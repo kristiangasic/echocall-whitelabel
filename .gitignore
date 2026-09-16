@@ -1,0 +1,15 @@
+# Dependencies and build output
+node_modules/
+dist/
+.angular/
+coverage/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and OS noise
+*.log
+.DS_Store
+Thumbs.db

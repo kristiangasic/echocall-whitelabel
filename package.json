@@ -1,0 +1,28 @@
+{
+  "name": "echocall-light",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Self-hosted, white-label customer portal and admin panel on the EchoCall public API",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22.22.3",
+    "npm": ">=10"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w packages/echocall-api && npm run build -w apps/api && npm run build -w apps/web",
+    "lint": "npm run lint -ws --if-present",
+    "typecheck": "npm run typecheck -ws --if-present",
+    "test": "npm run test -ws --if-present",
+    "check:vendor-neutral": "node scripts/check-vendor-neutral.mjs",
+    "check:white-label": "node scripts/check-white-label.mjs",
+    "check": "npm run check:vendor-neutral && npm run check:white-label",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "prettier": "3.9.7"
+  }
+}

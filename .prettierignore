@@ -1,0 +1,7 @@
+dist
+node_modules
+.angular
+coverage
+*.d.ts
+packages/echocall-api/spec
+package-lock.json
