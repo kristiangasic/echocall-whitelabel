@@ -10,8 +10,16 @@ export type TokenPurpose = 'invite' | 'password_reset';
 export class TokenService {
   constructor(@Inject(DB) private readonly db: Db) {}
 
+  /** Issues a fresh token; earlier unused tokens of the same purpose for this user stop working. */
   async issue(userId: number, purpose: TokenPurpose, ttlMs: number): Promise<string> {
     const token = randomToken();
+    await this.db
+      .updateTable('oneTimeTokens')
+      .set({ usedAt: new Date() })
+      .where('userId', '=', userId)
+      .where('purpose', '=', purpose)
+      .where('usedAt', 'is', null)
+      .execute();
     await this.db
       .insertInto('oneTimeTokens')
       .values({ userId, purpose, tokenHash: sha256Hex(token), expiresAt: new Date(Date.now() + ttlMs) })

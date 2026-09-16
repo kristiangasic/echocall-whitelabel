@@ -43,4 +43,12 @@ describe('TokenService', () => {
     expect(await tokens.consume(expired, 'password_reset')).toBeNull();
     expect(await tokens.consume('x'.repeat(43), 'password_reset')).toBeNull();
   });
+  it('invalidates earlier tokens of the same purpose when a new one is issued', async () => {
+    const first = await tokens.issue(userId, 'invite', 60_000);
+    const reset = await tokens.issue(userId, 'password_reset', 60_000);
+    const second = await tokens.issue(userId, 'invite', 60_000);
+    expect(await tokens.consume(first, 'invite')).toBeNull();
+    expect(await tokens.consume(second, 'invite')).toBe(userId);
+    expect(await tokens.consume(reset, 'password_reset')).toBe(userId);
+  });
 });
