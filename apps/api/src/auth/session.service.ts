@@ -105,7 +105,10 @@ export class SessionService {
     await this.db.deleteFrom('sessions').where('id', '=', sha256Hex(token)).execute();
   }
 
-  async revokeAllForUser(userId: number): Promise<void> {
-    await this.db.deleteFrom('sessions').where('userId', '=', userId).execute();
+  /** Ends every session of the user; pass the current cookie token to keep that one. */
+  async revokeAllForUser(userId: number, exceptToken?: string): Promise<void> {
+    let query = this.db.deleteFrom('sessions').where('userId', '=', userId);
+    if (exceptToken !== undefined) query = query.where('id', '!=', sha256Hex(exceptToken));
+    await query.execute();
   }
 }
