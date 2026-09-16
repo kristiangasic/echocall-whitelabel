@@ -5,9 +5,19 @@ import { AuthModule } from './auth/auth.module.js';
 import { DbModule } from './db/db.module.js';
 import { EchoCallModule } from './echocall/echocall.module.js';
 import { MailModule } from './mail/mail.module.js';
+import { SettingsModule } from './settings/settings.module.js';
 import { SetupModule } from './setup/setup.module.js';
 
 @Module({
-  imports: [ConfigModule, DbModule, EchoCallModule, MailModule, AuditModule, AuthModule, SetupModule],
+  imports: [
+    ConfigModule,
+    DbModule,
+    EchoCallModule,
+    MailModule,
+    AuditModule,
+    AuthModule,
+    SettingsModule,
+    SetupModule,
+  ],
 })
 export class AppModule {}

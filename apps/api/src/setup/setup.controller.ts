@@ -7,7 +7,8 @@ import { LoginService } from '../auth/login.service.js';
 import type { SessionUser } from '../auth/session.service.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { type HubStatus, HubStatusService } from '../echocall/hub-status.service.js';
-import { DEFAULT_BRANDING, type PublicBranding } from '../settings/branding.js';
+import type { PublicBranding } from '../settings/branding.js';
+import { SettingsService } from '../settings/settings.service.js';
 import { type SetupAdminDto, setupAdminSchema } from './dto.js';
 import { SetupService } from './setup.service.js';
 
@@ -22,6 +23,7 @@ export class SetupController {
   constructor(
     private readonly setup: SetupService,
     private readonly hubStatus: HubStatusService,
+    private readonly settings: SettingsService,
     private readonly audit: AuditService,
     private readonly login: LoginService,
   ) {}
@@ -32,7 +34,7 @@ export class SetupController {
     return {
       needsAdmin: await this.setup.needsAdmin(),
       hub: this.hubStatus.current(),
-      branding: DEFAULT_BRANDING,
+      branding: await this.settings.getBranding(),
     };
   }
 

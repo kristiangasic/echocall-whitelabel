@@ -42,15 +42,12 @@ describe('SetupController', () => {
   });
 
   it('creates the administrator, records it and signs them in', async () => {
-    const res = await request(t.app.getHttpServer())
-      .post('/api/setup/admin')
-      .set(XHR)
-      .send({
-        email: 'Owner@Example.com',
-        password: 'correct horse battery',
-        firstName: 'Olivia',
-        language: 'en',
-      });
+    const res = await request(t.app.getHttpServer()).post('/api/setup/admin').set(XHR).send({
+      email: 'Owner@Example.com',
+      password: 'correct horse battery',
+      firstName: 'Olivia',
+      language: 'en',
+    });
     expect(res.status).toBe(201);
     expect(res.body).toEqual({
       id: expect.any(Number),

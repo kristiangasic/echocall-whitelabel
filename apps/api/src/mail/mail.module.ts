@@ -1,9 +1,11 @@
 import { Global, Module } from '@nestjs/common';
-import { MAIL_SENDER, NoopMailSender } from './mail-sender.js';
+import { MAIL_SENDER } from './mail-sender.js';
+import { MailService } from './mail.service.js';
 
+/** MailService needs SettingsService, which the global SettingsModule provides. */
 @Global()
 @Module({
-  providers: [{ provide: MAIL_SENDER, useClass: NoopMailSender }],
-  exports: [MAIL_SENDER],
+  providers: [MailService, { provide: MAIL_SENDER, useExisting: MailService }],
+  exports: [MailService, MAIL_SENDER],
 })
 export class MailModule {}
