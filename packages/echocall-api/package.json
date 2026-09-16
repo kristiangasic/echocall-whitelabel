@@ -1,0 +1,28 @@
+{
+  "name": "@echocall/light-api-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Typed client for the EchoCall public API, generated from the published OpenAPI document",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "spec"
+  ],
+  "scripts": {
+    "refresh-spec": "node scripts/refresh-spec.mjs",
+    "generate": "openapi-typescript spec/openapi.json -o src/schema.d.ts --alphabetize",
+    "build": "tsc -p tsconfig.build.json && node scripts/copy-schema.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "openapi-fetch": "0.17.0"
+  },
+  "devDependencies": {
+    "openapi-typescript": "7.13.0",
+    "typescript": "~5.9.3",
+    "vitest": "5.0.1"
+  }
+}
