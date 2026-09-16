@@ -1,5 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import { AppModule } from './app.module.js';
 import { loadEnv } from './config/env.js';
 
@@ -16,7 +18,16 @@ async function bootstrap(): Promise<void> {
   loadDotEnv();
   // Validate before Nest starts so a misconfiguration prints only the readable problem list.
   const config = loadEnv(process.env);
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, { abortOnError: false });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    abortOnError: false,
+    logger: ['log', 'warn', 'error'],
+  });
+  app.set('trust proxy', config.trustProxy);
+  // The content security policy is added together with the static Angular delivery.
+  app.use(helmet({ contentSecurityPolicy: false }));
+  app.use(cookieParser());
+  app.setGlobalPrefix('api', { exclude: ['healthz', 'readyz'] });
+  app.enableShutdownHooks();
   await app.listen(config.port);
 }
 
