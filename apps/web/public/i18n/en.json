@@ -1,0 +1,152 @@
+{
+  "app": {
+    "loading": "Loading …"
+  },
+  "nav": {
+    "overview": "Overview",
+    "users": "Users",
+    "settings": "Settings",
+    "audit": "Audit log",
+    "account": "Account",
+    "logout": "Sign out",
+    "openMenu": "Open menu",
+    "language": "Language",
+    "accountMenu": "Account menu"
+  },
+  "languages": {
+    "de": "Deutsch",
+    "en": "English",
+    "fr": "Français"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "close": "Close",
+    "delete": "Delete",
+    "back": "Back",
+    "continue": "Continue",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "send": "Send",
+    "confirm": "Confirm",
+    "refresh": "Refresh",
+    "signIn": "Sign in"
+  },
+  "fields": {
+    "email": "E-mail address",
+    "password": "Password",
+    "newPassword": "New password",
+    "confirmPassword": "Repeat password",
+    "currentPassword": "Current password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "language": "Language",
+    "role": "Role",
+    "status": "Status",
+    "customerId": "Customer ID"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "user": "User"
+  },
+  "statuses": {
+    "invited": "Invited",
+    "active": "Active",
+    "disabled": "Disabled"
+  },
+  "validation": {
+    "required": "Required",
+    "email": "Please enter a valid e-mail address",
+    "minLength": "At least {{count}} characters",
+    "maxLength": "At most {{count}} characters",
+    "passwordMismatch": "The passwords do not match",
+    "hexColor": "Please enter a colour as #RRGGBB",
+    "url": "Please enter a full address starting with https://",
+    "integer": "Please enter a whole number"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "submit": "Sign in",
+      "forgot": "Forgot your password?"
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "intro": "Enter your e-mail address. If an account exists, you will receive a reset link.",
+      "submit": "Request link",
+      "done": "If an account exists for this address, a link is on its way.",
+      "toLogin": "Back to sign-in"
+    },
+    "reset": {
+      "title": "Choose a new password",
+      "submit": "Save password",
+      "done": "Your password has been changed. You can sign in now.",
+      "invalid": "This link is invalid or has expired. Request a new one."
+    },
+    "invite": {
+      "title": "Accept your invitation",
+      "intro": "Choose a password to activate your account.",
+      "submit": "Activate account",
+      "invalid": "This invitation is invalid or has expired. Ask for a new invitation."
+    },
+    "passwordHint": "At least 10 characters"
+  },
+  "setup": {
+    "title": "First-time setup",
+    "intro": "Welcome. Two steps and the portal is ready.",
+    "connection": {
+      "title": "1. Connection to the service",
+      "ok": "Connected as {{email}}",
+      "failed": "Not connected",
+      "hint": "Check the API key in the server configuration and try again.",
+      "checkedAt": "Last checked: {{time}}",
+      "unchecked": "Not checked yet"
+    },
+    "admin": {
+      "title": "2. Administrator account",
+      "intro": "This account manages users, branding and outgoing mail.",
+      "submit": "Create account"
+    },
+    "completed": "Setup is complete."
+  },
+  "footer": {
+    "imprint": "Imprint",
+    "privacy": "Privacy",
+    "support": "Support"
+  },
+  "errors": {
+    "unknown": "Something went wrong. Please try again.",
+    "network": "The server cannot be reached.",
+    "validation_error": "Please check your input.",
+    "unauthenticated": "Please sign in.",
+    "forbidden": "You do not have permission to do that.",
+    "not_found": "Not found.",
+    "too_many_requests": "Too many attempts. Please wait a moment.",
+    "invalid_credentials": "E-mail address or password is incorrect.",
+    "account_disabled": "This account is disabled.",
+    "invalid_token": "This link is invalid or has expired.",
+    "setup_completed": "Setup has already been completed.",
+    "email_taken": "An account with this e-mail address already exists.",
+    "customer_taken": "This customer is already linked to another account.",
+    "customer_required": "Users need a customer ID.",
+    "customer_not_linked": "This account is not linked to a customer yet.",
+    "cannot_change_self": "You cannot disable or demote your own account.",
+    "cannot_delete_self": "You cannot delete your own account.",
+    "invite_pending": "The invitation has not been accepted yet. Send it again instead.",
+    "already_active": "This account already has a password.",
+    "user_not_active": "Only active accounts can reset their password.",
+    "user_not_found": "This user does not exist.",
+    "invalid_current_password": "The current password is incorrect.",
+    "mail_not_configured": "No mail server is configured.",
+    "smtp_failed": "The mail server refused the message.",
+    "upstream_unavailable": "The service is not reachable right now. Please try again in a moment.",
+    "upstream_timeout": "The service is not responding. Please try again in a moment.",
+    "upstream_error": "The service answered unexpectedly.",
+    "invalid_api_key": "The API key was not accepted.",
+    "key_not_reseller": "The API key does not belong to a partner account.",
+    "no_active_subscription": "The service subscription is not active.",
+    "not_checked": "The connection has not been checked yet.",
+    "internal_error": "Internal error."
+  }
+}

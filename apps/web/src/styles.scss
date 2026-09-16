@@ -1,0 +1,41 @@
+// Material 3 theme. The primary colour is re-tinted at runtime by BrandingService, which sets
+// --mat-sys-primary and its companions on <html>; everything else comes from this palette.
+// Fonts stay on the system (no external font host) so the portal makes no third-party requests.
+@use 'sass:string';
+@use '@angular/material' as mat;
+// Only the filled icon set is bundled; the font files ship with the build (no icon CDN).
+@use 'material-icons/iconfont/filled';
+
+$font-stack: string.unquote("system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif");
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: (
+        plain-family: $font-stack,
+        brand-family: $font-stack,
+      ),
+      density: 0,
+    )
+  );
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  height: 100%;
+}
+
+.notify-error {
+  --mat-snack-bar-container-color: var(--mat-sys-error);
+  --mat-snack-bar-supporting-text-color: var(--mat-sys-on-error);
+  --mat-snack-bar-button-color: var(--mat-sys-on-error);
+}

@@ -1,0 +1,152 @@
+{
+  "app": {
+    "loading": "Wird geladen …"
+  },
+  "nav": {
+    "overview": "Übersicht",
+    "users": "Benutzer",
+    "settings": "Einstellungen",
+    "audit": "Protokoll",
+    "account": "Konto",
+    "logout": "Abmelden",
+    "openMenu": "Menü öffnen",
+    "language": "Sprache",
+    "accountMenu": "Kontomenü"
+  },
+  "languages": {
+    "de": "Deutsch",
+    "en": "English",
+    "fr": "Français"
+  },
+  "actions": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "retry": "Erneut versuchen",
+    "close": "Schließen",
+    "delete": "Löschen",
+    "back": "Zurück",
+    "continue": "Weiter",
+    "copy": "Link kopieren",
+    "copied": "Kopiert",
+    "send": "Senden",
+    "confirm": "Bestätigen",
+    "refresh": "Aktualisieren",
+    "signIn": "Anmelden"
+  },
+  "fields": {
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort wiederholen",
+    "currentPassword": "Aktuelles Passwort",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "language": "Sprache",
+    "role": "Rolle",
+    "status": "Status",
+    "customerId": "Kunden-ID"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "user": "Benutzer"
+  },
+  "statuses": {
+    "invited": "Eingeladen",
+    "active": "Aktiv",
+    "disabled": "Deaktiviert"
+  },
+  "validation": {
+    "required": "Pflichtfeld",
+    "email": "Bitte eine gültige E-Mail-Adresse eingeben",
+    "minLength": "Mindestens {{count}} Zeichen",
+    "maxLength": "Höchstens {{count}} Zeichen",
+    "passwordMismatch": "Die Passwörter stimmen nicht überein",
+    "hexColor": "Bitte eine Farbe im Format #RRGGBB eingeben",
+    "url": "Bitte eine vollständige Adresse mit https:// eingeben",
+    "integer": "Bitte eine ganze Zahl eingeben"
+  },
+  "auth": {
+    "login": {
+      "title": "Anmelden",
+      "submit": "Anmelden",
+      "forgot": "Passwort vergessen?"
+    },
+    "forgot": {
+      "title": "Passwort zurücksetzen",
+      "intro": "Geben Sie Ihre E-Mail-Adresse ein. Wenn ein Konto existiert, erhalten Sie einen Link zum Zurücksetzen.",
+      "submit": "Link anfordern",
+      "done": "Wenn ein Konto zu dieser Adresse existiert, ist ein Link unterwegs.",
+      "toLogin": "Zur Anmeldung"
+    },
+    "reset": {
+      "title": "Neues Passwort festlegen",
+      "submit": "Passwort speichern",
+      "done": "Ihr Passwort wurde geändert. Sie können sich jetzt anmelden.",
+      "invalid": "Dieser Link ist ungültig oder abgelaufen. Fordern Sie einen neuen an."
+    },
+    "invite": {
+      "title": "Einladung annehmen",
+      "intro": "Legen Sie ein Passwort fest, um Ihr Konto zu aktivieren.",
+      "submit": "Konto aktivieren",
+      "invalid": "Diese Einladung ist ungültig oder abgelaufen. Bitten Sie um eine neue Einladung."
+    },
+    "passwordHint": "Mindestens 10 Zeichen"
+  },
+  "setup": {
+    "title": "Ersteinrichtung",
+    "intro": "Willkommen. In zwei Schritten ist das Portal betriebsbereit.",
+    "connection": {
+      "title": "1. Verbindung zum Dienst",
+      "ok": "Verbunden als {{email}}",
+      "failed": "Keine Verbindung",
+      "hint": "Prüfen Sie den API-Schlüssel in der Serverkonfiguration und versuchen Sie es erneut.",
+      "checkedAt": "Zuletzt geprüft: {{time}}",
+      "unchecked": "Noch nicht geprüft"
+    },
+    "admin": {
+      "title": "2. Administrator-Konto",
+      "intro": "Dieses Konto verwaltet Benutzer, Branding und E-Mail-Versand.",
+      "submit": "Konto anlegen"
+    },
+    "completed": "Die Einrichtung ist abgeschlossen."
+  },
+  "footer": {
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "support": "Support"
+  },
+  "errors": {
+    "unknown": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+    "network": "Der Server ist nicht erreichbar.",
+    "validation_error": "Bitte prüfen Sie Ihre Eingaben.",
+    "unauthenticated": "Bitte melden Sie sich an.",
+    "forbidden": "Dafür fehlt Ihnen die Berechtigung.",
+    "not_found": "Nicht gefunden.",
+    "too_many_requests": "Zu viele Versuche. Bitte warten Sie einen Moment.",
+    "invalid_credentials": "E-Mail-Adresse oder Passwort ist falsch.",
+    "account_disabled": "Dieses Konto ist deaktiviert.",
+    "invalid_token": "Dieser Link ist ungültig oder abgelaufen.",
+    "setup_completed": "Die Einrichtung wurde bereits abgeschlossen.",
+    "email_taken": "Für diese E-Mail-Adresse gibt es bereits ein Konto.",
+    "customer_taken": "Dieser Kunde ist bereits mit einem anderen Konto verknüpft.",
+    "customer_required": "Benutzer benötigen eine Kunden-ID.",
+    "customer_not_linked": "Dieses Konto ist noch keinem Kunden zugeordnet.",
+    "cannot_change_self": "Sie können Ihr eigenes Konto nicht deaktivieren oder herabstufen.",
+    "cannot_delete_self": "Sie können Ihr eigenes Konto nicht löschen.",
+    "invite_pending": "Die Einladung wurde noch nicht angenommen. Senden Sie sie stattdessen erneut.",
+    "already_active": "Dieses Konto hat bereits ein Passwort.",
+    "user_not_active": "Nur aktive Konten können ihr Passwort zurücksetzen.",
+    "user_not_found": "Dieser Benutzer existiert nicht.",
+    "invalid_current_password": "Das aktuelle Passwort ist falsch.",
+    "mail_not_configured": "Es ist kein E-Mail-Server konfiguriert.",
+    "smtp_failed": "Der E-Mail-Server hat die Nachricht abgelehnt.",
+    "upstream_unavailable": "Der Dienst ist gerade nicht erreichbar. Bitte versuchen Sie es gleich noch einmal.",
+    "upstream_timeout": "Der Dienst antwortet nicht. Bitte versuchen Sie es gleich noch einmal.",
+    "upstream_error": "Der Dienst hat unerwartet geantwortet.",
+    "invalid_api_key": "Der API-Schlüssel wurde nicht akzeptiert.",
+    "key_not_reseller": "Der API-Schlüssel gehört nicht zu einem Partnerkonto.",
+    "no_active_subscription": "Das Abonnement des Dienstes ist nicht aktiv.",
+    "not_checked": "Die Verbindung wurde noch nicht geprüft.",
+    "internal_error": "Interner Fehler."
+  }
+}
