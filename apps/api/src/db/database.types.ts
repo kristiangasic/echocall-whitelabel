@@ -1,0 +1,68 @@
+import type { Generated, Insertable, Selectable, Updateable } from 'kysely';
+
+export interface UsersTable {
+  id: Generated<number>;
+  email: string;
+  passwordHash: string | null;
+  role: 'admin' | 'user';
+  /** Customer id in the hub for role user; null for admins. */
+  echocallCustomerId: number | null;
+  firstName: string | null;
+  lastName: string | null;
+  language: 'de' | 'en' | 'fr';
+  status: 'invited' | 'active' | 'disabled';
+  lastLoginAt: Date | null;
+  createdAt: Generated<Date>;
+  updatedAt: Generated<Date>;
+}
+
+export interface SessionsTable {
+  /** sha256 of the cookie token. */
+  id: string;
+  userId: number;
+  expiresAt: Date;
+  createdAt: Generated<Date>;
+  ip: string | null;
+  userAgent: string | null;
+}
+
+export interface OneTimeTokensTable {
+  id: Generated<number>;
+  userId: number;
+  purpose: 'invite' | 'password_reset';
+  tokenHash: string;
+  expiresAt: Date;
+  usedAt: Date | null;
+  createdAt: Generated<Date>;
+}
+
+export interface SettingsTable {
+  key: string;
+  /** JSON document. */
+  value: string;
+  updatedAt: Generated<Date>;
+}
+
+export interface AuditLogTable {
+  id: Generated<number>;
+  actorUserId: number | null;
+  action: string;
+  targetType: string | null;
+  targetId: string | null;
+  /** JSON, never contains secrets. */
+  details: string | null;
+  ip: string | null;
+  createdAt: Generated<Date>;
+}
+
+export interface Database {
+  users: UsersTable;
+  sessions: SessionsTable;
+  oneTimeTokens: OneTimeTokensTable;
+  settings: SettingsTable;
+  auditLog: AuditLogTable;
+}
+
+export type UserRow = Selectable<UsersTable>;
+export type NewUser = Insertable<UsersTable>;
+export type UserUpdate = Updateable<UsersTable>;
