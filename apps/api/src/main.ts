@@ -25,8 +25,28 @@ async function bootstrap(): Promise<void> {
     logger: ['log', 'warn', 'error'],
   });
   app.set('trust proxy', config.trustProxy);
-  // The content security policy is added together with the static Angular delivery.
-  app.use(helmet({ contentSecurityPolicy: false }));
+  // Angular emits inline style tags at runtime, so style-src needs 'unsafe-inline';
+  // uploaded logos are stored as data URLs, so img-src needs data:. Plain-HTTP
+  // intranet installs must not upgrade their asset requests to https.
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          ...(config.appUrl.startsWith('https://') ? {} : { 'upgrade-insecure-requests': null }),
+          'default-src': ["'self'"],
+          'script-src': ["'self'"],
+          'style-src': ["'self'", "'unsafe-inline'"],
+          'img-src': ["'self'", 'data:'],
+          'font-src': ["'self'"],
+          'connect-src': ["'self'"],
+          'object-src': ["'none'"],
+          'base-uri': ["'self'"],
+          'form-action': ["'self'"],
+          'frame-ancestors': ["'none'"],
+        },
+      },
+    }),
+  );
   app.useBodyParser('json', { limit: JSON_BODY_LIMIT });
   app.use(cookieParser());
   app.setGlobalPrefix('api', { exclude: ['healthz', 'readyz'] });

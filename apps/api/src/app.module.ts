@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from './config/config.module.js';
 import { AccountModule } from './account/account.module.js';
 import { AdminOverviewModule } from './admin/overview/admin-overview.module.js';
 import { AdminUsersModule } from './admin/users/admin-users.module.js';
 import { AuditModule } from './audit/audit.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { type AppConfig, APP_CONFIG } from './config/env.js';
 import { DbModule } from './db/db.module.js';
 import { EchoCallModule } from './echocall/echocall.module.js';
+import { HealthModule } from './health/health.module.js';
 import { MailModule } from './mail/mail.module.js';
 import { SettingsModule } from './settings/settings.module.js';
 import { SetupModule } from './setup/setup.module.js';
@@ -24,6 +27,15 @@ import { SetupModule } from './setup/setup.module.js';
     AdminOverviewModule,
     AdminUsersModule,
     AccountModule,
+    HealthModule,
+    // Serves the built Angular app next to the API when WEB_DIST_DIR points at it.
+    ServeStaticModule.forRootAsync({
+      inject: [APP_CONFIG],
+      useFactory: (config: AppConfig) =>
+        config.webDistDir
+          ? [{ rootPath: config.webDistDir, exclude: ['/api/{*path}', '/healthz', '/readyz'] }]
+          : [],
+    }),
   ],
 })
 export class AppModule {}

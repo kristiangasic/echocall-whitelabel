@@ -1,0 +1,12 @@
+.git
+node_modules
+**/node_modules
+**/dist
+.angular
+**/.angular
+.env
+.env.*
+!.env.example
+docker
+docs
+*.log
