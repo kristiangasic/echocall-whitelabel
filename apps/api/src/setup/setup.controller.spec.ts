@@ -1,6 +1,8 @@
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { RESELLER_PROFILE } from '../testing/hub-fake.js';
 import { createTestApp, type TestApp } from '../testing/test-app.js';
+import { createUser } from '../testing/users.js';
 import { SetupModule } from './setup.module.js';
 
 const XHR = { 'x-requested-with': 'XMLHttpRequest' };
@@ -88,5 +90,26 @@ describe('SetupController', () => {
     expect(res.body.error.code).toBe('setup_completed');
     const users = await t.db.db.selectFrom('users').select('email').execute();
     expect(users.map((u) => u.email)).toEqual(['owner@example.com']);
+  });
+
+  it('re-checks the key only while the first administrator is missing', async () => {
+    await t.db.reset();
+    const ok = await request(t.app.getHttpServer()).post('/api/setup/hub-check').set(XHR);
+    expect(ok.status).toBe(200);
+    expect(ok.body).toMatchObject({ ok: true, role: 'reseller' });
+
+    t.hub.on('GET /users/me', {
+      status: 401,
+      body: { error: { code: 'invalid_api_key', message: 'The API key is not valid' } },
+    });
+    const failed = await request(t.app.getHttpServer()).post('/api/setup/hub-check').set(XHR);
+    expect(failed.status).toBe(200);
+    expect(failed.body).toMatchObject({ ok: false, error: { code: 'invalid_api_key' } });
+    t.hub.on('GET /users/me', { body: RESELLER_PROFILE });
+
+    await createUser(t, { email: 'admin@example.com', role: 'admin' });
+    const closed = await request(t.app.getHttpServer()).post('/api/setup/hub-check').set(XHR);
+    expect(closed.status).toBe(409);
+    expect(closed.body.error.code).toBe('setup_completed');
   });
 });

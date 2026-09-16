@@ -3,6 +3,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { AuditService } from '../audit/audit.service.js';
 import { Public } from '../auth/decorators.js';
+import { apiError } from '../common/http-error.js';
 import { LoginService } from '../auth/login.service.js';
 import type { SessionUser } from '../auth/session.service.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
@@ -36,6 +37,18 @@ export class SetupController {
       hub: this.hubStatus.current(),
       branding: await this.settings.getBranding(),
     };
+  }
+
+  /** First-run only: re-checks the API key so the setup page can show the outcome without waiting. */
+  @Public()
+  @UseGuards(ThrottlerGuard)
+  @Post('hub-check')
+  @HttpCode(200)
+  async hubCheck(): Promise<HubStatus> {
+    if (!(await this.setup.needsAdmin())) {
+      throw apiError(409, 'setup_completed', 'The administrator account already exists');
+    }
+    return this.hubStatus.refresh();
   }
 
   /** First-run only: creates the administrator and signs them in. */
