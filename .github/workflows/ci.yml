@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # The lockfile is written by npm 12; npm 10 (bundled with Node 22) fails to install it.
+      - run: npm install -g npm@12
+      - run: npm ci
+      - run: npm run check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test -w packages/echocall-api -w apps/web
+      - run: docker build -f docker/Dockerfile .
+
+  api-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: postgres
+            url: postgres://postgres:postgres@127.0.0.1:5432/echocall_light_test
+          - name: mariadb
+            url: mariadb://root:root@127.0.0.1:3306/echocall_light_test
+    name: api-tests (${{ matrix.name }})
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: echocall_light_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+      mariadb:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: echocall_light_test
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd "healthcheck.sh --connect --innodb_initialized"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install -g npm@12
+      - run: npm ci
+      - run: npm run build -w packages/echocall-api
+      - run: npm test -w apps/api
+        env:
+          TEST_DATABASE_URL: ${{ matrix.url }}

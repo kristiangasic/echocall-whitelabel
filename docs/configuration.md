@@ -1,0 +1,54 @@
+# Configuration
+
+Every setting is an environment variable, read once at startup. Invalid or missing
+required values stop the server with a clear message. In development you can put them in a
+`.env` file in the repository root; the Docker Compose setup reads `../.env` as well.
+
+## Required
+
+| Variable           | Description                                                                                                                                      |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `APP_URL`          | Public URL people use to reach the portal, e.g. `https://portal.example.com`. Used for links in mails and to decide whether cookies are Secure.  |
+| `APP_SECRET`       | Random string, at least 32 characters. Signs sessions and one-time tokens. Generate with `openssl rand -hex 32`. Changing it signs everyone out. |
+| `DATABASE_URL`     | Connection URL of the portal database. `postgres://`, `postgresql://`, `mysql://` and `mariadb://` are accepted.                                 |
+| `ECHOCALL_API_KEY` | Your EchoCall reseller API key (`eck_live_` followed by 64 hex characters). Keep it secret; it never reaches the browser.                        |
+
+## Optional
+
+| Variable           | Default                          | Description                                                                                                                                                                                                       |
+| ------------------ | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PORT`             | `3000`                           | Port the HTTP server listens on.                                                                                                                                                                                  |
+| `NODE_ENV`         | `development`                    | Standard Node environment switch.                                                                                                                                                                                 |
+| `DATABASE_SSL`     | `disable`                        | TLS towards the database: `disable`, `require`, or `no-verify` (encrypt but accept self-signed certificates).                                                                                                     |
+| `COOKIE_SECURE`    | on when `APP_URL` is `https`     | Force or disable the `Secure` flag on the session cookie.                                                                                                                                                         |
+| `TRUST_PROXY`      | `1`                              | Number of reverse proxies in front of the app; needed for correct client IPs in the audit log and rate limiting. `0` when exposed directly.                                                                       |
+| `ECHOCALL_API_URL` | `https://hub.echocall.de/api/v1` | Base URL of the EchoCall public API. Only change on instruction from EchoCall support.                                                                                                                            |
+| `WEB_DIST_DIR`     | unset                            | Absolute path to the built Angular app (`apps/web/dist/web/browser`). When set, the API serves the web UI itself; the Docker image sets it for you. When unset, only `/api`, `/healthz` and `/readyz` are served. |
+
+## Mail (optional)
+
+Without SMTP the portal still works: invite and password reset links are shown to the
+admin as one-time links to pass on. With SMTP they are mailed automatically. SMTP can also
+be configured at runtime in the admin panel; environment variables take precedence and are
+shown there as locked.
+
+| Variable      | Default | Description                                                                       |
+| ------------- | ------- | --------------------------------------------------------------------------------- |
+| `SMTP_HOST`   | unset   | Hostname of your SMTP server. Enables mailing.                                    |
+| `SMTP_PORT`   | `587`   | Port; `465` implies TLS-on-connect (see below).                                   |
+| `SMTP_SECURE` | `false` | `true` for TLS-on-connect (usually port 465); `false` uses STARTTLS when offered. |
+| `SMTP_USER`   | unset   | Username, when the server requires authentication.                                |
+| `SMTP_PASS`   | unset   | Password for `SMTP_USER`.                                                         |
+| `SMTP_FROM`   | unset   | From address of portal mails, e.g. `portal@example.com`.                          |
+
+## Docker Compose only
+
+| Variable      | Description                                                                                          |
+| ------------- | ---------------------------------------------------------------------------------------------------- |
+| `DB_PASSWORD` | Password of the bundled PostgreSQL container; also used to build `DATABASE_URL` for the app service. |
+
+## Test suite
+
+| Variable            | Description                                                                                                                                                      |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TEST_DATABASE_URL` | Database the `apps/api` tests run against (they create and drop their own schemas). Defaults to a local PostgreSQL on port 5433, database `echocall_light_test`. |
