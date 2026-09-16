@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const emailSchema = z.string().trim().toLowerCase().pipe(z.email());
 export const passwordSchema = z.string().min(10, 'Password must be at least 10 characters').max(200);
 const tokenSchema = z.string().min(20).max(200);
-const nameSchema = z.string().trim().max(100);
+export const nameSchema = z.string().trim().max(100);
 
 export const loginSchema = z.object({
   email: emailSchema,

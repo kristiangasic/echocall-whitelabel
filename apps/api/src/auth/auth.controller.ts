@@ -20,7 +20,8 @@ import {
   resetSchema,
 } from './dto.js';
 import { PasswordService } from './password.service.js';
-import { SESSION_COOKIE, SessionService, type SessionUser, toSessionUser } from './session.service.js';
+import { LoginService } from './login.service.js';
+import { SessionService, type SessionUser } from './session.service.js';
 import { TokenService } from './token.service.js';
 
 const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
@@ -34,6 +35,7 @@ export class AuthController {
     private readonly passwords: PasswordService,
     private readonly sessions: SessionService,
     private readonly tokens: TokenService,
+    private readonly logins: LoginService,
   ) {}
 
   @Public()
@@ -54,16 +56,14 @@ export class AuthController {
     if (!user || !ok) throw apiError(401, 'invalid_credentials', 'E-mail or password is incorrect');
     if (user.status !== 'active') throw apiError(403, 'account_disabled', 'This account is disabled');
     await this.db.updateTable('users').set({ lastLoginAt: new Date() }).where('id', '=', user.id).execute();
-    return this.startSession(user, req, res);
+    return this.logins.startSession(user, req, res);
   }
 
   @Public()
   @Post('logout')
   @HttpCode(204)
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<void> {
-    const token: unknown = req.cookies?.[SESSION_COOKIE];
-    if (typeof token === 'string') await this.sessions.revoke(token);
-    res.clearCookie(SESSION_COOKIE, this.cookieOptions());
+    await this.logins.endSession(req, res);
   }
 
   @Get('me')
@@ -131,23 +131,10 @@ export class AuthController {
     await this.db.updateTable('users').set(changes).where('id', '=', user.id).execute();
     const updated = await this.findById(user.id);
     if (!updated) throw apiError(400, 'invalid_token', 'This link is invalid or has expired');
-    return this.startSession(updated, req, res);
+    return this.logins.startSession(updated, req, res);
   }
 
   private findById(id: number): Promise<UserRow | undefined> {
     return this.db.selectFrom('users').selectAll().where('id', '=', id).executeTakeFirst();
-  }
-
-  private async startSession(user: UserRow, req: Request, res: Response): Promise<SessionUser> {
-    const { token, expiresAt } = await this.sessions.create(user.id, {
-      ip: req.ip,
-      userAgent: req.headers['user-agent'],
-    });
-    res.cookie(SESSION_COOKIE, token, { ...this.cookieOptions(), expires: expiresAt });
-    return toSessionUser(user);
-  }
-
-  private cookieOptions() {
-    return { httpOnly: true, sameSite: 'lax' as const, secure: this.config.cookieSecure, path: '/' };
   }
 }
