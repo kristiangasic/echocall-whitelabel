@@ -1,3 +1,35 @@
 {
-  "title": "Mein Bereich"
+  "title": "Kundenbereich",
+  "dashboard": {
+    "title": "Übersicht",
+    "welcome": "Willkommen, {{name}}.",
+    "notLinked": "Ihr Konto ist noch keinem Kundenkonto zugeordnet. Bitte wenden Sie sich an Ihren Ansprechpartner.",
+    "thisPeriod": "Aktueller Zeitraum",
+    "period": "Zeitraum: {{from}} bis {{to}}",
+    "voice": {
+      "title": "Telefonie",
+      "used": "Minuten verbraucht",
+      "remaining": "Noch {{count}} Minuten verfügbar",
+      "perMonth": "{{count}} Minuten pro Monat enthalten"
+    },
+    "chat": {
+      "title": "Chat",
+      "used": "Unterhaltungen geführt",
+      "remaining": "Noch {{count}} Unterhaltungen verfügbar",
+      "perMonth": "{{count}} Unterhaltungen pro Monat enthalten"
+    },
+    "balance": {
+      "title": "Guthaben",
+      "hint": "Verfügbares Guthaben"
+    },
+    "plan": {
+      "title": "Tarif",
+      "none": "Kein Tarif hinterlegt"
+    },
+    "statuses": {
+      "active": "Aktiv",
+      "trial": "Testphase",
+      "suspended": "Gesperrt"
+    }
+  }
 }

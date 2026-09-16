@@ -1,3 +1,35 @@
 {
-  "title": "Mon espace"
+  "title": "Espace client",
+  "dashboard": {
+    "title": "Vue d'ensemble",
+    "welcome": "Bienvenue, {{name}}.",
+    "notLinked": "Votre compte n'est pas encore lié à un compte client. Veuillez contacter votre interlocuteur.",
+    "thisPeriod": "Période en cours",
+    "period": "Période : {{from}} au {{to}}",
+    "voice": {
+      "title": "Téléphonie",
+      "used": "minutes consommées",
+      "remaining": "Encore {{count}} minutes disponibles",
+      "perMonth": "{{count}} minutes par mois incluses"
+    },
+    "chat": {
+      "title": "Chat",
+      "used": "conversations menées",
+      "remaining": "Encore {{count}} conversations disponibles",
+      "perMonth": "{{count}} conversations par mois incluses"
+    },
+    "balance": {
+      "title": "Solde",
+      "hint": "Solde disponible"
+    },
+    "plan": {
+      "title": "Forfait",
+      "none": "Aucun forfait enregistré"
+    },
+    "statuses": {
+      "active": "Actif",
+      "trial": "Période d'essai",
+      "suspended": "Suspendu"
+    }
+  }
 }

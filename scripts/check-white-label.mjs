@@ -19,6 +19,9 @@ function walk(dir) {
       walk(p);
       continue;
     }
+    // Test files are not shipped to customers; they may name internal API fields
+    // and assert that the brand does NOT show up.
+    if (name.endsWith('.spec.ts')) continue;
     const lines = readFileSync(p, 'utf8').split('\n');
     lines.forEach((line, i) => {
       if (forbidden.test(line)) hits.push(`${relative(process.cwd(), p)}:${i + 1}: ${line.trim()}`);

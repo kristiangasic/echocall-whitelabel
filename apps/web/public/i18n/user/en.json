@@ -1,3 +1,35 @@
 {
-  "title": "My area"
+  "title": "Customer area",
+  "dashboard": {
+    "title": "Overview",
+    "welcome": "Welcome, {{name}}.",
+    "notLinked": "Your account is not linked to a customer account yet. Please contact your point of contact.",
+    "thisPeriod": "Current period",
+    "period": "Period: {{from}} to {{to}}",
+    "voice": {
+      "title": "Calls",
+      "used": "minutes used",
+      "remaining": "{{count}} minutes still available",
+      "perMonth": "{{count}} minutes per month included"
+    },
+    "chat": {
+      "title": "Chat",
+      "used": "conversations held",
+      "remaining": "{{count}} conversations still available",
+      "perMonth": "{{count}} conversations per month included"
+    },
+    "balance": {
+      "title": "Balance",
+      "hint": "Available balance"
+    },
+    "plan": {
+      "title": "Plan",
+      "none": "No plan on record"
+    },
+    "statuses": {
+      "active": "Active",
+      "trial": "Trial",
+      "suspended": "Suspended"
+    }
+  }
 }

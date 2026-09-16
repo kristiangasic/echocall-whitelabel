@@ -1,3 +1,100 @@
 {
-  "title": "Verwaltung"
+  "title": "Verwaltung",
+  "overview": {
+    "title": "Übersicht",
+    "hub": {
+      "title": "Verbindung zum Dienst",
+      "ok": "Verbunden als {{email}}",
+      "failed": "Keine Verbindung",
+      "subscriptionHint": "Das Portal braucht ein aktives Abonnement. Prüfen Sie Ihr Konto unter",
+      "keyHint": "Prüfen Sie den API-Schlüssel in der Serverkonfiguration und starten Sie den Dienst neu.",
+      "checkedAt": "Zuletzt geprüft: {{time}}",
+      "recheck": "Jetzt prüfen"
+    },
+    "users": {
+      "title": "Benutzerkonten",
+      "total": "{{count}} Konten insgesamt",
+      "manage": "Benutzer verwalten"
+    }
+  },
+  "users": {
+    "title": "Benutzer",
+    "invite": "Einladen",
+    "lastLogin": "Letzte Anmeldung",
+    "empty": "Noch keine Benutzer. Laden Sie die erste Person ein.",
+    "resendInvite": "Einladung erneut senden",
+    "passwordReset": "Passwort zurücksetzen",
+    "enable": "Aktivieren",
+    "disable": "Deaktivieren",
+    "saved": "Änderungen gespeichert.",
+    "deleted": "Benutzer gelöscht.",
+    "inviteSent": "Einladung an {{email}} gesendet.",
+    "resetSent": "Link zum Zurücksetzen an {{email}} gesendet.",
+    "inviteLinkTitle": "Einladungslink",
+    "resetLinkTitle": "Link zum Zurücksetzen",
+    "linkMessage": "Es ist kein E-Mail-Server konfiguriert. Geben Sie diesen Link persönlich weiter. Er ist nur begrenzt gültig.",
+    "deleteTitle": "Benutzer löschen",
+    "deleteMessage": "Soll das Konto {{email}} endgültig gelöscht werden?",
+    "dialog": {
+      "inviteTitle": "Benutzer einladen",
+      "editTitle": "Benutzer bearbeiten",
+      "inviteIntro": "Die Person erhält einen Link, mit dem sie ihr Passwort festlegt.",
+      "inviteSubmit": "Einladung senden",
+      "customerHint": "Kundennummer aus Ihrem Partnerkonto beim Dienst. Ohne Zuordnung sieht die Person keine Verbrauchsdaten."
+    }
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "branding": {
+      "tab": "Branding",
+      "intro": "Name, Logo und Farbe erscheinen überall im Portal und in den E-Mails.",
+      "productName": "Produktname",
+      "uploadLogo": "Logo hochladen",
+      "removeLogo": "Logo entfernen",
+      "logoHint": "PNG, JPEG, WebP oder SVG, höchstens 140 KB.",
+      "logoType": "Bitte ein PNG-, JPEG-, WebP- oder SVG-Bild wählen.",
+      "logoTooLarge": "Das Logo darf höchstens 140 KB groß sein.",
+      "primaryColor": "Hauptfarbe",
+      "supportEmail": "Support-Adresse",
+      "imprintUrl": "Link zum Impressum",
+      "privacyUrl": "Link zur Datenschutzerklärung",
+      "defaultLanguage": "Standardsprache",
+      "preview": "Vorschau",
+      "saved": "Branding gespeichert."
+    },
+    "mail": {
+      "tab": "E-Mail",
+      "intro": "Über diesen Server verschickt das Portal Einladungen und Links zum Zurücksetzen von Passwörtern.",
+      "envSource": "Konfiguriert über die Serverumgebung. Einstellungen auf dieser Seite haben Vorrang.",
+      "settingsSource": "Konfiguriert über diese Einstellungen.",
+      "notConfigured": "Noch kein E-Mail-Server konfiguriert. Einladungslinks müssen dann von Hand weitergegeben werden.",
+      "host": "SMTP-Server",
+      "port": "Port",
+      "secure": "Verschlüsselte Verbindung (TLS)",
+      "user": "Benutzername",
+      "pass": "Passwort",
+      "passKeep": "Leer lassen, um das gespeicherte Passwort zu behalten.",
+      "from": "Absender",
+      "saved": "E-Mail-Einstellungen gespeichert.",
+      "remove": "Einstellungen entfernen",
+      "removeTitle": "E-Mail-Einstellungen entfernen",
+      "removeMessage": "Die gespeicherten SMTP-Zugangsdaten werden gelöscht. Danach gilt wieder die Serverumgebung, falls dort etwas konfiguriert ist.",
+      "removed": "E-Mail-Einstellungen entfernt.",
+      "test": "Testnachricht",
+      "testTo": "Empfänger",
+      "testSent": "Testnachricht an {{email}} gesendet."
+    }
+  },
+  "audit": {
+    "title": "Protokoll",
+    "intro": "Alle Änderungen durch Administratoren und sicherheitsrelevante Ereignisse.",
+    "time": "Zeitpunkt",
+    "actor": "Ausgelöst von",
+    "system": "System",
+    "action": "Aktion",
+    "target": "Betrifft",
+    "details": "Details",
+    "ip": "IP-Adresse",
+    "empty": "Noch keine Einträge."
+  }
 }

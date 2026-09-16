@@ -24,6 +24,8 @@
     "retry": "Réessayer",
     "close": "Fermer",
     "delete": "Supprimer",
+    "edit": "Modifier",
+    "more": "Autres actions",
     "back": "Retour",
     "continue": "Continuer",
     "copy": "Copier le lien",
@@ -63,7 +65,17 @@
     "passwordMismatch": "Les mots de passe ne correspondent pas",
     "hexColor": "Veuillez saisir une couleur au format #RRGGBB",
     "url": "Veuillez saisir une adresse complète commençant par https://",
-    "integer": "Veuillez saisir un nombre entier"
+    "integer": "Veuillez saisir un nombre entier",
+    "invalid": "Saisie invalide",
+    "server": "{{message}}"
+  },
+  "paginator": {
+    "itemsPerPage": "Éléments par page",
+    "next": "Page suivante",
+    "previous": "Page précédente",
+    "first": "Première page",
+    "last": "Dernière page",
+    "range": "{{from}} à {{to}} sur {{total}}"
   },
   "auth": {
     "login": {
@@ -109,6 +121,19 @@
       "submit": "Créer le compte"
     },
     "completed": "La configuration est terminée."
+  },
+  "account": {
+    "title": "Mon compte",
+    "profile": {
+      "title": "Profil",
+      "saved": "Profil enregistré."
+    },
+    "password": {
+      "title": "Changer le mot de passe",
+      "intro": "Le mot de passe actuel est requis pour confirmer la modification.",
+      "submit": "Changer le mot de passe",
+      "saved": "Mot de passe modifié."
+    }
   },
   "footer": {
     "imprint": "Mentions légales",

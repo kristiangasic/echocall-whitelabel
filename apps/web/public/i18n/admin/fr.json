@@ -1,3 +1,100 @@
 {
-  "title": "Administration"
+  "title": "Administration",
+  "overview": {
+    "title": "Vue d'ensemble",
+    "hub": {
+      "title": "Connexion au service",
+      "ok": "Connecté en tant que {{email}}",
+      "failed": "Pas de connexion",
+      "subscriptionHint": "Le portail nécessite un abonnement actif. Vérifiez votre compte sur",
+      "keyHint": "Vérifiez la clé API dans la configuration du serveur et redémarrez le service.",
+      "checkedAt": "Dernière vérification : {{time}}",
+      "recheck": "Vérifier maintenant"
+    },
+    "users": {
+      "title": "Comptes utilisateurs",
+      "total": "{{count}} comptes au total",
+      "manage": "Gérer les utilisateurs"
+    }
+  },
+  "users": {
+    "title": "Utilisateurs",
+    "invite": "Inviter",
+    "lastLogin": "Dernière connexion",
+    "empty": "Aucun utilisateur pour le moment. Invitez la première personne.",
+    "resendInvite": "Renvoyer l'invitation",
+    "passwordReset": "Réinitialiser le mot de passe",
+    "enable": "Activer",
+    "disable": "Désactiver",
+    "saved": "Modifications enregistrées.",
+    "deleted": "Utilisateur supprimé.",
+    "inviteSent": "Invitation envoyée à {{email}}.",
+    "resetSent": "Lien de réinitialisation envoyé à {{email}}.",
+    "inviteLinkTitle": "Lien d'invitation",
+    "resetLinkTitle": "Lien de réinitialisation",
+    "linkMessage": "Aucun serveur de messagerie n'est configuré. Transmettez ce lien en personne. Sa validité est limitée dans le temps.",
+    "deleteTitle": "Supprimer l'utilisateur",
+    "deleteMessage": "Supprimer définitivement le compte {{email}} ?",
+    "dialog": {
+      "inviteTitle": "Inviter un utilisateur",
+      "editTitle": "Modifier l'utilisateur",
+      "inviteIntro": "La personne reçoit un lien pour définir son mot de passe.",
+      "inviteSubmit": "Envoyer l'invitation",
+      "customerHint": "Numéro de client issu de votre compte partenaire auprès du service. Sans lui, la personne ne voit aucune donnée de consommation."
+    }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "branding": {
+      "tab": "Image de marque",
+      "intro": "Le nom, le logo et la couleur apparaissent partout dans le portail et dans les e-mails.",
+      "productName": "Nom du produit",
+      "uploadLogo": "Téléverser un logo",
+      "removeLogo": "Retirer le logo",
+      "logoHint": "PNG, JPEG, WebP ou SVG, 140 Ko maximum.",
+      "logoType": "Veuillez choisir une image PNG, JPEG, WebP ou SVG.",
+      "logoTooLarge": "Le logo ne doit pas dépasser 140 Ko.",
+      "primaryColor": "Couleur principale",
+      "supportEmail": "Adresse d'assistance",
+      "imprintUrl": "Lien vers les mentions légales",
+      "privacyUrl": "Lien vers la politique de confidentialité",
+      "defaultLanguage": "Langue par défaut",
+      "preview": "Aperçu",
+      "saved": "Image de marque enregistrée."
+    },
+    "mail": {
+      "tab": "E-mail",
+      "intro": "Le portail envoie les invitations et les liens de réinitialisation de mot de passe via ce serveur.",
+      "envSource": "Configuré via l'environnement du serveur. Les paramètres de cette page sont prioritaires.",
+      "settingsSource": "Configuré via ces paramètres.",
+      "notConfigured": "Aucun serveur de messagerie n'est encore configuré. Les liens d'invitation doivent alors être transmis manuellement.",
+      "host": "Serveur SMTP",
+      "port": "Port",
+      "secure": "Connexion chiffrée (TLS)",
+      "user": "Nom d'utilisateur",
+      "pass": "Mot de passe",
+      "passKeep": "Laissez vide pour conserver le mot de passe enregistré.",
+      "from": "Expéditeur",
+      "saved": "Paramètres e-mail enregistrés.",
+      "remove": "Supprimer les paramètres",
+      "removeTitle": "Supprimer les paramètres e-mail",
+      "removeMessage": "Les identifiants SMTP enregistrés seront supprimés. L'environnement du serveur s'appliquera de nouveau, si quelque chose y est configuré.",
+      "removed": "Paramètres e-mail supprimés.",
+      "test": "Message de test",
+      "testTo": "Destinataire",
+      "testSent": "Message de test envoyé à {{email}}."
+    }
+  },
+  "audit": {
+    "title": "Journal",
+    "intro": "Toutes les modifications effectuées par les administrateurs et les événements liés à la sécurité.",
+    "time": "Date et heure",
+    "actor": "Déclenché par",
+    "system": "Système",
+    "action": "Action",
+    "target": "Concerne",
+    "details": "Détails",
+    "ip": "Adresse IP",
+    "empty": "Aucune entrée pour le moment."
+  }
 }

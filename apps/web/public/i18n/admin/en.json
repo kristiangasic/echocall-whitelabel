@@ -1,3 +1,100 @@
 {
-  "title": "Administration"
+  "title": "Administration",
+  "overview": {
+    "title": "Overview",
+    "hub": {
+      "title": "Connection to the service",
+      "ok": "Connected as {{email}}",
+      "failed": "Not connected",
+      "subscriptionHint": "The portal needs an active subscription. Check your account at",
+      "keyHint": "Check the API key in the server configuration and restart the service.",
+      "checkedAt": "Last checked: {{time}}",
+      "recheck": "Check now"
+    },
+    "users": {
+      "title": "User accounts",
+      "total": "{{count}} accounts in total",
+      "manage": "Manage users"
+    }
+  },
+  "users": {
+    "title": "Users",
+    "invite": "Invite",
+    "lastLogin": "Last sign-in",
+    "empty": "No users yet. Invite the first person.",
+    "resendInvite": "Send invitation again",
+    "passwordReset": "Reset password",
+    "enable": "Enable",
+    "disable": "Disable",
+    "saved": "Changes saved.",
+    "deleted": "User deleted.",
+    "inviteSent": "Invitation sent to {{email}}.",
+    "resetSent": "Reset link sent to {{email}}.",
+    "inviteLinkTitle": "Invitation link",
+    "resetLinkTitle": "Reset link",
+    "linkMessage": "No mail server is configured. Pass this link on in person. It is valid for a limited time only.",
+    "deleteTitle": "Delete user",
+    "deleteMessage": "Delete the account {{email}} permanently?",
+    "dialog": {
+      "inviteTitle": "Invite user",
+      "editTitle": "Edit user",
+      "inviteIntro": "The person receives a link to choose their password.",
+      "inviteSubmit": "Send invitation",
+      "customerHint": "Customer number from your partner account with the service. Without it the person sees no usage data."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "branding": {
+      "tab": "Branding",
+      "intro": "Name, logo and colour appear throughout the portal and in the e-mails.",
+      "productName": "Product name",
+      "uploadLogo": "Upload logo",
+      "removeLogo": "Remove logo",
+      "logoHint": "PNG, JPEG, WebP or SVG, at most 140 KB.",
+      "logoType": "Please choose a PNG, JPEG, WebP or SVG image.",
+      "logoTooLarge": "The logo must be 140 KB or smaller.",
+      "primaryColor": "Primary colour",
+      "supportEmail": "Support address",
+      "imprintUrl": "Imprint link",
+      "privacyUrl": "Privacy policy link",
+      "defaultLanguage": "Default language",
+      "preview": "Preview",
+      "saved": "Branding saved."
+    },
+    "mail": {
+      "tab": "E-mail",
+      "intro": "The portal sends invitations and password reset links through this server.",
+      "envSource": "Configured through the server environment. Settings on this page take precedence.",
+      "settingsSource": "Configured through these settings.",
+      "notConfigured": "No mail server configured yet. Invitation links then have to be passed on by hand.",
+      "host": "SMTP server",
+      "port": "Port",
+      "secure": "Encrypted connection (TLS)",
+      "user": "User name",
+      "pass": "Password",
+      "passKeep": "Leave empty to keep the stored password.",
+      "from": "Sender",
+      "saved": "E-mail settings saved.",
+      "remove": "Remove settings",
+      "removeTitle": "Remove e-mail settings",
+      "removeMessage": "The stored SMTP credentials will be deleted. The server environment applies again afterwards, if anything is configured there.",
+      "removed": "E-mail settings removed.",
+      "test": "Test message",
+      "testTo": "Recipient",
+      "testSent": "Test message sent to {{email}}."
+    }
+  },
+  "audit": {
+    "title": "Audit log",
+    "intro": "All changes made by administrators and security-relevant events.",
+    "time": "Time",
+    "actor": "Triggered by",
+    "system": "System",
+    "action": "Action",
+    "target": "Concerns",
+    "details": "Details",
+    "ip": "IP address",
+    "empty": "No entries yet."
+  }
 }

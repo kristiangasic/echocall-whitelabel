@@ -24,6 +24,8 @@
     "retry": "Try again",
     "close": "Close",
     "delete": "Delete",
+    "edit": "Edit",
+    "more": "More actions",
     "back": "Back",
     "continue": "Continue",
     "copy": "Copy link",
@@ -63,7 +65,17 @@
     "passwordMismatch": "The passwords do not match",
     "hexColor": "Please enter a colour as #RRGGBB",
     "url": "Please enter a full address starting with https://",
-    "integer": "Please enter a whole number"
+    "integer": "Please enter a whole number",
+    "invalid": "Invalid input",
+    "server": "{{message}}"
+  },
+  "paginator": {
+    "itemsPerPage": "Items per page",
+    "next": "Next page",
+    "previous": "Previous page",
+    "first": "First page",
+    "last": "Last page",
+    "range": "{{from}} to {{to}} of {{total}}"
   },
   "auth": {
     "login": {
@@ -109,6 +121,19 @@
       "submit": "Create account"
     },
     "completed": "Setup is complete."
+  },
+  "account": {
+    "title": "My account",
+    "profile": {
+      "title": "Profile",
+      "saved": "Profile saved."
+    },
+    "password": {
+      "title": "Change password",
+      "intro": "Your current password is required to confirm the change.",
+      "submit": "Change password",
+      "saved": "Password changed."
+    }
   },
   "footer": {
     "imprint": "Imprint",

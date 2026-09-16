@@ -24,6 +24,8 @@
     "retry": "Erneut versuchen",
     "close": "Schließen",
     "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "more": "Weitere Aktionen",
     "back": "Zurück",
     "continue": "Weiter",
     "copy": "Link kopieren",
@@ -63,7 +65,17 @@
     "passwordMismatch": "Die Passwörter stimmen nicht überein",
     "hexColor": "Bitte eine Farbe im Format #RRGGBB eingeben",
     "url": "Bitte eine vollständige Adresse mit https:// eingeben",
-    "integer": "Bitte eine ganze Zahl eingeben"
+    "integer": "Bitte eine ganze Zahl eingeben",
+    "invalid": "Ungültige Eingabe",
+    "server": "{{message}}"
+  },
+  "paginator": {
+    "itemsPerPage": "Einträge pro Seite",
+    "next": "Nächste Seite",
+    "previous": "Vorherige Seite",
+    "first": "Erste Seite",
+    "last": "Letzte Seite",
+    "range": "{{from}} bis {{to}} von {{total}}"
   },
   "auth": {
     "login": {
@@ -109,6 +121,19 @@
       "submit": "Konto anlegen"
     },
     "completed": "Die Einrichtung ist abgeschlossen."
+  },
+  "account": {
+    "title": "Mein Konto",
+    "profile": {
+      "title": "Profil",
+      "saved": "Profil gespeichert."
+    },
+    "password": {
+      "title": "Passwort ändern",
+      "intro": "Zur Bestätigung ist das aktuelle Passwort nötig.",
+      "submit": "Passwort ändern",
+      "saved": "Passwort geändert."
+    }
   },
   "footer": {
     "imprint": "Impressum",
