@@ -108,18 +108,14 @@ describe('SettingsController', () => {
       hasPassword: false,
     });
 
-    const saved = await api()
-      .put('/api/admin/settings/smtp')
-      .set('Cookie', admin.cookie)
-      .set(XHR)
-      .send({
-        host: 'smtp.acme.example',
-        port: '587',
-        secure: false,
-        user: 'mailer',
-        pass: 'top-secret',
-        from: 'Portal@Acme.example',
-      });
+    const saved = await api().put('/api/admin/settings/smtp').set('Cookie', admin.cookie).set(XHR).send({
+      host: 'smtp.acme.example',
+      port: '587',
+      secure: false,
+      user: 'mailer',
+      pass: 'top-secret',
+      from: 'Portal@Acme.example',
+    });
     expect(saved.status).toBe(200);
     expect(saved.body).toEqual({
       configured: true,
@@ -134,33 +130,25 @@ describe('SettingsController', () => {
     expect(JSON.stringify(saved.body)).not.toContain('top-secret');
 
     const settings = t.moduleRef.get(SettingsService, { strict: false });
-    const kept = await api()
-      .put('/api/admin/settings/smtp')
-      .set('Cookie', admin.cookie)
-      .set(XHR)
-      .send({
-        host: 'smtp.acme.example',
-        port: 465,
-        secure: true,
-        user: 'mailer',
-        pass: '',
-        from: 'portal@acme.example',
-      });
+    const kept = await api().put('/api/admin/settings/smtp').set('Cookie', admin.cookie).set(XHR).send({
+      host: 'smtp.acme.example',
+      port: 465,
+      secure: true,
+      user: 'mailer',
+      pass: '',
+      from: 'portal@acme.example',
+    });
     expect(kept.body).toMatchObject({ port: 465, secure: true, hasPassword: true });
     expect((await settings.getSmtp())?.pass).toBe('top-secret');
 
-    const cleared = await api()
-      .put('/api/admin/settings/smtp')
-      .set('Cookie', admin.cookie)
-      .set(XHR)
-      .send({
-        host: 'smtp.acme.example',
-        port: 465,
-        secure: true,
-        user: null,
-        pass: null,
-        from: 'portal@acme.example',
-      });
+    const cleared = await api().put('/api/admin/settings/smtp').set('Cookie', admin.cookie).set(XHR).send({
+      host: 'smtp.acme.example',
+      port: 465,
+      secure: true,
+      user: null,
+      pass: null,
+      from: 'portal@acme.example',
+    });
     expect(cleared.body).toMatchObject({ user: null, hasPassword: false });
 
     const audit = await api().get('/api/admin/audit?limit=5').set('Cookie', admin.cookie);
