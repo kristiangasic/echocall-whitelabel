@@ -23,8 +23,17 @@ import { PasswordService } from './password.service.js';
 import { LoginService } from './login.service.js';
 import { SessionService, type SessionUser } from './session.service.js';
 import { TokenService } from './token.service.js';
+import { TwoFactorService } from './two-factor.service.js';
 
 const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
+/** Long enough to reach for a phone, short enough that an unattended browser does not stay one step from a session. */
+const TWO_FACTOR_CHALLENGE_TTL_MS = 5 * 60 * 1000;
+
+/** What the password step answers with when the account has a second factor. */
+export interface TwoFactorChallenge {
+  challenge: string;
+  expiresAt: string;
+}
 
 @Controller('auth')
 export class AuthController {
@@ -36,6 +45,7 @@ export class AuthController {
     private readonly sessions: SessionService,
     private readonly tokens: TokenService,
     private readonly logins: LoginService,
+    private readonly twoFactor: TwoFactorService,
   ) {}
 
   @Public()
@@ -46,7 +56,7 @@ export class AuthController {
     @Body(new ZodValidationPipe(loginSchema)) body: LoginDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<SessionUser> {
+  ): Promise<SessionUser | TwoFactorChallenge> {
     const user = await this.db
       .selectFrom('users')
       .selectAll()
@@ -55,6 +65,13 @@ export class AuthController {
     const ok = await this.passwords.verify(user?.passwordHash ?? null, body.password);
     if (!user || !ok) throw apiError(401, 'invalid_credentials', 'E-mail or password is incorrect');
     if (user.status !== 'active') throw apiError(403, 'account_disabled', 'This account is disabled');
+    // The password alone is not a sign-in for an account that asked for a
+    // second factor: no session, no cookie, only a short lived challenge.
+    if (this.twoFactor.isEnabled(user)) {
+      const challenge = await this.tokens.issue(user.id, 'two_factor_challenge', TWO_FACTOR_CHALLENGE_TTL_MS);
+      res.status(202);
+      return { challenge, expiresAt: new Date(Date.now() + TWO_FACTOR_CHALLENGE_TTL_MS).toISOString() };
+    }
     return this.logins.startSession(user, req, res);
   }
 

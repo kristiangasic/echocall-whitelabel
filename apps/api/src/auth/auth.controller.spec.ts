@@ -1,17 +1,25 @@
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { sha256Hex } from '../common/crypto.js';
 import { insertReturningId } from '../db/helpers.js';
 import { createTestApp, type TestApp } from '../testing/test-app.js';
+import { encryptSecret } from '../settings/crypto.js';
+import { SettingsModule } from '../settings/settings.module.js';
 import { AuthModule } from './auth.module.js';
+import { TwoFactorModule } from './two-factor.module.js';
 import { PasswordService } from './password.service.js';
 import { TokenService } from './token.service.js';
+import { generateSecret, totpCode } from './totp.js';
 
 const XHR = { 'x-requested-with': 'XMLHttpRequest' };
 const PASSWORD = 'correct horse battery';
+const APP_SECRET = 's'.repeat(32);
+const TOTP_SECRET = generateSecret();
 
 describe('AuthController', () => {
   let t: TestApp;
   let nextIp = 1;
+  let twoFactorUserId: number;
 
   /** Each test gets its own client address so the per-IP throttle does not leak between tests. */
   function client() {
@@ -24,7 +32,7 @@ describe('AuthController', () => {
   }
 
   beforeAll(async () => {
-    t = await createTestApp([AuthModule]);
+    t = await createTestApp([AuthModule, SettingsModule, TwoFactorModule]);
     const hash = await new PasswordService().hash(PASSWORD);
     for (const user of [
       {
@@ -41,6 +49,16 @@ describe('AuthController', () => {
         language: 'de',
       });
     }
+    twoFactorUserId = await insertReturningId(t.db.db, t.db.dialect, 'users', {
+      email: 'guarded@example.com',
+      role: 'user',
+      status: 'active',
+      echocallCustomerId: 12,
+      passwordHash: hash,
+      language: 'de',
+      totpSecret: encryptSecret(TOTP_SECRET, APP_SECRET),
+      totpConfirmedAt: new Date(),
+    });
   });
 
   afterAll(async () => {
@@ -88,6 +106,116 @@ describe('AuthController', () => {
     expect(logout.headers['set-cookie'][0]).toMatch(/^ecl_session=;/);
     const after = await c.get('/api/auth/me').set('Cookie', cookie).expect(401);
     expect(after.body.error.code).toBe('unauthenticated');
+  });
+
+  describe('with a second factor', () => {
+    /** The password step, which for this account ends in a challenge rather than a session. */
+    async function firstStep(c = client()) {
+      const res = await c
+        .post('/api/auth/login')
+        .send({ email: 'guarded@example.com', password: PASSWORD })
+        .expect(202);
+      expect(res.headers['set-cookie']).toBeUndefined();
+      expect(res.body.challenge).toEqual(expect.any(String));
+      expect(new Date(res.body.expiresAt).getTime()).toBeGreaterThan(Date.now());
+      return { c, challenge: res.body.challenge as string };
+    }
+
+    it('answers the password with a challenge and no session', async () => {
+      const { c, challenge } = await firstStep();
+      const me = await c.get('/api/auth/me').expect(401);
+      expect(me.body.error.code).toBe('unauthenticated');
+
+      const verify = await c
+        .post('/api/auth/2fa/verify')
+        .send({ challenge, code: totpCode(TOTP_SECRET, Date.now()) })
+        .expect(200);
+      expect(verify.body.email).toBe('guarded@example.com');
+      expect(verify.body.twoFactorEnabled).toBe(true);
+      const cookie = verify.headers['set-cookie'][0];
+      const after = await c.get('/api/auth/me').set('Cookie', cookie).expect(200);
+      expect(after.body.email).toBe('guarded@example.com');
+    });
+
+    it('starts no session on a wrong code, and burns the challenge after too many tries', async () => {
+      const { c, challenge } = await firstStep();
+      const wrong = await c.post('/api/auth/2fa/verify').send({ challenge, code: '000000' }).expect(401);
+      expect(wrong.body.error.code).toBe('invalid_code');
+      expect(wrong.headers['set-cookie']).toBeUndefined();
+
+      // The code is still typed wrong twice more, then the challenge is spent
+      // and even the right code no longer helps.
+      await c.post('/api/auth/2fa/verify').send({ challenge, code: '000000' }).expect(401);
+      await c.post('/api/auth/2fa/verify').send({ challenge, code: '000000' }).expect(401);
+      const spent = await c
+        .post('/api/auth/2fa/verify')
+        .send({ challenge, code: totpCode(TOTP_SECRET, Date.now()) })
+        .expect(401);
+      expect(spent.body.error.code).toBe('invalid_challenge');
+    });
+
+    it('refuses a challenge that has expired', async () => {
+      const { c, challenge } = await firstStep();
+      await t.db.db
+        .updateTable('oneTimeTokens')
+        .set({ expiresAt: new Date(Date.now() - 1000) })
+        .where('userId', '=', twoFactorUserId)
+        .where('purpose', '=', 'two_factor_challenge')
+        .execute();
+      const res = await c
+        .post('/api/auth/2fa/verify')
+        .send({ challenge, code: totpCode(TOTP_SECRET, Date.now()) })
+        .expect(401);
+      expect(res.body.error.code).toBe('invalid_challenge');
+    });
+
+    it('takes a recovery code once and not twice', async () => {
+      await t.db.db.deleteFrom('twoFactorRecoveryCodes').where('userId', '=', twoFactorUserId).execute();
+      await t.db.db
+        .insertInto('twoFactorRecoveryCodes')
+        .values({ userId: twoFactorUserId, codeHash: sha256Hex('abcde-fghij'), usedAt: null })
+        .execute();
+
+      const first = await firstStep();
+      const used = await first.c
+        .post('/api/auth/2fa/verify')
+        .send({ challenge: first.challenge, code: 'ABCDE-FGHIJ' })
+        .expect(200);
+      expect(used.headers['set-cookie'][0]).toMatch(/^ecl_session=/);
+
+      const second = await firstStep();
+      const again = await second.c
+        .post('/api/auth/2fa/verify')
+        .send({ challenge: second.challenge, code: 'abcde-fghij' })
+        .expect(401);
+      expect(again.body.error.code).toBe('invalid_code');
+    });
+
+    it('stamps the sign-in only once the second factor is in', async () => {
+      await t.db.db
+        .updateTable('users')
+        .set({ lastLoginAt: null })
+        .where('id', '=', twoFactorUserId)
+        .execute();
+      const { c, challenge } = await firstStep();
+      const between = await t.db.db
+        .selectFrom('users')
+        .select('lastLoginAt')
+        .where('id', '=', twoFactorUserId)
+        .executeTakeFirstOrThrow();
+      expect(between.lastLoginAt).toBeNull();
+
+      await c
+        .post('/api/auth/2fa/verify')
+        .send({ challenge, code: totpCode(TOTP_SECRET, Date.now()) })
+        .expect(200);
+      const after = await t.db.db
+        .selectFrom('users')
+        .select('lastLoginAt')
+        .where('id', '=', twoFactorUserId)
+        .executeTakeFirstOrThrow();
+      expect(after.lastLoginAt).toBeInstanceOf(Date);
+    });
   });
 
   it('distinguishes wrong passwords from disabled accounts but never reveals unknown e-mails', async () => {

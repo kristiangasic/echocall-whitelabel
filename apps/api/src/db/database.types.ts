@@ -48,6 +48,8 @@ export interface OneTimeTokensTable {
   tokenHash: string;
   expiresAt: Date;
   usedAt: Date | null;
+  /** Wrong guesses against this token; a second factor challenge burns after a few. */
+  attempts: Generated<number>;
   createdAt: Generated<Date>;
 }
 

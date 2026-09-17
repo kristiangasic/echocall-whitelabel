@@ -31,6 +31,9 @@ export const twoFactorCodeSchema = z.string().trim().min(6).max(20);
 export const twoFactorActivateSchema = z.object({ code: twoFactorCodeSchema });
 export type TwoFactorActivateDto = z.infer<typeof twoFactorActivateSchema>;
 
+export const twoFactorVerifySchema = z.object({ challenge: tokenSchema, code: twoFactorCodeSchema });
+export type TwoFactorVerifyDto = z.infer<typeof twoFactorVerifySchema>;
+
 export const twoFactorDisableSchema = z.object({
   password: z.string().min(1, 'Password is required').max(200),
 });

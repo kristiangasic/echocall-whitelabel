@@ -29,12 +29,18 @@ export function twoFactor(dialect: DbDialect): Migration {
         .addColumn('created_at', t.timestamp, (c) => c.notNull().defaultTo(t.now))
         .execute();
       await db.schema
+        .alterTable('one_time_tokens')
+        .addColumn('attempts', 'integer', (c) => c.notNull().defaultTo(0))
+        .execute();
+
+      await db.schema
         .createIndex('two_factor_recovery_user_idx')
         .on('two_factor_recovery_codes')
         .column('user_id')
         .execute();
     },
     async down(db: Kysely<any>) {
+      await db.schema.alterTable('one_time_tokens').dropColumn('attempts').execute();
       await db.schema.dropTable('two_factor_recovery_codes').execute();
       await db.schema.alterTable('users').dropColumn('totp_confirmed_at').execute();
       await db.schema.alterTable('users').dropColumn('totp_secret').execute();

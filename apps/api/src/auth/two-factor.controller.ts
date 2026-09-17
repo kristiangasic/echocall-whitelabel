@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, HttpCode, Inject, Post, Req } from '@nestjs/common';
-import type { Request } from 'express';
+import { Body, Controller, Delete, HttpCode, Inject, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import type { Request, Response } from 'express';
 import { apiError } from '../common/http-error.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { AuditService } from '../audit/audit.service.js';
@@ -7,12 +8,16 @@ import type { UserRow } from '../db/database.types.js';
 import { DB } from '../db/db.service.js';
 import type { Db } from '../db/dialect.js';
 import { SettingsService } from '../settings/settings.service.js';
-import { CurrentUser } from './decorators.js';
+import { CurrentUser, Public } from './decorators.js';
+import { LoginService } from './login.service.js';
+import { TokenService } from './token.service.js';
 import {
   type TwoFactorActivateDto,
   twoFactorActivateSchema,
   type TwoFactorDisableDto,
   twoFactorDisableSchema,
+  type TwoFactorVerifyDto,
+  twoFactorVerifySchema,
 } from './dto.js';
 import { PasswordService } from './password.service.js';
 import type { SessionUser } from './session.service.js';
@@ -27,7 +32,45 @@ export class TwoFactorController {
     private readonly passwords: PasswordService,
     private readonly settings: SettingsService,
     private readonly audit: AuditService,
+    private readonly tokens: TokenService,
+    private readonly logins: LoginService,
   ) {}
+
+  /**
+   * The second step of a sign-in. The challenge stands in for the password
+   * that was already accepted, so this route is public; what guards it is the
+   * challenge itself, which expires, burns after a few wrong guesses, and is
+   * spent the moment it works.
+   */
+  @Public()
+  @UseGuards(ThrottlerGuard)
+  @Post('verify')
+  @HttpCode(200)
+  async verify(
+    @Body(new ZodValidationPipe(twoFactorVerifySchema)) body: TwoFactorVerifyDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<SessionUser> {
+    const open = await this.tokens.open(body.challenge, 'two_factor_challenge');
+    if (!open) throw apiError(401, 'invalid_challenge', 'Sign in again to get a new code prompt');
+    const user = await this.db
+      .selectFrom('users')
+      .selectAll()
+      .where('id', '=', open.userId)
+      .executeTakeFirst();
+    if (!user || user.status !== 'active') {
+      await this.tokens.spend(open.id);
+      throw apiError(403, 'account_disabled', 'This account is disabled');
+    }
+    if (!(await this.twoFactor.check(user, body.code))) {
+      await this.tokens.countFailure(open.id);
+      throw apiError(401, 'invalid_code', 'That code does not match');
+    }
+    if (!(await this.tokens.spend(open.id))) {
+      throw apiError(401, 'invalid_challenge', 'Sign in again to get a new code prompt');
+    }
+    return this.logins.startSession(user, req, res);
+  }
 
   @Post('setup')
   @HttpCode(200)
