@@ -4,19 +4,25 @@ import { CurrentUser, Roles } from '../auth/decorators.js';
 import type { SessionUser } from '../auth/session.service.js';
 import { apiError } from '../common/http-error.js';
 import { HubClientFactory } from '../echocall/hub-client.factory.js';
+import { SettingsService } from '../settings/settings.service.js';
 import { matchCustomerCall } from './allowlist.js';
+import { renameProduct } from './vendor-neutral.js';
 
 const METHODS_WITH_BODY = new Set(['POST', 'PATCH', 'PUT']);
 
 /**
  * Forwards allow-listed hub calls in the signed-in customer's context.
  * The browser calls /api/hub/<hub path>?<hub query>; status and body of the
- * hub response come back verbatim, so the UI sees the documented API shapes.
+ * hub response come back in their documented shape, with the one change the
+ * portal owes its customers: text that names the service reads as the portal.
  */
 @Controller('hub')
 @Roles('user')
 export class HubProxyController {
-  constructor(private readonly hub: HubClientFactory) {}
+  constructor(
+    private readonly hub: HubClientFactory,
+    private readonly settings: SettingsService,
+  ) {}
 
   @All('{*path}')
   async forward(
@@ -35,7 +41,11 @@ export class HubProxyController {
       query: url.searchParams,
       body: METHODS_WITH_BODY.has(req.method) ? ((req.body as unknown) ?? {}) : undefined,
     });
-    if (result.body === null && result.status === 204) res.status(204).send();
-    else res.status(result.status).json(result.body);
+    if (result.body === null && result.status === 204) {
+      res.status(204).send();
+      return;
+    }
+    const { productName } = await this.settings.getBranding();
+    res.status(result.status).json(renameProduct(result.body, productName));
   }
 }

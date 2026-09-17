@@ -19,6 +19,17 @@ describe('HubProxyController', () => {
     'POST /agents': (call) => ({ status: 201, body: { id: 'agent_2', echo: JSON.parse(call.body ?? '{}') } }),
     'GET /conversations': { body: { data: [], pagination: { page: 2 } } },
     'PATCH /notifications/read-all': { status: 204 },
+    'GET /integrations/types': {
+      body: {
+        data: [
+          {
+            name: 'Zapier',
+            description: 'Connect EchoCall to 5000+ apps through Zapier.',
+            docsUrl: 'https://hub.echocall.de/docs/zapier',
+          },
+        ],
+      },
+    },
     'GET /billing/balance': {
       status: 402,
       body: { error: { code: 'insufficient_balance', message: 'Top up first' } },
@@ -49,6 +60,16 @@ describe('HubProxyController', () => {
     const call = hub.calls[before];
     expect(call.path).toBe('/conversations?status=open&page=2');
     expect(call.headers.get('x-echocall-customer')).toBe('501');
+  });
+
+  it('lets the portal name stand in for the service in text the customer reads', async () => {
+    const res = await api().get('/api/hub/integrations/types').set('Cookie', user.cookie);
+
+    expect(res.status).toBe(200);
+    expect(res.body.data[0].description).toBe(
+      'Connect Customer Portal to 5000+ apps through Zapier.',
+    );
+    expect(res.body.data[0].docsUrl).toBe('https://hub.echocall.de/docs/zapier');
   });
 
   it('forwards a POST body and returns the hub status verbatim', async () => {
