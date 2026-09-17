@@ -1684,11 +1684,16 @@ export interface paths {
         };
         /**
          * List your invoices
-         * @description Returns every invoice raised against the account, newest first, as a bare JSON array rather than a `{ data: [...] }` envelope. There is no paging and no date filter, so the whole history comes back on each call. Reseller customers are served from the reseller invoice ledger, which has no stored PDF: for those rows `pdfUrl` is always null and the document has to be rendered on demand through GET /billing/invoices/{id}/pdf.
+         * @description Returns the invoices raised against the account, newest first. Without paging the body is a bare JSON array rather than a `{ data: [...] }` envelope, and the whole history comes back on each call; send `page` or `perPage` and the response becomes `{ data, pagination }` with a real `total`. There is no date filter either way. Reseller customers are served from the reseller invoice ledger, which has no stored PDF: for those rows `pdfUrl` is always null and the document has to be rendered on demand through GET /billing/invoices/{id}/pdf.
          */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Page to return. Starts at 1; values below 1 are clamped to 1. */
+                    page?: number;
+                    /** @description Items per page. Clamped to the range 1 to 100; larger values are reduced to 100. */
+                    perPage?: number;
+                };
                 header?: {
                     /** @description Reseller keys only. Runs this request as the named customer of the reseller, exactly as if that customer had sent it with a key of their own: ownership checks, limits and usage all apply to the customer, and none of the reseller operations are reachable while it is set. The value is the customer id returned by `POST /resellers/customers` and listed by `GET /resellers/customers`. Errors: 400 `invalid_customer_header` (not a positive integer), 403 `act_as_requires_reseller` (not a reseller key), 404 `customer_not_found` (no customer of this reseller with that id), 403 `customer_suspended`. The `/resellers/*` and `/provisioning/*` operations never accept it. */
                     "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
@@ -1698,13 +1703,16 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description All invoices for this account, newest first. */
+                /** @description Invoices for this account, newest first. */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["Invoice"][];
+                        "application/json": components["schemas"]["Invoice"][] | {
+                            data: components["schemas"]["Invoice"][];
+                            pagination: components["schemas"]["Pagination"];
+                        };
                     };
                 };
                 401: components["responses"]["Unauthorized"];
@@ -5987,24 +5995,32 @@ export interface paths {
         };
         /**
          * List reseller customers
-         * @description Lists every customer account linked to the reseller, newest link first, together with the balance and remaining allowances of each account. Accounts whose email has been rewritten to the terminated-account form are left out. There is no paging and no filtering: the whole book comes back as a bare JSON array, not wrapped in `data`. Each element also carries the two link columns that are not part of the shared customer schema, `customerReference` and `notes`. Requires an API key issued to a reseller account; a key belonging to any other kind of account is answered with 403 `forbidden`. No API scope is checked on this route, only the reseller role.
+         * @description Lists the customer accounts linked to the reseller, newest link first, together with the balance and remaining allowances of each account. Accounts whose email has been rewritten to the terminated-account form are left out. Without paging the whole book comes back as a bare JSON array, not wrapped in `data`. Each element also carries the two link columns that are not part of the shared customer schema, `customerReference` and `notes`. Paging is opt-in. Send `page` or `perPage` and the response becomes `{ data, pagination }` with a real `total` counted over the whole result set; send neither and the body stays exactly as described above. Requires an API key issued to a reseller account; a key belonging to any other kind of account is answered with 403 `forbidden`. No API scope is checked on this route, only the reseller role.
          */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Page to return. Starts at 1; values below 1 are clamped to 1. */
+                    page?: number;
+                    /** @description Items per page. Clamped to the range 1 to 100; larger values are reduced to 100. */
+                    perPage?: number;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Every linked customer. */
+                /** @description The linked customers. */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ResellerCustomer"][];
+                        "application/json": components["schemas"]["ResellerCustomer"][] | {
+                            data: components["schemas"]["ResellerCustomer"][];
+                            pagination: components["schemas"]["Pagination"];
+                        };
                     };
                 };
                 401: components["responses"]["Unauthorized"];
@@ -6632,13 +6648,17 @@ export interface paths {
         };
         /**
          * List the wallet transactions of one customer
-         * @description Returns the wallet ledger of one customer of the reseller, newest first. Every movement is included, whatever booked it: reseller adjustments, top-ups, add-on purchases and refunds. There is no cursor and no total, only a limit, so a long history is best read shortly after each change rather than reconciled in bulk. A customer that does not exist, or that belongs to another reseller, is reported as 404 `not_found` rather than 403, so one reseller cannot probe for the customers of another. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
+         * @description Returns the wallet ledger of one customer of the reseller, newest first. Every movement is included, whatever booked it: reseller adjustments, top-ups, add-on purchases and refunds. Paging is opt-in. Send `page` or `perPage` and the response becomes `{ data, pagination }` with a real `total` counted over the whole result set; send neither and the body stays exactly as described above. A customer that does not exist, or that belongs to another reseller, is reported as 404 `not_found` rather than 403, so one reseller cannot probe for the customers of another. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
          */
         get: {
             parameters: {
                 query?: {
-                    /** @description Maximum number of transactions to return. Defaults to 50 and is clamped to the range 1 to 200. */
+                    /** @description Maximum number of transactions to return. Defaults to 50 and is clamped to the range 1 to 200. Ignored once page or perPage is present. */
                     limit?: number;
+                    /** @description Page to return. Starts at 1; values below 1 are clamped to 1. */
+                    page?: number;
+                    /** @description Items per page. Clamped to the range 1 to 200; larger values are reduced to 200. */
+                    perPage?: number;
                 };
                 header?: never;
                 path: {
@@ -6649,14 +6669,13 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The wallet ledger of that customer. */
+                /** @description The wallet ledger of that customer, newest first. */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
-                            /** @description Wallet movements, newest first. */
                             data: {
                                 /** @description Add-on purchase the movement belongs to. */
                                 addonPurchaseId?: number | null;
@@ -6687,6 +6706,38 @@ export interface paths {
                                  */
                                 type: "deposit" | "purchase" | "refund" | "admin_adjustment" | "bonus";
                             }[];
+                        } | {
+                            data: {
+                                /** @description Add-on purchase the movement belongs to. */
+                                addonPurchaseId?: number | null;
+                                /** @description Signed amount in EUR, as a decimal string. Negative for a deduction. */
+                                amount: string;
+                                /** @description Wallet balance the account holds after the movement, as a decimal string. Read back from the wallet after every movement, including the ones POST /resellers/customers/{id}/balance books. */
+                                balanceAfter: string;
+                                /**
+                                 * Format: date-time
+                                 * @description When it was booked.
+                                 */
+                                createdAt: string;
+                                /** @description The customer wallet the movement was booked on. */
+                                customerId: number;
+                                /** @description Free-text note. */
+                                description?: string | null;
+                                /** @description Transaction identifier. */
+                                id: number;
+                                /** @description Further context, as a JSON string. Reseller-initiated movements carry the reseller id here. */
+                                metadata?: string | null;
+                                /** @description How it was paid, where a payment was involved. */
+                                paymentMethod?: string | null;
+                                /** @description Subscription the movement belongs to. */
+                                subscriptionId?: number | null;
+                                /**
+                                 * @description What caused the movement.
+                                 * @enum {string}
+                                 */
+                                type: "deposit" | "purchase" | "refund" | "admin_adjustment" | "bonus";
+                            }[];
+                            pagination: components["schemas"]["Pagination"];
                         };
                     };
                 };
@@ -6853,15 +6904,19 @@ export interface paths {
         };
         /**
          * List invoices raised by the reseller
-         * @description Lists the invoices this reseller has raised against its customers, newest invoice date first, each with a short reference to the customer. Line items are not included, fetch a single invoice for those. Two filters are available, and a `customerId` that is not a positive integer is rejected with 400 `invalid_id`. There is no paging and no total, only a limit. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
+         * @description Lists the invoices this reseller has raised against its customers, newest invoice date first, each with a short reference to the customer. Line items are not included, fetch a single invoice for those. Two filters are available, and a `customerId` that is not a positive integer is rejected with 400 `invalid_id`. Paging is opt-in. Send `page` or `perPage` and the response becomes `{ data, pagination }` with a real `total` counted over the whole result set; send neither and the body stays exactly as described above. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
          */
         get: {
             parameters: {
                 query?: {
                     /** @description Return only invoices for this customer. A non-numeric or zero value is rejected with 400; an empty value means no filter. */
                     customerId?: number;
-                    /** @description Maximum number of invoices to return. Defaults to 100 and is clamped to the range 1 to 500. */
+                    /** @description Maximum number of invoices to return. Defaults to 100 and is clamped to the range 1 to 500. Ignored once page or perPage is present. */
                     limit?: number;
+                    /** @description Page to return. Starts at 1; values below 1 are clamped to 1. */
+                    page?: number;
+                    /** @description Items per page. Clamped to the range 1 to 500; larger values are reduced to 500. */
+                    perPage?: number;
                     /** @description Return only invoices in this state. Omit for all of them. */
                     status?: "draft" | "pending" | "paid" | "failed" | "refunded";
                 };
@@ -6878,7 +6933,6 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            /** @description One entry per invoice. */
                             data: {
                                 /** @description The customer being invoiced. Null when the user row could not be joined. */
                                 customer?: components["schemas"]["OwnerRef"];
@@ -6947,6 +7001,76 @@ export interface paths {
                                     userId: number;
                                 };
                             }[];
+                        } | {
+                            data: {
+                                /** @description The customer being invoiced. Null when the user row could not be joined. */
+                                customer?: components["schemas"]["OwnerRef"];
+                                invoice: {
+                                    /**
+                                     * Format: date-time
+                                     * @description End of the period billed.
+                                     */
+                                    billingPeriodEnd?: string | null;
+                                    /**
+                                     * Format: date-time
+                                     * @description Start of the period billed.
+                                     */
+                                    billingPeriodStart?: string | null;
+                                    /**
+                                     * Format: date-time
+                                     * @description When the record was written.
+                                     */
+                                    createdAt?: string;
+                                    /** @description What the invoice covers. */
+                                    description?: string | null;
+                                    /**
+                                     * Format: date-time
+                                     * @description When payment is due.
+                                     */
+                                    dueDate?: string | null;
+                                    /** @description Invoice identifier. */
+                                    id: number;
+                                    /** @description Invoice number, of the form `R<resellerId>-<YYYYMM>-<NNNN>`. The counter runs per reseller. */
+                                    invoiceNumber: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Invoice date.
+                                     */
+                                    issuedDate: string;
+                                    /** @description A denormalised copy of the line items, as stored JSON. Invoices raised through this API leave it null and keep their items in the separate items list instead. */
+                                    lineItems?: {
+                                        [key: string]: unknown;
+                                    } | unknown[] | null;
+                                    /**
+                                     * Format: date-time
+                                     * @description When it was paid.
+                                     */
+                                    paidDate?: string | null;
+                                    /** @description How it was or will be paid. */
+                                    paymentMethod?: string | null;
+                                    /** @description The reseller that raised it. */
+                                    resellerId: number;
+                                    /**
+                                     * @description Payment state.
+                                     * @enum {string}
+                                     */
+                                    status?: "draft" | "pending" | "paid" | "failed" | "refunded";
+                                    /** @description Net total in EUR, as a decimal string. */
+                                    subtotalEur: string;
+                                    /** @description Tax in EUR, as a decimal string. */
+                                    taxEur?: string;
+                                    /** @description Gross total in EUR, as a decimal string. */
+                                    totalEur: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description When it last changed.
+                                     */
+                                    updatedAt?: string | null;
+                                    /** @description The customer being invoiced. */
+                                    userId: number;
+                                };
+                            }[];
+                            pagination: components["schemas"]["Pagination"];
                         };
                     };
                 };
@@ -8187,13 +8311,17 @@ export interface paths {
         };
         /**
          * List subscriptions across all reseller customers
-         * @description Lists the subscriptions of every customer of this reseller, newest first, each with its plan and a short reference to the customer. A reseller with no customers gets an empty list. There is no paging and no total in the response: use `limit` to size the result and GET /resellers/subscriptions/count for the total. `status` is passed to the query without being checked, so a value outside the enum simply matches nothing. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
+         * @description Lists the subscriptions of the customers of this reseller, newest first, each with its plan and a short reference to the customer. A reseller with no customers gets an empty list. Without paging there is no total in the response: use `limit` to size the result and GET /resellers/subscriptions/count for the total. `status` is passed to the query without being checked, so a value outside the enum simply matches nothing. Paging is opt-in. Send `page` or `perPage` and the response becomes `{ data, pagination }` with a real `total` counted over the whole result set; send neither and the body stays exactly as described above. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
          */
         get: {
             parameters: {
                 query?: {
-                    /** @description Maximum number of subscriptions to return. Defaults to 100 and is clamped to the range 1 to 500. */
+                    /** @description Maximum number of subscriptions to return. Defaults to 100 and is clamped to the range 1 to 500. Ignored once page or perPage is present. */
                     limit?: number;
+                    /** @description Page to return. Starts at 1; values below 1 are clamped to 1. */
+                    page?: number;
+                    /** @description Items per page. Clamped to the range 1 to 500; larger values are reduced to 500. */
+                    perPage?: number;
                     /** @description Return only subscriptions in this status. Omit for all of them. */
                     status?: "active" | "past_due" | "canceled" | "paused" | "expired";
                 };
@@ -8210,7 +8338,6 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            /** @description One entry per subscription. Empty when the reseller has no customers. */
                             data: {
                                 /** @description The customer holding the subscription. Null when the user row could not be joined. */
                                 customer?: components["schemas"]["OwnerRef"];
@@ -8275,6 +8402,72 @@ export interface paths {
                                     updatedAt?: string;
                                 };
                             }[];
+                        } | {
+                            data: {
+                                /** @description The customer holding the subscription. Null when the user row could not be joined. */
+                                customer?: components["schemas"]["OwnerRef"];
+                                /** @description The plan the subscription is for, read through a left join. Null when the plan row no longer exists. Note that on this response `features` is the stored JSON string, not a parsed array: only GET /resellers/plans parses it. */
+                                plan?: components["schemas"]["Plan"];
+                                subscription: {
+                                    /** @description Whether the subscription renews without action. */
+                                    autoRenew?: boolean;
+                                    /**
+                                     * Format: date-time
+                                     * @description When cancellation was recorded.
+                                     */
+                                    canceledAt?: string | null;
+                                    /** @description Contract length in months. */
+                                    contractDuration?: number;
+                                    /**
+                                     * Format: date-time
+                                     * @description When the record was written.
+                                     */
+                                    createdAt?: string;
+                                    /** @description The customer account the subscription belongs to. */
+                                    customerId: number;
+                                    /**
+                                     * Format: date-time
+                                     * @description When the subscription ends. Set on creation to the start date plus the contract duration, and rewritten on cancellation.
+                                     */
+                                    endDate?: string | null;
+                                    /** @description Subscription identifier. */
+                                    id: number;
+                                    /** @description Whether this is the main subscription of the customer. Subscriptions created through this API are never marked primary. */
+                                    isPrimary?: boolean;
+                                    /** @description Further context, as a JSON string. */
+                                    metadata?: string | null;
+                                    /**
+                                     * Format: date-time
+                                     * @description When that scheduled plan change takes effect.
+                                     */
+                                    pendingPlanEffectiveDate?: string | null;
+                                    /** @description A plan change scheduled for the end of the contract. */
+                                    pendingPlanId?: number | null;
+                                    /** @description The billing plan being paid for. */
+                                    planId: number;
+                                    /**
+                                     * Format: date-time
+                                     * @description Next billing date. Not set by this API.
+                                     */
+                                    renewalDate?: string | null;
+                                    /**
+                                     * Format: date-time
+                                     * @description When the subscription began.
+                                     */
+                                    startDate?: string;
+                                    /**
+                                     * @description Where the subscription stands.
+                                     * @enum {string}
+                                     */
+                                    status: "active" | "past_due" | "canceled" | "paused" | "expired";
+                                    /**
+                                     * Format: date-time
+                                     * @description When it last changed.
+                                     */
+                                    updatedAt?: string;
+                                };
+                            }[];
+                            pagination: components["schemas"]["Pagination"];
                         };
                     };
                 };
@@ -8491,18 +8684,23 @@ export interface paths {
         };
         /**
          * List tickets raised by reseller customers
-         * @description Lists every support ticket opened by any customer of this reseller, newest first. There is no paging, no filtering and no message thread: the response is a bare JSON array of ticket rows, and a reseller with no customers gets an empty array. These are the raw ticket records, so the identifier is a plain integer rather than the `ticket_<number>` form used by the /tickets endpoints, and they carry the escalation and reseller-scope columns as well. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
+         * @description Lists the support tickets opened by the customers of this reseller, newest first. There is no filtering and no message thread: without paging the response is a bare JSON array of ticket rows, and a reseller with no customers gets an empty array. These are the raw ticket records, so the identifier is a plain integer rather than the `ticket_<number>` form used by the /tickets endpoints, and they carry the escalation and reseller-scope columns as well. Paging is opt-in. Send `page` or `perPage` and the response becomes `{ data, pagination }` with a real `total` counted over the whole result set; send neither and the body stays exactly as described above. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
          */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Page to return. Starts at 1; values below 1 are clamped to 1. */
+                    page?: number;
+                    /** @description Items per page. Clamped to the range 1 to 100; larger values are reduced to 100. */
+                    perPage?: number;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Every ticket of every customer of this reseller. */
+                /** @description Tickets of the customers of this reseller. */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -8556,7 +8754,58 @@ export interface paths {
                             updatedAt?: string;
                             /** @description The customer who raised the ticket. */
                             userId: number;
-                        }[];
+                        }[] | {
+                            data: {
+                                /** @description Platform administrator the ticket was escalated to. Set to 1 by the escalate endpoint. */
+                                assignedToAdmin?: number | null;
+                                /**
+                                 * @description What the ticket is about.
+                                 * @enum {string}
+                                 */
+                                category?: "technical" | "billing" | "feature" | "other";
+                                /**
+                                 * Format: date-time
+                                 * @description When it was closed.
+                                 */
+                                closedAt?: string | null;
+                                /**
+                                 * Format: date-time
+                                 * @description When it was opened.
+                                 */
+                                createdAt?: string;
+                                /** @description The full text the reporter wrote. */
+                                description?: string;
+                                /** @description Ticket identifier. Numeric here, unlike the `ticket_<number>` form used by the /tickets endpoints. */
+                                id: number;
+                                /**
+                                 * @description How urgent it is.
+                                 * @enum {string}
+                                 */
+                                priority?: "low" | "medium" | "high" | "urgent";
+                                /** @description The reseller the ticket is scoped to. */
+                                resellerId?: number | null;
+                                /**
+                                 * Format: date-time
+                                 * @description When it was resolved.
+                                 */
+                                resolvedAt?: string | null;
+                                /**
+                                 * @description Where the ticket stands.
+                                 * @enum {string}
+                                 */
+                                status: "open" | "in_progress" | "waiting" | "resolved" | "closed";
+                                /** @description One-line summary of the issue. */
+                                subject: string;
+                                /**
+                                 * Format: date-time
+                                 * @description When it last changed.
+                                 */
+                                updatedAt?: string;
+                                /** @description The customer who raised the ticket. */
+                                userId: number;
+                            }[];
+                            pagination: components["schemas"]["Pagination"];
+                        };
                     };
                 };
                 401: components["responses"]["Unauthorized"];
@@ -8941,7 +9190,7 @@ export interface paths {
         };
         /**
          * Read a ticket and its thread
-         * @description Returns one ticket with its full public message thread, oldest message first. Internal notes written by staff for staff are filtered out and never appear here, so the thread you see is the correspondence you took part in. Each message carries the sender's display name and role, and `System` is used where a message was generated by the platform rather than typed by a person. A ticket belonging to another account answers 404 rather than 403.
+         * @description Returns one ticket with its full public message thread, oldest message first. Internal notes written by staff for staff are filtered out and never appear here, so the thread you see is the correspondence you took part in. Each message carries the sender's display name and role. `System` is used where a message was generated by the platform rather than typed by a person; a person who has no name on record reports `null`, so render your own label for them rather than a placeholder. A ticket belonging to another account answers 404 rather than 403.
          */
         get: {
             parameters: {

@@ -1,4 +1,4 @@
-import type { components } from '@echocall/light-api-client';
+import type { components, paths } from '@echocall/light-api-client';
 
 /**
  * The hub schemas the workspace pages consume, re-exported under their
@@ -70,3 +70,54 @@ export type Invoice = Schemas['Invoice'];
 export type Subscription = Schemas['Subscription'];
 export type Plan = Schemas['Plan'];
 export type AddonPackage = Schemas['AddonPackage'];
+
+/*
+ * Operator side. The admin panel reads the reseller group of the hub API, where
+ * several list endpoints answer with rows the hub never gave a named schema:
+ * those are derived from the path types instead of being repeated by hand.
+ */
+
+/** The JSON body of the 200 answer of a GET path. */
+type GetBody<P extends keyof paths> = paths[P] extends {
+    get: { responses: { 200: { content: { 'application/json': infer B } } } };
+}
+    ? B
+    : never;
+
+/**
+ * One row of a list body, whether the endpoint answers with a bare array, a
+ * `{ data }` envelope or the paged `{ data, pagination }` form.
+ */
+type ListItem<B> = B extends readonly (infer I)[]
+    ? I
+    : B extends { data: readonly (infer I)[] }
+      ? I
+      : never;
+
+export type ResellerCustomer = Schemas['ResellerCustomer'];
+export type ResellerStats = Schemas['ResellerStats'];
+export type ResellerActivity = Schemas['ResellerActivity'];
+export type ResellerCompany = Schemas['ResellerCompany'];
+export type ResellerSettings = Schemas['ResellerSettings'];
+export type ResellerPricing = Schemas['ResellerPricing'];
+export type ResellerCredits = Schemas['ResellerCredits'];
+export type ResellerCreditTransaction = Schemas['ResellerCreditTransaction'];
+export type OwnerRef = Schemas['OwnerRef'];
+export type UsageSummary = Schemas['UsageSummary'];
+export type Limits = Schemas['Limits'];
+export type UserProfile = Schemas['UserProfile'];
+
+export type ResellerSubscriptionRow = ListItem<GetBody<'/resellers/subscriptions'>>;
+export type ResellerInvoiceRow = ListItem<GetBody<'/resellers/invoices'>>;
+export type ResellerInvoiceDetail = GetBody<'/resellers/invoices/{id}'>;
+export type ResellerTicketRow = ListItem<GetBody<'/resellers/tickets'>>;
+export type ResellerTicketDetail = GetBody<'/resellers/tickets/{id}'>;
+export type ResellerAddonPurchase = ListItem<GetBody<'/resellers/addons/purchases'>>;
+export type ResellerAddonStats = GetBody<'/resellers/addons/stats'>;
+export type ResellerCustomerTransaction = ListItem<GetBody<'/resellers/customers/{id}/transactions'>>;
+export type ResellerCustomerDetail = GetBody<'/resellers/customers/{id}'>;
+export type ResellerAssignedNumber = ListItem<GetBody<'/resellers/phone-numbers/assigned'>>;
+export type ResellerAvailableNumber = ListItem<GetBody<'/resellers/phone-numbers/available'>>;
+export type ResellerRevenueAnalytics = GetBody<'/resellers/analytics/revenue'>;
+export type ResellerUsageAnalytics = GetBody<'/resellers/analytics/usage'>;
+export type ResellerPricingSuggestions = GetBody<'/resellers/pricing/suggestions'>;
