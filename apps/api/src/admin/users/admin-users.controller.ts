@@ -69,6 +69,16 @@ export class AdminUsersController {
     return this.users.sendPasswordReset(id, { actor, ip: req.ip });
   }
 
+  @Delete(':id/two-factor')
+  @HttpCode(204)
+  clearTwoFactor(
+    @Param('id', idPipe()) id: number,
+    @CurrentUser() actor: SessionUser,
+    @Req() req: Request,
+  ): Promise<void> {
+    return this.users.clearTwoFactor(id, { actor, ip: req.ip });
+  }
+
   @Delete(':id')
   @HttpCode(204)
   remove(

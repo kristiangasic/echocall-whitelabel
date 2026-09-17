@@ -525,6 +525,12 @@
     "linkMessage": "Es ist kein E-Mail-Server konfiguriert. Geben Sie diesen Link persönlich weiter. Er ist nur begrenzt gültig.",
     "deleteTitle": "Benutzer löschen",
     "deleteMessage": "Soll das Konto {{email}} endgültig gelöscht werden?",
+    "twoFactor": "Zwei-Faktor",
+    "twoFactorOn": "Zweiter Faktor aktiv",
+    "clearTwoFactor": "Zweiten Faktor zurücksetzen",
+    "clearTwoFactorTitle": "Zweiten Faktor zurücksetzen",
+    "clearTwoFactorMessage": "Soll der zweite Faktor von {{email}} entfernt werden? Die Person meldet sich danach nur mit Passwort an, bis sie einen neuen Faktor einrichtet.",
+    "twoFactorCleared": "Zweiter Faktor entfernt.",
     "dialog": {
       "inviteTitle": "Benutzer einladen",
       "editTitle": "Benutzer bearbeiten",

@@ -525,6 +525,12 @@
     "linkMessage": "No mail server is configured. Pass this link on in person. It is valid for a limited time only.",
     "deleteTitle": "Delete user",
     "deleteMessage": "Delete the account {{email}} permanently?",
+    "twoFactor": "Two-factor",
+    "twoFactorOn": "Second factor active",
+    "clearTwoFactor": "Reset the second factor",
+    "clearTwoFactorTitle": "Reset the second factor",
+    "clearTwoFactorMessage": "Remove the second factor of {{email}}? They sign in with their password alone until they set up a new one.",
+    "twoFactorCleared": "Second factor removed.",
     "dialog": {
       "inviteTitle": "Invite user",
       "editTitle": "Edit user",

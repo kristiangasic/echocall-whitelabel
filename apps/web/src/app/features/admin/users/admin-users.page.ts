@@ -64,6 +64,12 @@ import { UserDialogComponent, type UserDialogData, type UserDialogResult } from 
               <span class="status" [class]="'status status-' + u.status">{{
                 t('statuses.' + u.status)
               }}</span>
+              @if (u.twoFactorEnabled) {
+                <span class="two-factor" [title]="t('admin.users.twoFactorOn')">
+                  <mat-icon inline>verified_user</mat-icon>
+                  {{ t('admin.users.twoFactor') }}
+                </span>
+              }
             </td>
           </ng-container>
           <ng-container matColumnDef="customer">
@@ -118,6 +124,12 @@ import { UserDialogComponent, type UserDialogData, type UserDialogResult } from 
               <span>{{ t('admin.users.passwordReset') }}</span>
             </button>
           }
+          @if (user.twoFactorEnabled && user.id !== myId()) {
+            <button mat-menu-item type="button" (click)="clearTwoFactor(user)">
+              <mat-icon>shield_lock</mat-icon>
+              <span>{{ t('admin.users.clearTwoFactor') }}</span>
+            </button>
+          }
           @if (user.id !== myId()) {
             @if (user.status === 'disabled') {
               <button mat-menu-item type="button" (click)="setStatus(user, 'active')">
@@ -143,6 +155,15 @@ import { UserDialogComponent, type UserDialogData, type UserDialogResult } from 
     .cell-sub {
       font: var(--mat-sys-body-small);
       color: var(--mat-sys-on-surface-variant);
+    }
+    .two-factor {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      font: var(--mat-sys-body-small);
+      color: var(--mat-sys-on-surface-variant);
+      white-space: nowrap;
     }
     .cell-actions {
       text-align: right;
@@ -252,6 +273,30 @@ export class AdminUsersPage implements OnInit {
     } catch (err) {
       this.notify.apiError(err);
     }
+  }
+
+  /** For someone who lost the app and their recovery codes; their own account is not offered. */
+  clearTwoFactor(user: AdminUser): void {
+    const data: ConfirmDialogData = {
+      titleKey: 'admin.users.clearTwoFactorTitle',
+      messageKey: 'admin.users.clearTwoFactorMessage',
+      params: { email: user.email },
+      confirmKey: 'admin.users.clearTwoFactor',
+      destructive: true,
+    };
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, { data })
+      .afterClosed()
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
+        try {
+          await firstValueFrom(this.api.delete<void>(`/admin/users/${user.id}/two-factor`));
+          this.notify.success('admin.users.twoFactorCleared');
+          void this.load();
+        } catch (err) {
+          this.notify.apiError(err);
+        }
+      });
   }
 
   remove(user: AdminUser): void {

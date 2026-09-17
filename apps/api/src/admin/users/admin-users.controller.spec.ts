@@ -58,7 +58,9 @@ describe('AdminUsersController', () => {
       'lastName',
       'role',
       'status',
+      'twoFactorEnabled',
     ]);
+    expect(list.body.data[0].twoFactorEnabled).toBe(false);
   });
 
   it('validates invitations: customer id for users, unique e-mail and unique customer', async () => {
@@ -253,6 +255,44 @@ describe('AdminUsersController', () => {
     const pending = await api().post(`/api/admin/users/${invited.body.user.id}/password-reset`).set(asAdmin);
     expect(pending.status).toBe(409);
     expect(pending.body.error.code).toBe('user_not_active');
+  });
+
+  it('clears a second factor for a locked-out account, but never for the acting administrator', async () => {
+    // The state a locked-out account is in: a confirmed secret and the
+    // recovery codes that were handed out with it.
+    await t.db.db
+      .updateTable('users')
+      .set({ totpSecret: 'v1:stored-envelope', totpConfirmedAt: new Date() })
+      .where('id', '=', user.id)
+      .execute();
+    await t.db.db
+      .insertInto('twoFactorRecoveryCodes')
+      .values({ userId: user.id, codeHash: 'hash', usedAt: null })
+      .execute();
+
+    const listed = await api().get('/api/admin/users').set(asAdmin);
+    expect(listed.body.data.find((row: { id: number }) => row.id === user.id).twoFactorEnabled).toBe(true);
+
+    const self = await api().delete(`/api/admin/users/${admin.id}/two-factor`).set(asAdmin);
+    expect(self.status).toBe(409);
+    expect(self.body.error.code).toBe('cannot_change_self');
+
+    expect((await api().delete(`/api/admin/users/${user.id}/two-factor`).set(asAdmin)).status).toBe(204);
+    const after = await api().get('/api/admin/users').set(asAdmin);
+    expect(after.body.data.find((row: { id: number }) => row.id === user.id).twoFactorEnabled).toBe(false);
+    expect(
+      await t.db.db.selectFrom('twoFactorRecoveryCodes').select('id').where('userId', '=', user.id).execute(),
+    ).toEqual([]);
+    expect(await lastAudit()).toMatchObject({
+      action: 'users.two_factor_cleared',
+      targetId: String(user.id),
+      details: { email: 'user@example.com' },
+    });
+
+    expect((await api().delete('/api/admin/users/9999/two-factor').set(asAdmin)).status).toBe(404);
+    expect(
+      (await api().delete(`/api/admin/users/${admin.id}/two-factor`).set('Cookie', user.cookie)).status,
+    ).toBe(403);
   });
 
   it('deletes a user but never the acting administrator', async () => {

@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AuditService } from '../../audit/audit.service.js';
 import { SessionService, type SessionUser } from '../../auth/session.service.js';
 import { TokenService } from '../../auth/token.service.js';
+import { TwoFactorService } from '../../auth/two-factor.service.js';
 import { apiError } from '../../common/http-error.js';
 import { APP_CONFIG, type AppConfig } from '../../config/env.js';
 import type { UserRow, UserUpdate } from '../../db/database.types.js';
@@ -23,6 +24,8 @@ export interface AdminUserRow {
   lastName: string | null;
   language: 'de' | 'en' | 'fr';
   echocallCustomerId: number | null;
+  /** Whether this login asks for a code from an authenticator app as well. */
+  twoFactorEnabled: boolean;
   lastLoginAt: string | null;
   createdAt: string;
 }
@@ -56,6 +59,7 @@ export function toAdminRow(row: UserRow): AdminUserRow {
     lastName: row.lastName,
     language: row.language,
     echocallCustomerId: row.echocallCustomerId,
+    twoFactorEnabled: row.totpSecret !== null && row.totpConfirmedAt !== null,
     lastLoginAt: row.lastLoginAt?.toISOString() ?? null,
     createdAt: row.createdAt.toISOString(),
   };
@@ -74,6 +78,7 @@ export class AdminUsersService {
     @Inject(MAIL_SENDER) private readonly mail: MailSender,
     private readonly tokens: TokenService,
     private readonly sessions: SessionService,
+    private readonly twoFactor: TwoFactorService,
     private readonly audit: AuditService,
   ) {}
 
@@ -204,6 +209,28 @@ export class AdminUsersService {
       ip: ctx.ip,
     });
     return { resetLink: link, mailSent };
+  }
+
+  /**
+   * Clears the second factor of someone who can no longer produce a code and
+   * has run out of recovery codes. Their own account is not included: an
+   * operator who locked themselves out cannot be signed in to fix it, and
+   * leaving the route open would turn a stolen session into a way around the
+   * second factor.
+   */
+  async clearTwoFactor(id: number, ctx: ActionContext): Promise<void> {
+    if (id === ctx.actor.id)
+      throw apiError(409, 'cannot_change_self', 'Remove your own second factor in your account');
+    const user = await this.require(id);
+    await this.twoFactor.disable(id);
+    await this.audit.record({
+      actorUserId: ctx.actor.id,
+      action: 'users.two_factor_cleared',
+      targetType: 'user',
+      targetId: id,
+      details: { email: user.email },
+      ip: ctx.ip,
+    });
   }
 
   /** Sessions and one-time tokens go with the user; audit entries keep the id and lose the e-mail. */

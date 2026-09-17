@@ -102,6 +102,7 @@ export interface AdminUser {
   lastName: string | null;
   language: Language;
   echocallCustomerId: number | null;
+  twoFactorEnabled: boolean;
   lastLoginAt: string | null;
   createdAt: string;
 }

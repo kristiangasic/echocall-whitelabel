@@ -525,6 +525,12 @@
     "linkMessage": "Aucun serveur de messagerie n'est configuré. Transmettez ce lien en personne. Sa validité est limitée dans le temps.",
     "deleteTitle": "Supprimer l'utilisateur",
     "deleteMessage": "Supprimer définitivement le compte {{email}} ?",
+    "twoFactor": "Deux facteurs",
+    "twoFactorOn": "Deuxième facteur actif",
+    "clearTwoFactor": "Réinitialiser le deuxième facteur",
+    "clearTwoFactorTitle": "Réinitialiser le deuxième facteur",
+    "clearTwoFactorMessage": "Supprimer le deuxième facteur de {{email}} ? La personne se connectera uniquement avec son mot de passe jusqu'à ce qu'elle en configure un nouveau.",
+    "twoFactorCleared": "Deuxième facteur supprimé.",
     "dialog": {
       "inviteTitle": "Inviter un utilisateur",
       "editTitle": "Modifier l'utilisateur",
