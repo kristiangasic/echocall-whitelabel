@@ -680,6 +680,19 @@
         "ticket_escalated": "Request escalated",
         "ticket_replied": "Replied to request",
         "ticket_status_updated": "Request status changed"
+      },
+      "details": {
+        "balanceAdded": "Topped up by {{amount}}, new balance {{balance}}",
+        "balanceSubtracted": "Deducted {{amount}}, new balance {{balance}}",
+        "internalNote": "{{subject}} (internal note)",
+        "ticketStatus": "{{subject}}: {{status}}",
+        "subscriptionAssigned": "{{plan}}, {{months}} months",
+        "subscriptionCanceled": "Access until {{date}}",
+        "addonSold": "{{package}} for {{price}}",
+        "invoiceCreated": "{{number}} for {{total}}",
+        "numberImported": "{{number}} via {{provider}}",
+        "credits": "{{minutes}} voice minutes, {{chats}} chats",
+        "pricing": "Chat {{chat}}, voice {{voice}}"
       }
     }
   }

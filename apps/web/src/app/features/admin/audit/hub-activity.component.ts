@@ -7,8 +7,10 @@ import { firstValueFrom } from 'rxjs';
 import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type { ResellerActivity } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
+import { LanguageService } from '../../../core/i18n/language.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
 import { providePaginatorIntl } from '../../../shared/paginator-intl';
+import { hubActivityDescription } from './hub-activity-description';
 
 const PER_PAGE = 25;
 
@@ -48,8 +50,13 @@ const PER_PAGE = 25;
           </ng-container>
           <ng-container matColumnDef="description">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.hub.description') }}</th>
-            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.hub.description')">
-              {{ row.description ?? '' }}
+            <td
+              mat-cell
+              *matCellDef="let row"
+              [attr.data-label]="t('admin.audit.hub.description')"
+              [title]="row.description ?? ''"
+            >
+              {{ describe(row) }}
             </td>
           </ng-container>
           <ng-container matColumnDef="target">
@@ -95,6 +102,7 @@ export class HubActivityComponent implements OnInit {
   private readonly hub = inject(AdminHubService);
   private readonly notify = inject(NotifyService);
   private readonly transloco = inject(TranslocoService);
+  private readonly language = inject(LanguageService);
 
   readonly columns = ['createdAt', 'action', 'description', 'target'];
   readonly rows = signal<ResellerActivity[]>([]);
@@ -116,6 +124,19 @@ export class HubActivityComponent implements OnInit {
     const key = `admin.audit.hub.actions.${action}`;
     const label = this.transloco.translate(key);
     return label === key ? action : label;
+  }
+
+  /**
+   * The service words an entry in English. Everything the operator reads has to
+   * be in their own language, so the sentence is rebuilt from the data behind
+   * it; the original stays reachable as the cell's tooltip.
+   */
+  describe(row: ResellerActivity): string {
+    return hubActivityDescription(
+      row,
+      (key, params) => this.transloco.translate(key, params),
+      this.language.current(),
+    );
   }
 
   onPage(event: PageEvent): void {

@@ -65,6 +65,31 @@ describe('HubActivityComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('something_the_service_added');
   });
 
+  it('words an entry from the data behind it, not from the English sentence', async () => {
+    const fixture = TestBed.createComponent(HubActivityComponent);
+    await fixture.whenStable();
+    http
+      .expectOne((req) => req.url === '/api/admin/hub/resellers/activity-log')
+      .flush({
+        data: [
+          {
+            ...ENTRY,
+            action: 'subscription_canceled',
+            description: 'Subscription #203 canceled, access until 2026-10-17',
+            metadata: '{"subscriptionId":203,"accessUntil":"2026-10-17"}',
+          },
+        ],
+        pagination: { page: 1, perPage: 25, total: 1, totalPages: 1 },
+      });
+    await settle();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent as string;
+    expect(text).toContain(ADMIN_TEXTS.audit.hub.details.subscriptionCanceled.split('{{')[0].trim());
+    expect(text).toContain('17.10.2026');
+    expect(text).not.toContain('Subscription #203 canceled');
+  });
+
   it('asks for the next page when the paginator moves', async () => {
     const fixture = await render();
 

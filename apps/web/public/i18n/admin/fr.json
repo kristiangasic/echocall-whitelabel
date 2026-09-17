@@ -680,6 +680,19 @@
         "ticket_escalated": "Demande transmise",
         "ticket_replied": "Réponse à la demande",
         "ticket_status_updated": "Statut de la demande modifié"
+      },
+      "details": {
+        "balanceAdded": "Recharge de {{amount}}, nouveau solde {{balance}}",
+        "balanceSubtracted": "Débit de {{amount}}, nouveau solde {{balance}}",
+        "internalNote": "{{subject}} (note interne)",
+        "ticketStatus": "{{subject}} : {{status}}",
+        "subscriptionAssigned": "{{plan}}, {{months}} mois d’engagement",
+        "subscriptionCanceled": "Accès jusqu’au {{date}}",
+        "addonSold": "{{package}} pour {{price}}",
+        "invoiceCreated": "{{number}} de {{total}}",
+        "numberImported": "{{number}} via {{provider}}",
+        "credits": "{{minutes}} minutes vocales, {{chats}} discussions",
+        "pricing": "Chat {{chat}}, voix {{voice}}"
       }
     }
   }
