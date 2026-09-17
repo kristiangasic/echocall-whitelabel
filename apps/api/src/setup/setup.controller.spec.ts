@@ -59,6 +59,7 @@ describe('SetupController', () => {
       lastName: null,
       language: 'en',
       echocallCustomerId: null,
+      twoFactorEnabled: false,
       impersonator: null,
     });
     const cookie = res.headers['set-cookie']?.[0] ?? '';

@@ -42,6 +42,7 @@ describe('SessionService', () => {
       lastName: null,
       language: 'en',
       echocallCustomerId: 501,
+      twoFactorEnabled: false,
       impersonator: null,
     });
     const rows = await t.db.selectFrom('sessions').selectAll().execute();

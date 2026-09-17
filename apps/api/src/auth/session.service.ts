@@ -28,13 +28,23 @@ export interface SessionUser {
   lastName: string | null;
   language: 'de' | 'en' | 'fr';
   echocallCustomerId: number | null;
+  /** True once a second factor is enrolled and confirmed; the portal shows and offers it. */
+  twoFactorEnabled: boolean;
   /** Set while an administrator is viewing the portal as this customer. */
   impersonator: Impersonator | null;
 }
 
 export type SessionUserSource = Pick<
   UserRow,
-  'id' | 'email' | 'role' | 'firstName' | 'lastName' | 'language' | 'echocallCustomerId'
+  | 'id'
+  | 'email'
+  | 'role'
+  | 'firstName'
+  | 'lastName'
+  | 'language'
+  | 'echocallCustomerId'
+  | 'totpSecret'
+  | 'totpConfirmedAt'
 >;
 
 export function toSessionUser(row: SessionUserSource, impersonator: Impersonator | null = null): SessionUser {
@@ -46,6 +56,7 @@ export function toSessionUser(row: SessionUserSource, impersonator: Impersonator
     lastName: row.lastName,
     language: row.language,
     echocallCustomerId: row.echocallCustomerId,
+    twoFactorEnabled: row.totpSecret !== null && row.totpConfirmedAt !== null,
     impersonator,
   };
 }
@@ -96,6 +107,8 @@ export class SessionService {
         'users.lastName',
         'users.language',
         'users.echocallCustomerId',
+        'users.totpSecret',
+        'users.totpConfirmedAt',
         'users.status',
       ])
       .where('sessions.id', '=', id)

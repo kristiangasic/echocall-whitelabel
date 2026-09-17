@@ -69,6 +69,7 @@ describe('AuthController', () => {
       lastName: null,
       language: 'de',
       echocallCustomerId: null,
+      twoFactorEnabled: false,
       impersonator: null,
     });
     const cookie = login.headers['set-cookie'][0];

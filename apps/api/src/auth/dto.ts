@@ -24,3 +24,14 @@ export const acceptInviteSchema = z.object({
   lastName: nameSchema.optional(),
 });
 export type AcceptInviteDto = z.infer<typeof acceptInviteSchema>;
+
+/** A code from an authenticator app, or a recovery code, as it was typed. */
+export const twoFactorCodeSchema = z.string().trim().min(6).max(20);
+
+export const twoFactorActivateSchema = z.object({ code: twoFactorCodeSchema });
+export type TwoFactorActivateDto = z.infer<typeof twoFactorActivateSchema>;
+
+export const twoFactorDisableSchema = z.object({
+  password: z.string().min(1, 'Password is required').max(200),
+});
+export type TwoFactorDisableDto = z.infer<typeof twoFactorDisableSchema>;

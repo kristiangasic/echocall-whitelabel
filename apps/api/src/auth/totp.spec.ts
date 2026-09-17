@@ -70,7 +70,11 @@ describe('generateSecret', () => {
 
 describe('otpauthUrl', () => {
   it('names the portal and the account, escaping what needs it', () => {
-    const url = otpauthUrl({ secret: RFC_SECRET, account: 'lena@example.test', issuer: 'Nordwind Telefonie' });
+    const url = otpauthUrl({
+      secret: RFC_SECRET,
+      account: 'lena@example.test',
+      issuer: 'Nordwind Telefonie',
+    });
     expect(url).toBe(
       'otpauth://totp/Nordwind%20Telefonie:lena%40example.test' +
         `?secret=${RFC_SECRET}&issuer=Nordwind%20Telefonie&algorithm=SHA1&digits=6&period=30`,

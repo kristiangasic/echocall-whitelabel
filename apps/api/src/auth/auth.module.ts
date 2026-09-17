@@ -10,6 +10,7 @@ import { PasswordService } from './password.service.js';
 import { RolesGuard } from './roles.guard.js';
 import { SessionService } from './session.service.js';
 import { TokenService } from './token.service.js';
+import { TwoFactorService } from './two-factor.service.js';
 
 @Module({
   imports: [
@@ -26,12 +27,13 @@ import { TokenService } from './token.service.js';
     SessionService,
     TokenService,
     LoginService,
+    TwoFactorService,
     // Global guards run in this order: CSRF header, session cookie, roles.
     { provide: APP_GUARD, useClass: CsrfGuard },
     { provide: APP_GUARD, useClass: SessionGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
   ],
   // ThrottlerModule is re-exported so other modules can opt routes into @UseGuards(ThrottlerGuard).
-  exports: [PasswordService, SessionService, TokenService, LoginService, ThrottlerModule],
+  exports: [PasswordService, SessionService, TokenService, LoginService, TwoFactorService, ThrottlerModule],
 })
 export class AuthModule {}

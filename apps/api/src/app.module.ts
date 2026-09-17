@@ -17,6 +17,7 @@ import { EmbedModule } from './embed/embed.module.js';
 import { HealthModule } from './health/health.module.js';
 import { HubProxyModule } from './hub-proxy/hub-proxy.module.js';
 import { MailModule } from './mail/mail.module.js';
+import { TwoFactorModule } from './auth/two-factor.module.js';
 import { SettingsModule } from './settings/settings.module.js';
 import { SetupModule } from './setup/setup.module.js';
 
@@ -28,6 +29,7 @@ import { SetupModule } from './setup/setup.module.js';
     MailModule,
     AuditModule,
     AuthModule,
+    TwoFactorModule,
     SettingsModule,
     SetupModule,
     AdminOverviewModule,
