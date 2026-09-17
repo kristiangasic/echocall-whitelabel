@@ -27,9 +27,9 @@
       "none": "Kein Tarif hinterlegt"
     },
     "statuses": {
-      "active": "Aktiv",
+      "active": "Konto aktiv",
       "trial": "Testphase",
-      "suspended": "Gesperrt"
+      "suspended": "Konto gesperrt"
     },
     "recent": {
       "title": "Letzte Gespräche",
@@ -388,7 +388,16 @@
     "secretTitle": "Signaturschlüssel",
     "secretMessage": "Mit diesem Schlüssel wird jede Zustellung signiert. Er wird nur dieses eine Mal angezeigt.",
     "deleteTitle": "Endpunkt löschen",
-    "deleteMessage": "Soll der Endpunkt {{url}} gelöscht werden?"
+    "deleteMessage": "Soll der Endpunkt {{url}} gelöscht werden?",
+    "eventTexts": {
+      "call_ended": "Ein Anruf wurde beendet. Enthält Dauer, Status und, sofern vorhanden, Transkript, Zusammenfassung und Aufzeichnung.",
+      "conversation_closed": "Ein Chat wurde geschlossen.",
+      "conversation_message_received": "In einem Chat ist eine Nachricht des Besuchers eingegangen.",
+      "conversation_message_sent": "In einem Chat wurde eine Nachricht gesendet, vom Assistenten oder von einem Mitarbeiter.",
+      "ticket_created": "Ein Ticket wurde angelegt.",
+      "ticket_updated": "Ein Ticket hat sich geändert: Status, Priorität oder eine neue Nachricht.",
+      "webhook_test": "Testzustellung, die Sie selbst für einen Endpunkt auslösen. Entsteht nie aus dem laufenden Betrieb."
+    }
   },
   "inbox": {
     "title": "Posteingang",
@@ -426,6 +435,7 @@
     "deleteTitle": "Kampagne löschen?",
     "deleteMessage": "Die Kampagne \"{{name}}\" und ihre Ergebnisse werden gelöscht.",
     "empty": "Noch keine Kampagnen angelegt.",
+    "emptyFiltered": "Keine Kampagne in diesem Zustand.",
     "filters": {
       "all": "Alle",
       "draft": "Entwürfe",

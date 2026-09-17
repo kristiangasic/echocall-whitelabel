@@ -65,6 +65,14 @@ describe('UserDashboardPage', () => {
     expect(tiles.textContent).toContain('Business');
   });
 
+  it('says what the status on the plan tile is about', async () => {
+    const fixture = await render();
+
+    const tiles = fixture.nativeElement.querySelector('[data-testid="tiles"]');
+    expect(tiles.textContent).toContain(USER_TEXTS.dashboard.statuses.active);
+    expect(USER_TEXTS.dashboard.statuses.active).toBe('Konto aktiv');
+  });
+
   it('lists the most recent conversations', async () => {
     const fixture = await render();
 

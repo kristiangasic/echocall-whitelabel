@@ -27,9 +27,9 @@
       "none": "No plan on record"
     },
     "statuses": {
-      "active": "Active",
+      "active": "Account active",
       "trial": "Trial",
-      "suspended": "Suspended"
+      "suspended": "Account suspended"
     },
     "recent": {
       "title": "Recent conversations",
@@ -388,7 +388,16 @@
     "secretTitle": "Signing secret",
     "secretMessage": "Every delivery is signed with this secret. It is shown this one time only.",
     "deleteTitle": "Delete the endpoint",
-    "deleteMessage": "Delete the endpoint {{url}}?"
+    "deleteMessage": "Delete the endpoint {{url}}?",
+    "eventTexts": {
+      "call_ended": "A voice call has finished. Carries duration, status and, when available, transcript, summary and recording.",
+      "conversation_closed": "A chat was closed.",
+      "conversation_message_received": "A message from the visitor arrived in a chat.",
+      "conversation_message_sent": "A message was sent in a chat, by the assistant or by a member of your team.",
+      "ticket_created": "A ticket was opened.",
+      "ticket_updated": "A ticket changed: status, priority or a new message.",
+      "webhook_test": "Test delivery you trigger yourself for one endpoint. Never comes out of day to day activity."
+    }
   },
   "inbox": {
     "title": "Inbox",
@@ -426,6 +435,7 @@
     "deleteTitle": "Delete the campaign?",
     "deleteMessage": "The campaign \"{{name}}\" and its results will be deleted.",
     "empty": "No campaigns yet.",
+    "emptyFiltered": "No campaign is in this state.",
     "filters": {
       "all": "All",
       "draft": "Drafts",

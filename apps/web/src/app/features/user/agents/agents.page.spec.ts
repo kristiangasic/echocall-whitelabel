@@ -47,6 +47,15 @@ describe('AgentsPage', () => {
     expect(rows[1].textContent).toContain(USER_TEXTS.agents.statuses.inactive);
   });
 
+  it('names the standard voice for an agent that picked none', async () => {
+    const fixture = await render([
+      { id: 'agent_2', name: 'After Hours', language: 'en', status: 'active' },
+    ]);
+
+    const row = fixture.nativeElement.querySelector('table tbody tr');
+    expect(row.textContent).toContain(USER_TEXTS.agents.voiceDefault);
+  });
+
   it('shows the empty hint without agents', async () => {
     const fixture = await render([]);
     expect(fixture.nativeElement.textContent).toContain(USER_TEXTS.agents.empty);

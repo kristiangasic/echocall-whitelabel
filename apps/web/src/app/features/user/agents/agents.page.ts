@@ -49,7 +49,7 @@ import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/
           </ng-container>
           <ng-container matColumnDef="voice">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.agents.voice') }}</th>
-            <td mat-cell *matCellDef="let a">{{ a.voice?.name || '' }}</td>
+            <td mat-cell *matCellDef="let a">{{ a.voice?.name || t('user.agents.voiceDefault') }}</td>
           </ng-container>
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>

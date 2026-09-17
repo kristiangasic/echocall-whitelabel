@@ -2,13 +2,14 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { provideTestI18n } from '../../../testing/i18n';
+import { provideTestI18n, USER_TEXTS } from '../../../testing/i18n';
 import { WebhookDialogComponent, type WebhookDialogData } from './webhook-dialog.component';
 
 const EVENTS = {
   data: [
-    { event: 'call.ended', description: 'Ein Anruf wurde beendet.' },
-    { event: 'ticket.created', description: 'Ein Ticket wurde angelegt.' },
+    { event: 'call.ended', description: 'A voice call has finished.' },
+    { event: 'ticket.created', description: 'A support ticket was opened.' },
+    { event: 'weather.changed', description: 'The weather changed.' },
   ],
   wildcard: '*',
 };
@@ -43,7 +44,20 @@ describe('WebhookDialogComponent', () => {
     const fixture = await render({});
 
     expect(fixture.nativeElement.querySelector('[data-testid="webhook-event-call.ended"]')).not.toBeNull();
-    expect(fixture.nativeElement.textContent).toContain('Ein Ticket wurde angelegt.');
+    expect(fixture.nativeElement.querySelector('[data-testid="webhook-event-ticket.created"]')).not.toBeNull();
+  });
+
+  it('explains each event in the reader language', async () => {
+    const fixture = await render({});
+
+    expect(fixture.nativeElement.textContent).toContain(USER_TEXTS.webhooks.eventTexts.ticket_created);
+    expect(fixture.nativeElement.textContent).not.toContain('A support ticket was opened.');
+  });
+
+  it('keeps the service wording for an event it has no words for', async () => {
+    const fixture = await render({});
+
+    expect(fixture.nativeElement.textContent).toContain('The weather changed.');
   });
 
   it('returns the signing secret of a new endpoint', async () => {

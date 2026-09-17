@@ -93,7 +93,7 @@ type Filter = (typeof FILTERS)[number];
           <tr mat-row *matRowDef="let row; columns: columns"></tr>
           <tr class="mat-row" *matNoDataRow>
             <td class="mat-cell empty" [attr.colspan]="columns.length">
-              {{ t('user.campaigns.empty') }}
+              {{ t(filter() === 'all' ? 'user.campaigns.empty' : 'user.campaigns.emptyFiltered') }}
             </td>
           </tr>
         </table>

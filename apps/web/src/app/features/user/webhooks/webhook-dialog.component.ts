@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
+import { provideTranslocoScope, TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { HubService } from '../../../core/hub/hub.service';
 import type { Webhook, WebhookEvent } from '../../../core/hub/hub.models';
@@ -84,7 +84,7 @@ export interface WebhookDialogResult {
                 [attr.data-testid]="'webhook-event-' + event.event"
               >
                 <span class="event">{{ event.event }}</span>
-                <span class="description">{{ event.description }}</span>
+                <span class="description">{{ eventDescription(event) }}</span>
               </mat-checkbox>
             }
           </div>
@@ -144,6 +144,7 @@ export class WebhookDialogComponent implements OnInit {
   );
   private readonly hub = inject(HubService);
   private readonly notify = inject(NotifyService);
+  private readonly transloco = inject(TranslocoService);
 
   readonly catalog = signal<WebhookEvent[]>([]);
   readonly wildcard = signal(WILDCARD);
@@ -170,6 +171,18 @@ export class WebhookDialogComponent implements OnInit {
       this.events.set(subscribed.filter((event) => event !== WILDCARD));
     }
     void this.loadCatalog();
+  }
+
+  /**
+   * Explains an event in the reader's language. The service documents its
+   * events in English for developers; a customer picking deliveries in the
+   * portal reads their own. An event the portal has no wording for yet keeps
+   * the service's own sentence rather than showing nothing.
+   */
+  eventDescription(event: WebhookEvent): string {
+    const key = `user.webhooks.eventTexts.${event.event.replaceAll('.', '_')}`;
+    const text = this.transloco.translate(key);
+    return text === key ? event.description : text;
   }
 
   isSelected(event: string): boolean {

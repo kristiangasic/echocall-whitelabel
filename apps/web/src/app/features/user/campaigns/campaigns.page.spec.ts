@@ -67,6 +67,18 @@ describe('CampaignsPage', () => {
     expect(fixture.nativeElement.textContent).toContain(USER_TEXTS.campaigns.empty);
   });
 
+  it('answers the filter that found nothing, not the empty account', async () => {
+    const { fixture } = await render();
+
+    fixture.componentInstance.setFilter('running');
+    http.expectOne((req) => req.url === '/api/hub/batch-calling/campaigns').flush({ data: [] });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain(USER_TEXTS.campaigns.emptyFiltered);
+    expect(fixture.nativeElement.textContent).not.toContain(USER_TEXTS.campaigns.empty);
+  });
+
   it('asks for the first page without a status filter', async () => {
     const { request } = await render();
 

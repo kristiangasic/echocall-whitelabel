@@ -27,9 +27,9 @@
       "none": "Aucun forfait enregistré"
     },
     "statuses": {
-      "active": "Actif",
+      "active": "Compte actif",
       "trial": "Période d'essai",
-      "suspended": "Suspendu"
+      "suspended": "Compte suspendu"
     },
     "recent": {
       "title": "Conversations récentes",
@@ -388,7 +388,16 @@
     "secretTitle": "Clé de signature",
     "secretMessage": "Chaque livraison est signée avec cette clé. Elle n'est affichée qu'une seule fois.",
     "deleteTitle": "Supprimer le point de terminaison",
-    "deleteMessage": "Supprimer le point de terminaison {{url}} ?"
+    "deleteMessage": "Supprimer le point de terminaison {{url}} ?",
+    "eventTexts": {
+      "call_ended": "Un appel s'est terminé. Contient la durée, le statut et, le cas échéant, la transcription, le résumé et l'enregistrement.",
+      "conversation_closed": "Une conversation a été fermée.",
+      "conversation_message_received": "Un message du visiteur est arrivé dans une conversation.",
+      "conversation_message_sent": "Un message a été envoyé dans une conversation, par l'assistant ou par un membre de votre équipe.",
+      "ticket_created": "Un ticket a été créé.",
+      "ticket_updated": "Un ticket a changé : statut, priorité ou nouveau message.",
+      "webhook_test": "Envoi de test que vous déclenchez vous-même pour un point de terminaison. Ne provient jamais de l'activité courante."
+    }
   },
   "inbox": {
     "title": "Boîte de réception",
@@ -426,6 +435,7 @@
     "deleteTitle": "Supprimer la campagne ?",
     "deleteMessage": "La campagne « {{name}} » et ses résultats seront supprimés.",
     "empty": "Aucune campagne pour le moment.",
+    "emptyFiltered": "Aucune campagne dans cet état.",
     "filters": {
       "all": "Toutes",
       "draft": "Brouillons",
