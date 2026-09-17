@@ -227,7 +227,8 @@ const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
                   matInput
                   formControlName="from"
                   autocomplete="off"
-                  placeholder="Portal <portal@example.com>"
+                  placeholder="portal@example.com"
+                  data-testid="smtp-from"
                 />
                 @if (smtpForm.controls.from | fieldError; as e) {
                   <mat-error>{{ t(e.key, e.params) }}</mat-error>
@@ -442,7 +443,8 @@ export class AdminSettingsPage implements OnInit {
     secure: [false],
     user: ['', Validators.maxLength(200)],
     pass: ['', Validators.maxLength(500)],
-    from: ['', [Validators.required, Validators.maxLength(320)]],
+    /** The display name comes from the product name, so this is the address alone. */
+    from: ['', [Validators.required, Validators.email, Validators.maxLength(320)]],
   });
   readonly testForm = this.fb.group({
     to: [this.auth.user()?.email ?? '', [Validators.required, Validators.email]],

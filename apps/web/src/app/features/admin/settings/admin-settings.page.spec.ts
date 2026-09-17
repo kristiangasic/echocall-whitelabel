@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { MATERIAL_ANIMATIONS } from '@angular/material/core';
 import { byTestId } from '../../../testing/dom';
-import { provideTestI18n } from '../../../testing/i18n';
+import { provideTestI18n, TEXTS } from '../../../testing/i18n';
 import { AdminSettingsPage } from './admin-settings.page';
 
 const SMTP = {
@@ -64,5 +64,30 @@ describe('AdminSettingsPage', () => {
     fixture.detectChanges();
 
     expect(picker.value).toBe('#0f766e');
+  });
+
+  it('asks for a bare sender address, because the portal supplies the display name', async () => {
+    const fixture = await render();
+    const tabs = (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('.mat-mdc-tab');
+    tabs[1].click();
+    await settle();
+    fixture.detectChanges();
+
+    const sender = byTestId<HTMLInputElement>(fixture, 'smtp-from');
+    // The placeholder may only show what the form accepts.
+    expect(sender.placeholder).not.toContain('<');
+
+    sender.value = 'Portal <portal@example.com>';
+    sender.dispatchEvent(new Event('input', { bubbles: true }));
+    sender.dispatchEvent(new Event('blur', { bubbles: true }));
+    await settle();
+    fixture.detectChanges();
+
+    byTestId(fixture, 'save-smtp').click();
+    await settle();
+    // Nothing is sent, so the operator is told in their own language instead of
+    // reading the server's English complaint.
+    http.expectNone('/api/admin/settings/smtp');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain(TEXTS.validation.email);
   });
 });
