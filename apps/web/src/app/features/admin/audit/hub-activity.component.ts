@@ -2,7 +2,7 @@ import { Component, inject, type OnInit, signal } from '@angular/core';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
+import { provideTranslocoScope, TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type { ResellerActivity } from '../../../core/hub/hub.models';
@@ -37,8 +37,13 @@ const PER_PAGE = 25;
           </ng-container>
           <ng-container matColumnDef="action">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.action') }}</th>
-            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.action')">
-              <code>{{ row.action }}</code>
+            <td
+              mat-cell
+              *matCellDef="let row"
+              [attr.data-label]="t('admin.audit.action')"
+              [title]="row.action"
+            >
+              {{ actionLabel(row.action) }}
             </td>
           </ng-container>
           <ng-container matColumnDef="description">
@@ -89,6 +94,7 @@ const PER_PAGE = 25;
 export class HubActivityComponent implements OnInit {
   private readonly hub = inject(AdminHubService);
   private readonly notify = inject(NotifyService);
+  private readonly transloco = inject(TranslocoService);
 
   readonly columns = ['createdAt', 'action', 'description', 'target'];
   readonly rows = signal<ResellerActivity[]>([]);
@@ -99,6 +105,17 @@ export class HubActivityComponent implements OnInit {
 
   ngOnInit(): void {
     void this.load();
+  }
+
+  /**
+   * The service names an action with a technical key. Known keys get the
+   * operator's own wording; anything the service adds later still shows, as the
+   * key itself, rather than leaving the column empty.
+   */
+  actionLabel(action: string): string {
+    const key = `admin.audit.hub.actions.${action}`;
+    const label = this.transloco.translate(key);
+    return label === key ? action : label;
   }
 
   onPage(event: PageEvent): void {

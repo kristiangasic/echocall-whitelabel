@@ -14,7 +14,7 @@ import type { CreatePlanInput, Plan, UpdatePlanInput } from '../../../core/hub/h
 import { NotifyService } from '../../../core/notify/notify.service';
 import { FieldErrorPipe } from '../../../shared/forms/field-error.pipe';
 import { applyServerErrors } from '../../../shared/forms/server-errors';
-import { integerValidator } from '../../../shared/forms/validators';
+import { allowanceValidator } from '../../../shared/forms/validators';
 
 export type PlanDialogData = { mode: 'create' } | { mode: 'edit'; plan: Plan };
 
@@ -189,11 +189,11 @@ export class PlanDialogComponent {
     ],
     voiceMinutes: [
       { value: numberText(this.plan?.voiceMinutesPerMonth), disabled: this.plan !== null },
-      integerValidator,
+      allowanceValidator,
     ],
     chatConversations: [
       { value: numberText(this.plan?.chatConversationsPerMonth), disabled: this.plan !== null },
-      integerValidator,
+      allowanceValidator,
     ],
     features: [(this.plan?.features ?? []).join('\n')],
     isActive: [this.plan?.isActive ?? true],
@@ -229,8 +229,12 @@ export class PlanDialogComponent {
           billingCycle: value.billingCycle,
           priceEur: Number(value.priceEur),
           ...(value.description.trim() ? { description: value.description.trim() } : {}),
-          ...(value.voiceMinutes ? { voiceMinutesPerMonth: Number(value.voiceMinutes) } : {}),
-          ...(value.chatConversations ? { chatConversationsPerMonth: Number(value.chatConversations) } : {}),
+          // Only an empty field is left out, which the service reads as no
+          // limit. A zero is sent as a zero and stands for nothing included.
+          ...(value.voiceMinutes === '' ? {} : { voiceMinutesPerMonth: Number(value.voiceMinutes) }),
+          ...(value.chatConversations === ''
+            ? {}
+            : { chatConversationsPerMonth: Number(value.chatConversations) }),
           ...(features.length ? { features } : {}),
         };
         await firstValueFrom(this.hub.post('/resellers/plans', body));

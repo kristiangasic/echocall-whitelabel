@@ -41,10 +41,22 @@ export const phoneNumberValidator: ValidatorFn = (control) => {
   return /^\+[1-9]\d{6,14}$/.test(value) ? null : { phoneNumber: true };
 };
 
+/** Accepts an empty value or a whole number above zero. For identifiers. */
 export const integerValidator: ValidatorFn = (control) => {
   const value = control.value;
   if (value === '' || value === null || value === undefined) return null;
-  return /^\d+$/.test(String(value)) && Number(value) > 0 ? null : { integer: true };
+  return /^\d+$/.test(String(value)) && Number(value) > 0 ? null : { positiveInteger: true };
+};
+
+/**
+ * Accepts an empty value or a whole number from zero up. Allowances need the
+ * zero: a plan that includes none of a service says so with a zero, while an
+ * empty field means no limit at all.
+ */
+export const allowanceValidator: ValidatorFn = (control) => {
+  const value = control.value;
+  if (value === '' || value === null || value === undefined) return null;
+  return /^\d+$/.test(String(value)) ? null : { integer: true };
 };
 
 export const PASSWORD_MIN_LENGTH = 10;

@@ -42,9 +42,27 @@ describe('HubActivityComponent', () => {
     const fixture = await render();
     const text = fixture.nativeElement.textContent as string;
 
-    expect(text).toContain('customer_created');
+    // The service records an action as a technical key. The operator reads the
+    // log in their own language, so the key only shows when we have no wording.
+    expect(text).toContain(ADMIN_TEXTS.audit.hub.actions.customer_created);
+    expect(text).not.toContain('customer_created');
     expect(text).toContain('Created customer Muster GmbH');
     expect(fixture.componentInstance.total()).toBe(61);
+  });
+
+  it('shows an action we have no wording for as the service named it', async () => {
+    const fixture = TestBed.createComponent(HubActivityComponent);
+    await fixture.whenStable();
+    http
+      .expectOne((req) => req.url === '/api/admin/hub/resellers/activity-log')
+      .flush({
+        data: [{ ...ENTRY, action: 'something_the_service_added' }],
+        pagination: { page: 1, perPage: 25, total: 1, totalPages: 1 },
+      });
+    await settle();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('something_the_service_added');
   });
 
   it('asks for the next page when the paginator moves', async () => {

@@ -87,6 +87,7 @@
     "hexColor": "Bitte eine Farbe im Format #RRGGBB eingeben",
     "url": "Bitte eine vollständige Adresse mit https:// eingeben",
     "integer": "Bitte eine ganze Zahl eingeben",
+    "positiveInteger": "Bitte eine ganze Zahl über null eingeben",
     "phoneNumber": "Bitte die Nummer in internationaler Schreibweise eingeben, zum Beispiel +4930123456",
     "invalid": "Ungültige Eingabe",
     "server": "{{message}}",
