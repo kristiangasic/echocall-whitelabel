@@ -17,11 +17,11 @@ describe('KnowledgePanelComponent', () => {
 
   afterEach(() => http.verify());
 
-  async function render() {
+  async function render(basePath = '/agents/agent_3') {
     const fixture = TestBed.createComponent(KnowledgePanelComponent);
-    fixture.componentRef.setInput('basePath', '/agents/agent_3');
+    fixture.componentRef.setInput('basePath', basePath);
     await fixture.whenStable();
-    http.expectOne('/api/hub/agents/agent_3/knowledge').flush({
+    http.expectOne(`/api/hub${basePath}/knowledge`).flush({
       data: [{ id: 11, type: 'url', sourceUrl: 'https://example.com/faq', status: 'indexed', title: 'FAQ' }],
     });
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -43,7 +43,7 @@ describe('KnowledgePanelComponent', () => {
 
     const request = http.expectOne('/api/hub/agents/agent_3/knowledge');
     expect(request.request.method).toBe('POST');
-    expect(request.request.body).toEqual({ type: 'url', content: 'https://example.com/pricing' });
+    expect(request.request.body).toEqual({ type: 'url', url: 'https://example.com/pricing' });
     request.flush({ id: 12, type: 'url' }, { status: 201, statusText: 'Created' });
     await new Promise((resolve) => setTimeout(resolve, 0));
     http.expectOne('/api/hub/agents/agent_3/knowledge').flush({ data: [] });
@@ -60,7 +60,7 @@ describe('KnowledgePanelComponent', () => {
     const request = http.expectOne('/api/hub/agents/agent_3/knowledge');
     expect(request.request.body).toEqual({
       type: 'text',
-      content: 'We are open 9 to 5.',
+      text: 'We are open 9 to 5.',
       title: 'Opening hours',
     });
     request.flush({ id: 13, type: 'text' }, { status: 201, statusText: 'Created' });
@@ -69,5 +69,18 @@ describe('KnowledgePanelComponent', () => {
     await pending;
     await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain(USER_TEXTS.knowledge.empty);
+  });
+
+  it('sends a chatbot source in the field that endpoint documents', async () => {
+    const fixture = await render('/chatbots/7');
+    fixture.componentInstance.url = 'https://example.com/pricing';
+    const pending = fixture.componentInstance.addUrl();
+
+    const request = http.expectOne('/api/hub/chatbots/7/knowledge');
+    expect(request.request.body).toEqual({ type: 'url', content: 'https://example.com/pricing' });
+    request.flush({ id: 12, type: 'url' }, { status: 201, statusText: 'Created' });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    http.expectOne('/api/hub/chatbots/7/knowledge').flush({ data: [] });
+    await pending;
   });
 });

@@ -190,7 +190,7 @@ export class KnowledgePanelComponent implements OnInit {
   async addUrl(): Promise<void> {
     const content = this.url.trim();
     if (!content) return;
-    await this.add({ type: 'url', content });
+    await this.add(this.source('url', content));
     this.url = '';
   }
 
@@ -198,9 +198,17 @@ export class KnowledgePanelComponent implements OnInit {
     const content = this.textContent.trim();
     if (!content) return;
     const title = this.textTitle.trim();
-    await this.add({ type: 'text', content, ...(title ? { title } : {}) });
+    await this.add({ ...this.source('text', content), ...(title ? { title } : {}) });
     this.textTitle = '';
     this.textContent = '';
+  }
+
+  /**
+   * Both owners take the same source under a different field name: an agent
+   * reads it from url or text, a chatbot from content.
+   */
+  private source(type: 'url' | 'text', content: string): Record<string, string> {
+    return this.basePath().startsWith('/agents') ? { type, [type]: content } : { type, content };
   }
 
   async refresh(entry: KnowledgePanelEntry): Promise<void> {
@@ -239,7 +247,7 @@ export class KnowledgePanelComponent implements OnInit {
     }
   }
 
-  private async add(body: { type: 'url' | 'text'; content: string; title?: string }): Promise<void> {
+  private async add(body: Record<string, string>): Promise<void> {
     this.busy.set(true);
     try {
       await firstValueFrom(this.hub.post(`${this.basePath()}/knowledge`, body));
