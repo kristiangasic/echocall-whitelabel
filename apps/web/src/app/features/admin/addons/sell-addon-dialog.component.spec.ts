@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import type { ResellerAddonPackage } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
-import { ADMIN_TEXTS, provideTestI18n } from '../../../testing/i18n';
+import { ADMIN_TEXTS, TEXTS, provideTestI18n } from '../../../testing/i18n';
 import { SellAddonDialogComponent, type SellAddonDialogData } from './sell-addon-dialog.component';
 
 const PACKAGES: ResellerAddonPackage[] = [
@@ -151,5 +151,15 @@ describe('SellAddonDialogComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain(ADMIN_TEXTS.addons.dialog.noPackages);
+  });
+  it('says what is missing instead of doing nothing when the form is submitted empty', async () => {
+    const fixture = await setup();
+
+    await fixture.componentInstance.submit();
+    await settle();
+    fixture.detectChanges();
+    const errors = Array.from(fixture.nativeElement.querySelectorAll('mat-error') as NodeListOf<HTMLElement>);
+
+    expect(errors.map((error) => error.textContent?.trim())).toContain(TEXTS.validation.required);
   });
 });

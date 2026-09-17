@@ -14,6 +14,7 @@ import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type { ResellerAddonPackage, ResellerCustomer } from '../../../core/hub/hub.models';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { NotifyService } from '../../../core/notify/notify.service';
+import { FieldErrorPipe } from '../../../shared/forms/field-error.pipe';
 import { type CustomerOption, customerOption } from '../customer-option';
 
 /** How many customers the picker loads at once; the hub caps a page at 500. */
@@ -61,6 +62,7 @@ const OWN_MESSAGES: Record<string, string> = {
     MatProgressBarModule,
     MatButtonModule,
     TranslocoDirective,
+    FieldErrorPipe,
   ],
   providers: [provideTranslocoScope('admin')],
   template: `
@@ -79,6 +81,9 @@ const OWN_MESSAGES: Record<string, string> = {
                 <mat-option [value]="customer.id">{{ customer.label }}</mat-option>
               }
             </mat-select>
+            @if (form.controls.customerId | fieldError; as e) {
+              <mat-error>{{ t(e.key, e.params) }}</mat-error>
+            }
           </mat-form-field>
           <mat-form-field appearance="outline" class="full">
             <mat-label>{{ t('admin.addons.dialog.package') }}</mat-label>
@@ -90,6 +95,9 @@ const OWN_MESSAGES: Record<string, string> = {
                 </mat-option>
               }
             </mat-select>
+            @if (form.controls.packageId | fieldError; as e) {
+              <mat-error>{{ t(e.key, e.params) }}</mat-error>
+            }
           </mat-form-field>
           @if (!loading() && packages().length === 0) {
             <p class="hint" data-testid="no-packages">{{ t('admin.addons.dialog.noPackages') }}</p>

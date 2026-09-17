@@ -87,6 +87,7 @@
     "hexColor": "Veuillez saisir une couleur au format #RRGGBB",
     "url": "Veuillez saisir une adresse complète commençant par https://",
     "integer": "Veuillez saisir un nombre entier",
+    "phoneNumber": "Saisissez le numéro en notation internationale, par exemple +4930123456",
     "invalid": "Saisie invalide",
     "server": "{{message}}",
     "positiveAmount": "Veuillez saisir un montant supérieur à 0"

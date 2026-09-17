@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
-import { provideTestI18n } from '../../../testing/i18n';
+import { provideTestI18n, TEXTS } from '../../../testing/i18n';
 import { ImportNumberDialogComponent } from './import-number-dialog.component';
 
 const PATH = '/api/admin/hub/resellers/phone-numbers/import';
@@ -178,6 +178,34 @@ describe('ImportNumberDialogComponent', () => {
     await settle();
 
     http.expectNone(PATH);
+  });
+
+  it('refuses a number that is not in international notation', async () => {
+    const fixture = await render();
+
+    fixture.componentInstance.form.patchValue({
+      phoneNumber: '030 111222',
+      label: 'Berlin',
+      address: 'sip.example.com',
+    });
+    await fixture.componentInstance.submit();
+    await settle();
+
+    http.expectNone(PATH);
+    expect(fixture.componentInstance.form.controls.phoneNumber.errors).toEqual({ phoneNumber: true });
+  });
+
+  it('says what is missing instead of doing nothing when the form is submitted empty', async () => {
+    const fixture = await render();
+
+    await fixture.componentInstance.submit();
+    await settle();
+    fixture.detectChanges();
+    const errors = Array.from(fixture.nativeElement.querySelectorAll('mat-error') as NodeListOf<HTMLElement>);
+
+    http.expectNone(PATH);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors.map((error) => error.textContent?.trim())).toContain(TEXTS.validation.required);
   });
 
   it('does not call the hub without the carrier credentials', async () => {

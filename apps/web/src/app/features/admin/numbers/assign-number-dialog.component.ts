@@ -10,6 +10,7 @@ import { firstValueFrom } from 'rxjs';
 import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type { ResellerCustomer } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
+import { FieldErrorPipe } from '../../../shared/forms/field-error.pipe';
 import { type CustomerOption, customerOption } from '../customer-option';
 
 /** How many customers the picker loads at once; the hub caps a page at 500. */
@@ -39,6 +40,7 @@ export interface AssignNumberResult {
     MatProgressBarModule,
     MatButtonModule,
     TranslocoDirective,
+    FieldErrorPipe,
   ],
   providers: [provideTranslocoScope('admin')],
   template: `
@@ -59,6 +61,9 @@ export interface AssignNumberResult {
                 <mat-option [value]="customer.id">{{ customer.label }}</mat-option>
               }
             </mat-select>
+            @if (form.controls.customerId | fieldError; as e) {
+              <mat-error>{{ t(e.key, e.params) }}</mat-error>
+            }
           </mat-form-field>
         </mat-dialog-content>
         <mat-dialog-actions align="end">

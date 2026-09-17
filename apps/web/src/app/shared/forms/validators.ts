@@ -30,6 +30,17 @@ export const urlValidator: ValidatorFn = (control) => {
   }
 };
 
+/**
+ * Accepts an empty value or a number in international notation. Telephony
+ * takes nothing else, and finding that out from the carrier costs a round
+ * trip and a confusing message.
+ */
+export const phoneNumberValidator: ValidatorFn = (control) => {
+  const value = String(control.value ?? '').trim();
+  if (value === '') return null;
+  return /^\+[1-9]\d{6,14}$/.test(value) ? null : { phoneNumber: true };
+};
+
 export const integerValidator: ValidatorFn = (control) => {
   const value = control.value;
   if (value === '' || value === null || value === undefined) return null;

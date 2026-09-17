@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
-import { provideTestI18n } from '../../../testing/i18n';
+import { TEXTS, provideTestI18n } from '../../../testing/i18n';
 import { ChatbotEditPage } from './chatbot-edit.page';
 
 @Component({ template: '' })
@@ -90,5 +90,15 @@ describe('ChatbotEditPage', () => {
     request.flush({ id: 7 });
     await pending;
     expect(router.url).toBe('/app/chatbots');
+  });
+  it('says the name is missing instead of doing nothing', async () => {
+    const fixture = await setup('new');
+    await fixture.whenStable();
+
+    await fixture.componentInstance.save();
+    fixture.detectChanges();
+    const errors = Array.from(fixture.nativeElement.querySelectorAll('mat-error') as NodeListOf<HTMLElement>);
+
+    expect(errors.map((error) => error.textContent?.trim())).toContain(TEXTS.validation.required);
   });
 });

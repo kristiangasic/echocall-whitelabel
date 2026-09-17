@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { provideTestI18n } from '../../../testing/i18n';
+import { TEXTS, provideTestI18n } from '../../../testing/i18n';
 import { AssignNumberDialogComponent } from './assign-number-dialog.component';
 
 const CUSTOMERS = [
@@ -71,5 +71,15 @@ describe('AssignNumberDialogComponent', () => {
     fixture.componentInstance.submit();
 
     expect(closed).toBeUndefined();
+  });
+  it('says what is missing instead of doing nothing when the form is submitted empty', async () => {
+    const fixture = await render();
+
+    await fixture.componentInstance.submit();
+    await settle();
+    fixture.detectChanges();
+    const errors = Array.from(fixture.nativeElement.querySelectorAll('mat-error') as NodeListOf<HTMLElement>);
+
+    expect(errors.map((error) => error.textContent?.trim())).toContain(TEXTS.validation.required);
   });
 });

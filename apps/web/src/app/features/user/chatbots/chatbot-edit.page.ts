@@ -17,6 +17,7 @@ import type { Chatbot, Language } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { KnowledgePanelComponent } from '../shared/knowledge-panel.component';
 import { IntegrationsPanelComponent } from '../shared/integrations-panel.component';
+import { FieldErrorPipe } from '../../../shared/forms/field-error.pipe';
 
 const POSITIONS = ['bottom-right', 'bottom-left', 'top-right', 'top-left'];
 const SIZES = ['small', 'medium', 'large'];
@@ -38,6 +39,7 @@ const STYLES = ['standard', 'rounded', 'compact'];
     TranslocoDirective,
     KnowledgePanelComponent,
     IntegrationsPanelComponent,
+    FieldErrorPipe,
   ],
   providers: [provideTranslocoScope('user')],
   template: `
@@ -64,6 +66,9 @@ const STYLES = ['standard', 'rounded', 'compact'];
             <mat-form-field appearance="outline">
               <mat-label>{{ t('fields.name') }}</mat-label>
               <input matInput formControlName="name" data-testid="chatbot-name" />
+              @if (form.controls.name | fieldError; as e) {
+                <mat-error>{{ t(e.key, e.params) }}</mat-error>
+              }
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>{{ t('user.chatbots.displayName') }}</mat-label>
@@ -344,7 +349,10 @@ export class ChatbotEditPage implements OnInit {
   }
 
   async save(): Promise<void> {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.saving.set(true);
     try {
       if (this.isNew()) {

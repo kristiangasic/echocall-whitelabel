@@ -87,6 +87,7 @@
     "hexColor": "Please enter a colour as #RRGGBB",
     "url": "Please enter a full address starting with https://",
     "integer": "Please enter a whole number",
+    "phoneNumber": "Enter the number in international notation, for example +4930123456",
     "invalid": "Invalid input",
     "server": "{{message}}",
     "positiveAmount": "Please enter an amount greater than 0"

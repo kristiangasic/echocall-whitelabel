@@ -13,6 +13,7 @@ const SIMPLE: Record<string, string> = {
   hexColor: 'validation.hexColor',
   url: 'validation.url',
   integer: 'validation.integer',
+  phoneNumber: 'validation.phoneNumber',
   min: 'validation.positiveAmount',
 };
 

@@ -13,6 +13,7 @@ import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type { Plan, ResellerCustomer } from '../../../core/hub/hub.models';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { NotifyService } from '../../../core/notify/notify.service';
+import { FieldErrorPipe } from '../../../shared/forms/field-error.pipe';
 import { type CustomerOption, customerOption } from '../customer-option';
 
 /** The contract lengths the hub accepts, in months and as the strings it wants. */
@@ -37,6 +38,7 @@ const CUSTOMER_PAGE = 500;
     MatProgressBarModule,
     MatButtonModule,
     TranslocoDirective,
+    FieldErrorPipe,
   ],
   providers: [provideTranslocoScope('admin')],
   template: `
@@ -55,6 +57,9 @@ const CUSTOMER_PAGE = 500;
                 <mat-option [value]="customer.id">{{ customer.label }}</mat-option>
               }
             </mat-select>
+            @if (form.controls.customerId | fieldError; as e) {
+              <mat-error>{{ t(e.key, e.params) }}</mat-error>
+            }
             <mat-hint>{{ t('admin.subscriptions.dialog.customerHint') }}</mat-hint>
           </mat-form-field>
           <mat-form-field appearance="outline" class="full">
@@ -68,6 +73,9 @@ const CUSTOMER_PAGE = 500;
                 </mat-option>
               }
             </mat-select>
+            @if (form.controls.planId | fieldError; as e) {
+              <mat-error>{{ t(e.key, e.params) }}</mat-error>
+            }
           </mat-form-field>
           @if (!loading() && plans().length === 0) {
             <p class="hint" data-testid="no-plans">{{ t('admin.subscriptions.dialog.noPlans') }}</p>

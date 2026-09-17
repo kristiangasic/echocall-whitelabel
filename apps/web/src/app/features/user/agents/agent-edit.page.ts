@@ -22,6 +22,7 @@ import type { Agent, AvailableVoice, Language, Voice } from '../../../core/hub/h
 import { NotifyService } from '../../../core/notify/notify.service';
 import { KnowledgePanelComponent } from '../shared/knowledge-panel.component';
 import { IntegrationsPanelComponent } from '../shared/integrations-panel.component';
+import { FieldErrorPipe } from '../../../shared/forms/field-error.pipe';
 
 const SYSTEM_TOOLS = [
   'endCall',
@@ -48,6 +49,7 @@ const SYSTEM_TOOLS = [
     TranslocoDirective,
     KnowledgePanelComponent,
     IntegrationsPanelComponent,
+    FieldErrorPipe,
   ],
   providers: [provideTranslocoScope('user')],
   template: `
@@ -74,6 +76,9 @@ const SYSTEM_TOOLS = [
             <mat-form-field appearance="outline">
               <mat-label>{{ t('fields.name') }}</mat-label>
               <input matInput formControlName="name" data-testid="agent-name" />
+              @if (form.controls.name | fieldError; as e) {
+                <mat-error>{{ t(e.key, e.params) }}</mat-error>
+              }
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>{{ t('user.agents.language') }}</mat-label>
@@ -467,7 +472,10 @@ export class AgentEditPage implements OnInit {
   }
 
   async save(): Promise<void> {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.saving.set(true);
     try {
       if (this.isNew()) {

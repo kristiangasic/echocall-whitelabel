@@ -11,6 +11,8 @@ import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import { NotifyService } from '../../../core/notify/notify.service';
+import { FieldErrorPipe } from '../../../shared/forms/field-error.pipe';
+import { phoneNumberValidator } from '../../../shared/forms/validators';
 
 /** The two ways a number can reach the platform. */
 const PROVIDERS = ['sip_trunk', 'twilio'] as const;
@@ -47,6 +49,7 @@ export interface ImportNumberResult {
     MatCheckboxModule,
     MatButtonModule,
     TranslocoDirective,
+    FieldErrorPipe,
   ],
   providers: [provideTranslocoScope('admin')],
   template: `
@@ -59,11 +62,18 @@ export interface ImportNumberResult {
             <mat-form-field appearance="outline">
               <mat-label>{{ t('admin.numbers.importDialog.number') }}</mat-label>
               <input matInput formControlName="phoneNumber" data-testid="number" />
-              <mat-hint>{{ t('admin.numbers.importDialog.numberHint') }}</mat-hint>
+              @if (form.controls.phoneNumber | fieldError; as e) {
+                <mat-error>{{ t(e.key, e.params) }}</mat-error>
+              } @else {
+                <mat-hint>{{ t('admin.numbers.importDialog.numberHint') }}</mat-hint>
+              }
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>{{ t('admin.numbers.importDialog.label') }}</mat-label>
               <input matInput formControlName="label" data-testid="label" />
+              @if (form.controls.label | fieldError; as e) {
+                <mat-error>{{ t(e.key, e.params) }}</mat-error>
+              }
             </mat-form-field>
           </div>
           <fieldset>
@@ -225,7 +235,7 @@ export class ImportNumberDialogComponent {
   readonly busy = signal(false);
 
   readonly form = inject(NonNullableFormBuilder).group({
-    phoneNumber: ['', Validators.required],
+    phoneNumber: ['', [Validators.required, phoneNumberValidator]],
     label: ['', Validators.required],
     supportsInbound: [true],
     supportsOutbound: [true],
