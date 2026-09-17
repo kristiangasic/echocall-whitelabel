@@ -10,7 +10,7 @@ const MESSAGES = [
     id: 1,
     message: 'Seit gestern kommt kein Anruf an.',
     createdAt: '2026-09-16T10:00:00.000Z',
-    sender: { name: 'Maria Beispiel', role: 'user' },
+    sender: { name: null, role: 'user' },
   },
   {
     id: 2,
@@ -80,6 +80,16 @@ describe('TicketDetailPage', () => {
     const messages = fixture.nativeElement.querySelectorAll('[data-testid="ticket-thread"] .message');
     expect(messages[0].classList.contains('support')).toBe(false);
     expect(messages[1].classList.contains('support')).toBe(true);
+  });
+
+  it('names each writer by their side of the thread, not by the name the hub carries', async () => {
+    const fixture = await render();
+
+    const senders = [
+      ...fixture.nativeElement.querySelectorAll('[data-testid="ticket-thread"] .sender'),
+    ].map((element: HTMLElement) => element.textContent?.trim());
+    expect(senders).toEqual([USER_TEXTS.tickets.you, USER_TEXTS.tickets.support]);
+    expect(fixture.nativeElement.textContent).not.toContain('Team');
   });
 
   it('sends a reply and reloads the thread', async () => {

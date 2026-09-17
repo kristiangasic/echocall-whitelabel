@@ -86,7 +86,7 @@ const SUPPORT_ROLES = ['admin', 'reseller'];
         @for (message of messages(); track message.id) {
           <div class="message" [class.support]="isSupport(message)">
             <div class="meta">
-              <span class="sender">{{ message.sender.name || t('user.tickets.support') }}</span>
+              <span class="sender">{{ t(senderLabel(message)) }}</span>
               <span class="time">{{ message.createdAt | localDate: 'short' }}</span>
             </div>
             <p class="text">{{ message.message }}</p>
@@ -212,6 +212,15 @@ export class TicketDetailPage implements OnInit {
 
   isSupport(message: TicketMessage): boolean {
     return SUPPORT_ROLES.includes(message.sender.role ?? '');
+  }
+
+  /**
+   * Names the writer of a message by their side of the thread, never by the name
+   * the hub carries for them: the customer reads their own replies as theirs,
+   * and everything from the operator side reads as support.
+   */
+  senderLabel(message: TicketMessage): string {
+    return this.isSupport(message) ? 'user.tickets.support' : 'user.tickets.you';
   }
 
   async send(): Promise<void> {
