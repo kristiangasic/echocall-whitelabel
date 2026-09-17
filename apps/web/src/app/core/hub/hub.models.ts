@@ -79,20 +79,16 @@ export type AddonPackage = Schemas['AddonPackage'];
 
 /** The JSON body of the 200 answer of a GET path. */
 type GetBody<P extends keyof paths> = paths[P] extends {
-    get: { responses: { 200: { content: { 'application/json': infer B } } } };
+  get: { responses: { 200: { content: { 'application/json': infer B } } } };
 }
-    ? B
-    : never;
+  ? B
+  : never;
 
 /**
  * One row of a list body, whether the endpoint answers with a bare array, a
  * `{ data }` envelope or the paged `{ data, pagination }` form.
  */
-type ListItem<B> = B extends readonly (infer I)[]
-    ? I
-    : B extends { data: readonly (infer I)[] }
-      ? I
-      : never;
+type ListItem<B> = B extends readonly (infer I)[] ? I : B extends { data: readonly (infer I)[] } ? I : never;
 
 export type ResellerCustomer = Schemas['ResellerCustomer'];
 export type ResellerStats = Schemas['ResellerStats'];

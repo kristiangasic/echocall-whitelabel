@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from './config/config.module.js';
 import { AccountModule } from './account/account.module.js';
+import { AdminHubProxyModule } from './admin/hub/admin-hub-proxy.module.js';
 import { AdminOverviewModule } from './admin/overview/admin-overview.module.js';
 import { AdminUsersModule } from './admin/users/admin-users.module.js';
 import { AuditModule } from './audit/audit.module.js';
@@ -28,6 +29,7 @@ import { SetupModule } from './setup/setup.module.js';
     SetupModule,
     AdminOverviewModule,
     AdminUsersModule,
+    AdminHubProxyModule,
     AccountModule,
     HubProxyModule,
     EmbedModule,
@@ -37,7 +39,12 @@ import { SetupModule } from './setup/setup.module.js';
       inject: [APP_CONFIG],
       useFactory: (config: AppConfig) =>
         config.webDistDir
-          ? [{ rootPath: config.webDistDir, exclude: ['/api/{*path}', '/embed/{*path}', '/healthz', '/readyz'] }]
+          ? [
+              {
+                rootPath: config.webDistDir,
+                exclude: ['/api/{*path}', '/embed/{*path}', '/healthz', '/readyz'],
+              },
+            ]
           : [],
     }),
   ],

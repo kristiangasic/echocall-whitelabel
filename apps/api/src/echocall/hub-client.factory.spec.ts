@@ -118,6 +118,20 @@ describe('HubClientFactory', () => {
     expect(hub.calls[1].headers.get('content-type')).toBe('application/json');
   });
 
+  it('raw() runs in the operator context when no customer is named', async () => {
+    const hub = createHubFake({ 'GET /resellers/customers': { body: { data: [] } } });
+    const factory = new HubClientFactory(testConfig(), hub.fetch);
+
+    const list = await factory.raw('GET', '/resellers/customers', {
+      query: new URLSearchParams({ page: '2' }),
+    });
+
+    expect(list.status).toBe(200);
+    expect(hub.calls[0].path).toBe('/resellers/customers?page=2');
+    expect(hub.calls[0].headers.get('authorization')).toBe(`Bearer ${TEST_API_KEY}`);
+    expect(hub.calls[0].headers.get('x-echocall-customer')).toBeNull();
+  });
+
   it('raw() rethrows hub error envelopes with the same status and code', async () => {
     const hub = createHubFake({
       'GET /agents': {

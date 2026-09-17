@@ -19,9 +19,10 @@ export interface HubCallResult<T> {
   response: Response;
 }
 
-/** Options for one untyped hub request in a customer's context. */
+/** Options for one untyped hub request. Without a customer it runs as the operator. */
 export interface RawHubOptions {
-  customerId: number;
+  /** The customer to act as. Left out, the call runs in the operator's own context. */
+  customerId?: number;
   query?: URLSearchParams;
   body?: unknown;
   /** 'binary' returns the bytes untouched (invoice PDFs); default parses JSON. */
@@ -84,9 +85,10 @@ export class HubClientFactory {
   }
 
   /**
-   * One untyped hub request in a customer's context, for the allow-listed proxy
-   * and binary downloads. Same error mapping as call(): envelopes keep their
-   * status and code, a hub 401 becomes 503, transport failures 502/504.
+   * One untyped hub request, for the two allow-listed proxies and binary
+   * downloads. With a customerId it acts as that customer, without one it runs
+   * as the operator. Same error mapping as call(): envelopes keep their status
+   * and code, a hub 401 becomes 503, transport failures 502/504.
    */
   async raw(method: string, hubPath: string, opts: RawHubOptions): Promise<RawHubResult> {
     const url = new URL(this.config.echocall.apiUrl.replace(/\/+$/, '') + hubPath);
@@ -97,7 +99,7 @@ export class HubClientFactory {
         method,
         headers: {
           authorization: `Bearer ${this.config.echocall.apiKey}`,
-          'x-echocall-customer': String(opts.customerId),
+          ...(opts.customerId !== undefined ? { 'x-echocall-customer': String(opts.customerId) } : {}),
           ...(opts.body !== undefined ? { 'content-type': 'application/json' } : {}),
           ...opts.headers,
         },

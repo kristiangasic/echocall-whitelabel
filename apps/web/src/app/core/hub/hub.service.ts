@@ -13,15 +13,17 @@ export interface HubPage<T> {
 }
 
 /**
- * Calls the hub through the portal's allow-listed proxy under /api/hub.
+ * Calls the hub through one of the portal's allow-listed proxies.
  * Paths are the documented hub paths, for example get('/agents/3').
  */
-@Injectable({ providedIn: 'root' })
-export class HubService {
-  private readonly api = inject(ApiService);
+export abstract class HubApi {
+  protected readonly api = inject(ApiService);
+
+  /** The portal route the proxy sits on, without the /api prefix. */
+  protected abstract readonly prefix: string;
 
   get<T>(path: string, params?: Params): Observable<T> {
-    return this.api.get<T>('/hub' + path, params);
+    return this.api.get<T>(this.prefix + path, params);
   }
 
   /** Fetches a hub collection and unwraps its { data } envelope. */
@@ -35,14 +37,20 @@ export class HubService {
   }
 
   post<T>(path: string, body: unknown = {}): Observable<T> {
-    return this.api.post<T>('/hub' + path, body);
+    return this.api.post<T>(this.prefix + path, body);
   }
 
   patch<T>(path: string, body: unknown = {}): Observable<T> {
-    return this.api.patch<T>('/hub' + path, body);
+    return this.api.patch<T>(this.prefix + path, body);
   }
 
   delete<T = unknown>(path: string): Observable<T> {
-    return this.api.delete<T>('/hub' + path);
+    return this.api.delete<T>(this.prefix + path);
   }
+}
+
+/** The customer surface: every call runs in the signed-in customer's context. */
+@Injectable({ providedIn: 'root' })
+export class HubService extends HubApi {
+  protected readonly prefix = '/hub';
 }
