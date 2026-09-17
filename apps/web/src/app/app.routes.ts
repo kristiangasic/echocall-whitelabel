@@ -94,6 +94,11 @@ export const routes: Routes = [
               import('./features/user/chatbots/chatbot-edit.page').then((m) => m.ChatbotEditPage),
           },
           {
+            path: 'numbers',
+            loadComponent: () =>
+              import('./features/user/phone-numbers/phone-numbers.page').then((m) => m.PhoneNumbersPage),
+          },
+          {
             path: 'conversations',
             loadComponent: () =>
               import('./features/user/conversations/conversations.page').then((m) => m.ConversationsPage),

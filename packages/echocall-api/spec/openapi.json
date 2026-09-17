@@ -2268,7 +2268,10 @@
             "description": "Archive or unarchive the conversation."
           },
           "assignedAgentId": {
-            "type": "number",
+            "type": [
+              "number",
+              "null"
+            ],
             "description": "Live chat agent to assign, or null to unassign."
           }
         },
@@ -3320,7 +3323,10 @@
             "type": "string"
           },
           "name": {
-            "type": "string"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "role": {
             "type": "string",
@@ -3331,16 +3337,28 @@
             ]
           },
           "avatarUrl": {
-            "type": "string"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "defaultLanguage": {
-            "type": "string"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "resellerId": {
-            "type": "number"
+            "type": [
+              "number",
+              "null"
+            ]
           },
           "ownResellerId": {
-            "type": "number"
+            "type": [
+              "number",
+              "null"
+            ]
           }
         },
         "required": [
@@ -8486,7 +8504,10 @@
                     }
                   },
                   "requirementId": {
-                    "type": "string"
+                    "type": [
+                      "string",
+                      "null"
+                    ]
                   }
                 },
                 "required": [
@@ -8702,7 +8723,7 @@
           "PhoneNumbers"
         ],
         "summary": "Update a phone number",
-        "description": "Changes which agent answers on a number and the label it carries in the dashboard. Only the fields present in the body are written, everything else is left alone. The response is an acknowledgement message only, it does not echo the updated record: read the number back with the GET endpoint if you need the new state. Assigning an agent here does not itself provision the number at the carrier, it only changes the routing recorded for it.",
+        "description": "Changes which agent answers on a number and the label it carries in the dashboard. Only the fields present in the body are written, everything else is left alone; a body with no known field is rejected with 400. The response is an acknowledgement message only, it does not echo the updated record: read the number back with the GET endpoint if you need the new state. Assigning an agent here does not itself provision the number at the carrier, it only changes the routing recorded for it.",
         "parameters": [
           {
             "name": "phoneNumberId",
@@ -8719,17 +8740,17 @@
         ],
         "requestBody": {
           "required": true,
-          "description": "The fields to change. `voiceAgentId` points the number at a voice agent, `chatbotId` at a chatbot, and `label` sets the internal display name.",
+          "description": "The fields to change. `voiceAgentId` points the number at a voice agent, or clears the routing when null, and `label` sets the display name returned as `friendlyName`.",
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "voiceAgentId": {
-                    "type": "number"
-                  },
-                  "chatbotId": {
-                    "type": "number"
+                    "type": [
+                      "number",
+                      "null"
+                    ]
                   },
                   "label": {
                     "type": "string"
@@ -13449,10 +13470,16 @@
                     }
                   },
                   "voiceMinutesPerMonth": {
-                    "type": "number"
+                    "type": [
+                      "number",
+                      "null"
+                    ]
                   },
                   "chatConversationsPerMonth": {
-                    "type": "number"
+                    "type": [
+                      "number",
+                      "null"
+                    ]
                   }
                 },
                 "required": [
@@ -17082,7 +17109,10 @@
                     "type": "string"
                   },
                   "brandLogo": {
-                    "type": "string"
+                    "type": [
+                      "string",
+                      "null"
+                    ]
                   }
                 }
               }
@@ -17942,7 +17972,10 @@
                 "type": "object",
                 "properties": {
                   "logoUrl": {
-                    "type": "string"
+                    "type": [
+                      "string",
+                      "null"
+                    ]
                   }
                 }
               }

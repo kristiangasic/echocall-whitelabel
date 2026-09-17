@@ -4032,7 +4032,7 @@ export interface paths {
         head?: never;
         /**
          * Update a phone number
-         * @description Changes which agent answers on a number and the label it carries in the dashboard. Only the fields present in the body are written, everything else is left alone. The response is an acknowledgement message only, it does not echo the updated record: read the number back with the GET endpoint if you need the new state. Assigning an agent here does not itself provision the number at the carrier, it only changes the routing recorded for it.
+         * @description Changes which agent answers on a number and the label it carries in the dashboard. Only the fields present in the body are written, everything else is left alone; a body with no known field is rejected with 400. The response is an acknowledgement message only, it does not echo the updated record: read the number back with the GET endpoint if you need the new state. Assigning an agent here does not itself provision the number at the carrier, it only changes the routing recorded for it.
          */
         patch: {
             parameters: {
@@ -4047,13 +4047,12 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            /** @description The fields to change. `voiceAgentId` points the number at a voice agent, `chatbotId` at a chatbot, and `label` sets the internal display name. */
+            /** @description The fields to change. `voiceAgentId` points the number at a voice agent, or clears the routing when null, and `label` sets the display name returned as `friendlyName`. */
             requestBody: {
                 content: {
                     "application/json": {
-                        chatbotId?: number;
                         label?: string;
-                        voiceAgentId?: number;
+                        voiceAgentId?: number | null;
                     };
                 };
             };
@@ -4363,7 +4362,7 @@ export interface paths {
                         numberType: "local" | "national" | "mobile" | "tollfree" | "shared_cost" | "uifn";
                         providerMonthlyCost?: number;
                         providerSetupCost?: number;
-                        requirementId?: string;
+                        requirementId?: string | null;
                         setupPrice?: number;
                         skuId: string;
                     };
@@ -5717,7 +5716,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        brandLogo?: string;
+                        brandLogo?: string | null;
                         brandPrimaryColor?: string;
                         companyAddress?: string;
                         companyLegalName?: string;
@@ -7614,14 +7613,14 @@ export interface paths {
                     "application/json": {
                         /** @enum {string} */
                         billingCycle: "monthly" | "yearly" | "one-time";
-                        chatConversationsPerMonth?: number;
+                        chatConversationsPerMonth?: number | null;
                         description?: string;
                         features?: string[];
                         name: string;
                         priceEur: number;
                         /** @enum {string} */
                         type: "voice" | "chat" | "addon";
-                        voiceMinutesPerMonth?: number;
+                        voiceMinutesPerMonth?: number | null;
                     };
                 };
             };
@@ -8052,7 +8051,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        logoUrl?: string;
+                        logoUrl?: string | null;
                     };
                 };
             };
@@ -11662,7 +11661,7 @@ export interface components {
         /** @description Update conversation status or assignment */
         UpdateConversation: {
             /** @description Live chat agent to assign, or null to unassign. */
-            assignedAgentId?: number;
+            assignedAgentId?: number | null;
             /** @description Archive or unarchive the conversation. */
             isArchived?: boolean;
             /**
@@ -11722,13 +11721,13 @@ export interface components {
         };
         /** @description User Profile */
         UserProfileInput: {
-            avatarUrl?: string;
-            defaultLanguage?: string;
+            avatarUrl?: string | null;
+            defaultLanguage?: string | null;
             email: string;
             id: number;
-            name?: string;
-            ownResellerId?: number;
-            resellerId?: number;
+            name?: string | null;
+            ownResellerId?: number | null;
+            resellerId?: number | null;
             /** @enum {string} */
             role: "admin" | "user" | "reseller";
         };

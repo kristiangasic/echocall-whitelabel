@@ -182,6 +182,55 @@
     "saved": "Changes saved.",
     "deleted": "Chatbot deleted."
   },
+  "numbers": {
+    "title": "Phone numbers",
+    "purchase": "Buy a number",
+    "number": "Number",
+    "label": "Label",
+    "agent": "Agent",
+    "agentNone": "Not assigned",
+    "kyc": "Verification",
+    "monthly": "Monthly",
+    "setupPrice": "Setup",
+    "empty": "No phone numbers yet. Buy your first one.",
+    "cancel": "Cancel number",
+    "cancelTitle": "Cancel this number?",
+    "cancelMessage": "{{number}} stays reachable until the 30 day notice period ends and is released afterwards.",
+    "cancelled": "Cancelled. The number stays reachable until {{date}}.",
+    "until": "Cancelled, active until {{date}}",
+    "assigned": "Assignment saved.",
+    "labelSaved": "Label saved.",
+    "purchased": "{{number}} was bought.",
+    "purchasedKyc": "{{number}} was bought. This number still needs proof of identity.",
+    "purchaseTitle": "Buy a phone number",
+    "country": "Country",
+    "numberType": "Type",
+    "areaCode": "Area code (optional)",
+    "search": "Search",
+    "searchEmpty": "No matching numbers found.",
+    "buy": "Buy",
+    "priceHint": "All prices are net of VAT. The setup fee is charged once.",
+    "types": {
+      "local": "Local",
+      "national": "National",
+      "mobile": "Mobile",
+      "tollfree": "Toll free",
+      "shared_cost": "Shared cost",
+      "uifn": "International toll free"
+    },
+    "kycStatuses": {
+      "not_required": "Not needed",
+      "pending": "In review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "kycHints": {
+      "not_required": "This country needs no proof of identity.",
+      "pending": "The submission is being reviewed. This can take a few working days.",
+      "approved": "The submission was approved. The number is cleared for traffic.",
+      "rejected": "The submission was rejected. Please contact support."
+    }
+  },
   "models": {
     "tts": {
       "fastest": "Fastest",

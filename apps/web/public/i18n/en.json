@@ -183,6 +183,12 @@
     "key_not_reseller": "The API key does not belong to a partner account.",
     "no_active_subscription": "The service subscription is not active.",
     "not_checked": "The connection has not been checked yet.",
-    "internal_error": "Internal error."
+    "internal_error": "Internal error.",
+    "marketplace_disabled": "Buying phone numbers is not available at the moment.",
+    "quote_failed": "This number could not be priced any more. Please search again.",
+    "insufficient_balance": "Your balance is not high enough for this.",
+    "provider_error": "The request could not be completed. Please try again.",
+    "database_error": "The change could not be saved. Please try again.",
+    "billing_profile_incomplete": "Please complete your billing details first."
   }
 }

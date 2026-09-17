@@ -182,6 +182,55 @@
     "saved": "Modifications enregistrées.",
     "deleted": "Chatbot supprimé."
   },
+  "numbers": {
+    "title": "Numéros de téléphone",
+    "purchase": "Acheter un numéro",
+    "number": "Numéro",
+    "label": "Libellé",
+    "agent": "Agent",
+    "agentNone": "Non attribué",
+    "kyc": "Vérification",
+    "monthly": "Mensuel",
+    "setupPrice": "Mise en service",
+    "empty": "Aucun numéro pour le moment. Achetez le premier.",
+    "cancel": "Résilier",
+    "cancelTitle": "Résilier ce numéro ?",
+    "cancelMessage": "{{number}} reste joignable jusqu'à la fin du préavis de 30 jours, puis il est libéré.",
+    "cancelled": "Résilié. Le numéro reste joignable jusqu'au {{date}}.",
+    "until": "Résilié, actif jusqu'au {{date}}",
+    "assigned": "Attribution enregistrée.",
+    "labelSaved": "Libellé enregistré.",
+    "purchased": "{{number}} a été acheté.",
+    "purchasedKyc": "{{number}} a été acheté. Ce numéro nécessite encore un justificatif d'identité.",
+    "purchaseTitle": "Acheter un numéro",
+    "country": "Pays",
+    "numberType": "Type",
+    "areaCode": "Indicatif (facultatif)",
+    "search": "Rechercher",
+    "searchEmpty": "Aucun numéro correspondant.",
+    "buy": "Acheter",
+    "priceHint": "Tous les prix sont hors taxes. Les frais de mise en service sont prélevés une seule fois.",
+    "types": {
+      "local": "Local",
+      "national": "National",
+      "mobile": "Mobile",
+      "tollfree": "Numéro vert",
+      "shared_cost": "Coût partagé",
+      "uifn": "Numéro vert international"
+    },
+    "kycStatuses": {
+      "not_required": "Non requis",
+      "pending": "En cours d'examen",
+      "approved": "Validé",
+      "rejected": "Refusé"
+    },
+    "kycHints": {
+      "not_required": "Aucun justificatif n'est requis pour ce pays.",
+      "pending": "Le justificatif est en cours d'examen. Cela peut prendre quelques jours ouvrés.",
+      "approved": "Le justificatif a été validé. Le numéro est activé.",
+      "rejected": "Le justificatif a été refusé. Veuillez contacter le support."
+    }
+  },
   "models": {
     "tts": {
       "fastest": "Très rapide",

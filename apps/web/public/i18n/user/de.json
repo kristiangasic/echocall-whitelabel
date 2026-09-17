@@ -182,6 +182,55 @@
     "saved": "Änderungen gespeichert.",
     "deleted": "Chatbot gelöscht."
   },
+  "numbers": {
+    "title": "Rufnummern",
+    "purchase": "Rufnummer kaufen",
+    "number": "Rufnummer",
+    "label": "Bezeichnung",
+    "agent": "Agent",
+    "agentNone": "Nicht zugewiesen",
+    "kyc": "Nachweis",
+    "monthly": "Monatlich",
+    "setupPrice": "Einrichtung",
+    "empty": "Noch keine Rufnummern. Kaufen Sie die erste.",
+    "cancel": "Kündigen",
+    "cancelTitle": "Rufnummer kündigen?",
+    "cancelMessage": "{{number}} bleibt bis zum Ende der 30-tägigen Frist erreichbar und wird danach freigegeben.",
+    "cancelled": "Gekündigt. Die Nummer ist noch bis zum {{date}} erreichbar.",
+    "until": "Gekündigt bis {{date}}",
+    "assigned": "Zuweisung gespeichert.",
+    "labelSaved": "Bezeichnung gespeichert.",
+    "purchased": "{{number}} wurde gekauft.",
+    "purchasedKyc": "{{number}} wurde gekauft. Für diese Nummer ist noch ein Identitätsnachweis nötig.",
+    "purchaseTitle": "Rufnummer kaufen",
+    "country": "Land",
+    "numberType": "Art",
+    "areaCode": "Vorwahl (optional)",
+    "search": "Suchen",
+    "searchEmpty": "Keine passenden Rufnummern gefunden.",
+    "buy": "Kaufen",
+    "priceHint": "Alle Preise netto zuzüglich Mehrwertsteuer. Die Einrichtungsgebühr wird einmalig abgebucht.",
+    "types": {
+      "local": "Ortsnetz",
+      "national": "National",
+      "mobile": "Mobil",
+      "tollfree": "Gebührenfrei",
+      "shared_cost": "Geteilte Kosten",
+      "uifn": "International gebührenfrei"
+    },
+    "kycStatuses": {
+      "not_required": "Nicht nötig",
+      "pending": "In Prüfung",
+      "approved": "Bestätigt",
+      "rejected": "Abgelehnt"
+    },
+    "kycHints": {
+      "not_required": "Für dieses Land ist kein Nachweis nötig.",
+      "pending": "Der Nachweis wird geprüft. Das kann einige Werktage dauern.",
+      "approved": "Der Nachweis wurde bestätigt. Die Nummer ist freigeschaltet.",
+      "rejected": "Der Nachweis wurde abgelehnt. Bitte wenden Sie sich an den Support."
+    }
+  },
   "models": {
     "tts": {
       "fastest": "Sehr schnell",

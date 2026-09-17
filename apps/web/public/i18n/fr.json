@@ -183,6 +183,12 @@
     "key_not_reseller": "La clé API n'appartient pas à un compte partenaire.",
     "no_active_subscription": "L'abonnement au service n'est pas actif.",
     "not_checked": "La connexion n'a pas encore été vérifiée.",
-    "internal_error": "Erreur interne."
+    "internal_error": "Erreur interne.",
+    "marketplace_disabled": "L'achat de numéros n'est pas disponible pour le moment.",
+    "quote_failed": "Ce numéro n'a pas pu être tarifé. Veuillez relancer la recherche.",
+    "insufficient_balance": "Votre solde est insuffisant.",
+    "provider_error": "L'opération n'a pas pu aboutir. Veuillez réessayer.",
+    "database_error": "La modification n'a pas pu être enregistrée. Veuillez réessayer.",
+    "billing_profile_incomplete": "Veuillez d'abord compléter vos informations de facturation."
   }
 }

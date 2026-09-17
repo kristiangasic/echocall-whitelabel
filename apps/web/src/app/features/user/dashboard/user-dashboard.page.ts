@@ -8,6 +8,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../../core/api/api.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { readApiError } from '../../../core/errors/api-error';
+import { formatMoney } from '../../../core/format/money';
 import { LanguageService } from '../../../core/i18n/language.service';
 import type { AccountOverview } from '../../../core/models';
 import { NotifyService } from '../../../core/notify/notify.service';
@@ -196,9 +197,7 @@ export class UserDashboardPage implements OnInit {
   }
 
   money(value: number): string {
-    return new Intl.NumberFormat(this.language.current(), { style: 'currency', currency: 'EUR' }).format(
-      value,
-    );
+    return formatMoney(value, this.language.current());
   }
 
   /** Translated when the portal knows the status, otherwise the value as the service reports it. */

@@ -183,6 +183,12 @@
     "key_not_reseller": "Der API-Schlüssel gehört nicht zu einem Partnerkonto.",
     "no_active_subscription": "Das Abonnement des Dienstes ist nicht aktiv.",
     "not_checked": "Die Verbindung wurde noch nicht geprüft.",
-    "internal_error": "Interner Fehler."
+    "internal_error": "Interner Fehler.",
+    "marketplace_disabled": "Der Rufnummernkauf ist derzeit nicht verfügbar.",
+    "quote_failed": "Diese Rufnummer konnte nicht mehr bepreist werden. Bitte suchen Sie erneut.",
+    "insufficient_balance": "Ihr Guthaben reicht dafür nicht aus.",
+    "provider_error": "Der Vorgang konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
+    "database_error": "Die Daten konnten nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+    "billing_profile_incomplete": "Bitte vervollständigen Sie zuerst Ihre Rechnungsdaten."
   }
 }
