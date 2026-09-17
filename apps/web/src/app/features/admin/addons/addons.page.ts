@@ -163,7 +163,7 @@ const PURCHASE_LIMIT = 50;
           <ng-container matColumnDef="package">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.addons.purchases.package') }}</th>
             <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.addons.purchases.package')">
-              {{ t('admin.addons.types.' + row.addon.addonType) }}
+              {{ packageName(row) || t('admin.addons.types.' + row.addon.addonType) }}
             </td>
           </ng-container>
           <ng-container matColumnDef="quantity">
@@ -292,6 +292,23 @@ export class AdminAddonsPage implements OnInit {
 
   money(value: string | number | null | undefined): string {
     return formatMoney(value, this.language.current());
+  }
+
+  /**
+   * The name of the plan the sale was made from. The hub keeps it in the
+   * purchase metadata, a JSON string; anything else there is none of our
+   * business, and a sale made outside the portal carries no name at all.
+   */
+  packageName(row: ResellerAddonPurchase): string {
+    const raw = row.addon.metadata;
+    if (!raw) return '';
+    try {
+      const parsed: unknown = JSON.parse(raw);
+      const name = (parsed as { planName?: unknown })?.planName;
+      return typeof name === 'string' ? name : '';
+    } catch {
+      return '';
+    }
   }
 
   /** The name of the buyer, or the address, or the identifier the sale was booked on. */

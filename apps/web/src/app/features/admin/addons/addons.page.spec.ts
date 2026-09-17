@@ -44,6 +44,7 @@ const PURCHASES: ResellerAddonPurchase[] = [
       expiryDate: '2027-09-10T08:00:00.000Z',
       usedAmount: 120,
       createdAt: '2026-09-10T08:00:00.000Z',
+      metadata: '{"planId":81,"planName":"500 Extra-Minuten","soldBy":"reseller","resellerId":72}',
     },
     customer: { id: 501, email: 'lina@example.com', name: 'Lina Mayer' },
   },
@@ -140,6 +141,14 @@ describe('AdminAddonsPage', () => {
     expect(rows[0].textContent).toContain('79,00');
     expect(rows[1].textContent).toContain('502');
     expect(rows[1].textContent).toContain(ADMIN_TEXTS.addons.purchases.statuses.failed);
+  });
+
+  it('names the package that was sold, and falls back to what it contained', async () => {
+    const fixture = await render();
+    const rows = tableOf(fixture, 'purchases-table');
+
+    expect(rows[0].textContent).toContain('500 Extra-Minuten');
+    expect(rows[1].textContent).toContain(ADMIN_TEXTS.addons.types.chat_conversations);
   });
 
   it('counts every sale but takes revenue from the completed ones', async () => {
