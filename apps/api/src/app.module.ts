@@ -10,6 +10,7 @@ import { AdminUsersModule } from './admin/users/admin-users.module.js';
 import { AuditModule } from './audit/audit.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { type AppConfig, APP_CONFIG } from './config/env.js';
+import { cacheControlFor } from './common/static-cache.js';
 import { DbModule } from './db/db.module.js';
 import { EchoCallModule } from './echocall/echocall.module.js';
 import { EmbedModule } from './embed/embed.module.js';
@@ -47,6 +48,9 @@ import { SetupModule } from './setup/setup.module.js';
               {
                 rootPath: config.webDistDir,
                 exclude: ['/api/{*path}', '/embed/{*path}', '/healthz', '/readyz'],
+                serveStaticOptions: {
+                  setHeaders: (res, path) => res.setHeader('Cache-Control', cacheControlFor(path)),
+                },
               },
             ]
           : [],

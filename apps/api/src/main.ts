@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import type { NextFunction, Request, Response } from 'express';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import { JSON_BODY_LIMIT } from './common/http.js';
 import helmet from 'helmet';
@@ -51,6 +52,11 @@ async function bootstrap(): Promise<void> {
   app.use((req: Request, res: Response, next: NextFunction) =>
     req.path.startsWith('/embed/') ? next() : baseline(req, res, next),
   );
+  // The portal is often installed without a reverse proxy in front of it, so it
+  // compresses its own answers: the largest script drops from around 400 KB to a
+  // third of that, which is the difference between a fast and a slow first visit
+  // over a phone connection.
+  app.use(compression());
   app.useBodyParser('json', { limit: JSON_BODY_LIMIT });
   app.use(cookieParser());
   app.setGlobalPrefix('api', { exclude: ['healthz', 'readyz', 'embed/{*path}'] });
