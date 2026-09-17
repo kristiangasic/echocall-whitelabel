@@ -71,28 +71,46 @@ server {
 
 ## Health checks
 
-| Route      | Meaning                                                                                                                                                   |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/healthz` | Liveness: the process accepts requests. Always `200 {"status":"ok"}`.                                                                                     |
-| `/readyz`  | Readiness: `200` when the database answers and the EchoCall connection is healthy; otherwise `503` with `{"status":"degraded","database":...,"hub":...}`. |
+| Route      | Meaning                                                                                                                              |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `/healthz` | Liveness: the process accepts requests. Always `200 {"status":"ok"}`.                                                                |
+| `/readyz`  | Readiness: `200` when the database answers and the EchoCall connection is healthy; otherwise `503` with `{"status":"degraded",...}`. |
 
-`/readyz` tells you _why_ the portal is degraded: `database: false` points at your
-database; `hub.error.code` values like `invalid_api_key` or `no_active_subscription` point
-at the EchoCall subscription or key. The Docker image wires `/healthz` into
-`HEALTHCHECK`.
+Both routes are open, so an orchestrator can use them without a credential. That is why
+`/readyz` says _whether_, not _why_: it reports `database` as a boolean and the EchoCall
+connection as `{ "ok": false, "checkedAt": ... }`, and nothing about the key or the account
+behind it. The reason is one sign-in away, in the admin overview, and in the server log,
+which writes one line with the reason code whenever the connection changes state:
+`invalid_api_key`, `no_active_subscription`, `key_not_reseller` or `upstream_unavailable`.
+[operating.md](operating.md) lists what each of them means.
+
+The Docker image wires `/healthz` into `HEALTHCHECK`. Block both routes at the proxy if
+they should not be reachable from the internet.
 
 ## Updates
 
 ```bash
-git pull
+git fetch --tags
+git checkout v0.1.0          # or: git pull, for the tip of main
 docker compose -f docker/docker-compose.yml up -d --build
 ```
 
-Database migrations run automatically at startup. Read [CHANGELOG.md](../CHANGELOG.md)
-before major upgrades.
+Take a database dump first. Migrations run at startup, before the server listens, and a
+failed migration stops the start instead of leaving half a schema; they are forward-only,
+so the way back from a release is that dump. Read [CHANGELOG.md](../CHANGELOG.md) before
+you upgrade, then check `/readyz` and sign in once afterwards.
 
 ## Backups
 
 Everything the portal owns lives in its database (accounts, settings including your logo,
-audit log) plus your `.env`. Back up both; see [database.md](database.md) for dump
-commands. Usage data is not stored locally - it always comes live from EchoCall.
+audit log) plus your `.env`. Back up both, and keep them apart: the dump is only fully
+readable together with the `APP_SECRET` from that `.env`, which is exactly why the two do
+not belong in one archive.
+
+```bash
+pg_dump --format=custom --file=portal-$(date +%F).dump "$DATABASE_URL"
+```
+
+Restore commands for every supported server are in [database.md](database.md); the day to
+day of running the portal is in [operating.md](operating.md). Usage data is not stored
+locally - it always comes live from EchoCall.

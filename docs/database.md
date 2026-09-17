@@ -26,32 +26,43 @@ usage data stays at EchoCall.
 ## Migrations
 
 Migrations are bundled with the app and run automatically at startup, before the server
-starts listening; a failed migration stops the start. They are forward-only - restore a
-backup to roll back. No manual migration step exists or is needed.
+starts listening; a failed migration stops the start instead of leaving half a schema. They
+are forward-only - restore a backup to roll back. No manual migration step exists or is
+needed, on an installation or on an upgrade.
 
-## Backups
+## Backup and restore
 
 PostgreSQL:
 
 ```bash
 pg_dump --format=custom --file=portal.dump "$DATABASE_URL"
-pg_restore --dbname="$DATABASE_URL" --clean portal.dump
+pg_restore --dbname="$DATABASE_URL" --clean --if-exists portal.dump
 ```
 
 Bundled Compose database:
 
 ```bash
 docker compose -f docker/docker-compose.yml exec db pg_dump -U light --format=custom echocall_light > portal.dump
+docker compose -f docker/docker-compose.yml exec -T db pg_restore -U light --dbname=echocall_light --clean --if-exists < portal.dump
 ```
 
 MariaDB / MySQL:
 
 ```bash
 mariadb-dump --single-transaction echocall_light > portal.sql   # or mysqldump
+mariadb echocall_light < portal.sql                             # or mysql
 ```
 
-Take backups before upgrades; the audit log and your branding (including the uploaded
-logo) live in this database.
+Restore with the portal stopped, then start it: migrations run at startup and bring a dump
+from an older release up to the current schema.
+
+Take a backup before every upgrade; the audit log and your branding (including the uploaded
+logo) live in this database. Two things are worth knowing about a dump. It holds password
+hashes, session hashes and the encrypted SMTP password and second-factor secrets, so it
+belongs in encrypted storage, apart from the `.env` it was taken with. And it is only fully
+readable together with that `APP_SECRET`: restore the database under a different secret and
+the SMTP password and every second factor are lost - the accounts still work, the second
+factor has to be set up again. [operating.md](operating.md) walks through both cases.
 
 ## Test database
 

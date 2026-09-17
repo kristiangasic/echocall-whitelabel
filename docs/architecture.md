@@ -135,6 +135,29 @@ Angular (standalone components, zoneless, signals) with Angular Material and Tra
 the API serves the operator's name, logo and color, and the theme is re-tinted from that
 color - no rebuild needed. Test infrastructure is Vitest with jsdom.
 
+## How it is tested
+
+Three layers, all runnable on a developer machine.
+
+| Layer           | Command                | What it covers                                                                           |
+| --------------- | ---------------------- | ---------------------------------------------------------------------------------------- |
+| Back end        | `npm test -w apps/api` | Every route through supertest against a real database schema the suite creates and drops |
+| Front end       | `npm test -w apps/web` | Components, services, guards and form logic with Vitest and jsdom                        |
+| Browser (smoke) | `npm run e2e`          | The built portal, driven through Chromium on a desktop window and a phone viewport       |
+
+The smoke run lives in `apps/web/e2e`. `harness.mjs` drops and recreates the schema of a
+throwaway PostgreSQL database, starts `hub-stub.mjs` (a stand-in for the EchoCall API that
+answers the calls the two paths make and keeps what it is given in memory), then starts the
+built back end with `ECHOCALL_API_URL` pointing at the stub and `WEB_DIST_DIR` pointing at
+the built front end. A real service is therefore never reached and no API key is needed.
+
+Seeding goes through the portal's own API - the first-run setup creates the administrator,
+the administrator creates a customer, the invitation is accepted - so the fixture cannot
+drift away from what the portal actually does. The stub answers its readiness URL with 200
+only once that is finished, which is what the test runner waits for. Both projects
+(`desktop`, `phone`) run the same paths, because the portal has to work on a phone just as
+well.
+
 ## API client (`packages/echocall-api`)
 
 Generated from the published EchoCall OpenAPI document (`openapi-typescript` +

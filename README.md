@@ -49,7 +49,9 @@ docker compose -f docker/docker-compose.yml up -d
 Open the app (port 3000, put a TLS-terminating reverse proxy in front for production) and
 follow the first-run setup: it checks the connection to EchoCall and creates your admin
 account. See [docs/self-hosting.md](docs/self-hosting.md) for reverse proxy examples,
-updates and backups.
+updates and backups, and [docs/operating.md](docs/operating.md) for everything after that:
+the first hour, what to watch, a rotated API key, a lost second factor, a lost
+administrator password, backup and restore, upgrades.
 
 ## Using an external database
 
@@ -86,6 +88,9 @@ reseller account.
   CSRF header. Passwords are hashed with Argon2id.
 - The reseller API key stays in the server environment; the browser never receives it.
 - Login and token endpoints are rate limited; a strict Content-Security-Policy is set.
+- Every sign-in, refused or not, and every administrative change is written to an audit log.
+- [docs/security-review.md](docs/security-review.md) is the full review: what was checked,
+  which limits the portal knowingly has, and what a self-hoster has to do themselves.
 - See [SECURITY.md](SECURITY.md) for supported versions and how to report vulnerabilities.
 
 ## Layout
@@ -96,7 +101,7 @@ reseller account.
 | `apps/api`              | NestJS back end for the front end; holds the API key and the database |
 | `packages/echocall-api` | Typed client generated from the published OpenAPI document            |
 | `docker/`               | Dockerfile and Compose setup                                          |
-| `docs/`                 | Architecture, configuration, self-hosting and database guides         |
+| `docs/`                 | Architecture, configuration, self-hosting, operating, security        |
 
 ## Development
 
@@ -110,6 +115,7 @@ npm run lint
 npm run typecheck
 npm test           # apps/api needs a local test database, see docs/database.md
 npm run build
+npm run e2e        # browser smoke run against the built portal, see docs/architecture.md
 ```
 
 Architecture notes live in [docs/architecture.md](docs/architecture.md), contribution

@@ -1,17 +1,19 @@
 # Configuration
 
-Every setting is an environment variable, read once at startup. Invalid or missing
-required values stop the server with a clear message. In development you can put them in a
-`.env` file in the repository root; the Docker Compose setup reads `../.env` as well.
+Every setting is an environment variable, read once at startup. A required variable that
+is missing or malformed stops the start with a message naming it; the server never comes up
+half configured. An optional variable that is missing falls back to the default in the
+tables below. In development you can put them in a `.env` file in the repository root; the
+Docker Compose setup reads `../.env` as well.
 
 ## Required
 
-| Variable           | Description                                                                                                                                      |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `APP_URL`          | Public URL people use to reach the portal, e.g. `https://portal.example.com`. Used for links in mails and to decide whether cookies are Secure.  |
-| `APP_SECRET`       | Random string, at least 32 characters. Signs sessions and one-time tokens. Generate with `openssl rand -hex 32`. Changing it signs everyone out. |
-| `DATABASE_URL`     | Connection URL of the portal database. `postgres://`, `postgresql://`, `mysql://` and `mariadb://` are accepted.                                 |
-| `ECHOCALL_API_KEY` | Your EchoCall reseller API key (`eck_live_` followed by 64 hex characters). Keep it secret; it never reaches the browser.                        |
+| Variable           | Description                                                                                                                                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `APP_URL`          | Public URL people use to reach the portal, e.g. `https://portal.example.com`. Used for links in mails and to decide whether cookies are Secure.                                                                     |
+| `APP_SECRET`       | Random string, at least 32 characters. Encrypts the stored SMTP password and every second-factor secret. Generate with `openssl rand -hex 32`. Changing it makes both unreadable; see [operating.md](operating.md). |
+| `DATABASE_URL`     | Connection URL of the portal database. `postgres://`, `postgresql://`, `mysql://` and `mariadb://` are accepted.                                                                                                    |
+| `ECHOCALL_API_KEY` | Your EchoCall reseller API key (`eck_live_` followed by 64 hex characters). Keep it secret; it never reaches the browser.                                                                                           |
 
 ## Optional
 
@@ -53,3 +55,16 @@ shown there as locked.
 | Variable            | Description                                                                                                                                                      |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `TEST_DATABASE_URL` | Database the `apps/api` tests run against (they create and drop their own schemas). Defaults to a local PostgreSQL on port 5433, database `echocall_light_test`. |
+
+## Browser smoke run
+
+`npm run e2e` starts a built portal, a stub of the EchoCall API and a throwaway database,
+then drives the result through a real browser. Every value has a default, so the run needs
+no configuration on a developer machine; the variables exist so a pipeline can hand out its
+own database and ports.
+
+| Variable             | Default                                                            | Description                                                                                                                |
+| -------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| `SMOKE_DATABASE_URL` | `postgres://postgres:postgres@127.0.0.1:5433/echocall_light_smoke` | PostgreSQL only. The run drops and recreates the `public` schema of this database, so never point it at anything you keep. |
+| `SMOKE_PORTAL_PORT`  | `4010`                                                             | Port the portal under test listens on.                                                                                     |
+| `SMOKE_HUB_PORT`     | `4011`                                                             | Port of the API stub. The portal under test gets `ECHOCALL_API_URL` pointing here, so no real service is ever reached.     |

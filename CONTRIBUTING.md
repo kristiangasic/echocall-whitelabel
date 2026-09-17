@@ -10,6 +10,8 @@ Thanks for helping improve EchoCall Light!
 - The `apps/api` tests need a disposable database, by default PostgreSQL on
   `127.0.0.1:5433` with a database `echocall_light_test`; override with
   `TEST_DATABASE_URL`. See [docs/database.md](docs/database.md).
+- The browser smoke run needs the same PostgreSQL server (it uses a second database,
+  `echocall_light_smoke`) and the Playwright browsers: `npx playwright install chromium`.
 
 ## Before you open a pull request
 
@@ -20,7 +22,14 @@ npm run lint
 npm run typecheck
 npm test
 npm run build
+npm run e2e        # needs the build above: it drives the built portal in a browser
 ```
+
+`npm run e2e` starts a built portal, a stub of the EchoCall API and a throwaway database,
+and runs both smoke paths on a desktop window and on a phone. It never reaches the real
+service. The variables that move its database and ports are in
+[docs/configuration.md](docs/configuration.md); how it is put together is in
+[docs/architecture.md](docs/architecture.md).
 
 CI runs the same steps, plus the API test suite against PostgreSQL **and** MariaDB, plus a
 Docker image build. All of them must pass.
@@ -37,7 +46,11 @@ Docker image build. All of them must pass.
 - **Three languages.** Every user-facing string needs `de`, `en` and `fr` entries in the
   Transloco files.
 - **Tests come with the change.** New endpoints get supertest specs; new front-end logic
-  gets Vitest specs.
+  gets Vitest specs. A change to a path the smoke run walks (first-run setup, sign-in,
+  inviting a customer, the workspace, support requests) gets checked with `npm run e2e`
+  before the pull request.
+- **Mobile is not an afterthought.** Every page has to work at phone width; the smoke run
+  drives the same paths on a phone viewport for that reason.
 
 ## Commit style
 
