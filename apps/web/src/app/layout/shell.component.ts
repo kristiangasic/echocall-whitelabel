@@ -32,6 +32,15 @@ const ADMIN_NAV: NavItem[] = [
 
 const USER_NAV: NavItem[] = [
   { path: '/app', icon: 'dashboard', label: 'nav.overview', exact: true },
+  { path: '/app/agents', icon: 'support_agent', label: 'nav.agents', exact: false },
+  { path: '/app/chatbots', icon: 'forum', label: 'nav.chatbots', exact: false },
+  { path: '/app/numbers', icon: 'call', label: 'nav.numbers', exact: false },
+  { path: '/app/conversations', icon: 'chat', label: 'nav.conversations', exact: false },
+  { path: '/app/analytics', icon: 'insights', label: 'nav.analytics', exact: false },
+  { path: '/app/integrations', icon: 'extension', label: 'nav.integrations', exact: false },
+  { path: '/app/webhooks', icon: 'webhook', label: 'nav.webhooks', exact: false },
+  { path: '/app/campaigns', icon: 'campaign', label: 'nav.campaigns', exact: false },
+  { path: '/app/tickets', icon: 'support', label: 'nav.tickets', exact: false },
   { path: '/account', icon: 'manage_accounts', label: 'nav.account', exact: false },
 ];
 

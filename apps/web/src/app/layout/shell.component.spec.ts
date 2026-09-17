@@ -62,9 +62,22 @@ describe('ShellComponent', () => {
     expect(fixture.nativeElement.textContent).toContain(TEXTS.nav.users);
   });
 
-  it('offers customers only their own pages', async () => {
+  it('offers customers the full workspace navigation', async () => {
     const fixture = await render(CUSTOMER);
-    expect(navLinks(fixture)).toEqual(['/app', '/account']);
+    expect(navLinks(fixture)).toEqual([
+      '/app',
+      '/app/agents',
+      '/app/chatbots',
+      '/app/numbers',
+      '/app/conversations',
+      '/app/analytics',
+      '/app/integrations',
+      '/app/webhooks',
+      '/app/campaigns',
+      '/app/tickets',
+      '/account',
+    ]);
+    expect(fixture.nativeElement.textContent).toContain(TEXTS.nav.agents);
   });
 
   it('shows the operator brand and never the service brand', async () => {
