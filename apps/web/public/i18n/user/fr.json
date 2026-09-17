@@ -30,6 +30,12 @@
       "active": "Actif",
       "trial": "Période d'essai",
       "suspended": "Suspendu"
+    },
+    "recent": {
+      "title": "Conversations récentes",
+      "hint": "Les cinq appels les plus récents.",
+      "empty": "Aucune conversation pour le moment.",
+      "all": "Toutes les conversations"
     }
   },
   "agents": {
@@ -278,6 +284,29 @@
     "close": "Clôturer la conversation",
     "closed": "Conversation clôturée.",
     "empty": "Aucune conversation pour l’instant."
+  },
+  "analytics": {
+    "title": "Analyses",
+    "window": "Période",
+    "lastDays": "{{count}} derniers jours",
+    "charged": "{{amount}} facturés",
+    "noUsage": "Aucune consommation sur cette période.",
+    "perDay": "Appels par jour",
+    "day": "Jour",
+    "calls": "Appels",
+    "successRate": "Taux de réussite",
+    "averageDuration": "Durée moyenne",
+    "noCalls": "Aucun appel sur cette période.",
+    "breakdown": "Par agent ou chatbot",
+    "noSelection": "Aucune sélection",
+    "noActivity": "Aucun chiffre disponible pour cette sélection.",
+    "total": "Conversations au total",
+    "successful": "Réussies",
+    "failed": "Échouées",
+    "usage": {
+      "voice_minute": "Minutes d'appel",
+      "chat_session": "Conversations de chat"
+    }
   },
   "inbox": {
     "title": "Boîte de réception",

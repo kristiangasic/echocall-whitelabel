@@ -30,6 +30,12 @@
       "active": "Active",
       "trial": "Trial",
       "suspended": "Suspended"
+    },
+    "recent": {
+      "title": "Recent conversations",
+      "hint": "The five most recent calls.",
+      "empty": "No conversations yet.",
+      "all": "All conversations"
     }
   },
   "agents": {
@@ -278,6 +284,29 @@
     "close": "Close the conversation",
     "closed": "Conversation closed.",
     "empty": "No conversations yet."
+  },
+  "analytics": {
+    "title": "Analytics",
+    "window": "Period",
+    "lastDays": "Last {{count}} days",
+    "charged": "{{amount}} charged",
+    "noUsage": "Nothing was used in this period.",
+    "perDay": "Calls per day",
+    "day": "Day",
+    "calls": "Calls",
+    "successRate": "Success rate",
+    "averageDuration": "Average length",
+    "noCalls": "No calls in this period.",
+    "breakdown": "By agent or chatbot",
+    "noSelection": "Nothing selected",
+    "noActivity": "There are no figures for this selection yet.",
+    "total": "Conversations in total",
+    "successful": "Successful",
+    "failed": "Failed",
+    "usage": {
+      "voice_minute": "Call minutes",
+      "chat_session": "Chat conversations"
+    }
   },
   "inbox": {
     "title": "Inbox",

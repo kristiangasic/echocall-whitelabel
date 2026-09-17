@@ -12,6 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { formatMoney } from '../../../core/format/money';
+import { agentNumber } from '../../../core/hub/agent-id';
 import { HubService } from '../../../core/hub/hub.service';
 import type { AgentSummary, PhoneNumber } from '../../../core/hub/hub.models';
 import { LanguageService } from '../../../core/i18n/language.service';
@@ -177,6 +178,8 @@ export class PhoneNumbersPage implements OnInit {
   readonly agents = signal<AgentSummary[]>([]);
   readonly loading = signal(false);
   readonly columns = ['number', 'label', 'agent', 'kyc', 'monthly', 'actions'];
+  /** Used by the template to match an agent to the id stored on the number. */
+  readonly agentNumber = agentNumber;
 
   ngOnInit(): void {
     void this.load();
@@ -184,11 +187,6 @@ export class PhoneNumbersPage implements OnInit {
 
   money(value: string | null | undefined): string {
     return formatMoney(value, this.language.current());
-  }
-
-  /** Agent ids read `agent_<number>`; the number record stores the bare number. */
-  agentNumber(id: string): number {
-    return Number(id.replace('agent_', ''));
   }
 
   /** Numbers from countries without a registry requirement come back without a state. */

@@ -30,6 +30,12 @@
       "active": "Aktiv",
       "trial": "Testphase",
       "suspended": "Gesperrt"
+    },
+    "recent": {
+      "title": "Letzte Gespräche",
+      "hint": "Die fünf jüngsten Telefonate.",
+      "empty": "Noch keine Gespräche.",
+      "all": "Alle Gespräche"
     }
   },
   "agents": {
@@ -278,6 +284,29 @@
     "close": "Gespräch abschließen",
     "closed": "Gespräch abgeschlossen.",
     "empty": "Noch keine Gespräche."
+  },
+  "analytics": {
+    "title": "Analysen",
+    "window": "Zeitraum",
+    "lastDays": "Letzte {{count}} Tage",
+    "charged": "{{amount}} berechnet",
+    "noUsage": "In diesem Zeitraum wurde nichts verbraucht.",
+    "perDay": "Anrufe pro Tag",
+    "day": "Tag",
+    "calls": "Anrufe",
+    "successRate": "Erfolgsquote",
+    "averageDuration": "Durchschnittsdauer",
+    "noCalls": "Keine Anrufe in diesem Zeitraum.",
+    "breakdown": "Nach Agent oder Chatbot",
+    "noSelection": "Keine Auswahl",
+    "noActivity": "Für diese Auswahl liegen noch keine Zahlen vor.",
+    "total": "Gespräche gesamt",
+    "successful": "Erfolgreich",
+    "failed": "Fehlgeschlagen",
+    "usage": {
+      "voice_minute": "Telefonminuten",
+      "chat_session": "Chat-Unterhaltungen"
+    }
   },
   "inbox": {
     "title": "Posteingang",

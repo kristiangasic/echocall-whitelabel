@@ -2,17 +2,22 @@ import { Component, computed, inject, type OnInit, signal } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { provideTranslocoScope, TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { RouterLink } from '@angular/router';
 import { ApiService } from '../../../core/api/api.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { readApiError } from '../../../core/errors/api-error';
 import { formatMoney } from '../../../core/format/money';
+import type { Conversation } from '../../../core/hub/hub.models';
+import { HubService } from '../../../core/hub/hub.service';
 import { LanguageService } from '../../../core/i18n/language.service';
 import type { AccountOverview } from '../../../core/models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
+import { conversationTitle } from '../conversations/conversation.model';
 
 @Component({
   selector: 'app-user-dashboard-page',
@@ -20,7 +25,9 @@ import { LocalDatePipe } from '../../../shared/local-date.pipe';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
+    MatListModule,
     MatProgressBarModule,
+    RouterLink,
     TranslocoDirective,
     LocalDatePipe,
   ],
@@ -129,6 +136,29 @@ import { LocalDatePipe } from '../../../shared/local-date.pipe';
             </mat-card-content>
           </mat-card>
         </div>
+
+        <mat-card appearance="outlined" class="recent">
+          <mat-card-header>
+            <mat-card-title>{{ t('user.dashboard.recent.title') }}</mat-card-title>
+            <mat-card-subtitle>{{ t('user.dashboard.recent.hint') }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <mat-nav-list data-testid="recent-conversations">
+              @for (conversation of recent(); track conversation.id) {
+                <a mat-list-item [routerLink]="['/app/conversations', conversation.id]">
+                  <span matListItemTitle>{{ title(conversation) }}</span>
+                  <span matListItemLine>{{ conversation.createdAt | localDate: 'short' }}</span>
+                </a>
+              } @empty {
+                <p class="hint">{{ t('user.dashboard.recent.empty') }}</p>
+              }
+            </mat-nav-list>
+          </mat-card-content>
+          <mat-card-actions>
+            <a mat-button routerLink="/app/conversations">{{ t('user.dashboard.recent.all') }}</a>
+            <a mat-button routerLink="/app/inbox">{{ t('user.conversations.openInbox') }}</a>
+          </mat-card-actions>
+        </mat-card>
       }
     </ng-container>
   `,
@@ -168,6 +198,12 @@ import { LocalDatePipe } from '../../../shared/local-date.pipe';
     .notice mat-icon {
       color: var(--mat-sys-on-surface-variant);
     }
+    .recent {
+      margin-top: 24px;
+    }
+    .recent .hint {
+      padding: 8px 16px;
+    }
   `,
 })
 export class UserDashboardPage implements OnInit {
@@ -177,7 +213,10 @@ export class UserDashboardPage implements OnInit {
   private readonly transloco = inject(TranslocoService);
   readonly notify = inject(NotifyService);
 
+  private readonly hub = inject(HubService);
+
   readonly overview = signal<AccountOverview | null>(null);
+  readonly recent = signal<Conversation[]>([]);
   readonly loading = signal(false);
   readonly notLinked = signal(false);
   readonly errorCode = signal<string | null>(null);
@@ -200,6 +239,10 @@ export class UserDashboardPage implements OnInit {
     return formatMoney(value, this.language.current());
   }
 
+  title(conversation: Conversation): string {
+    return conversationTitle(conversation);
+  }
+
   /** Translated when the portal knows the status, otherwise the value as the service reports it. */
   statusLabel(status: string | null): string {
     if (!status) return '';
@@ -218,8 +261,22 @@ export class UserDashboardPage implements OnInit {
       const error = readApiError(err);
       if (error.code === 'customer_not_linked') this.notLinked.set(true);
       else this.errorCode.set(error.code);
-    } finally {
       this.loading.set(false);
+      return;
+    }
+    await this.loadRecent();
+    this.loading.set(false);
+  }
+
+  /** A side panel, not the point of the page: a failure here leaves the tiles standing. */
+  private async loadRecent(): Promise<void> {
+    try {
+      const result = await firstValueFrom(
+        this.hub.page<Conversation>('/conversations', { perPage: 5 }),
+      );
+      this.recent.set(result.data);
+    } catch {
+      this.recent.set([]);
     }
   }
 }

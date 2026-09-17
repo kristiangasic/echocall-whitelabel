@@ -111,6 +111,11 @@ export const routes: Routes = [
               ),
           },
           {
+            path: 'analytics',
+            loadComponent: () =>
+              import('./features/user/analytics/analytics.page').then((m) => m.AnalyticsPage),
+          },
+          {
             path: 'inbox',
             loadComponent: () =>
               import('./features/user/conversations/live-inbox.page').then((m) => m.LiveInboxPage),
