@@ -372,6 +372,84 @@
       "submit": "Rechnung anlegen"
     }
   },
+  "numbers": {
+    "title": "Rufnummern",
+    "intro": "Der Nummernbestand Ihres Portals. Freie Nummern teilen Sie einem Kunden zu, vergebene holen Sie zurück.",
+    "import": "Nummer importieren",
+    "tabs": {
+      "available": "Im Bestand",
+      "assigned": "Vergeben"
+    },
+    "number": "Nummer",
+    "label": "Bezeichnung",
+    "country": "Land",
+    "type": "Art",
+    "price": "Monatlich",
+    "direction": "Richtung",
+    "inbound": "Eingehend",
+    "outbound": "Ausgehend",
+    "customer": "Kunde",
+    "since": "Zugeteilt am",
+    "empty": "Es liegt keine freie Nummer im Bestand.",
+    "emptyAssigned": "Derzeit ist keine Nummer vergeben.",
+    "customerGone": "Kundenkonto gelöscht",
+    "assign": "Kunden zuteilen",
+    "assigned": "Nummer {{number}} wurde zugeteilt.",
+    "release": "Zurückholen",
+    "releaseTitle": "Nummer zurückholen",
+    "releaseMessage": "Die Nummer {{number}} wird dem Kunden entzogen und geht zurück in den Bestand. Anrufe darauf erreichen den Kunden danach nicht mehr.",
+    "released": "Die Nummer liegt wieder im Bestand.",
+    "imported": "Die Nummer {{number}} wurde übernommen.",
+    "assignDialog": {
+      "title": "Nummer zuteilen",
+      "intro": "Die Nummer {{number}} geht an diesen Kunden. Er kann sie danach selbst einem Agenten zuweisen.",
+      "customer": "Kunde",
+      "submit": "Zuteilen"
+    },
+    "importDialog": {
+      "title": "Eigene Nummer übernehmen",
+      "intro": "Übernehmen Sie eine Nummer, die Sie bereits bei Ihrem Anbieter halten. Die Zugangsdaten werden weitergereicht und nie zurückgelesen.",
+      "number": "Rufnummer",
+      "numberHint": "In internationaler Schreibweise, zum Beispiel +4930123456",
+      "label": "Bezeichnung",
+      "directions": "Richtung",
+      "inbound": "Kann Anrufe annehmen",
+      "outbound": "Kann Anrufe auslösen",
+      "provider": "Anbindung",
+      "providers": {
+        "sip_trunk": "SIP-Trunk",
+        "twilio": "Twilio-Konto"
+      },
+      "sip": {
+        "title": "SIP-Trunk",
+        "address": "Adresse ausgehend",
+        "addressHint": "Host oder IP Ihres Trunks, zum Beispiel sip.beispiel.de",
+        "transport": "Transport",
+        "encryption": "Medienverschlüsselung",
+        "encryptions": {
+          "disabled": "Aus",
+          "allowed": "Erlaubt",
+          "required": "Erforderlich"
+        },
+        "outboundUser": "Benutzer ausgehend",
+        "outboundPassword": "Kennwort ausgehend",
+        "inboundUser": "Benutzer eingehend",
+        "inboundPassword": "Kennwort eingehend",
+        "allowedAddresses": "Erlaubte Absenderadressen",
+        "allowedAddressesHint": "Mehrere durch Komma trennen. Leer lassen, wenn Ihr Anbieter das nicht verlangt."
+      },
+      "carrier": {
+        "title": "Konto beim Anbieter",
+        "sid": "Konto-Kennung",
+        "token": "Konto-Token",
+        "apiKeySid": "API-Schlüssel-Kennung",
+        "apiKeySecret": "API-Schlüssel-Geheimnis",
+        "optional": "Optional. Ohne diese Angaben wird das Konto-Token verwendet."
+      },
+      "secretHint": "Zugangsdaten werden nur an die Telefonie weitergereicht und danach nicht mehr angezeigt.",
+      "submit": "Nummer übernehmen"
+    }
+  },
   "users": {
     "title": "Benutzer",
     "invite": "Einladen",

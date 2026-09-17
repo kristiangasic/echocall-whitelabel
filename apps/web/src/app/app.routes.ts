@@ -86,6 +86,11 @@ export const routes: Routes = [
               import('./features/admin/invoices/invoice-detail.page').then((m) => m.AdminInvoiceDetailPage),
           },
           {
+            path: 'numbers',
+            loadComponent: () =>
+              import('./features/admin/numbers/admin-numbers.page').then((m) => m.AdminNumbersPage),
+          },
+          {
             path: 'users',
             loadComponent: () =>
               import('./features/admin/users/admin-users.page').then((m) => m.AdminUsersPage),

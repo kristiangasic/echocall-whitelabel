@@ -372,6 +372,84 @@
       "submit": "Create the invoice"
     }
   },
+  "numbers": {
+    "title": "Phone numbers",
+    "intro": "The number pool of your portal. Hand a free number to a customer, or take an assigned one back.",
+    "import": "Import a number",
+    "tabs": {
+      "available": "In the pool",
+      "assigned": "Assigned"
+    },
+    "number": "Number",
+    "label": "Label",
+    "country": "Country",
+    "type": "Kind",
+    "price": "Monthly",
+    "direction": "Direction",
+    "inbound": "Inbound",
+    "outbound": "Outbound",
+    "customer": "Customer",
+    "since": "Assigned on",
+    "empty": "There is no free number in the pool.",
+    "emptyAssigned": "No number is assigned at the moment.",
+    "customerGone": "Customer account deleted",
+    "assign": "Hand to a customer",
+    "assigned": "Number {{number}} was assigned.",
+    "release": "Take back",
+    "releaseTitle": "Take the number back",
+    "releaseMessage": "Number {{number}} is taken from the customer and returns to the pool. Calls to it no longer reach them afterwards.",
+    "released": "The number is back in the pool.",
+    "imported": "Number {{number}} was imported.",
+    "assignDialog": {
+      "title": "Assign the number",
+      "intro": "Number {{number}} goes to this customer. They can then point one of their agents at it.",
+      "customer": "Customer",
+      "submit": "Assign"
+    },
+    "importDialog": {
+      "title": "Import a number of your own",
+      "intro": "Bring over a number you already hold with your carrier. The credentials are passed on and never read back.",
+      "number": "Phone number",
+      "numberHint": "In international form, for example +4930123456",
+      "label": "Label",
+      "directions": "Direction",
+      "inbound": "Can take calls",
+      "outbound": "Can place calls",
+      "provider": "Connection",
+      "providers": {
+        "sip_trunk": "SIP trunk",
+        "twilio": "Twilio account"
+      },
+      "sip": {
+        "title": "SIP trunk",
+        "address": "Outbound address",
+        "addressHint": "Host or IP of your trunk, for example sip.example.com",
+        "transport": "Transport",
+        "encryption": "Media encryption",
+        "encryptions": {
+          "disabled": "Off",
+          "allowed": "Allowed",
+          "required": "Required"
+        },
+        "outboundUser": "Outbound user",
+        "outboundPassword": "Outbound password",
+        "inboundUser": "Inbound user",
+        "inboundPassword": "Inbound password",
+        "allowedAddresses": "Allowed sender addresses",
+        "allowedAddressesHint": "Separate several with a comma. Leave empty when your carrier does not ask for it."
+      },
+      "carrier": {
+        "title": "Account with the carrier",
+        "sid": "Account identifier",
+        "token": "Account token",
+        "apiKeySid": "API key identifier",
+        "apiKeySecret": "API key secret",
+        "optional": "Optional. Without them the account token is used."
+      },
+      "secretHint": "Credentials are only passed on to telephony and are not shown again afterwards.",
+      "submit": "Import the number"
+    }
+  },
   "users": {
     "title": "Users",
     "invite": "Invite",

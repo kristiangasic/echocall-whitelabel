@@ -372,6 +372,84 @@
       "submit": "Créer la facture"
     }
   },
+  "numbers": {
+    "title": "Numéros",
+    "intro": "Le parc de numéros de votre portail. Attribuez un numéro libre à un client, ou reprenez celui qui est attribué.",
+    "import": "Importer un numéro",
+    "tabs": {
+      "available": "Dans le parc",
+      "assigned": "Attribués"
+    },
+    "number": "Numéro",
+    "label": "Libellé",
+    "country": "Pays",
+    "type": "Type",
+    "price": "Mensuel",
+    "direction": "Sens",
+    "inbound": "Entrant",
+    "outbound": "Sortant",
+    "customer": "Client",
+    "since": "Attribué le",
+    "empty": "Aucun numéro libre dans le parc.",
+    "emptyAssigned": "Aucun numéro n'est attribué pour le moment.",
+    "customerGone": "Compte client supprimé",
+    "assign": "Attribuer à un client",
+    "assigned": "Le numéro {{number}} a été attribué.",
+    "release": "Reprendre",
+    "releaseTitle": "Reprendre le numéro",
+    "releaseMessage": "Le numéro {{number}} est retiré au client et retourne dans le parc. Les appels vers ce numéro ne le joindront plus.",
+    "released": "Le numéro est de retour dans le parc.",
+    "imported": "Le numéro {{number}} a été repris.",
+    "assignDialog": {
+      "title": "Attribuer le numéro",
+      "intro": "Le numéro {{number}} va à ce client. Il pourra ensuite y affecter un de ses agents.",
+      "customer": "Client",
+      "submit": "Attribuer"
+    },
+    "importDialog": {
+      "title": "Reprendre un numéro à vous",
+      "intro": "Reprenez un numéro que vous détenez déjà chez votre opérateur. Les identifiants sont transmis et jamais relus.",
+      "number": "Numéro de téléphone",
+      "numberHint": "En forme internationale, par exemple +4930123456",
+      "label": "Libellé",
+      "directions": "Sens",
+      "inbound": "Peut recevoir des appels",
+      "outbound": "Peut émettre des appels",
+      "provider": "Raccordement",
+      "providers": {
+        "sip_trunk": "Trunk SIP",
+        "twilio": "Compte Twilio"
+      },
+      "sip": {
+        "title": "Trunk SIP",
+        "address": "Adresse sortante",
+        "addressHint": "Hôte ou IP de votre trunk, par exemple sip.exemple.fr",
+        "transport": "Transport",
+        "encryption": "Chiffrement des médias",
+        "encryptions": {
+          "disabled": "Désactivé",
+          "allowed": "Autorisé",
+          "required": "Obligatoire"
+        },
+        "outboundUser": "Utilisateur sortant",
+        "outboundPassword": "Mot de passe sortant",
+        "inboundUser": "Utilisateur entrant",
+        "inboundPassword": "Mot de passe entrant",
+        "allowedAddresses": "Adresses émettrices autorisées",
+        "allowedAddressesHint": "Séparez-les par des virgules. Laissez vide si votre opérateur ne le demande pas."
+      },
+      "carrier": {
+        "title": "Compte chez l'opérateur",
+        "sid": "Identifiant du compte",
+        "token": "Jeton du compte",
+        "apiKeySid": "Identifiant de la clé API",
+        "apiKeySecret": "Secret de la clé API",
+        "optional": "Facultatif. Sans eux, le jeton du compte est utilisé."
+      },
+      "secretHint": "Les identifiants ne sont transmis qu'à la téléphonie et ne sont plus affichés ensuite.",
+      "submit": "Reprendre le numéro"
+    }
+  },
   "users": {
     "title": "Utilisateurs",
     "invite": "Inviter",
