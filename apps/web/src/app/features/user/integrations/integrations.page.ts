@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
+import { provideTranslocoScope, TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { HubService } from '../../../core/hub/hub.service';
 import type { IntegrationSummary, IntegrationType } from '../../../core/hub/hub.models';
@@ -146,7 +146,7 @@ interface TestResult {
             <mat-card-content>
               <strong>{{ entry.name }}</strong>
               @if (entry.category) {
-                <span class="sub">{{ entry.category }}</span>
+                <span class="sub">{{ categoryLabel(entry.category) }}</span>
               }
               <p class="description">{{ entry.description }}</p>
             </mat-card-content>
@@ -202,6 +202,7 @@ export class IntegrationsPage implements OnInit {
   private readonly hub = inject(HubService);
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotifyService);
+  private readonly transloco = inject(TranslocoService);
 
   readonly integrations = signal<IntegrationSummary[]>([]);
   readonly catalog = signal<IntegrationType[]>([]);
@@ -215,6 +216,17 @@ export class IntegrationsPage implements OnInit {
 
   ngOnInit(): void {
     void this.load();
+  }
+
+  /**
+   * Names a catalog category in the reader's language, falling back to the
+   * word the service sent when it offers a category the portal has no name
+   * for yet: a raw word reads better than an empty slot or a key.
+   */
+  categoryLabel(category: string): string {
+    const key = `user.integrations.categories.${category}`;
+    const label = this.transloco.translate(key);
+    return label === key ? category : label;
   }
 
   /** The catalog name of a type, or the raw value when the catalog does not list it. */

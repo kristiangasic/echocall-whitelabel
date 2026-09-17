@@ -351,6 +351,18 @@
       "recommended": "Recommended actions",
       "custom": "Custom selection",
       "none": "No actions allowed"
+    },
+    "categories": {
+      "automation": "Automation",
+      "calendar": "Calendar",
+      "communication": "Communication",
+      "crm": "Customer management",
+      "custom": "Custom",
+      "ecommerce": "E-commerce",
+      "notifications": "Notifications",
+      "other": "Other",
+      "scheduling": "Scheduling",
+      "ticketing": "Support"
     }
   },
   "webhooks": {

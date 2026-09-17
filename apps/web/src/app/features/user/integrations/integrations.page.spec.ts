@@ -85,6 +85,28 @@ describe('IntegrationsPage', () => {
     expect(card.textContent).toContain('Termine buchen und absagen.');
   });
 
+  it('names the catalog category in the reader language', async () => {
+    const fixture = await render();
+
+    const card = fixture.nativeElement.querySelector('[data-testid="integrations-catalog"]');
+    expect(card.textContent).toContain(USER_TEXTS.integrations.categories.calendar);
+    expect(card.textContent).not.toContain('calendar');
+  });
+
+  it('shows a category the portal has no name for as the service sent it', async () => {
+    const fixture = TestBed.createComponent(IntegrationsPage);
+    await fixture.whenStable();
+    http.expectOne('/api/hub/integrations').flush([]);
+    http
+      .expectOne('/api/hub/integrations/types')
+      .flush([{ ...TYPE, type: 'somesuch', category: 'telepathy' }]);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await fixture.whenStable();
+
+    const card = fixture.nativeElement.querySelector('[data-testid="integrations-catalog"]');
+    expect(card.textContent).toContain('telepathy');
+  });
+
   it('preselects the service when it is connected from the catalog', async () => {
     const fixture = await render();
 
