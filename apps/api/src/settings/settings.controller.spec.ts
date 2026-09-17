@@ -95,6 +95,27 @@ describe('SettingsController', () => {
     expect((await api().get('/api/admin/audit?limit=0').set('Cookie', admin.cookie)).status).toBe(400);
   });
 
+  it('refuses legal links that are not web addresses', async () => {
+    // A script or inline document behind the imprint link would run on every
+    // page of the portal, so the portal never stores one.
+    for (const url of [
+      'javascript:alert(1)',
+      'data:text/html,<script>alert(1)</script>',
+      'file:///etc/passwd',
+    ]) {
+      const res = await api()
+        .put('/api/admin/settings/branding')
+        .set('Cookie', admin.cookie)
+        .set(XHR)
+        .send({ ...DEFAULT_BRANDING, imprintUrl: url, privacyUrl: url });
+      expect(res.status).toBe(400);
+      expect(res.body.error.details.map((d: { path: string }) => d.path).sort()).toEqual([
+        'imprintUrl',
+        'privacyUrl',
+      ]);
+    }
+  });
+
   it('manages the SMTP settings without ever returning the password', async () => {
     const empty = await api().get('/api/admin/settings/smtp').set('Cookie', admin.cookie);
     expect(empty.body).toEqual({

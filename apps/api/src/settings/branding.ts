@@ -29,6 +29,13 @@ export const DEFAULT_BRANDING: Branding = {
 /** 200 KB of base64 keeps the logo small enough to inline into every page. */
 const LOGO_MAX_CHARS = 200 * 1024;
 
+/**
+ * Legal links are shown to everyone who opens the portal, so they may only be
+ * addresses a browser opens as a page. A script or an inline document behind
+ * one of them would run inside the portal.
+ */
+const legalUrl = z.url({ protocol: /^https?$/, error: 'Link must be an http or https address' }).max(500);
+
 export const brandingSchema = z.object({
   productName: z.string().trim().min(1, 'Product name is required').max(60),
   logoDataUrl: z
@@ -44,8 +51,8 @@ export const brandingSchema = z.object({
     .regex(/^#[0-9a-fA-F]{6}$/, 'Colour must be a six digit hex value')
     .transform((value) => value.toLowerCase()),
   supportEmail: z.string().trim().toLowerCase().pipe(z.email()).nullable(),
-  imprintUrl: z.url().max(500).nullable(),
-  privacyUrl: z.url().max(500).nullable(),
+  imprintUrl: legalUrl.nullable(),
+  privacyUrl: legalUrl.nullable(),
   defaultLanguage: z.enum(LANGUAGES),
 });
 
