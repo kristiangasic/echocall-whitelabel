@@ -136,6 +136,33 @@ describe('AdminPricingPanel', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="unsaved"]')).toBeNull();
   });
 
+  it('applies a suggested price as a price, not as a floating point artefact', async () => {
+    const fixture = await render();
+
+    fixture.componentInstance.apply({
+      ...SUGGESTIONS[2],
+      voiceMinutePrice: 0.27000000000000002,
+      chatSessionPrice: 0.07500000000000001,
+    });
+    fixture.detectChanges();
+
+    expect(input(fixture, 'voice-price').value).toBe('0.27');
+    expect(input(fixture, 'chat-price').value).toBe('0.075');
+  });
+
+  it('rounds a margin the service computed in floating point', async () => {
+    const fixture = await render();
+    const noisy = SUGGESTIONS.map((suggestion, index) =>
+      index === 1 ? { ...suggestion, voiceMarginPercent: 24.999999999999993 } : suggestion,
+    );
+    fixture.componentInstance.suggestions.set(noisy);
+    fixture.detectChanges();
+    const text = fixture.nativeElement.textContent as string;
+
+    expect(text).not.toContain('24.999999999999993');
+    expect(text).toContain('25 %');
+  });
+
   it('refuses to save a price of zero', async () => {
     const fixture = await render();
     fixture.componentInstance.form.controls.voice.setValue(0);

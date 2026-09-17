@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
-import { formatUnitPrice } from '../../../core/format/money';
+import { formatPercent, formatUnitPrice } from '../../../core/format/money';
 import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type {
   ResellerPricing,
@@ -24,6 +24,15 @@ import { FieldErrorPipe } from '../../../shared/forms/field-error.pipe';
  * own wording; a tier it does not know keeps the name the hub gave it.
  */
 const TIERS = new Set(['minimal', 'standard', 'premium', 'enterprise']);
+
+/**
+ * The hub multiplies its base price by a margin, so a suggestion arrives as
+ * 0.07500000000000001. Four decimals are as fine as a unit price ever gets.
+ */
+function toPrice(value: number | null | undefined): number | null {
+  if (value === null || value === undefined || !Number.isFinite(value)) return null;
+  return Math.round(value * 10000) / 10000;
+}
 
 /**
  * What the operator charges its customers for a voice minute and a chat
@@ -121,7 +130,9 @@ const TIERS = new Set(['minimal', 'standard', 'premium', 'enterprise']);
                     {{ price(suggestion.voiceMinutePrice) }} / {{ price(suggestion.chatSessionPrice) }}
                   </p>
                   <p class="suggestion-margin">
-                    {{ t('admin.pricing.marginPercent', { percent: suggestion.voiceMarginPercent ?? 0 }) }}
+                    {{
+                      t('admin.pricing.marginPercent', { percent: percent(suggestion.voiceMarginPercent) })
+                    }}
                   </p>
                   <button
                     mat-stroked-button
@@ -247,6 +258,10 @@ export class AdminPricingPanel implements OnInit {
     return formatUnitPrice(value ?? null, this.language.current());
   }
 
+  percent(value: number | null | undefined): string {
+    return formatPercent(value ?? 0, this.language.current());
+  }
+
   /** The translation key of a tier the portal has words for, otherwise null. */
   tierKey(tier: string): string | null {
     const first = tier.split(/[\s(]/)[0].toLowerCase();
@@ -255,7 +270,10 @@ export class AdminPricingPanel implements OnInit {
 
   /** Fills the form with a suggested tier. Nothing is stored until the operator saves. */
   apply(suggestion: ResellerPricingSuggestion): void {
-    this.form.setValue({ voice: suggestion.voiceMinutePrice, chat: suggestion.chatSessionPrice });
+    this.form.setValue({
+      voice: toPrice(suggestion.voiceMinutePrice),
+      chat: toPrice(suggestion.chatSessionPrice),
+    });
     this.form.markAsDirty();
   }
 

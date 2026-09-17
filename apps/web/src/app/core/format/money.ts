@@ -24,3 +24,15 @@ export function formatUnitPrice(value: number | string | null | undefined, local
     maximumFractionDigits: 4,
   }).format(amount);
 }
+
+/**
+ * Formats a percentage for the given interface language. The hub computes
+ * margins in floating point, so 25 percent can arrive as 24.999999999999993.
+ * At most one decimal is shown, and a trailing zero is dropped.
+ */
+export function formatPercent(value: number | string | null | undefined, locale: string): string {
+  if (value === null || value === undefined || value === '') return '';
+  const amount = typeof value === 'string' ? Number(value) : value;
+  if (!Number.isFinite(amount)) return '';
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(amount);
+}
