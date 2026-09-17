@@ -1,6 +1,7 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, DestroyRef, inject, type OnInit } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -14,7 +15,12 @@ import { AuthStore } from '../core/auth/auth.store';
 import { BrandingService } from '../core/branding/branding.service';
 import { LanguageService } from '../core/i18n/language.service';
 import { LANGUAGES } from '../core/models';
+import { NotificationsStore } from '../core/notifications/notifications.store';
+import { startPolling } from '../core/polling/poll';
 import { FooterLinksComponent } from '../shared/footer-links.component';
+
+/** How often the bell asks the hub for unread notifications. */
+const NOTIFICATION_POLL_MS = 60_000;
 
 interface NavItem {
   path: string;
@@ -51,6 +57,7 @@ const USER_NAV: NavItem[] = [
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
+    MatBadgeModule,
     MatSidenavModule,
     MatToolbarModule,
     MatListModule,
@@ -123,6 +130,40 @@ const USER_NAV: NavItem[] = [
               </button>
             }
           </mat-menu>
+          @if (showBell()) {
+            <button
+              mat-icon-button
+              type="button"
+              [matMenuTriggerFor]="bellMenu"
+              (menuOpened)="refreshNotifications()"
+              [attr.aria-label]="t('nav.notifications')"
+              data-testid="notifications-bell"
+            >
+              <mat-icon
+                [matBadge]="unread()"
+                [matBadgeHidden]="unread() === 0"
+                matBadgeColor="warn"
+                matBadgeSize="small"
+              >
+                notifications
+              </mat-icon>
+            </button>
+            <mat-menu #bellMenu="matMenu" class="bell-menu">
+              @for (item of preview(); track item.id) {
+                <a mat-menu-item routerLink="/app/notifications">
+                  <span class="bell-title">{{ item.title }}</span>
+                </a>
+              } @empty {
+                <span mat-menu-item disabled data-testid="bell-empty">
+                  {{ t('nav.noNotifications') }}
+                </span>
+              }
+              <a mat-menu-item routerLink="/app/notifications" data-testid="bell-all">
+                <mat-icon>list</mat-icon>
+                <span>{{ t('nav.showAllNotifications') }}</span>
+              </a>
+            </mat-menu>
+          }
           <button
             mat-icon-button
             type="button"
@@ -218,6 +259,10 @@ const USER_NAV: NavItem[] = [
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .bell-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     .active {
       --mat-list-list-item-label-text-color: var(--mat-sys-primary);
       --mat-list-list-item-leading-icon-color: var(--mat-sys-primary);
@@ -226,12 +271,16 @@ const USER_NAV: NavItem[] = [
     }
   `,
 })
-export class ShellComponent {
+export class ShellComponent implements OnInit {
   private readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly notifications = inject(NotificationsStore);
   readonly language = inject(LanguageService);
   readonly branding = inject(BrandingService).branding;
   readonly languages = LANGUAGES;
+  readonly unread = this.notifications.unread;
+  readonly preview = this.notifications.preview;
 
   readonly isHandset = toSignal(
     inject(BreakpointObserver)
@@ -241,6 +290,19 @@ export class ShellComponent {
   );
 
   readonly navItems = computed(() => (this.auth.user()?.role === 'admin' ? ADMIN_NAV : USER_NAV));
+
+  /** The bell reads the hub account, which only the workspace side uses. */
+  readonly showBell = computed(() => this.auth.user()?.role !== 'admin');
+
+  ngOnInit(): void {
+    if (!this.showBell()) return;
+    void this.refreshNotifications();
+    startPolling(this.destroyRef, NOTIFICATION_POLL_MS, () => this.notifications.refresh());
+  }
+
+  async refreshNotifications(): Promise<void> {
+    await this.notifications.refresh();
+  }
 
   readonly userLabel = computed(() => {
     const user = this.auth.user();

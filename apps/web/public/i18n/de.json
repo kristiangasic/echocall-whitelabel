@@ -21,7 +21,10 @@
     "logout": "Abmelden",
     "openMenu": "Menü öffnen",
     "language": "Sprache",
-    "accountMenu": "Kontomenü"
+    "accountMenu": "Kontomenü",
+    "notifications": "Benachrichtigungen",
+    "noNotifications": "Keine neuen Benachrichtigungen",
+    "showAllNotifications": "Alle anzeigen"
   },
   "languages": {
     "de": "Deutsch",

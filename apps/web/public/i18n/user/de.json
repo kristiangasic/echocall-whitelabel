@@ -384,5 +384,105 @@
     "selectHint": "Wählen Sie links einen Chat aus.",
     "noMessages": "Noch keine Nachrichten.",
     "reply": "Antwort"
+  },
+  "campaigns": {
+    "title": "Kampagnen",
+    "hint": "Rufen Sie viele Kontakte automatisch mit einem Sprachagenten an.",
+    "create": "Kampagne anlegen",
+    "createTitle": "Neue Kampagne",
+    "name": "Name",
+    "agent": "Sprachagent",
+    "noAgents": "Legen Sie zuerst einen Sprachagenten an.",
+    "recipients": "Empfänger",
+    "recipientsHint": "Eine Rufnummer pro Zeile, optional gefolgt von Komma und Name.",
+    "recipientCount": "{{count}} Empfänger erkannt",
+    "noRecipients": "Noch keine Empfänger vorhanden.",
+    "phoneNumber": "Rufnummer",
+    "duration": "Dauer",
+    "calledAt": "Angerufen am",
+    "progress": "Fortschritt",
+    "created": "Angelegt",
+    "successful": "Erfolgreich",
+    "failed": "Fehlgeschlagen",
+    "pending": "Ausstehend",
+    "submit": "Kampagne starten",
+    "submitted": "Kampagne wurde gestartet.",
+    "cancel": "Kampagne stoppen",
+    "cancelTitle": "Kampagne stoppen?",
+    "cancelMessage": "Noch nicht begonnene Anrufe werden nicht mehr ausgeführt.",
+    "cancelled": "Kampagne wurde gestoppt.",
+    "deleteTitle": "Kampagne löschen?",
+    "deleteMessage": "Die Kampagne \"{{name}}\" und ihre Ergebnisse werden gelöscht.",
+    "empty": "Noch keine Kampagnen angelegt.",
+    "filters": {
+      "all": "Alle",
+      "draft": "Entwürfe",
+      "running": "Laufend",
+      "completed": "Abgeschlossen"
+    },
+    "statuses": {
+      "draft": "Entwurf",
+      "pending": "Wartet",
+      "scheduled": "Geplant",
+      "running": "Läuft",
+      "completed": "Abgeschlossen",
+      "cancelled": "Gestoppt",
+      "failed": "Fehlgeschlagen"
+    },
+    "callStatuses": {
+      "pending": "Ausstehend",
+      "calling": "Wird angerufen",
+      "completed": "Erreicht",
+      "failed": "Nicht erreicht",
+      "cancelled": "Abgebrochen"
+    }
+  },
+  "tickets": {
+    "title": "Support",
+    "hint": "Stellen Sie Ihre Fragen direkt an unser Team.",
+    "create": "Anfrage stellen",
+    "createTitle": "Neue Anfrage",
+    "subject": "Betreff",
+    "description": "Beschreibung",
+    "category": "Kategorie",
+    "priority": "Priorität",
+    "updated": "Zuletzt aktualisiert",
+    "opened": "Erstellt",
+    "support": "Support",
+    "reply": "Ihre Antwort",
+    "noMessages": "Noch keine Nachrichten in dieser Anfrage.",
+    "closedHint": "Diese Anfrage ist abgeschlossen. Stellen Sie bei Bedarf eine neue.",
+    "empty": "Noch keine Anfragen gestellt.",
+    "filters": {
+      "all": "Alle",
+      "open": "Offen",
+      "resolved": "Gelöst"
+    },
+    "statuses": {
+      "open": "Offen",
+      "in_progress": "In Bearbeitung",
+      "waiting": "Wartet auf Sie",
+      "resolved": "Gelöst",
+      "closed": "Geschlossen"
+    },
+    "categories": {
+      "technical": "Technik",
+      "billing": "Abrechnung",
+      "feature": "Wunsch",
+      "other": "Sonstiges"
+    },
+    "priorities": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "urgent": "Dringend"
+    }
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "hint": "Meldungen zu Ihrem Konto und Ihren Agenten.",
+    "markAll": "Alle als gelesen markieren",
+    "markRead": "Als gelesen markieren",
+    "empty": "Keine Benachrichtigungen vorhanden."
   }
 }

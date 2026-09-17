@@ -22,6 +22,15 @@ const ADMIN: SessionUser = {
   echocallCustomerId: null,
 };
 
+const NOTIFICATION = {
+  id: 4,
+  type: 'call.missed',
+  title: 'Anruf verpasst',
+  message: 'Ein Anrufer hat aufgelegt.',
+  isRead: false,
+  createdAt: '2026-09-16T10:00:00.000Z',
+};
+
 const CUSTOMER: SessionUser = {
   ...ADMIN,
   id: 2,
@@ -42,11 +51,20 @@ describe('ShellComponent', () => {
     }).compileComponents();
   });
 
-  async function render(user: SessionUser) {
+  afterEach(() => TestBed.inject(HttpTestingController).verify());
+
+  async function render(user: SessionUser, unread = 0) {
     TestBed.inject(AuthStore).setUser(user);
     TestBed.inject(BrandingService).update({ ...DEFAULT_BRANDING, productName: 'Acme Portal' });
     const fixture = TestBed.createComponent(ShellComponent);
     await fixture.whenStable();
+    if (user.role !== 'admin') {
+      TestBed.inject(HttpTestingController)
+        .expectOne((req) => req.url === '/api/hub/notifications')
+        .flush({ data: [NOTIFICATION], pagination: { page: 1, perPage: 5, total: unread } });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await fixture.whenStable();
+    }
     return fixture;
   }
 
@@ -86,6 +104,20 @@ describe('ShellComponent', () => {
     const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(text).toContain('Acme Portal');
     expect(text.toLowerCase()).not.toContain('echocall');
+  });
+
+  it('counts the unread notifications on the bell', async () => {
+    const fixture = await render(CUSTOMER, 3);
+
+    expect(fixture.nativeElement.querySelector('[data-testid="notifications-bell"]')).not.toBeNull();
+    expect(fixture.componentInstance.unread()).toBe(3);
+  });
+
+  it('keeps the bell away from the administration', async () => {
+    const fixture = await render(ADMIN);
+
+    expect(fixture.componentInstance.showBell()).toBe(false);
+    expect(fixture.nativeElement.querySelector('[data-testid="notifications-bell"]')).toBeNull();
   });
 
   it('signs out through the API and returns to the login page', async () => {

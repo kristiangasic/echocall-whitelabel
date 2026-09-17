@@ -126,6 +126,35 @@ export const routes: Routes = [
               import('./features/user/webhooks/webhooks.page').then((m) => m.WebhooksPage),
           },
           {
+            path: 'campaigns',
+            loadComponent: () =>
+              import('./features/user/campaigns/campaigns.page').then((m) => m.CampaignsPage),
+          },
+          {
+            path: 'campaigns/:id',
+            loadComponent: () =>
+              import('./features/user/campaigns/campaign-detail.page').then(
+                (m) => m.CampaignDetailPage,
+              ),
+          },
+          {
+            path: 'tickets',
+            loadComponent: () =>
+              import('./features/user/tickets/tickets.page').then((m) => m.TicketsPage),
+          },
+          {
+            path: 'tickets/:id',
+            loadComponent: () =>
+              import('./features/user/tickets/ticket-detail.page').then((m) => m.TicketDetailPage),
+          },
+          {
+            path: 'notifications',
+            loadComponent: () =>
+              import('./features/user/notifications/notifications.page').then(
+                (m) => m.NotificationsPage,
+              ),
+          },
+          {
             path: 'inbox',
             loadComponent: () =>
               import('./features/user/conversations/live-inbox.page').then((m) => m.LiveInboxPage),

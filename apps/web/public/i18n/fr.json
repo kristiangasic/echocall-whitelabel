@@ -21,7 +21,10 @@
     "logout": "Se déconnecter",
     "openMenu": "Ouvrir le menu",
     "language": "Langue",
-    "accountMenu": "Menu du compte"
+    "accountMenu": "Menu du compte",
+    "notifications": "Notifications",
+    "noNotifications": "Aucune nouvelle notification",
+    "showAllNotifications": "Tout afficher"
   },
   "languages": {
     "de": "Deutsch",

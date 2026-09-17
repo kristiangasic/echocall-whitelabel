@@ -384,5 +384,105 @@
     "selectHint": "Choisissez un chat à gauche.",
     "noMessages": "Aucun message pour l’instant.",
     "reply": "Réponse"
+  },
+  "campaigns": {
+    "title": "Campagnes",
+    "hint": "Appelez automatiquement de nombreux contacts avec un agent vocal.",
+    "create": "Créer une campagne",
+    "createTitle": "Nouvelle campagne",
+    "name": "Nom",
+    "agent": "Agent vocal",
+    "noAgents": "Créez d’abord un agent vocal.",
+    "recipients": "Destinataires",
+    "recipientsHint": "Un numéro par ligne, suivi le cas échéant d’une virgule et d’un nom.",
+    "recipientCount": "{{count}} destinataires reconnus",
+    "noRecipients": "Aucun destinataire pour le moment.",
+    "phoneNumber": "Numéro",
+    "duration": "Durée",
+    "calledAt": "Appelé le",
+    "progress": "Progression",
+    "created": "Créée",
+    "successful": "Réussis",
+    "failed": "Échoués",
+    "pending": "En attente",
+    "submit": "Démarrer la campagne",
+    "submitted": "La campagne a démarré.",
+    "cancel": "Arrêter la campagne",
+    "cancelTitle": "Arrêter la campagne ?",
+    "cancelMessage": "Les appels non commencés ne seront pas passés.",
+    "cancelled": "La campagne a été arrêtée.",
+    "deleteTitle": "Supprimer la campagne ?",
+    "deleteMessage": "La campagne « {{name}} » et ses résultats seront supprimés.",
+    "empty": "Aucune campagne pour le moment.",
+    "filters": {
+      "all": "Toutes",
+      "draft": "Brouillons",
+      "running": "En cours",
+      "completed": "Terminées"
+    },
+    "statuses": {
+      "draft": "Brouillon",
+      "pending": "En attente",
+      "scheduled": "Planifiée",
+      "running": "En cours",
+      "completed": "Terminée",
+      "cancelled": "Arrêtée",
+      "failed": "Échouée"
+    },
+    "callStatuses": {
+      "pending": "En attente",
+      "calling": "Appel en cours",
+      "completed": "Joint",
+      "failed": "Non joint",
+      "cancelled": "Annulé"
+    }
+  },
+  "tickets": {
+    "title": "Assistance",
+    "hint": "Posez vos questions directement à notre équipe.",
+    "create": "Créer une demande",
+    "createTitle": "Nouvelle demande",
+    "subject": "Objet",
+    "description": "Description",
+    "category": "Catégorie",
+    "priority": "Priorité",
+    "updated": "Dernière mise à jour",
+    "opened": "Créée",
+    "support": "Assistance",
+    "reply": "Votre réponse",
+    "noMessages": "Aucun message dans cette demande pour le moment.",
+    "closedHint": "Cette demande est close. Créez-en une nouvelle si nécessaire.",
+    "empty": "Aucune demande pour le moment.",
+    "filters": {
+      "all": "Toutes",
+      "open": "Ouvertes",
+      "resolved": "Résolues"
+    },
+    "statuses": {
+      "open": "Ouverte",
+      "in_progress": "En cours de traitement",
+      "waiting": "En attente de votre réponse",
+      "resolved": "Résolue",
+      "closed": "Close"
+    },
+    "categories": {
+      "technical": "Technique",
+      "billing": "Facturation",
+      "feature": "Suggestion",
+      "other": "Autre"
+    },
+    "priorities": {
+      "low": "Basse",
+      "medium": "Moyenne",
+      "high": "Haute",
+      "urgent": "Urgente"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "hint": "Informations sur votre compte et vos agents.",
+    "markAll": "Tout marquer comme lu",
+    "markRead": "Marquer comme lu",
+    "empty": "Aucune notification."
   }
 }

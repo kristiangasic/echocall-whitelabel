@@ -384,5 +384,105 @@
     "selectHint": "Pick a chat on the left.",
     "noMessages": "No messages yet.",
     "reply": "Reply"
+  },
+  "campaigns": {
+    "title": "Campaigns",
+    "hint": "Call many contacts automatically with a voice agent.",
+    "create": "Create campaign",
+    "createTitle": "New campaign",
+    "name": "Name",
+    "agent": "Voice agent",
+    "noAgents": "Create a voice agent first.",
+    "recipients": "Recipients",
+    "recipientsHint": "One phone number per line, optionally followed by a comma and a name.",
+    "recipientCount": "{{count}} recipients recognised",
+    "noRecipients": "No recipients yet.",
+    "phoneNumber": "Phone number",
+    "duration": "Duration",
+    "calledAt": "Called at",
+    "progress": "Progress",
+    "created": "Created",
+    "successful": "Successful",
+    "failed": "Failed",
+    "pending": "Pending",
+    "submit": "Start campaign",
+    "submitted": "The campaign was started.",
+    "cancel": "Stop campaign",
+    "cancelTitle": "Stop the campaign?",
+    "cancelMessage": "Calls that have not started yet will not be placed.",
+    "cancelled": "The campaign was stopped.",
+    "deleteTitle": "Delete the campaign?",
+    "deleteMessage": "The campaign \"{{name}}\" and its results will be deleted.",
+    "empty": "No campaigns yet.",
+    "filters": {
+      "all": "All",
+      "draft": "Drafts",
+      "running": "Running",
+      "completed": "Completed"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "pending": "Pending",
+      "scheduled": "Scheduled",
+      "running": "Running",
+      "completed": "Completed",
+      "cancelled": "Stopped",
+      "failed": "Failed"
+    },
+    "callStatuses": {
+      "pending": "Pending",
+      "calling": "Calling",
+      "completed": "Reached",
+      "failed": "Not reached",
+      "cancelled": "Cancelled"
+    }
+  },
+  "tickets": {
+    "title": "Support",
+    "hint": "Ask our team directly.",
+    "create": "Open a request",
+    "createTitle": "New request",
+    "subject": "Subject",
+    "description": "Description",
+    "category": "Category",
+    "priority": "Priority",
+    "updated": "Last updated",
+    "opened": "Created",
+    "support": "Support",
+    "reply": "Your reply",
+    "noMessages": "No messages in this request yet.",
+    "closedHint": "This request is closed. Open a new one if you need anything else.",
+    "empty": "No requests yet.",
+    "filters": {
+      "all": "All",
+      "open": "Open",
+      "resolved": "Resolved"
+    },
+    "statuses": {
+      "open": "Open",
+      "in_progress": "In progress",
+      "waiting": "Waiting for you",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "categories": {
+      "technical": "Technical",
+      "billing": "Billing",
+      "feature": "Feature request",
+      "other": "Other"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "hint": "News about your account and your agents.",
+    "markAll": "Mark all as read",
+    "markRead": "Mark as read",
+    "empty": "No notifications."
   }
 }
