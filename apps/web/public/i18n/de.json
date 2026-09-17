@@ -208,6 +208,7 @@
     "quote_failed": "Diese Rufnummer konnte nicht mehr bepreist werden. Bitte suchen Sie erneut.",
     "insufficient_balance": "Ihr Guthaben reicht dafür nicht aus.",
     "no_subscription": "Dieser Kunde hat kein laufendes Abonnement.",
+    "subscription_active": "Dieser Kunde hat noch ein laufendes Abonnement. Bitte kündigen Sie es zuerst.",
     "provider_error": "Der Vorgang konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
     "database_error": "Die Daten konnten nicht gespeichert werden. Bitte versuchen Sie es erneut.",
     "billing_profile_incomplete": "Bitte vervollständigen Sie zuerst Ihre Rechnungsdaten.",

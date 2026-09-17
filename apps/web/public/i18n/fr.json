@@ -208,6 +208,7 @@
     "quote_failed": "Ce numéro n'a pas pu être tarifé. Veuillez relancer la recherche.",
     "insufficient_balance": "Votre solde est insuffisant.",
     "no_subscription": "Ce client n'a aucun abonnement en cours.",
+    "subscription_active": "Ce client a encore un abonnement en cours. Veuillez d'abord le résilier.",
     "provider_error": "L'opération n'a pas pu aboutir. Veuillez réessayer.",
     "database_error": "La modification n'a pas pu être enregistrée. Veuillez réessayer.",
     "billing_profile_incomplete": "Veuillez d'abord compléter vos informations de facturation.",

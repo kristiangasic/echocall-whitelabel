@@ -2,9 +2,10 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
-import { ADMIN_TEXTS, provideTestI18n } from '../../../testing/i18n';
+import { ADMIN_TEXTS, TEXTS, provideTestI18n } from '../../../testing/i18n';
 import { AdminCustomersPage } from './customers.page';
 
 const CUSTOMERS = [
@@ -73,9 +74,11 @@ const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 describe('AdminCustomersPage', () => {
   let http: HttpTestingController;
   let dialogResult: unknown;
+  let snacks: string[];
 
   beforeEach(async () => {
     dialogResult = undefined;
+    snacks = [];
     await TestBed.configureTestingModule({
       imports: [AdminCustomersPage, provideTestI18n()],
       providers: [
@@ -83,6 +86,7 @@ describe('AdminCustomersPage', () => {
         provideHttpClientTesting(),
         provideRouter([]),
         { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(dialogResult) }) } },
+        { provide: MatSnackBar, useValue: { open: (message: string) => snacks.push(message) } },
       ],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
@@ -163,6 +167,25 @@ describe('AdminCustomersPage', () => {
     suspend.flush({ user: null });
     await settle();
     await answerLoad();
+  });
+
+  it('says why a customer on a running subscription was not deleted', async () => {
+    const fixture = await render();
+
+    dialogResult = true;
+    fixture.componentInstance.remove(fixture.componentInstance.rows()[0]);
+    await settle();
+    // The hub refuses while the customer is still being billed, and the operator
+    // has to read what to do about it, not "something went wrong".
+    http
+      .expectOne('/api/admin/customers/501')
+      .flush(
+        { error: { code: 'subscription_active', message: 'Cancel the running subscriptions first' } },
+        { status: 400, statusText: 'Bad Request' },
+      );
+    await settle();
+
+    expect(snacks).toEqual([TEXTS.errors.subscription_active]);
   });
 
   it('invites a portal login for a customer that has none', async () => {

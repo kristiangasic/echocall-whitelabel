@@ -208,6 +208,7 @@
     "quote_failed": "This number could not be priced any more. Please search again.",
     "insufficient_balance": "Your balance is not high enough for this.",
     "no_subscription": "This customer has no running subscription.",
+    "subscription_active": "This customer still has a running subscription. Cancel it first.",
     "provider_error": "The request could not be completed. Please try again.",
     "database_error": "The change could not be saved. Please try again.",
     "billing_profile_incomplete": "Please complete your billing details first.",
