@@ -1,0 +1,11 @@
+/* The smoke run: the Playwright config, the specs and the harness next to them. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true
+  },
+  "include": ["e2e/**/*.ts", "e2e/**/*.mjs", "playwright.config.ts"]
+}

@@ -9,6 +9,11 @@ coverage/
 .env.*
 !.env.example
 
+# End-to-end run output
+test-results/
+playwright-report/
+blob-report/
+
 # Logs and OS noise
 *.log
 .DS_Store
