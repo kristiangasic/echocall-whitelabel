@@ -75,6 +75,7 @@ export class AccountService {
   }
 
   async updateProfile(user: SessionUser, patch: ProfileUpdateDto): Promise<SessionUser> {
+    assertOwnAccount(user);
     const changes: UserUpdate = { updatedAt: new Date() };
     if (patch.firstName !== undefined) changes.firstName = patch.firstName || null;
     if (patch.lastName !== undefined) changes.lastName = patch.lastName || null;
@@ -95,6 +96,7 @@ export class AccountService {
     currentSessionToken: string | undefined,
     ip: string | undefined,
   ): Promise<void> {
+    assertOwnAccount(user);
     const row = await this.db
       .selectFrom('users')
       .select('passwordHash')
@@ -116,6 +118,20 @@ export class AccountService {
       ip,
     });
   }
+}
+
+/**
+ * An operator viewing the portal as a customer may look at everything, but the
+ * account itself stays the customer's own: no password, name or language of
+ * theirs is ever changed by someone else.
+ */
+function assertOwnAccount(user: SessionUser): void {
+  if (user.impersonator)
+    throw apiError(
+      403,
+      'impersonation_read_only',
+      'While viewing the portal as a customer you cannot change this account',
+    );
 }
 
 /** The filename the hub suggested, when it is one the portal can safely repeat. */

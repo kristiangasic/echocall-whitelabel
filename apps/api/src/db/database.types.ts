@@ -20,6 +20,8 @@ export interface SessionsTable {
   /** sha256 of the cookie token. */
   id: string;
   userId: number;
+  /** The administrator who opened this session as the customer; null for an ordinary login. */
+  impersonatorId: Generated<number | null>;
   expiresAt: Date;
   createdAt: Generated<Date>;
   ip: string | null;

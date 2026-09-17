@@ -155,6 +155,10 @@
       "saved": "Passwort geändert."
     }
   },
+  "impersonation": {
+    "banner": "Sie sehen das Portal als {{email}}.",
+    "back": "Zurück zur Verwaltung"
+  },
   "footer": {
     "imprint": "Impressum",
     "privacy": "Datenschutz",
@@ -198,6 +202,12 @@
     "insufficient_balance": "Ihr Guthaben reicht dafür nicht aus.",
     "provider_error": "Der Vorgang konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
     "database_error": "Die Daten konnten nicht gespeichert werden. Bitte versuchen Sie es erneut.",
-    "billing_profile_incomplete": "Bitte vervollständigen Sie zuerst Ihre Rechnungsdaten."
+    "billing_profile_incomplete": "Bitte vervollständigen Sie zuerst Ihre Rechnungsdaten.",
+    "no_portal_login": "Dieser Kunde hat noch keinen Portalzugang, den Sie öffnen könnten.",
+    "login_not_active": "Dieser Zugang kann erst geöffnet werden, wenn der Kunde die Einladung angenommen hat.",
+    "cannot_impersonate_admin": "Nur Kundenzugänge lassen sich auf diesem Weg öffnen.",
+    "not_impersonating": "Diese Sitzung wurde nicht von einem Betreiber geöffnet.",
+    "impersonation_read_only": "Solange Sie das Portal als Kunde ansehen, können Sie dieses Konto nicht ändern.",
+    "session_ended": "Die Sitzung wurde beendet. Bitte melden Sie sich erneut an."
   }
 }

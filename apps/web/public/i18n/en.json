@@ -155,6 +155,10 @@
       "saved": "Password changed."
     }
   },
+  "impersonation": {
+    "banner": "You are viewing the portal as {{email}}.",
+    "back": "Back to administration"
+  },
   "footer": {
     "imprint": "Imprint",
     "privacy": "Privacy",
@@ -198,6 +202,12 @@
     "insufficient_balance": "Your balance is not high enough for this.",
     "provider_error": "The request could not be completed. Please try again.",
     "database_error": "The change could not be saved. Please try again.",
-    "billing_profile_incomplete": "Please complete your billing details first."
+    "billing_profile_incomplete": "Please complete your billing details first.",
+    "no_portal_login": "This customer has no portal login you could open.",
+    "login_not_active": "This login can only be opened once the customer has accepted the invitation.",
+    "cannot_impersonate_admin": "Only customer logins can be opened this way.",
+    "not_impersonating": "This session was not opened by an operator.",
+    "impersonation_read_only": "While you view the portal as a customer you cannot change this account.",
+    "session_ended": "The session has ended. Please sign in again."
   }
 }

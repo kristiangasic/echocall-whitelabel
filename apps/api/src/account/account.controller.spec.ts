@@ -162,6 +162,7 @@ describe('AccountController', () => {
       lastName: null,
       language: 'fr',
       echocallCustomerId: 501,
+      impersonator: null,
     });
     const me = await api().get('/api/auth/me').set('Cookie', user.cookie);
     expect(me.body).toMatchObject({ firstName: 'Kai', language: 'fr' });

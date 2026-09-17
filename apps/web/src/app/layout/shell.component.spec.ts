@@ -39,6 +39,12 @@ const CUSTOMER: SessionUser = {
   echocallCustomerId: 42,
 };
 
+/** The same customer, seen by the operator who opened the session as them. */
+const IMPERSONATED: SessionUser = { ...CUSTOMER, impersonator: { id: 1, email: 'admin@example.com' } };
+
+/** Lets the component's own promises run before the next expectation. */
+const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+
 describe('ShellComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -46,7 +52,10 @@ describe('ShellComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([{ path: 'login', component: BlankPage }]),
+        provideRouter([
+          { path: 'login', component: BlankPage },
+          { path: 'admin', component: BlankPage },
+        ]),
       ],
     }).compileComponents();
   });
@@ -124,6 +133,28 @@ describe('ShellComponent', () => {
 
     expect(fixture.componentInstance.showBell()).toBe(false);
     expect(fixture.nativeElement.querySelector('[data-testid="notifications-bell"]')).toBeNull();
+  });
+
+  it('says whose portal an operator is looking at and offers the way back', async () => {
+    const fixture = await render(IMPERSONATED);
+
+    const banner = fixture.nativeElement.querySelector('[data-testid="impersonation-banner"]');
+    expect(banner).not.toBeNull();
+    expect(banner.textContent).toContain('customer@example.com');
+
+    fixture.nativeElement.querySelector('[data-testid="impersonation-stop"]').click();
+    await settle();
+    TestBed.inject(HttpTestingController).expectOne('/api/auth/impersonation/stop').flush(ADMIN);
+    await settle();
+
+    expect(TestBed.inject(AuthStore).user()?.role).toBe('admin');
+    expect(TestBed.inject(Router).url).toBe('/admin');
+  });
+
+  it('keeps the banner away from a customer signing in themselves', async () => {
+    const fixture = await render(CUSTOMER);
+
+    expect(fixture.nativeElement.querySelector('[data-testid="impersonation-banner"]')).toBeNull();
   });
 
   it('signs out through the API and returns to the login page', async () => {

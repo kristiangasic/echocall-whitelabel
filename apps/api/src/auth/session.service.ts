@@ -10,6 +10,16 @@ const SLIDE_BELOW_MS = 15 * 24 * 60 * 60 * 1000;
 
 export type UserRole = 'admin' | 'user';
 
+/**
+ * The administrator behind a session that was opened as a customer. The e-mail
+ * is null when that account has since been deleted; the session then still
+ * knows it is not the customer's own and can only be ended.
+ */
+export interface Impersonator {
+  id: number;
+  email: string | null;
+}
+
 export interface SessionUser {
   id: number;
   email: string;
@@ -18,6 +28,8 @@ export interface SessionUser {
   lastName: string | null;
   language: 'de' | 'en' | 'fr';
   echocallCustomerId: number | null;
+  /** Set while an administrator is viewing the portal as this customer. */
+  impersonator: Impersonator | null;
 }
 
 export type SessionUserSource = Pick<
@@ -25,7 +37,7 @@ export type SessionUserSource = Pick<
   'id' | 'email' | 'role' | 'firstName' | 'lastName' | 'language' | 'echocallCustomerId'
 >;
 
-export function toSessionUser(row: SessionUserSource): SessionUser {
+export function toSessionUser(row: SessionUserSource, impersonator: Impersonator | null = null): SessionUser {
   return {
     id: row.id,
     email: row.email,
@@ -34,6 +46,7 @@ export function toSessionUser(row: SessionUserSource): SessionUser {
     lastName: row.lastName,
     language: row.language,
     echocallCustomerId: row.echocallCustomerId,
+    impersonator,
   };
 }
 
@@ -71,8 +84,11 @@ export class SessionService {
     const row = await this.db
       .selectFrom('sessions')
       .innerJoin('users', 'users.id', 'sessions.userId')
+      .leftJoin('users as operator', 'operator.id', 'sessions.impersonatorId')
       .select([
         'sessions.expiresAt',
+        'sessions.impersonatorId',
+        'operator.email as impersonatorEmail',
         'users.id',
         'users.email',
         'users.role',
@@ -98,7 +114,21 @@ export class SessionService {
         .where('id', '=', id)
         .execute();
     }
-    return toSessionUser(row);
+    const operator = row.impersonatorId;
+    return toSessionUser(row, operator === null ? null : { id: operator, email: row.impersonatorEmail });
+  }
+
+  /**
+   * Hands the session over to another user, keeping the cookie the browser
+   * already holds. Pass the administrator id to open the session as a customer,
+   * and null to hand it back.
+   */
+  async switchTo(token: string, userId: number, impersonatorId: number | null): Promise<void> {
+    await this.db
+      .updateTable('sessions')
+      .set({ userId, impersonatorId })
+      .where('id', '=', sha256Hex(token))
+      .execute();
   }
 
   async revoke(token: string): Promise<void> {

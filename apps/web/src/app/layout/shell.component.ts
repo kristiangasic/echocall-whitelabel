@@ -102,6 +102,22 @@ const USER_NAV: NavItem[] = [
       </mat-sidenav>
 
       <mat-sidenav-content class="shell-content">
+        @if (impersonator()) {
+          <div class="shell-impersonation" role="status" data-testid="impersonation-banner">
+            <mat-icon aria-hidden="true">visibility</mat-icon>
+            <span class="shell-impersonation-text">
+              {{ t('impersonation.banner', { email: auth.user()?.email }) }}
+            </span>
+            <button
+              mat-flat-button
+              type="button"
+              (click)="stopImpersonation()"
+              data-testid="impersonation-stop"
+            >
+              {{ t('impersonation.back') }}
+            </button>
+          </div>
+        }
         <mat-toolbar class="shell-toolbar">
           @if (isHandset()) {
             <button
@@ -250,6 +266,19 @@ const USER_NAV: NavItem[] = [
       box-sizing: border-box;
       margin: 0 auto;
     }
+    .shell-impersonation {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 10px 16px;
+      background: var(--mat-sys-tertiary-container);
+      color: var(--mat-sys-on-tertiary-container);
+    }
+    .shell-impersonation-text {
+      flex: 1;
+      min-width: 200px;
+    }
     .shell-user {
       padding: 8px 16px;
       font: var(--mat-sys-body-small);
@@ -273,7 +302,7 @@ const USER_NAV: NavItem[] = [
   `,
 })
 export class ShellComponent implements OnInit {
-  private readonly auth = inject(AuthStore);
+  readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly notifications = inject(NotificationsStore);
@@ -295,6 +324,9 @@ export class ShellComponent implements OnInit {
   /** The bell reads the hub account, which only the workspace side uses. */
   readonly showBell = computed(() => this.auth.user()?.role !== 'admin');
 
+  /** Set while an operator is viewing the portal as one of their customers. */
+  readonly impersonator = this.auth.impersonator;
+
   ngOnInit(): void {
     if (!this.showBell()) return;
     void this.refreshNotifications();
@@ -311,6 +343,20 @@ export class ShellComponent implements OnInit {
     const name = [user.firstName, user.lastName].filter(Boolean).join(' ');
     return name ? `${name} (${user.email})` : user.email;
   });
+
+  /**
+   * Hands the session back to the operator. When their account is gone the
+   * session ends instead, and the portal returns to the login page.
+   */
+  async stopImpersonation(): Promise<void> {
+    try {
+      await this.auth.stopImpersonation();
+      await this.router.navigateByUrl('/admin');
+    } catch {
+      this.auth.clear();
+      await this.router.navigateByUrl('/login');
+    }
+  }
 
   async logout(): Promise<void> {
     await this.auth.logout();

@@ -69,6 +69,7 @@ describe('AuthController', () => {
       lastName: null,
       language: 'de',
       echocallCustomerId: null,
+      impersonator: null,
     });
     const cookie = login.headers['set-cookie'][0];
     expect(cookie).toMatch(/^ecl_session=[A-Za-z0-9_-]{40,}; Path=\/; Expires=.*; HttpOnly; SameSite=Lax$/);

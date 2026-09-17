@@ -42,6 +42,7 @@ describe('SessionService', () => {
       lastName: null,
       language: 'en',
       echocallCustomerId: 501,
+      impersonator: null,
     });
     const rows = await t.db.selectFrom('sessions').selectAll().execute();
     expect(rows).toHaveLength(1);
@@ -83,6 +84,43 @@ describe('SessionService', () => {
     expect(await sessions.resolve(b.token)).not.toBeNull();
     await sessions.revokeAllForUser(userId);
     expect(await sessions.resolve(b.token)).toBeNull();
+  });
+
+  it('hands a session to another user and back, remembering who opened it', async () => {
+    const operatorId = await insertReturningId(t.db, t.dialect, 'users', {
+      email: 'operator@example.com',
+      role: 'admin',
+      status: 'active',
+      language: 'en',
+    });
+    const { token } = await sessions.create(operatorId);
+
+    await sessions.switchTo(token, userId, operatorId);
+    expect(await sessions.resolve(token)).toMatchObject({
+      id: userId,
+      impersonator: { id: operatorId, email: 'operator@example.com' },
+    });
+
+    await sessions.switchTo(token, operatorId, null);
+    expect(await sessions.resolve(token)).toMatchObject({ id: operatorId, impersonator: null });
+  });
+
+  it('keeps the session apart from its operator once that account is gone', async () => {
+    const operatorId = await insertReturningId(t.db, t.dialect, 'users', {
+      email: 'leaving@example.com',
+      role: 'admin',
+      status: 'active',
+      language: 'en',
+    });
+    const { token } = await sessions.create(operatorId);
+    await sessions.switchTo(token, userId, operatorId);
+
+    await t.db.deleteFrom('users').where('id', '=', operatorId).execute();
+
+    expect(await sessions.resolve(token)).toMatchObject({
+      id: userId,
+      impersonator: { id: operatorId, email: null },
+    });
   });
 
   it('refuses sessions of users that are no longer active', async () => {

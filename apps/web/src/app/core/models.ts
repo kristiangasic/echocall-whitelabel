@@ -8,6 +8,15 @@ export function isLanguage(value: unknown): value is Language {
 
 export type UserStatus = 'invited' | 'active' | 'disabled';
 
+/**
+ * The operator who opened a session as one of their customers. The e-mail is
+ * null when that operator account has since been deleted.
+ */
+export interface Impersonator {
+  id: number;
+  email: string | null;
+}
+
 /** The signed-in user as GET /api/auth/me returns it. */
 export interface SessionUser {
   id: number;
@@ -17,6 +26,8 @@ export interface SessionUser {
   lastName: string | null;
   language: Language;
   echocallCustomerId: number | null;
+  /** Set while an operator is viewing the portal as this customer. */
+  impersonator?: Impersonator | null;
 }
 
 export interface Branding {

@@ -155,6 +155,10 @@
       "saved": "Mot de passe modifié."
     }
   },
+  "impersonation": {
+    "banner": "Vous consultez le portail en tant que {{email}}.",
+    "back": "Retour à l'administration"
+  },
   "footer": {
     "imprint": "Mentions légales",
     "privacy": "Confidentialité",
@@ -198,6 +202,12 @@
     "insufficient_balance": "Votre solde est insuffisant.",
     "provider_error": "L'opération n'a pas pu aboutir. Veuillez réessayer.",
     "database_error": "La modification n'a pas pu être enregistrée. Veuillez réessayer.",
-    "billing_profile_incomplete": "Veuillez d'abord compléter vos informations de facturation."
+    "billing_profile_incomplete": "Veuillez d'abord compléter vos informations de facturation.",
+    "no_portal_login": "Ce client n'a pas encore d'accès au portail à ouvrir.",
+    "login_not_active": "Cet accès ne peut être ouvert qu'une fois l'invitation acceptée par le client.",
+    "cannot_impersonate_admin": "Seuls les accès clients peuvent être ouverts de cette manière.",
+    "not_impersonating": "Cette session n'a pas été ouverte par un opérateur.",
+    "impersonation_read_only": "Tant que vous consultez le portail en tant que client, vous ne pouvez pas modifier ce compte.",
+    "session_ended": "La session a pris fin. Veuillez vous reconnecter."
   }
 }

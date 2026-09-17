@@ -1,11 +1,28 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { ADMIN_TEXTS, provideTestI18n } from '../../../testing/i18n';
 import { AdminCustomerDetailPage } from './customer-detail.page';
+
+@Component({ template: '' })
+class BlankPage {}
+
+/** The session the portal hands back once it was opened as this customer. */
+const CUSTOMER_SESSION = {
+  id: 7,
+  email: 'linked@example.com',
+  role: 'user',
+  firstName: 'Lina',
+  lastName: 'Mayer',
+  language: 'de',
+  echocallCustomerId: 501,
+  impersonator: { id: 1, email: 'admin@example.com' },
+};
 
 const CUSTOMER = {
   id: 1,
@@ -73,7 +90,7 @@ describe('AdminCustomerDetailPage', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([]),
+        provideRouter([{ path: 'app', component: BlankPage }]),
         { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(dialogResult) }) } },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '501' }) } } },
       ],
@@ -190,6 +207,20 @@ describe('AdminCustomerDetailPage', () => {
 
     expect(request.params.get('page')).toBe('2');
     expect(request.params.get('perPage')).toBe('50');
+  });
+
+  it('opens the portal as the customer and lands in their workspace', async () => {
+    const fixture = await render();
+
+    fixture.nativeElement.querySelector('[data-testid="open-as"]').click();
+    await settle();
+    const started = http.expectOne('/api/admin/customers/501/impersonate');
+    expect(started.request.method).toBe('POST');
+    started.flush(CUSTOMER_SESSION);
+    await settle();
+
+    expect(TestBed.inject(AuthStore).user()?.impersonator?.email).toBe('admin@example.com');
+    expect(TestBed.inject(Router).url).toBe('/app');
   });
 
   it('says so when the customer is not one of ours', async () => {

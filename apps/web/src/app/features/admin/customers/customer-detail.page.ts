@@ -6,9 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { AuthStore } from '../../../core/auth/auth.store';
 import { formatMoney } from '../../../core/format/money';
 import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type {
@@ -71,11 +72,17 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
             <h1 class="page-title">{{ c.user?.email }}</h1>
             <p class="page-hint">{{ subtitle() }}</p>
           </div>
-          @if (c.user?.accountStatus; as status) {
-            <span class="status" [class]="'status status-' + status">
-              {{ t('admin.customers.accountStatuses.' + status) }}
-            </span>
-          }
+          <div class="head-actions">
+            @if (c.user?.accountStatus; as status) {
+              <span class="status" [class]="'status status-' + status">
+                {{ t('admin.customers.accountStatuses.' + status) }}
+              </span>
+            }
+            <button mat-stroked-button type="button" (click)="openAsCustomer()" data-testid="open-as">
+              <mat-icon>visibility</mat-icon>
+              {{ t('admin.customer.openAs') }}
+            </button>
+          </div>
         </div>
 
         <div class="cards">
@@ -232,6 +239,12 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
     .back {
       margin-bottom: 8px;
     }
+    .head-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -288,6 +301,8 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
 export class AdminCustomerDetailPage implements OnInit {
   private readonly hub = inject(AdminHubService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly auth = inject(AuthStore);
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotifyService);
   private readonly transloco = inject(TranslocoService);
@@ -403,6 +418,20 @@ export class AdminCustomerDetailPage implements OnInit {
       this.balance.set(answer.balance);
     } catch {
       // The view keeps the balance it has; the refusal is the message that matters.
+    }
+  }
+
+  /**
+   * Opens the portal as this customer. The session is handed over, so the
+   * operator lands in the customer's own workspace and finds the way back in
+   * the banner the shell then shows.
+   */
+  async openAsCustomer(): Promise<void> {
+    try {
+      await this.auth.impersonate(this.id());
+      await this.router.navigateByUrl('/app');
+    } catch (err) {
+      this.notify.apiError(err);
     }
   }
 

@@ -12,6 +12,8 @@ export class AuthStore {
   /** True once /auth/me has answered, whether or not a session exists. */
   readonly loaded = signal(false);
   readonly isAdmin = computed(() => this.user()?.role === 'admin');
+  /** The operator behind this session while they are viewing the portal as a customer. */
+  readonly impersonator = computed(() => this.user()?.impersonator ?? null);
 
   async load(): Promise<SessionUser | null> {
     try {
@@ -36,6 +38,25 @@ export class AuthStore {
     } finally {
       this.user.set(null);
     }
+  }
+
+  /**
+   * Opens the portal as one customer. The session cookie stays the same, so
+   * every following request already runs in the customer's context.
+   */
+  async impersonate(customerId: number): Promise<SessionUser> {
+    const user = await firstValueFrom(
+      this.api.post<SessionUser>(`/admin/customers/${customerId}/impersonate`),
+    );
+    this.user.set(user);
+    return user;
+  }
+
+  /** Hands the session back to the operator who opened it. */
+  async stopImpersonation(): Promise<SessionUser> {
+    const user = await firstValueFrom(this.api.post<SessionUser>('/auth/impersonation/stop'));
+    this.user.set(user);
+    return user;
   }
 
   setUser(user: SessionUser): void {

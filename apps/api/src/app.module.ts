@@ -4,6 +4,7 @@ import { ConfigModule } from './config/config.module.js';
 import { AccountModule } from './account/account.module.js';
 import { AdminCustomersModule } from './admin/customers/admin-customers.module.js';
 import { AdminHubProxyModule } from './admin/hub/admin-hub-proxy.module.js';
+import { ImpersonationModule } from './admin/impersonation/impersonation.module.js';
 import { AdminOverviewModule } from './admin/overview/admin-overview.module.js';
 import { AdminUsersModule } from './admin/users/admin-users.module.js';
 import { AuditModule } from './audit/audit.module.js';
@@ -32,6 +33,7 @@ import { SetupModule } from './setup/setup.module.js';
     AdminUsersModule,
     AdminCustomersModule,
     AdminHubProxyModule,
+    ImpersonationModule,
     AccountModule,
     HubProxyModule,
     EmbedModule,
