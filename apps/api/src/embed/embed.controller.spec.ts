@@ -15,7 +15,20 @@ describe('EmbedController', () => {
     'GET /widget.js': () =>
       widgetBroken
         ? { status: 500, body: { error: { code: 'internal', message: 'boom' } } }
-        : { binary: text('(function(){/*loader*/})();'), contentType: 'application/javascript; charset=utf-8' },
+        : {
+            binary: text(
+              [
+                '(function(){/*loader*/',
+                'if (window.EchoCallInitialized) return;',
+                'window.EchoCallInitialized = true;',
+                "var base = src ? src.slice(0, i) : 'https://hub.echocall.de';",
+                "frame.id = 'echocall-widget-iframe';",
+                "window.addEventListener('message', function (e) { if (e.data.type === 'echocall-widget-opened') {} });",
+                '})();',
+              ].join('\n'),
+            ),
+            contentType: 'application/javascript; charset=utf-8',
+          },
     'GET /widget.html': {
       binary: text(
         '<html><head><script type="module" src="/assets/widget-abc.js"></script>' +
@@ -65,6 +78,17 @@ describe('EmbedController', () => {
     expect(res.text).toContain('src="/embed/assets/widget-abc.js"');
     expect(res.text).toContain('href="/embed/assets/widget-abc.css"');
     expect(res.text).not.toContain('"/assets/');
+  });
+
+  it('serves the loader under the portal own names, never the service names', async () => {
+    const res = await api().get('/embed/chat.js');
+
+    expect(res.status).toBe(200);
+    expect(res.text).not.toMatch(/echocall/i);
+    expect(res.text).toContain('window.ChatWidgetInitialized = true;');
+    expect(res.text).toContain("frame.id = 'chat-widget-iframe';");
+    expect(res.text).toContain("e.data.type === 'chat-widget-opened'");
+    expect(res.text).toContain("'http://localhost:3000/embed'");
   });
 
   it('passes assets through with their upstream content type', async () => {
