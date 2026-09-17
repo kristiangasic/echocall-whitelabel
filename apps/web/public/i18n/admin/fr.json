@@ -75,6 +75,63 @@
       "sendInvite": "Envoyer l'invitation par e-mail immédiatement"
     }
   },
+  "customer": {
+    "missing": "Ce client est introuvable.",
+    "balance": {
+      "title": "Solde",
+      "hint": "Le portefeuille prépayé du client, en euros.",
+      "add": "Recharger",
+      "subtract": "Déduire",
+      "addTitle": "Recharger le portefeuille",
+      "subtractTitle": "Déduire du portefeuille",
+      "dialogHint": "{{email}} dispose actuellement de {{balance}}.",
+      "amount": "Montant",
+      "reason": "Motif",
+      "booked": "Le mouvement a été enregistré.",
+      "insufficient": "Le solde est insuffisant. Disponible : {{balance}}."
+    },
+    "usage": {
+      "title": "Consommation",
+      "period": "du {{from}} au {{to}}",
+      "empty": "Rien n'a été consommé sur cette période.",
+      "types": {
+        "voice_minute": "Minutes d'appel",
+        "chat_session": "Conversations de chat"
+      }
+    },
+    "subscriptions": {
+      "title": "Abonnements",
+      "plan": "Forfait",
+      "planGone": "Forfait supprimé",
+      "price": "Prix",
+      "start": "Début",
+      "end": "Fin",
+      "empty": "Ce client n'a aucun abonnement.",
+      "statuses": {
+        "active": "Actif",
+        "past_due": "Paiement en attente",
+        "canceled": "Résilié",
+        "paused": "En pause",
+        "expired": "Expiré"
+      }
+    },
+    "transactions": {
+      "title": "Écritures",
+      "when": "Date",
+      "type": "Type",
+      "reason": "Motif",
+      "amount": "Montant",
+      "after": "Solde après",
+      "empty": "Aucune écriture pour l'instant.",
+      "types": {
+        "deposit": "Dépôt",
+        "purchase": "Achat",
+        "refund": "Remboursement",
+        "admin_adjustment": "Ajustement",
+        "bonus": "Bonus"
+      }
+    }
+  },
   "users": {
     "title": "Utilisateurs",
     "invite": "Inviter",

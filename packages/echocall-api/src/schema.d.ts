@@ -6094,7 +6094,39 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Get one reseller customer
+         * @description Returns one linked customer in the same shape the list reports, link columns included, so a caller that already knows the id does not have to page the whole book. A customer that does not exist, or that belongs to another reseller, is reported as 404 `not_found` rather than 403, so one reseller cannot probe for the customers of another. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Identifier of the customer account. A value that is not an integer is answered with 400 `invalid_id`. */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The linked customer. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ResellerCustomer"];
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+            };
+        };
         put?: never;
         post?: never;
         /**

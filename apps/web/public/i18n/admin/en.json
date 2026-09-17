@@ -75,6 +75,63 @@
       "sendInvite": "Send the invitation by e-mail right away"
     }
   },
+  "customer": {
+    "missing": "This customer was not found.",
+    "balance": {
+      "title": "Balance",
+      "hint": "The prepaid wallet of the customer, in euros.",
+      "add": "Top up",
+      "subtract": "Deduct",
+      "addTitle": "Top up the wallet",
+      "subtractTitle": "Deduct from the wallet",
+      "dialogHint": "{{email}} currently holds {{balance}}.",
+      "amount": "Amount",
+      "reason": "Reason",
+      "booked": "The movement was booked.",
+      "insufficient": "The wallet does not hold that much. Available: {{balance}}."
+    },
+    "usage": {
+      "title": "Usage",
+      "period": "{{from}} to {{to}}",
+      "empty": "Nothing was used in this period.",
+      "types": {
+        "voice_minute": "Call minutes",
+        "chat_session": "Chat conversations"
+      }
+    },
+    "subscriptions": {
+      "title": "Subscriptions",
+      "plan": "Plan",
+      "planGone": "Plan deleted",
+      "price": "Price",
+      "start": "Start",
+      "end": "End",
+      "empty": "This customer has no subscription.",
+      "statuses": {
+        "active": "Active",
+        "past_due": "Payment due",
+        "canceled": "Canceled",
+        "paused": "Paused",
+        "expired": "Expired"
+      }
+    },
+    "transactions": {
+      "title": "Movements",
+      "when": "Date",
+      "type": "Kind",
+      "reason": "Reason",
+      "amount": "Amount",
+      "after": "Balance after",
+      "empty": "No movements yet.",
+      "types": {
+        "deposit": "Deposit",
+        "purchase": "Purchase",
+        "refund": "Refund",
+        "admin_adjustment": "Adjustment",
+        "bonus": "Bonus"
+      }
+    }
+  },
   "users": {
     "title": "Users",
     "invite": "Invite",

@@ -75,6 +75,63 @@
       "sendInvite": "Einladung sofort per E-Mail senden"
     }
   },
+  "customer": {
+    "missing": "Dieser Kunde wurde nicht gefunden.",
+    "balance": {
+      "title": "Guthaben",
+      "hint": "Das Prepaid-Guthaben des Kunden in Euro.",
+      "add": "Aufladen",
+      "subtract": "Abziehen",
+      "addTitle": "Guthaben aufladen",
+      "subtractTitle": "Guthaben abziehen",
+      "dialogHint": "{{email}} hat derzeit {{balance}}.",
+      "amount": "Betrag",
+      "reason": "Grund",
+      "booked": "Buchung ausgeführt.",
+      "insufficient": "Das Guthaben reicht dafür nicht aus. Verfügbar sind {{balance}}."
+    },
+    "usage": {
+      "title": "Verbrauch",
+      "period": "{{from}} bis {{to}}",
+      "empty": "In diesem Zeitraum wurde nichts verbraucht.",
+      "types": {
+        "voice_minute": "Gesprächsminuten",
+        "chat_session": "Chat-Unterhaltungen"
+      }
+    },
+    "subscriptions": {
+      "title": "Abonnements",
+      "plan": "Tarif",
+      "planGone": "Tarif gelöscht",
+      "price": "Preis",
+      "start": "Beginn",
+      "end": "Ende",
+      "empty": "Dieser Kunde hat kein Abonnement.",
+      "statuses": {
+        "active": "Aktiv",
+        "past_due": "Zahlung offen",
+        "canceled": "Gekündigt",
+        "paused": "Pausiert",
+        "expired": "Abgelaufen"
+      }
+    },
+    "transactions": {
+      "title": "Buchungen",
+      "when": "Datum",
+      "type": "Art",
+      "reason": "Grund",
+      "amount": "Betrag",
+      "after": "Stand danach",
+      "empty": "Noch keine Buchungen.",
+      "types": {
+        "deposit": "Einzahlung",
+        "purchase": "Kauf",
+        "refund": "Erstattung",
+        "admin_adjustment": "Korrektur",
+        "bonus": "Gutschrift"
+      }
+    }
+  },
   "users": {
     "title": "Benutzer",
     "invite": "Einladen",

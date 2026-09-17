@@ -7,6 +7,7 @@ import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator'
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../../core/api/api.service';
@@ -45,6 +46,7 @@ const DEFAULT_PER_PAGE = 25;
     MatProgressBarModule,
     MatTableModule,
     MatTooltipModule,
+    RouterLink,
     TranslocoDirective,
     LocalDatePipe,
   ],
@@ -69,7 +71,7 @@ const DEFAULT_PER_PAGE = 25;
           <ng-container matColumnDef="customer">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.email') }}</th>
             <td mat-cell *matCellDef="let row">
-              <div>{{ row.email }}</div>
+              <a [routerLink]="[row.customerId]" data-testid="open">{{ row.email }}</a>
               @if (subtitle(row); as sub) {
                 <div class="cell-sub">{{ sub }}</div>
               }
