@@ -12,8 +12,21 @@ export interface UsersTable {
   language: 'de' | 'en' | 'fr';
   status: 'invited' | 'active' | 'disabled';
   lastLoginAt: Date | null;
+  /** The encrypted TOTP secret, or null when the account has no second factor. */
+  totpSecret: string | null;
+  /** Set when the first correct code proved the secret arrived; null while enrolling. */
+  totpConfirmedAt: Date | null;
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
+}
+
+export interface TwoFactorRecoveryCodesTable {
+  id: Generated<number>;
+  userId: number;
+  /** Hashed like a password; the plain code is shown once and never stored. */
+  codeHash: string;
+  usedAt: Date | null;
+  createdAt: Generated<Date>;
 }
 
 export interface SessionsTable {
@@ -31,7 +44,7 @@ export interface SessionsTable {
 export interface OneTimeTokensTable {
   id: Generated<number>;
   userId: number;
-  purpose: 'invite' | 'password_reset';
+  purpose: 'invite' | 'password_reset' | 'two_factor_challenge';
   tokenHash: string;
   expiresAt: Date;
   usedAt: Date | null;
@@ -61,6 +74,7 @@ export interface Database {
   users: UsersTable;
   sessions: SessionsTable;
   oneTimeTokens: OneTimeTokensTable;
+  twoFactorRecoveryCodes: TwoFactorRecoveryCodesTable;
   settings: SettingsTable;
   auditLog: AuditLogTable;
 }

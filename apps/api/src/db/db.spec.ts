@@ -111,6 +111,49 @@ describe('database', () => {
     expect(auditId).toBeGreaterThan(0);
   });
 
+  it('keeps a second factor with its user and drops it with them', async () => {
+    const id = await insertReturningId(t.db, t.dialect, 'users', {
+      email: 'lena@example.com',
+      role: 'user',
+      status: 'active',
+      passwordHash: null,
+      echocallCustomerId: null,
+      firstName: null,
+      lastName: null,
+      language: 'de',
+      lastLoginAt: null,
+    });
+
+    const fresh = await t.db.selectFrom('users').selectAll().where('id', '=', id).executeTakeFirstOrThrow();
+    expect(fresh.totpSecret).toBeNull();
+    expect(fresh.totpConfirmedAt).toBeNull();
+
+    await t.db
+      .updateTable('users')
+      .set({ totpSecret: 'v1:envelope', totpConfirmedAt: new Date() })
+      .where('id', '=', id)
+      .execute();
+    await t.db
+      .insertInto('twoFactorRecoveryCodes')
+      .values([
+        { userId: id, codeHash: 'hash-1', usedAt: null },
+        { userId: id, codeHash: 'hash-2', usedAt: null },
+      ])
+      .execute();
+
+    const stored = await t.db.selectFrom('users').selectAll().where('id', '=', id).executeTakeFirstOrThrow();
+    expect(stored.totpSecret).toBe('v1:envelope');
+    expect(stored.totpConfirmedAt).toBeInstanceOf(Date);
+
+    await t.db.deleteFrom('users').where('id', '=', id).execute();
+    const left = await t.db
+      .selectFrom('twoFactorRecoveryCodes')
+      .selectAll()
+      .where('userId', '=', id)
+      .execute();
+    expect(left).toEqual([]);
+  });
+
   it('empties every table on reset and is idempotent to migrate', async () => {
     await insertReturningId(t.db, t.dialect, 'users', {
       email: 'reset@example.com',

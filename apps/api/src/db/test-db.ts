@@ -2,7 +2,14 @@ import { sql } from 'kysely';
 import { createDb, type Db, type DbDialect } from './dialect.js';
 import { migrateToLatest } from './migrator.js';
 
-const TABLES = ['audit_log', 'one_time_tokens', 'sessions', 'settings', 'users'];
+const TABLES = [
+  'audit_log',
+  'one_time_tokens',
+  'two_factor_recovery_codes',
+  'sessions',
+  'settings',
+  'users',
+];
 
 export interface TestDb {
   db: Db;
