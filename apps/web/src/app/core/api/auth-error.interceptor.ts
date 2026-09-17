@@ -8,7 +8,9 @@ import { NotifyService } from '../notify/notify.service';
 import { API_BASE } from './api.service';
 
 /** Requests whose 401 is part of the normal flow and must not send the user to the login page. */
-const EXPECTED_401 = ['/auth/login', '/auth/me', '/auth/logout', '/setup/'].map((p) => API_BASE + p);
+const EXPECTED_401 = ['/auth/login', '/auth/2fa/verify', '/auth/me', '/auth/logout', '/setup/'].map(
+  (p) => API_BASE + p,
+);
 const UPSTREAM_CODES = new Set(['upstream_unavailable', 'upstream_timeout']);
 
 /** Ends the client session on 401 and tells the user when the service behind the API is unreachable. */

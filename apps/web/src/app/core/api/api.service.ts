@@ -36,7 +36,8 @@ export class ApiService {
     return this.http.put<T>(url(path), body, { withCredentials: true });
   }
 
-  delete<T>(path: string): Observable<T> {
-    return this.http.delete<T>(url(path), { withCredentials: true });
+  /** A body is unusual on DELETE but allowed; the portal uses it to confirm a removal with a password. */
+  delete<T>(path: string, body?: unknown): Observable<T> {
+    return this.http.delete<T>(url(path), { withCredentials: true, body });
   }
 }

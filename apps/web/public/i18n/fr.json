@@ -126,7 +126,14 @@
       "submit": "Activer le compte",
       "invalid": "Cette invitation est invalide ou a expiré. Demandez une nouvelle invitation."
     },
-    "passwordHint": "Au moins 10 caractères"
+    "passwordHint": "Au moins 10 caractères",
+    "twoFactor": {
+      "title": "Authentification à deux facteurs",
+      "intro": "Saisissez le code de votre application d'authentification. Un code de récupération fonctionne également ici.",
+      "code": "Code",
+      "submit": "Terminer la connexion",
+      "recoveryHint": "Pas d'accès à l'application ? Utilisez l'un de vos codes de récupération."
+    }
   },
   "setup": {
     "title": "Configuration initiale",
@@ -150,7 +157,8 @@
     "title": "Mon compte",
     "tabs": {
       "billing": "Facturation",
-      "profile": "Profil"
+      "profile": "Profil",
+      "security": "Sécurité"
     },
     "profile": {
       "title": "Profil",
@@ -161,6 +169,25 @@
       "intro": "Le mot de passe actuel est requis pour confirmer la modification.",
       "submit": "Changer le mot de passe",
       "saved": "Mot de passe modifié."
+    },
+    "twoFactor": {
+      "title": "Authentification à deux facteurs",
+      "intro": "Un deuxième facteur protège votre compte même si votre mot de passe est connu.",
+      "statusOn": "Active. Chaque connexion demande également un code.",
+      "statusOff": "Non configurée.",
+      "start": "Configurer",
+      "scan": "Scannez ce code avec votre application d'authentification.",
+      "manual": "Ou saisissez cette clé à la main :",
+      "code": "Code à six chiffres de l'application",
+      "activate": "Activer",
+      "activated": "L'authentification à deux facteurs est active.",
+      "recoveryTitle": "Codes de récupération",
+      "recoveryIntro": "Conservez ces codes en lieu sûr. Chacun remplace une fois le code de l'application. Ils ne sont affichés que maintenant.",
+      "recoveryDone": "J'ai enregistré les codes",
+      "disableTitle": "Supprimer le deuxième facteur",
+      "disableIntro": "Votre mot de passe actuel est requis pour confirmer.",
+      "disable": "Supprimer",
+      "disabled": "Authentification à deux facteurs supprimée."
     }
   },
   "impersonation": {
@@ -219,6 +246,10 @@
     "not_impersonating": "Cette session n'a pas été ouverte par un opérateur.",
     "impersonation_read_only": "Tant que vous consultez le portail en tant que client, vous ne pouvez pas modifier ce compte.",
     "session_ended": "La session a pris fin. Veuillez vous reconnecter.",
-    "plan_in_use": "Un abonnement utilise encore ce forfait, il ne peut donc pas être supprimé."
+    "plan_in_use": "Un abonnement utilise encore ce forfait, il ne peut donc pas être supprimé.",
+    "invalid_code": "Ce code n'est pas correct. Veuillez réessayer.",
+    "invalid_challenge": "La connexion a expiré. Veuillez vous reconnecter.",
+    "two_factor_already_enabled": "Ce compte possède déjà un deuxième facteur.",
+    "invalid_password": "Ce mot de passe n'est pas correct."
   }
 }

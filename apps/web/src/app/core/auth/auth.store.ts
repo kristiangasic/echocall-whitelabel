@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../api/api.service';
-import type { SessionUser } from '../models';
+import type { LoginResult, SessionUser, TwoFactorChallenge } from '../models';
 
 /** The signed-in user, loaded once at start-up and kept in sync by the login, logout and profile calls. */
 @Injectable({ providedIn: 'root' })
@@ -26,8 +26,23 @@ export class AuthStore {
     return this.user();
   }
 
-  async login(email: string, password: string): Promise<SessionUser> {
-    const user = await firstValueFrom(this.api.post<SessionUser>('/auth/login', { email, password }));
+  /**
+   * The password step. An account with a second factor is not signed in yet
+   * when this resolves: it answers with a challenge, and the session starts in
+   * verifyTwoFactor.
+   */
+  async login(email: string, password: string): Promise<LoginResult> {
+    const body = await firstValueFrom(
+      this.api.post<SessionUser | TwoFactorChallenge>('/auth/login', { email, password }),
+    );
+    if ('challenge' in body) return { kind: 'challenge', challenge: body };
+    this.user.set(body);
+    return { kind: 'session', user: body };
+  }
+
+  /** The second step: the code from the app, or one of the recovery codes. */
+  async verifyTwoFactor(challenge: string, code: string): Promise<SessionUser> {
+    const user = await firstValueFrom(this.api.post<SessionUser>('/auth/2fa/verify', { challenge, code }));
     this.user.set(user);
     return user;
   }

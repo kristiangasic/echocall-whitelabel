@@ -126,7 +126,14 @@
       "submit": "Konto aktivieren",
       "invalid": "Diese Einladung ist ungültig oder abgelaufen. Bitten Sie um eine neue Einladung."
     },
-    "passwordHint": "Mindestens 10 Zeichen"
+    "passwordHint": "Mindestens 10 Zeichen",
+    "twoFactor": {
+      "title": "Zwei-Faktor-Authentifizierung",
+      "intro": "Geben Sie den Code aus Ihrer Authenticator-App ein. Ein Wiederherstellungscode funktioniert hier ebenso.",
+      "code": "Code",
+      "submit": "Anmeldung abschließen",
+      "recoveryHint": "Kein Zugriff auf die App? Verwenden Sie einen Ihrer Wiederherstellungscodes."
+    }
   },
   "setup": {
     "title": "Ersteinrichtung",
@@ -150,7 +157,8 @@
     "title": "Mein Konto",
     "tabs": {
       "billing": "Abrechnung",
-      "profile": "Profil"
+      "profile": "Profil",
+      "security": "Sicherheit"
     },
     "profile": {
       "title": "Profil",
@@ -161,6 +169,25 @@
       "intro": "Zur Bestätigung ist das aktuelle Passwort nötig.",
       "submit": "Passwort ändern",
       "saved": "Passwort geändert."
+    },
+    "twoFactor": {
+      "title": "Zwei-Faktor-Authentifizierung",
+      "intro": "Ein zweiter Faktor schützt Ihr Konto auch dann, wenn Ihr Passwort bekannt wird.",
+      "statusOn": "Aktiv. Bei jeder Anmeldung wird zusätzlich ein Code abgefragt.",
+      "statusOff": "Nicht eingerichtet.",
+      "start": "Einrichten",
+      "scan": "Scannen Sie diesen Code mit Ihrer Authenticator-App.",
+      "manual": "Oder tragen Sie diesen Schlüssel von Hand ein:",
+      "code": "Sechsstelliger Code aus der App",
+      "activate": "Aktivieren",
+      "activated": "Zwei-Faktor-Authentifizierung ist aktiv.",
+      "recoveryTitle": "Wiederherstellungscodes",
+      "recoveryIntro": "Bewahren Sie diese Codes sicher auf. Jeder Code ersetzt einmal den Code aus der App. Sie werden nur jetzt angezeigt.",
+      "recoveryDone": "Ich habe die Codes gespeichert",
+      "disableTitle": "Zweiten Faktor entfernen",
+      "disableIntro": "Zur Bestätigung ist Ihr aktuelles Passwort nötig.",
+      "disable": "Entfernen",
+      "disabled": "Zwei-Faktor-Authentifizierung entfernt."
     }
   },
   "impersonation": {
@@ -219,6 +246,10 @@
     "not_impersonating": "Diese Sitzung wurde nicht von einem Betreiber geöffnet.",
     "impersonation_read_only": "Solange Sie das Portal als Kunde ansehen, können Sie dieses Konto nicht ändern.",
     "session_ended": "Die Sitzung wurde beendet. Bitte melden Sie sich erneut an.",
-    "plan_in_use": "Dieser Tarif wird noch von einem Abonnement genutzt und kann nicht gelöscht werden."
+    "plan_in_use": "Dieser Tarif wird noch von einem Abonnement genutzt und kann nicht gelöscht werden.",
+    "invalid_code": "Dieser Code stimmt nicht. Bitte versuchen Sie es erneut.",
+    "invalid_challenge": "Die Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an.",
+    "two_factor_already_enabled": "Für dieses Konto ist bereits ein zweiter Faktor eingerichtet.",
+    "invalid_password": "Das Passwort stimmt nicht."
   }
 }

@@ -47,14 +47,18 @@ describe('AccountPage', () => {
   it('offers a linked customer the billing tab', async () => {
     const fixture = await render(CUSTOMER);
 
-    expect(tabLabels(fixture)).toEqual([TEXTS.account.tabs.profile, TEXTS.account.tabs.billing]);
+    expect(tabLabels(fixture)).toEqual([
+      TEXTS.account.tabs.profile,
+      TEXTS.account.tabs.security,
+      TEXTS.account.tabs.billing,
+    ]);
   });
 
   it('keeps billing away from an account without a customer', async () => {
     const fixture = await render(OPERATOR);
 
     expect(fixture.componentInstance.showBilling()).toBe(false);
-    expect(tabLabels(fixture)).toEqual([TEXTS.account.tabs.profile]);
+    expect(tabLabels(fixture)).toEqual([TEXTS.account.tabs.profile, TEXTS.account.tabs.security]);
   });
 
   it('leaves the password form clean after a successful change', async () => {

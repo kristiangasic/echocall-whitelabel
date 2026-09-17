@@ -126,7 +126,14 @@
       "submit": "Activate account",
       "invalid": "This invitation is invalid or has expired. Ask for a new invitation."
     },
-    "passwordHint": "At least 10 characters"
+    "passwordHint": "At least 10 characters",
+    "twoFactor": {
+      "title": "Two-factor authentication",
+      "intro": "Enter the code from your authenticator app. A recovery code works here as well.",
+      "code": "Code",
+      "submit": "Complete sign-in",
+      "recoveryHint": "No access to the app? Use one of your recovery codes."
+    }
   },
   "setup": {
     "title": "First-time setup",
@@ -150,7 +157,8 @@
     "title": "My account",
     "tabs": {
       "billing": "Billing",
-      "profile": "Profile"
+      "profile": "Profile",
+      "security": "Security"
     },
     "profile": {
       "title": "Profile",
@@ -161,6 +169,25 @@
       "intro": "Your current password is required to confirm the change.",
       "submit": "Change password",
       "saved": "Password changed."
+    },
+    "twoFactor": {
+      "title": "Two-factor authentication",
+      "intro": "A second factor protects your account even when your password becomes known.",
+      "statusOn": "Active. Every sign-in asks for a code as well.",
+      "statusOff": "Not set up.",
+      "start": "Set up",
+      "scan": "Scan this code with your authenticator app.",
+      "manual": "Or type this key by hand:",
+      "code": "Six-digit code from the app",
+      "activate": "Activate",
+      "activated": "Two-factor authentication is active.",
+      "recoveryTitle": "Recovery codes",
+      "recoveryIntro": "Keep these codes somewhere safe. Each one replaces the code from the app once. They are shown now and never again.",
+      "recoveryDone": "I have saved the codes",
+      "disableTitle": "Remove the second factor",
+      "disableIntro": "Your current password is required to confirm this.",
+      "disable": "Remove",
+      "disabled": "Two-factor authentication removed."
     }
   },
   "impersonation": {
@@ -219,6 +246,10 @@
     "not_impersonating": "This session was not opened by an operator.",
     "impersonation_read_only": "While you view the portal as a customer you cannot change this account.",
     "session_ended": "The session has ended. Please sign in again.",
-    "plan_in_use": "A subscription still uses this plan, so it cannot be deleted."
+    "plan_in_use": "A subscription still uses this plan, so it cannot be deleted.",
+    "invalid_code": "That code is not correct. Please try again.",
+    "invalid_challenge": "The sign-in has expired. Please sign in again.",
+    "two_factor_already_enabled": "This account already has a second factor.",
+    "invalid_password": "That password is not correct."
   }
 }

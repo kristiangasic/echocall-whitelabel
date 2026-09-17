@@ -26,9 +26,21 @@ export interface SessionUser {
   lastName: string | null;
   language: Language;
   echocallCustomerId: number | null;
+  /** True once this login is protected by a second factor. */
+  twoFactorEnabled?: boolean;
   /** Set while an operator is viewing the portal as this customer. */
   impersonator?: Impersonator | null;
 }
+
+/** What the password step answers with when the account asks for a second factor. */
+export interface TwoFactorChallenge {
+  challenge: string;
+  expiresAt: string;
+}
+
+/** Either the portal is open, or it wants the code from the authenticator app. */
+export type LoginResult =
+  { kind: 'session'; user: SessionUser } | { kind: 'challenge'; challenge: TwoFactorChallenge };
 
 export interface Branding {
   productName: string;

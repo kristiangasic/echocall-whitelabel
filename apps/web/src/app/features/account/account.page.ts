@@ -17,6 +17,7 @@ import { FieldErrorPipe } from '../../shared/forms/field-error.pipe';
 import { applyServerErrors } from '../../shared/forms/server-errors';
 import { matchValidator, PASSWORD_MIN_LENGTH } from '../../shared/forms/validators';
 import { BillingPanel } from './billing.panel';
+import { TwoFactorPanel } from './two-factor.panel';
 
 /** Profile and password of the signed-in person; available to both roles. */
 @Component({
@@ -32,6 +33,7 @@ import { BillingPanel } from './billing.panel';
     TranslocoDirective,
     FieldErrorPipe,
     BillingPanel,
+    TwoFactorPanel,
   ],
   template: `
     <ng-container *transloco="let t">
@@ -117,6 +119,13 @@ import { BillingPanel } from './billing.panel';
               </mat-card-content>
             </mat-card>
           </div>
+        </mat-tab>
+        <mat-tab [label]="t('account.tabs.security')" data-testid="security-tab">
+          <ng-template matTabContent>
+            <div class="cards">
+              <app-two-factor-panel />
+            </div>
+          </ng-template>
         </mat-tab>
         @if (showBilling()) {
           <mat-tab [label]="t('account.tabs.billing')" data-testid="billing-tab">
