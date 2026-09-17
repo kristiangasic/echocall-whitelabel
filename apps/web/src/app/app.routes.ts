@@ -76,6 +76,16 @@ export const routes: Routes = [
             loadComponent: () => import('./features/admin/addons/addons.page').then((m) => m.AdminAddonsPage),
           },
           {
+            path: 'invoices',
+            loadComponent: () =>
+              import('./features/admin/invoices/invoices.page').then((m) => m.AdminInvoicesPage),
+          },
+          {
+            path: 'invoices/:id',
+            loadComponent: () =>
+              import('./features/admin/invoices/invoice-detail.page').then((m) => m.AdminInvoiceDetailPage),
+          },
+          {
             path: 'users',
             loadComponent: () =>
               import('./features/admin/users/admin-users.page').then((m) => m.AdminUsersPage),
