@@ -59,91 +59,93 @@ interface TestDelivery {
         <mat-progress-bar mode="indeterminate" />
       }
 
-      <table mat-table [dataSource]="webhooks()" data-testid="webhooks-table">
-        <ng-container matColumnDef="url">
-          <th mat-header-cell *matHeaderCellDef>{{ t('user.webhooks.url') }}</th>
-          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.webhooks.url')">
-            <span class="url">{{ row.url }}</span>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="events">
-          <th mat-header-cell *matHeaderCellDef>{{ t('user.webhooks.events') }}</th>
-          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.webhooks.events')">
-            <mat-chip-set>
-              @for (event of events(row); track event) {
-                <mat-chip>{{ event === '*' ? t('user.webhooks.allEvents') : event }}</mat-chip>
+      <div class="table-wrap">
+        <table mat-table [dataSource]="webhooks()" data-testid="webhooks-table">
+          <ng-container matColumnDef="url">
+            <th mat-header-cell *matHeaderCellDef>{{ t('user.webhooks.url') }}</th>
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.webhooks.url')">
+              <span class="url">{{ row.url }}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="events">
+            <th mat-header-cell *matHeaderCellDef>{{ t('user.webhooks.events') }}</th>
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.webhooks.events')">
+              <mat-chip-set>
+                @for (event of events(row); track event) {
+                  <mat-chip>{{ event === '*' ? t('user.webhooks.allEvents') : event }}</mat-chip>
+                }
+              </mat-chip-set>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.status')">
+              <mat-chip-set>
+                <mat-chip [highlighted]="row.isActive">
+                  {{ t(row.isActive ? 'user.webhooks.active' : 'user.webhooks.inactive') }}
+                </mat-chip>
+              </mat-chip-set>
+              @if (row.failedDeliveries) {
+                <span class="sub">
+                  {{ t('user.webhooks.failures', { count: row.failedDeliveries }) }}
+                </span>
               }
-            </mat-chip-set>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-          <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.status')">
-            <mat-chip-set>
-              <mat-chip [highlighted]="row.isActive">
-                {{ t(row.isActive ? 'user.webhooks.active' : 'user.webhooks.inactive') }}
-              </mat-chip>
-            </mat-chip-set>
-            @if (row.failedDeliveries) {
-              <span class="sub">
-                {{ t('user.webhooks.failures', { count: row.failedDeliveries }) }}
-              </span>
-            }
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="lastDelivery">
-          <th mat-header-cell *matHeaderCellDef>{{ t('user.webhooks.lastDelivery') }}</th>
-          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.webhooks.lastDelivery')">
-            @if (row.lastDeliveryAt) {
-              {{ row.lastDeliveryAt | localDate: 'short' }}
-              <span class="sub">{{ row.lastDeliveryStatus }}</span>
-            } @else {
-              {{ t('user.webhooks.never') }}
-            }
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let row" class="row-actions">
-            <button
-              mat-icon-button
-              type="button"
-              (click)="test(row)"
-              [disabled]="busy()"
-              [matTooltip]="t('user.webhooks.test')"
-              [attr.aria-label]="t('user.webhooks.test')"
-              [attr.data-testid]="'webhook-test-' + row.id"
-            >
-              <mat-icon>bolt</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              type="button"
-              (click)="edit(row)"
-              [matTooltip]="t('actions.edit')"
-              [attr.aria-label]="t('actions.edit')"
-            >
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              type="button"
-              (click)="remove(row)"
-              [matTooltip]="t('actions.delete')"
-              [attr.aria-label]="t('actions.delete')"
-            >
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="columns"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns"></tr>
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell empty" [attr.colspan]="columns.length">
-            {{ t('user.webhooks.empty') }}
-          </td>
-        </tr>
-      </table>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="lastDelivery">
+            <th mat-header-cell *matHeaderCellDef>{{ t('user.webhooks.lastDelivery') }}</th>
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.webhooks.lastDelivery')">
+              @if (row.lastDeliveryAt) {
+                {{ row.lastDeliveryAt | localDate: 'short' }}
+                <span class="sub">{{ row.lastDeliveryStatus }}</span>
+              } @else {
+                {{ t('user.webhooks.never') }}
+              }
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row" class="row-actions">
+              <button
+                mat-icon-button
+                type="button"
+                (click)="test(row)"
+                [disabled]="busy()"
+                [matTooltip]="t('user.webhooks.test')"
+                [attr.aria-label]="t('user.webhooks.test')"
+                [attr.data-testid]="'webhook-test-' + row.id"
+              >
+                <mat-icon>bolt</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="edit(row)"
+                [matTooltip]="t('actions.edit')"
+                [attr.aria-label]="t('actions.edit')"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="remove(row)"
+                [matTooltip]="t('actions.delete')"
+                [attr.aria-label]="t('actions.delete')"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell empty" [attr.colspan]="columns.length">
+              {{ t('user.webhooks.empty') }}
+            </td>
+          </tr>
+        </table>
+      </div>
     </ng-container>
   `,
   styles: `

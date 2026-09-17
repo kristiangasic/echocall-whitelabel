@@ -60,81 +60,83 @@ interface TestResult {
         <mat-progress-bar mode="indeterminate" />
       }
 
-      <table mat-table [dataSource]="integrations()" data-testid="integrations-table">
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>{{ t('user.integrations.name') }}</th>
-          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.integrations.name')">
-            <strong>{{ row.name }}</strong>
-            <span class="sub">{{ typeName(row.type) }}</span>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-          <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.status')">
-            <mat-chip-set>
-              <mat-chip [highlighted]="row.isActive">
-                {{ t(row.isActive ? 'user.integrations.active' : 'user.integrations.inactive') }}
-              </mat-chip>
-            </mat-chip-set>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="lastUsed">
-          <th mat-header-cell *matHeaderCellDef>{{ t('user.integrations.lastUsed') }}</th>
-          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.integrations.lastUsed')">
-            {{ row.lastUsedAt ? (row.lastUsedAt | localDate: 'short') : t('user.integrations.never') }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let row" class="row-actions">
-            <button
-              mat-icon-button
-              type="button"
-              (click)="test(row)"
-              [disabled]="busy()"
-              [matTooltip]="t('user.integrations.test')"
-              [attr.aria-label]="t('user.integrations.test')"
-              [attr.data-testid]="'integration-test-' + row.id"
-            >
-              <mat-icon>bolt</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              type="button"
-              (click)="showTools(row)"
-              [matTooltip]="t('user.integrations.tools')"
-              [attr.aria-label]="t('user.integrations.tools')"
-            >
-              <mat-icon>handyman</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              type="button"
-              (click)="edit(row)"
-              [matTooltip]="t('actions.edit')"
-              [attr.aria-label]="t('actions.edit')"
-            >
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              type="button"
-              (click)="remove(row)"
-              [matTooltip]="t('actions.delete')"
-              [attr.aria-label]="t('actions.delete')"
-            >
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="columns"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns"></tr>
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell empty" [attr.colspan]="columns.length">
-            {{ t('user.integrations.empty') }}
-          </td>
-        </tr>
-      </table>
+      <div class="table-wrap">
+        <table mat-table [dataSource]="integrations()" data-testid="integrations-table">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>{{ t('user.integrations.name') }}</th>
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.integrations.name')">
+              <strong>{{ row.name }}</strong>
+              <span class="sub">{{ typeName(row.type) }}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.status')">
+              <mat-chip-set>
+                <mat-chip [highlighted]="row.isActive">
+                  {{ t(row.isActive ? 'user.integrations.active' : 'user.integrations.inactive') }}
+                </mat-chip>
+              </mat-chip-set>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="lastUsed">
+            <th mat-header-cell *matHeaderCellDef>{{ t('user.integrations.lastUsed') }}</th>
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.integrations.lastUsed')">
+              {{ row.lastUsedAt ? (row.lastUsedAt | localDate: 'short') : t('user.integrations.never') }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row" class="row-actions">
+              <button
+                mat-icon-button
+                type="button"
+                (click)="test(row)"
+                [disabled]="busy()"
+                [matTooltip]="t('user.integrations.test')"
+                [attr.aria-label]="t('user.integrations.test')"
+                [attr.data-testid]="'integration-test-' + row.id"
+              >
+                <mat-icon>bolt</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="showTools(row)"
+                [matTooltip]="t('user.integrations.tools')"
+                [attr.aria-label]="t('user.integrations.tools')"
+              >
+                <mat-icon>handyman</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="edit(row)"
+                [matTooltip]="t('actions.edit')"
+                [attr.aria-label]="t('actions.edit')"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="remove(row)"
+                [matTooltip]="t('actions.delete')"
+                [attr.aria-label]="t('actions.delete')"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell empty" [attr.colspan]="columns.length">
+              {{ t('user.integrations.empty') }}
+            </td>
+          </tr>
+        </table>
+      </div>
 
       <h2 class="catalog-title">{{ t('user.integrations.catalog') }}</h2>
       <div class="catalog" data-testid="integrations-catalog">

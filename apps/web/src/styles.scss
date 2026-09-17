@@ -105,6 +105,15 @@ body {
   }
 }
 
+// A card already frames what it holds; the wrap inside one is there for the
+// phone layout alone and draws no second border around the table.
+mat-card .table-wrap,
+mat-dialog-content .table-wrap {
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
 // On a phone a table with six columns is either unreadable or a sideways scroll,
 // so every row becomes a card: the header row goes away and each cell carries its
 // own label, which the cell itself supplies as data-label. Nothing is hidden, the

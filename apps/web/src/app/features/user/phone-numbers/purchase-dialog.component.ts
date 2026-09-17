@@ -85,50 +85,52 @@ export interface PurchaseResult {
         }
 
         @if (searched()) {
-          <table mat-table [dataSource]="offers()" data-testid="purchase-results">
-            <ng-container matColumnDef="number">
-              <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.number') }}</th>
-              <td mat-cell *matCellDef="let offer" [attr.data-label]="t('user.numbers.number')">
-                {{ offer.number }}
-                @if (offer.areaName) {
-                  <span class="area">{{ offer.areaName }}</span>
-                }
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="setup">
-              <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.setupPrice') }}</th>
-              <td mat-cell *matCellDef="let offer" [attr.data-label]="t('user.numbers.setupPrice')">
-                {{ money(offer.setupPrice) }}
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="monthly">
-              <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.monthly') }}</th>
-              <td mat-cell *matCellDef="let offer" [attr.data-label]="t('user.numbers.monthly')">
-                {{ money(offer.monthlyPrice) }}
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef></th>
-              <td mat-cell *matCellDef="let offer" class="cell-actions">
-                <button
-                  mat-stroked-button
-                  type="button"
-                  (click)="buy(offer)"
-                  [disabled]="busy()"
-                  data-testid="purchase-buy"
-                >
-                  {{ t('user.numbers.buy') }}
-                </button>
-              </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="columns"></tr>
-            <tr mat-row *matRowDef="let row; columns: columns"></tr>
-            <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell empty" [attr.colspan]="columns.length">
-                {{ t('user.numbers.searchEmpty') }}
-              </td>
-            </tr>
-          </table>
+          <div class="table-wrap">
+            <table mat-table [dataSource]="offers()" data-testid="purchase-results">
+              <ng-container matColumnDef="number">
+                <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.number') }}</th>
+                <td mat-cell *matCellDef="let offer" [attr.data-label]="t('user.numbers.number')">
+                  {{ offer.number }}
+                  @if (offer.areaName) {
+                    <span class="area">{{ offer.areaName }}</span>
+                  }
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="setup">
+                <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.setupPrice') }}</th>
+                <td mat-cell *matCellDef="let offer" [attr.data-label]="t('user.numbers.setupPrice')">
+                  {{ money(offer.setupPrice) }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="monthly">
+                <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.monthly') }}</th>
+                <td mat-cell *matCellDef="let offer" [attr.data-label]="t('user.numbers.monthly')">
+                  {{ money(offer.monthlyPrice) }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let offer" class="cell-actions">
+                  <button
+                    mat-stroked-button
+                    type="button"
+                    (click)="buy(offer)"
+                    [disabled]="busy()"
+                    data-testid="purchase-buy"
+                  >
+                    {{ t('user.numbers.buy') }}
+                  </button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="columns"></tr>
+              <tr mat-row *matRowDef="let row; columns: columns"></tr>
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell empty" [attr.colspan]="columns.length">
+                  {{ t('user.numbers.searchEmpty') }}
+                </td>
+              </tr>
+            </table>
+          </div>
           <p class="hint">{{ t('user.numbers.priceHint') }}</p>
         }
       </mat-dialog-content>

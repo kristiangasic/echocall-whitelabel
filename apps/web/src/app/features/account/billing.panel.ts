@@ -97,87 +97,91 @@ const INVOICE_COLUMNS = ['number', 'issued', 'total', 'status', 'download'];
       </div>
 
       <h2 class="section">{{ t('user.billing.invoices.title') }}</h2>
-      <table mat-table [dataSource]="invoices()" data-testid="invoices-table">
-        <ng-container matColumnDef="number">
-          <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.invoices.number') }}</th>
-          <td mat-cell *matCellDef="let invoice" [attr.data-label]="t('user.billing.invoices.number')">
-            {{ invoice.invoiceNumber ?? invoice.id }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="issued">
-          <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.invoices.issued') }}</th>
-          <td mat-cell *matCellDef="let invoice" [attr.data-label]="t('user.billing.invoices.issued')">
-            {{ invoice.issuedDate ?? invoice.createdAt | localDate }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="total">
-          <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.invoices.total') }}</th>
-          <td mat-cell *matCellDef="let invoice" [attr.data-label]="t('user.billing.invoices.total')">
-            {{ money(invoice.totalEur) }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.invoices.status') }}</th>
-          <td mat-cell *matCellDef="let invoice" [attr.data-label]="t('user.billing.invoices.status')">
-            {{ invoiceStatus(invoice.status) }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="download">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let invoice" class="cell-actions">
-            <button
-              mat-icon-button
-              type="button"
-              (click)="download(invoice)"
-              [disabled]="downloading() !== null"
-              [attr.aria-label]="t('user.billing.invoices.download')"
-              [attr.data-testid]="'invoice-download-' + invoice.id"
-            >
-              <mat-icon>download</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="invoiceColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: invoiceColumns"></tr>
-      </table>
+      <div class="table-wrap">
+        <table mat-table [dataSource]="invoices()" data-testid="invoices-table">
+          <ng-container matColumnDef="number">
+            <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.invoices.number') }}</th>
+            <td mat-cell *matCellDef="let invoice" [attr.data-label]="t('user.billing.invoices.number')">
+              {{ invoice.invoiceNumber ?? invoice.id }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="issued">
+            <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.invoices.issued') }}</th>
+            <td mat-cell *matCellDef="let invoice" [attr.data-label]="t('user.billing.invoices.issued')">
+              {{ invoice.issuedDate ?? invoice.createdAt | localDate }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.invoices.total') }}</th>
+            <td mat-cell *matCellDef="let invoice" [attr.data-label]="t('user.billing.invoices.total')">
+              {{ money(invoice.totalEur) }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.invoices.status') }}</th>
+            <td mat-cell *matCellDef="let invoice" [attr.data-label]="t('user.billing.invoices.status')">
+              {{ invoiceStatus(invoice.status) }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="download">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let invoice" class="cell-actions">
+              <button
+                mat-icon-button
+                type="button"
+                (click)="download(invoice)"
+                [disabled]="downloading() !== null"
+                [attr.aria-label]="t('user.billing.invoices.download')"
+                [attr.data-testid]="'invoice-download-' + invoice.id"
+              >
+                <mat-icon>download</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="invoiceColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: invoiceColumns"></tr>
+        </table>
+      </div>
       @if (invoices().length === 0 && !loading()) {
         <p class="empty">{{ t('user.billing.invoices.empty') }}</p>
       }
 
       <h2 class="section">{{ t('user.billing.transactions.title') }}</h2>
-      <table mat-table [dataSource]="transactions()" data-testid="transactions-table">
-        <ng-container matColumnDef="booked">
-          <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.transactions.booked') }}</th>
-          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.billing.transactions.booked')">
-            {{ row.createdAt | localDate: 'short' }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.transactions.description') }}</th>
-          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.billing.transactions.description')">
-            {{ row.description || transactionType(row.type) }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="amount">
-          <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.transactions.amount') }}</th>
-          <td
-            mat-cell
-            *matCellDef="let row"
-            [attr.data-label]="t('user.billing.transactions.amount')"
-            [class.negative]="row.amount < 0"
-          >
-            {{ money(row.amount) }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="balance">
-          <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.transactions.balance') }}</th>
-          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.billing.transactions.balance')">
-            {{ money(row.balanceAfter) }}
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="transactionColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: transactionColumns"></tr>
-      </table>
+      <div class="table-wrap">
+        <table mat-table [dataSource]="transactions()" data-testid="transactions-table">
+          <ng-container matColumnDef="booked">
+            <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.transactions.booked') }}</th>
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.billing.transactions.booked')">
+              {{ row.createdAt | localDate: 'short' }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.transactions.description') }}</th>
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.billing.transactions.description')">
+              {{ row.description || transactionType(row.type) }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.transactions.amount') }}</th>
+            <td
+              mat-cell
+              *matCellDef="let row"
+              [attr.data-label]="t('user.billing.transactions.amount')"
+              [class.negative]="row.amount < 0"
+            >
+              {{ money(row.amount) }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="balance">
+            <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.transactions.balance') }}</th>
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.billing.transactions.balance')">
+              {{ money(row.balanceAfter) }}
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="transactionColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: transactionColumns"></tr>
+        </table>
+      </div>
       @if (transactions().length === 0 && !loading()) {
         <p class="empty">{{ t('user.billing.transactions.empty') }}</p>
       }
