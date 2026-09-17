@@ -15,7 +15,11 @@ import { LANGUAGES, type SessionUser } from '../../core/models';
 import { NotifyService } from '../../core/notify/notify.service';
 import { FieldErrorPipe } from '../../shared/forms/field-error.pipe';
 import { applyServerErrors } from '../../shared/forms/server-errors';
-import { matchValidator, PASSWORD_MIN_LENGTH } from '../../shared/forms/validators';
+import {
+  matchValidator,
+  PASSWORD_MIN_LENGTH,
+  passwordStrengthValidator,
+} from '../../shared/forms/validators';
 import { BillingPanel } from './billing.panel';
 import { TwoFactorPanel } from './two-factor.panel';
 
@@ -172,7 +176,10 @@ export class AccountPage {
   readonly password = this.fb.group(
     {
       currentPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH)]],
+      newPassword: [
+        '',
+        [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH), passwordStrengthValidator],
+      ],
       confirm: ['', Validators.required],
     },
     { validators: matchValidator('newPassword', 'confirm') },

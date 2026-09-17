@@ -12,6 +12,15 @@ give us reasonable time to ship a fix before disclosing.
 The latest release and the current `main` branch receive security fixes. Older releases
 are not patched - upgrading is the fix.
 
+## What the portal does, in one page
+
+`docs/security-review.md` is the written review of the portal: session and cookie
+handling, CSRF, rate limits, password and token rules, what each of the two proxies
+forwards, where every secret lives, what the audit log covers, the headers the portal
+sets, the dependency audit, the limits it knowingly has, and the list of things a
+self-hoster has to do that the portal cannot do for them. Read it before you put an
+installation on the open internet.
+
 ## Scope and design notes for operators
 
 - The EchoCall reseller API key is the most sensitive value in an installation. It lives
@@ -23,6 +32,8 @@ are not patched - upgrading is the fix.
   stored.
 - Login and token endpoints are rate limited. A strict Content-Security-Policy is set on
   the delivered web UI.
+- Sign-ins, refused sign-ins and every change an operator makes are written to the audit
+  log, which is where a series of attempts becomes visible.
 - Run the portal behind TLS. `COOKIE_SECURE` defaults to on when `APP_URL` is `https`.
 - Vulnerabilities in the EchoCall platform itself belong to EchoCall support, not this
   repository.

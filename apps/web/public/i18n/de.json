@@ -84,6 +84,7 @@
     "minLength": "Mindestens {{count}} Zeichen",
     "maxLength": "Höchstens {{count}} Zeichen",
     "passwordMismatch": "Die Passwörter stimmen nicht überein",
+    "weakPassword": "Dieses Passwort ist zu leicht zu erraten",
     "hexColor": "Bitte eine Farbe im Format #RRGGBB eingeben",
     "url": "Bitte eine vollständige Adresse mit https:// eingeben",
     "integer": "Bitte eine ganze Zahl eingeben",

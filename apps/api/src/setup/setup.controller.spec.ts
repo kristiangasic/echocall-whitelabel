@@ -70,7 +70,7 @@ describe('SetupController', () => {
     expect(me.body.email).toBe('owner@example.com');
 
     const audit = await t.db.db.selectFrom('auditLog').selectAll().execute();
-    expect(audit).toHaveLength(1);
+    expect(audit.map((row) => row.action)).toEqual(['setup.admin_created', 'auth.signed_in']);
     expect(audit[0]).toMatchObject({
       actorUserId: res.body.id,
       action: 'setup.admin_created',
@@ -81,6 +81,9 @@ describe('SetupController', () => {
 
     const status = await request(t.app.getHttpServer()).get('/api/setup/status');
     expect(status.body.needsAdmin).toBe(false);
+    // Anyone can ask for this once the portal is set up, so from here on it says
+    // whether the connection works and no longer whose account is behind it.
+    expect(status.body.hub).toEqual({ ok: true, checkedAt: expect.any(String) });
   });
 
   it('refuses a second administrator through the setup route', async () => {

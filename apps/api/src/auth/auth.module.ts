@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { AuditModule } from '../audit/audit.module.js';
 import { CommonModule } from '../common/common.module.js';
 import { AuthController } from './auth.controller.js';
 import { SessionGuard } from './auth.guard.js';
@@ -14,6 +15,7 @@ import { TwoFactorService } from './two-factor.service.js';
 
 @Module({
   imports: [
+    AuditModule,
     CommonModule,
     // Applied only where a route opts in with @UseGuards(ThrottlerGuard): login, forgot, reset.
     ThrottlerModule.forRoot({

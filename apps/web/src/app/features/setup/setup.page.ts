@@ -18,7 +18,11 @@ import { NotifyService } from '../../core/notify/notify.service';
 import { AuthCardComponent } from '../../shared/auth-card.component';
 import { FieldErrorPipe } from '../../shared/forms/field-error.pipe';
 import { applyServerErrors } from '../../shared/forms/server-errors';
-import { matchValidator, PASSWORD_MIN_LENGTH } from '../../shared/forms/validators';
+import {
+  matchValidator,
+  PASSWORD_MIN_LENGTH,
+  passwordStrengthValidator,
+} from '../../shared/forms/validators';
 import { LocalDatePipe } from '../../shared/local-date.pipe';
 
 @Component({
@@ -188,7 +192,10 @@ export class SetupPage implements OnInit {
       firstName: ['', Validators.maxLength(100)],
       lastName: ['', Validators.maxLength(100)],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH)]],
+      password: [
+        '',
+        [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH), passwordStrengthValidator],
+      ],
       confirm: ['', Validators.required],
       language: [this.branding.branding().defaultLanguage],
     },

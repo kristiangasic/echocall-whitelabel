@@ -205,7 +205,8 @@ describe('AccountController', () => {
       .send({ email: 'user@example.com', password: 'second password 456' });
     expect(login.status).toBe(200);
     const audit = await api().get('/api/admin/audit').set('Cookie', admin.cookie);
-    expect(audit.body.data[0]).toMatchObject({
+    expect(audit.body.data[0]).toMatchObject({ action: 'auth.signed_in', actorEmail: 'user@example.com' });
+    expect(audit.body.data[1]).toMatchObject({
       action: 'account.password_changed',
       actorEmail: 'user@example.com',
       targetId: String(user.id),

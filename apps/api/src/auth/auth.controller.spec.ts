@@ -354,4 +354,80 @@ describe('AuthController', () => {
       .send({ email: 'new@example.com', password: 'welcome aboard 1' })
       .expect(200);
   });
+
+  it('refuses a password that is long enough but an obvious guess', async () => {
+    const c = client();
+    const userId = await insertReturningId(t.db.db, t.db.dialect, 'users', {
+      email: 'weak@example.com',
+      role: 'user',
+      status: 'invited',
+      echocallCustomerId: 43,
+      language: 'de',
+    });
+    const token = await t.moduleRef.get(TokenService).issue(userId, 'invite', 60_000);
+
+    const refused = await c.post('/api/auth/accept-invite').send({ token, password: 'passwort123' });
+    expect(refused.status).toBe(400);
+    expect(refused.body.error.details[0]).toMatchObject({ path: 'password' });
+
+    const repeated = await c.post('/api/auth/accept-invite').send({ token, password: 'abcabcabcabc' });
+    expect(repeated.status).toBe(400);
+
+    // The token survives both refusals: nothing was consumed by a rejected form.
+    await c.post('/api/auth/accept-invite').send({ token, password: 'ada counts sheep' }).expect(200);
+  });
+
+  describe('the audit log', () => {
+    /** Its own account, because other tests in this file change the password of theirs. */
+    const LEDGER = { email: 'ledger@example.com', password: 'ledger keeps counting' };
+    let ledgerId: number;
+
+    beforeAll(async () => {
+      ledgerId = await insertReturningId(t.db.db, t.db.dialect, 'users', {
+        email: LEDGER.email,
+        role: 'user',
+        status: 'active',
+        echocallCustomerId: 77,
+        language: 'de',
+        passwordHash: await new PasswordService().hash(LEDGER.password),
+      });
+    });
+
+    async function entries(action: string) {
+      return t.db.db.selectFrom('auditLog').selectAll().where('action', '=', action).execute();
+    }
+
+    it('records a sign-in with the account that was let in', async () => {
+      const before = (await entries('auth.signed_in')).length;
+      await client().post('/api/auth/login').send(LEDGER).expect(200);
+      const rows = await entries('auth.signed_in');
+      expect(rows).toHaveLength(before + 1);
+      expect(rows.at(-1)).toMatchObject({
+        action: 'auth.signed_in',
+        targetType: 'user',
+        actorUserId: ledgerId,
+      });
+    });
+
+    it('records a refused sign-in with the address and the reason, never the password', async () => {
+      await client()
+        .post('/api/auth/login')
+        .send({ email: LEDGER.email, password: 'not the password' })
+        .expect(401);
+      await client()
+        .post('/api/auth/login')
+        .send({ email: 'nobody@example.com', password: 'not the password' })
+        .expect(401);
+
+      const rows = await entries('auth.sign_in_failed');
+      const details = rows.map((row) => String(row.details));
+      expect(details.some((row) => row.includes('wrong_password') && row.includes(LEDGER.email))).toBe(true);
+      expect(
+        details.some((row) => row.includes('unknown_account') && row.includes('nobody@example.com')),
+      ).toBe(true);
+      expect(details.join(' ')).not.toContain('not the password');
+      // An address nobody has an account for leaves an entry without an actor.
+      expect(rows.some((row) => row.actorUserId === null)).toBe(true);
+    });
+  });
 });

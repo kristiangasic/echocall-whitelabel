@@ -10,6 +10,7 @@ const SIMPLE: Record<string, string> = {
   required: 'validation.required',
   email: 'validation.email',
   mismatch: 'validation.passwordMismatch',
+  weakPassword: 'validation.weakPassword',
   hexColor: 'validation.hexColor',
   url: 'validation.url',
   integer: 'validation.integer',

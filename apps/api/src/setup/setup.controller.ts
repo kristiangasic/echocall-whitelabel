@@ -7,7 +7,7 @@ import { apiError } from '../common/http-error.js';
 import { LoginService } from '../auth/login.service.js';
 import type { SessionUser } from '../auth/session.service.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
-import { type HubStatus, HubStatusService } from '../echocall/hub-status.service.js';
+import { type HubStatus, HubStatusService, publicHubStatus } from '../echocall/hub-status.service.js';
 import type { PublicBranding } from '../settings/branding.js';
 import { SettingsService } from '../settings/settings.service.js';
 import { type SetupAdminDto, setupAdminSchema } from './dto.js';
@@ -32,9 +32,15 @@ export class SetupController {
   @Public()
   @Get('status')
   async status(): Promise<SetupStatus> {
+    const needsAdmin = await this.setup.needsAdmin();
+    const hub = this.hubStatus.current();
     return {
-      needsAdmin: await this.setup.needsAdmin(),
-      hub: this.hubStatus.current(),
+      needsAdmin,
+      // Until the first administrator exists, whoever reaches the portal can
+      // become it, so the setup page gets the whole connection report. Once it
+      // exists, this route is only the branding and the flag, and the report is
+      // cut back to what a stranger may know.
+      hub: needsAdmin ? hub : publicHubStatus(hub),
       branding: await this.settings.getBranding(),
     };
   }

@@ -11,7 +11,11 @@ import { readApiError } from '../../core/errors/api-error';
 import { NotifyService } from '../../core/notify/notify.service';
 import { AuthCardComponent } from '../../shared/auth-card.component';
 import { FieldErrorPipe } from '../../shared/forms/field-error.pipe';
-import { matchValidator, PASSWORD_MIN_LENGTH } from '../../shared/forms/validators';
+import {
+  matchValidator,
+  PASSWORD_MIN_LENGTH,
+  passwordStrengthValidator,
+} from '../../shared/forms/validators';
 
 @Component({
   selector: 'app-reset-password-page',
@@ -75,7 +79,10 @@ export class ResetPasswordPage {
 
   readonly form = inject(NonNullableFormBuilder).group(
     {
-      password: ['', [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH)]],
+      password: [
+        '',
+        [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH), passwordStrengthValidator],
+      ],
       confirm: ['', Validators.required],
     },
     { validators: matchValidator('password', 'confirm') },

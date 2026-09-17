@@ -14,6 +14,16 @@ export interface HubStatus {
 
 export const HUB_STATUS_INTERVAL_MS = 10 * 60_000;
 
+/**
+ * What a caller without a session may learn about the connection: whether it
+ * works and when it was last checked. Which account the key belongs to, its
+ * address and the message of the service stay behind the sign-in, because they
+ * say something about the operator and about what the portal is built on.
+ */
+export function publicHubStatus(status: HubStatus): HubStatus {
+  return { ok: status.ok, checkedAt: status.checkedAt };
+}
+
 const NOT_CHECKED: HubStatus = {
   ok: false,
   checkedAt: '',

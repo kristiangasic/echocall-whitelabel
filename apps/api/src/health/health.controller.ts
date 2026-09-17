@@ -4,11 +4,12 @@ import { sql } from 'kysely';
 import { Public } from '../auth/decorators.js';
 import { DB } from '../db/db.service.js';
 import type { Db } from '../db/dialect.js';
-import { type HubStatus, HubStatusService } from '../echocall/hub-status.service.js';
+import { type HubStatus, HubStatusService, publicHubStatus } from '../echocall/hub-status.service.js';
 
 export interface ReadinessReport {
   status: 'ok' | 'degraded';
   database: boolean;
+  /** Reduced on purpose: the probe is public, so it says whether, not who. */
   hub: HubStatus;
 }
 
@@ -37,7 +38,7 @@ export class HealthController {
     } catch {
       database = false;
     }
-    const hub = this.hubStatus.current();
+    const hub = publicHubStatus(this.hubStatus.current());
     const ready = database && hub.ok;
     const report: ReadinessReport = { status: ready ? 'ok' : 'degraded', database, hub };
     res.status(ready ? 200 : 503).json(report);

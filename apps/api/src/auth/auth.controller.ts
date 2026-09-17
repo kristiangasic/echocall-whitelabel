@@ -1,6 +1,7 @@
 import { Body, Controller, Get, HttpCode, Inject, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
+import { AuditService } from '../audit/audit.service.js';
 import { apiError } from '../common/http-error.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { APP_CONFIG, type AppConfig } from '../config/env.js';
@@ -46,6 +47,7 @@ export class AuthController {
     private readonly tokens: TokenService,
     private readonly logins: LoginService,
     private readonly twoFactor: TwoFactorService,
+    private readonly audit: AuditService,
   ) {}
 
   @Public()
@@ -63,8 +65,17 @@ export class AuthController {
       .where('email', '=', body.email)
       .executeTakeFirst();
     const ok = await this.passwords.verify(user?.passwordHash ?? null, body.password);
-    if (!user || !ok) throw apiError(401, 'invalid_credentials', 'E-mail or password is incorrect');
-    if (user.status !== 'active') throw apiError(403, 'account_disabled', 'This account is disabled');
+    // A refused attempt is written down with the address that was typed, so an
+    // operator can see a series of them. The answer stays the same either way.
+    if (!user || !ok) {
+      const reason = user ? 'wrong_password' : 'unknown_account';
+      await this.recordRefusal(body.email, user?.id ?? null, reason, req);
+      throw apiError(401, 'invalid_credentials', 'E-mail or password is incorrect');
+    }
+    if (user.status !== 'active') {
+      await this.recordRefusal(body.email, user.id, `account_${user.status}`, req);
+      throw apiError(403, 'account_disabled', 'This account is disabled');
+    }
     // The password alone is not a sign-in for an account that asked for a
     // second factor: no session, no cookie, only a short lived challenge.
     if (this.twoFactor.isEnabled(user)) {
@@ -123,9 +134,16 @@ export class AuthController {
       .where('id', '=', user.id)
       .execute();
     await this.sessions.revokeAllForUser(user.id);
+    await this.audit.record({
+      actorUserId: user.id,
+      action: 'auth.password_reset',
+      targetType: 'user',
+      targetId: user.id,
+    });
   }
 
   @Public()
+  @UseGuards(ThrottlerGuard)
   @Post('accept-invite')
   @HttpCode(200)
   async acceptInvite(
@@ -148,6 +166,18 @@ export class AuthController {
     const updated = await this.findById(user.id);
     if (!updated) throw apiError(400, 'invalid_token', 'This link is invalid or has expired');
     return this.logins.startSession(updated, req, res);
+  }
+
+  /** One refused sign-in. The password itself never reaches the log. */
+  private recordRefusal(email: string, userId: number | null, reason: string, req: Request): Promise<void> {
+    return this.audit.record({
+      actorUserId: userId,
+      action: 'auth.sign_in_failed',
+      targetType: 'user',
+      targetId: userId ?? undefined,
+      details: { email, reason },
+      ip: req.ip,
+    });
   }
 
   private findById(id: number): Promise<UserRow | undefined> {

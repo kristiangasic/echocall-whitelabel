@@ -32,6 +32,14 @@ describe('HealthController', () => {
     expect(res.body.hub.ok).toBe(true);
   });
 
+  it('keeps the account behind the key out of the probe', async () => {
+    const res = await api().get('/readyz').expect(200);
+    // The probe is reachable without a session, so it says whether the service
+    // answers and when it was asked, not who the key belongs to.
+    expect(res.body.hub).toEqual({ ok: true, checkedAt: expect.any(String) });
+    expect(JSON.stringify(res.body)).not.toContain('operator@example.com');
+  });
+
   it('reports degraded with a 503 when the hub rejects the key', async () => {
     const rejecting = await createTestApp([HealthModule], {
       hub: createHubFake({
@@ -44,6 +52,9 @@ describe('HealthController', () => {
       expect(res.body.status).toBe('degraded');
       expect(res.body.database).toBe(true);
       expect(res.body.hub.ok).toBe(false);
+      // Not even the reason: what the service answered belongs in the log and
+      // in the admin overview, not in an answer to whoever asks.
+      expect(JSON.stringify(res.body)).not.toContain('nope');
     } finally {
       await rejecting.close();
     }

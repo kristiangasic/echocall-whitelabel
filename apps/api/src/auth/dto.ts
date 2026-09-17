@@ -1,7 +1,12 @@
 import { z } from 'zod';
+import { isWeakPassword } from './weak-password.js';
 
 export const emailSchema = z.string().trim().toLowerCase().pipe(z.email());
-export const passwordSchema = z.string().min(10, 'Password must be at least 10 characters').max(200);
+export const passwordSchema = z
+  .string()
+  .min(10, 'Password must be at least 10 characters')
+  .max(200)
+  .refine((value) => !isWeakPassword(value), 'Password is too easy to guess');
 const tokenSchema = z.string().min(20).max(200);
 export const nameSchema = z.string().trim().max(100);
 
