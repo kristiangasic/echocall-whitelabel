@@ -15,7 +15,29 @@
       "title": "User accounts",
       "total": "{{count}} accounts in total",
       "manage": "Manage users"
-    }
+    },
+    "customers": {
+      "title": "Customers",
+      "customers": "Customers",
+      "voiceAgents": "Voice agents",
+      "chatbots": "Chatbots",
+      "usage": "Usage (30 days)"
+    },
+    "balance": {
+      "title": "Portal balance",
+      "credit": "Balance",
+      "voiceMinutes": "Voice minutes",
+      "chatMessages": "Chat messages"
+    },
+    "subscriptions": {
+      "title": "Subscriptions",
+      "total": "Subscriptions in total"
+    },
+    "tickets": {
+      "title": "Tickets",
+      "open": "Open tickets"
+    },
+    "unavailable": "The service did not return these figures just now."
   },
   "users": {
     "title": "Users",

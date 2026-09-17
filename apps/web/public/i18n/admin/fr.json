@@ -15,7 +15,29 @@
       "title": "Comptes utilisateurs",
       "total": "{{count}} comptes au total",
       "manage": "Gérer les utilisateurs"
-    }
+    },
+    "customers": {
+      "title": "Clients",
+      "customers": "Clients",
+      "voiceAgents": "Agents vocaux",
+      "chatbots": "Chatbots",
+      "usage": "Consommation (30 jours)"
+    },
+    "balance": {
+      "title": "Solde du portail",
+      "credit": "Solde",
+      "voiceMinutes": "Minutes vocales",
+      "chatMessages": "Messages de chat"
+    },
+    "subscriptions": {
+      "title": "Abonnements",
+      "total": "Abonnements au total"
+    },
+    "tickets": {
+      "title": "Tickets",
+      "open": "Tickets ouverts"
+    },
+    "unavailable": "Le service n'a pas fourni ces chiffres pour le moment."
   },
   "users": {
     "title": "Utilisateurs",

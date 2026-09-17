@@ -20,8 +20,10 @@ describe('AdminHubService', () => {
     let seen: unknown;
     hub.page('/resellers/customers', { page: 2, perPage: 25 }).subscribe((res) => (seen = res));
 
-    const req = http.expectOne('/api/admin/hub/resellers/customers?page=2&perPage=25');
+    const req = http.expectOne((r) => r.url === '/api/admin/hub/resellers/customers');
     expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('page')).toBe('2');
+    expect(req.request.params.get('perPage')).toBe('25');
     req.flush({ data: [{ id: 1 }], pagination: { page: 2, perPage: 25, total: 1 } });
 
     expect(seen).toEqual({ data: [{ id: 1 }], pagination: { page: 2, perPage: 25, total: 1 } });
