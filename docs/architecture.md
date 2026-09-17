@@ -31,7 +31,9 @@ NestJS 12, ESM, Express. Modules:
 | `setup`    | First-run: connection check and creation of the initial admin                                    |
 | `admin/*`  | Overview with hub status and user counts; user management (invite, edit, disable, delete)        |
 | `settings` | Branding (name, logo, color, legal links, default language) and SMTP                             |
-| `account`  | Own profile, password change, and the customer usage overview                                    |
+| `account`  | Own profile, password change, the customer usage overview and invoice downloads                  |
+| `hub-proxy`| Forwards allow-listed customer calls to the EchoCall API under `/api/hub`                        |
+| `embed`    | Re-serves the chat widget from the portal's own domain under `/embed`                            |
 | `audit`    | Append-only log of admin actions with actor, IP and outcome                                      |
 | `mail`     | Invite and password reset mails via SMTP; falls back to one-time links                           |
 | `health`   | `/healthz` (liveness) and `/readyz` (database + hub) for orchestration                           |
@@ -44,6 +46,39 @@ Cross-cutting rules:
   the front end translates codes, never messages.
 - Upstream failures map to stable codes too (`no_active_subscription`,
   `invalid_api_key`, `upstream_unavailable`), so operators see what to fix.
+
+## The hub proxy (`/api/hub`)
+
+Workspace pages read and write far more hub resources than the portal could sensibly
+mirror: agents, chatbots, numbers, conversations, analytics, integrations, webhooks,
+campaigns, support requests and notifications. Wrapping each of them in a hand-written
+controller would mean re-describing shapes the published API already documents, and every
+upstream addition would need a second implementation here.
+
+So the portal forwards them instead. `/api/hub/<hub path>` passes the call through with
+the status and body of the upstream response untouched, which is why the front end can be
+typed straight from the OpenAPI document. Three rules keep that from becoming a hole:
+
+- **An allow list, not a pass-through.** `hub-proxy/allowlist.ts` names every method and
+  path template that may be forwarded. Anything else answers 404, including the reseller,
+  provisioning and payment surfaces the operator's key could otherwise reach.
+- **Always in the customer's context.** Every forwarded call carries the act-as header for
+  the signed-in user's linked customer, so the hub scopes it to that customer. A user
+  cannot reach another customer's data even on an allow-listed path.
+- **The key never leaves the server.** The browser authenticates with its session cookie;
+  the reseller key is attached by the API.
+
+Anything that is not a plain forward stays in its own controller: the account module, for
+instance, fetches an invoice PDF from the hub and streams the bytes, because the hub's own
+download link is readable only by a hub browser session.
+
+## The widget proxy (`/embed`)
+
+Customer sites embed `<script src="{your portal}/embed/chat.js">`. The portal fetches the
+widget files from `ECHOCALL_WIDGET_URL`, caches them for a few minutes, rewrites the asset
+references in `widget.html` to point back at `/embed/assets/`, and serves everything from
+the operator's own domain. Visitors of a customer's website therefore never resolve an
+upstream host, and a brief outage of the widget origin is covered by the cached copy.
 
 ## Front end (`apps/web`)
 
@@ -68,5 +103,9 @@ packages/echocall-api` when the upstream API gains endpoints.
 - **Multi-database via Kysely.** One query builder, two dialects (postgres, mysql), the
   same migrations. PostgreSQL is the reference database; MariaDB/MySQL are covered by the
   same test suite in CI.
+- **Forward what is documented, wrap what is not.** The allow-listed proxy keeps the
+  portal small and in step with the upstream API; a resource only gets its own endpoint
+  when the portal has to do something the browser cannot, such as fetching a PDF with the
+  operator's key.
 - **White label enforced by CI.** `npm run check` fails the build when customer-facing
   texts or bundles leak the EchoCall brand or any upstream vendor name.

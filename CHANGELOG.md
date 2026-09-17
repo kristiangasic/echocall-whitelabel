@@ -19,6 +19,17 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   branding settings with live preview, SMTP settings with test mail.
 - Customer portal API and pages: profile and password, usage dashboard with minutes,
   conversations, balance and plan of the linked customer account.
+- Customer workspace: voice agents and chatbots (create, edit, test, publish), phone
+  numbers, conversation history with transcripts and recordings, analytics, knowledge
+  base, integrations and webhooks, outbound campaigns, and support requests.
+- Allow-listed hub proxy under `/api/hub`: workspace pages reach the documented customer
+  endpoints in the context of their own customer account, while reseller, provisioning
+  and payment surfaces stay unreachable from the browser.
+- Notification bell with unread counter, polling, and mark-as-read.
+- Billing tab in the account page: plan, balance, invoices and wallet movements, with
+  invoice PDFs streamed through the portal so the upstream host never reaches the browser.
+- Widget proxy under `/embed`: the chat widget and its assets are served from the
+  operator's own domain with a short-lived cache that survives upstream outages.
 - Angular front end: standalone zoneless app with Material, runtime branding (name, logo,
   color re-tint), DE/EN/FR translations, lazy route chunks.
 - Invite and password reset mails via SMTP with one-time-link fallback.
