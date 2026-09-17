@@ -10,6 +10,7 @@ import { type AppConfig, APP_CONFIG } from './config/env.js';
 import { DbModule } from './db/db.module.js';
 import { EchoCallModule } from './echocall/echocall.module.js';
 import { HealthModule } from './health/health.module.js';
+import { HubProxyModule } from './hub-proxy/hub-proxy.module.js';
 import { MailModule } from './mail/mail.module.js';
 import { SettingsModule } from './settings/settings.module.js';
 import { SetupModule } from './setup/setup.module.js';
@@ -27,6 +28,7 @@ import { SetupModule } from './setup/setup.module.js';
     AdminOverviewModule,
     AdminUsersModule,
     AccountModule,
+    HubProxyModule,
     HealthModule,
     // Serves the built Angular app next to the API when WEB_DIST_DIR points at it.
     ServeStaticModule.forRootAsync({
