@@ -10193,7 +10193,7 @@ export interface components {
              * @description Discriminator. Always `voice` for a call record. (enum property replaced by openapi-typescript)
              * @enum {string}
              */
-            type: "Conversation";
+            type: "voice";
             /** @description Numeric id of the agent that handled the call. */
             voiceAgentId?: number | null;
         };
@@ -10875,7 +10875,7 @@ export interface components {
              * @description Discriminator. Always `chat` for a conversation record. (enum property replaced by openapi-typescript)
              * @enum {string}
              */
-            type: "LiveConversation";
+            type: "chat";
             /**
              * Format: date-time
              * @description When the record last changed.

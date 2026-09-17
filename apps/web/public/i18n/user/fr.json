@@ -193,5 +193,48 @@
       "conversation": "Optimisé pour la conversation",
       "knowledge": "Optimisé pour les questions de connaissance"
     }
+  },
+  "conversations": {
+    "title": "Conversations",
+    "type": "Type",
+    "openInbox": "Ouvrir la boîte de réception",
+    "types": {
+      "voice": "Appels",
+      "chat": "Chats"
+    },
+    "partner": "Interlocuteur",
+    "started": "Débutée",
+    "duration": "Durée",
+    "direction": "Sens",
+    "directions": {
+      "inbound": "Entrant",
+      "outbound": "Sortant"
+    },
+    "statuses": {
+      "waiting": "En attente",
+      "active": "Active",
+      "closed": "Clôturée",
+      "completed": "Terminée",
+      "failed": "Échouée",
+      "no-answer": "Sans réponse",
+      "busy": "Occupé"
+    },
+    "senders": {
+      "visitor": "Visiteur",
+      "agent": "Collaborateur",
+      "bot": "Assistant"
+    },
+    "transcript": "Transcription",
+    "noTranscript": "Aucune transcription pour cette conversation.",
+    "close": "Clôturer la conversation",
+    "closed": "Conversation clôturée.",
+    "empty": "Aucune conversation pour l’instant."
+  },
+  "inbox": {
+    "title": "Boîte de réception",
+    "empty": "Aucun chat ouvert.",
+    "selectHint": "Choisissez un chat à gauche.",
+    "noMessages": "Aucun message pour l’instant.",
+    "reply": "Réponse"
   }
 }

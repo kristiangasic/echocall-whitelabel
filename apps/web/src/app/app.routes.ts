@@ -93,6 +93,23 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/user/chatbots/chatbot-edit.page').then((m) => m.ChatbotEditPage),
           },
+          {
+            path: 'conversations',
+            loadComponent: () =>
+              import('./features/user/conversations/conversations.page').then((m) => m.ConversationsPage),
+          },
+          {
+            path: 'conversations/:id',
+            loadComponent: () =>
+              import('./features/user/conversations/conversation-detail.page').then(
+                (m) => m.ConversationDetailPage,
+              ),
+          },
+          {
+            path: 'inbox',
+            loadComponent: () =>
+              import('./features/user/conversations/live-inbox.page').then((m) => m.LiveInboxPage),
+          },
         ],
       },
     ],

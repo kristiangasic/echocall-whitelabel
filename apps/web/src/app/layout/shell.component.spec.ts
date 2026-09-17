@@ -69,6 +69,7 @@ describe('ShellComponent', () => {
       '/app/agents',
       '/app/chatbots',
       '/app/numbers',
+      '/app/inbox',
       '/app/conversations',
       '/app/analytics',
       '/app/integrations',

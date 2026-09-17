@@ -193,5 +193,48 @@
       "conversation": "Für Gespräche optimiert",
       "knowledge": "Für Wissensfragen optimiert"
     }
+  },
+  "conversations": {
+    "title": "Gespräche",
+    "type": "Art",
+    "openInbox": "Zum Posteingang",
+    "types": {
+      "voice": "Anrufe",
+      "chat": "Chats"
+    },
+    "partner": "Gesprächspartner",
+    "started": "Begonnen",
+    "duration": "Dauer",
+    "direction": "Richtung",
+    "directions": {
+      "inbound": "Eingehend",
+      "outbound": "Ausgehend"
+    },
+    "statuses": {
+      "waiting": "Wartet",
+      "active": "Aktiv",
+      "closed": "Abgeschlossen",
+      "completed": "Beendet",
+      "failed": "Fehlgeschlagen",
+      "no-answer": "Nicht angenommen",
+      "busy": "Besetzt"
+    },
+    "senders": {
+      "visitor": "Besucher",
+      "agent": "Mitarbeiter",
+      "bot": "Assistent"
+    },
+    "transcript": "Gesprächsverlauf",
+    "noTranscript": "Für dieses Gespräch liegt kein Verlauf vor.",
+    "close": "Gespräch abschließen",
+    "closed": "Gespräch abgeschlossen.",
+    "empty": "Noch keine Gespräche."
+  },
+  "inbox": {
+    "title": "Posteingang",
+    "empty": "Keine offenen Chats.",
+    "selectHint": "Wählen Sie links einen Chat aus.",
+    "noMessages": "Noch keine Nachrichten.",
+    "reply": "Antwort"
   }
 }

@@ -193,5 +193,48 @@
       "conversation": "Tuned for conversation",
       "knowledge": "Tuned for knowledge questions"
     }
+  },
+  "conversations": {
+    "title": "Conversations",
+    "type": "Kind",
+    "openInbox": "Open the inbox",
+    "types": {
+      "voice": "Calls",
+      "chat": "Chats"
+    },
+    "partner": "Counterpart",
+    "started": "Started",
+    "duration": "Duration",
+    "direction": "Direction",
+    "directions": {
+      "inbound": "Inbound",
+      "outbound": "Outbound"
+    },
+    "statuses": {
+      "waiting": "Waiting",
+      "active": "Active",
+      "closed": "Closed",
+      "completed": "Completed",
+      "failed": "Failed",
+      "no-answer": "No answer",
+      "busy": "Busy"
+    },
+    "senders": {
+      "visitor": "Visitor",
+      "agent": "Teammate",
+      "bot": "Assistant"
+    },
+    "transcript": "Transcript",
+    "noTranscript": "There is no transcript for this conversation.",
+    "close": "Close the conversation",
+    "closed": "Conversation closed.",
+    "empty": "No conversations yet."
+  },
+  "inbox": {
+    "title": "Inbox",
+    "empty": "No open chats.",
+    "selectHint": "Pick a chat on the left.",
+    "noMessages": "No messages yet.",
+    "reply": "Reply"
   }
 }

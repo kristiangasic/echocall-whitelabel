@@ -9295,7 +9295,11 @@
                           }
                         ],
                         "discriminator": {
-                          "propertyName": "type"
+                          "propertyName": "type",
+                          "mapping": {
+                            "voice": "#/components/schemas/Conversation",
+                            "chat": "#/components/schemas/LiveConversation"
+                          }
                         }
                       }
                     },
@@ -9423,7 +9427,11 @@
                     }
                   ],
                   "discriminator": {
-                    "propertyName": "type"
+                    "propertyName": "type",
+                    "mapping": {
+                      "voice": "#/components/schemas/Conversation",
+                      "chat": "#/components/schemas/LiveConversation"
+                    }
                   }
                 }
               }

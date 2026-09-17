@@ -35,6 +35,7 @@ const USER_NAV: NavItem[] = [
   { path: '/app/agents', icon: 'support_agent', label: 'nav.agents', exact: false },
   { path: '/app/chatbots', icon: 'forum', label: 'nav.chatbots', exact: false },
   { path: '/app/numbers', icon: 'call', label: 'nav.numbers', exact: false },
+  { path: '/app/inbox', icon: 'inbox', label: 'nav.inbox', exact: false },
   { path: '/app/conversations', icon: 'chat', label: 'nav.conversations', exact: false },
   { path: '/app/analytics', icon: 'insights', label: 'nav.analytics', exact: false },
   { path: '/app/integrations', icon: 'extension', label: 'nav.integrations', exact: false },
