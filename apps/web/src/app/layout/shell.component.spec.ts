@@ -88,6 +88,7 @@ describe('ShellComponent', () => {
     expect(navLinks(fixture)).toEqual([
       '/admin',
       '/admin/customers',
+      '/admin/plans',
       '/admin/users',
       '/admin/settings',
       '/admin/audit',

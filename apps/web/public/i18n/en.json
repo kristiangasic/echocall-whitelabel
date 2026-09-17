@@ -15,6 +15,7 @@
     "campaigns": "Campaigns",
     "tickets": "Support",
     "customers": "Customers",
+    "plans": "Plans",
     "users": "Users",
     "settings": "Settings",
     "audit": "Audit log",
@@ -83,7 +84,8 @@
     "url": "Please enter a full address starting with https://",
     "integer": "Please enter a whole number",
     "invalid": "Invalid input",
-    "server": "{{message}}"
+    "server": "{{message}}",
+    "positiveAmount": "Please enter an amount greater than 0"
   },
   "paginator": {
     "itemsPerPage": "Items per page",
@@ -208,6 +210,7 @@
     "cannot_impersonate_admin": "Only customer logins can be opened this way.",
     "not_impersonating": "This session was not opened by an operator.",
     "impersonation_read_only": "While you view the portal as a customer you cannot change this account.",
-    "session_ended": "The session has ended. Please sign in again."
+    "session_ended": "The session has ended. Please sign in again.",
+    "plan_in_use": "A subscription still uses this plan, so it cannot be deleted."
   }
 }

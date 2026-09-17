@@ -133,6 +133,74 @@
       }
     }
   },
+  "plans": {
+    "title": "Tarife",
+    "intro": "Tarife sind das, was Ihre Kunden buchen. Art, Abrechnung und Inklusivleistungen stehen nach dem Anlegen fest.",
+    "create": "Neuer Tarif",
+    "empty": "Es ist noch kein Tarif angelegt.",
+    "type": "Art",
+    "billingCycle": "Abrechnung",
+    "price": "Preis",
+    "allowances": "Inklusivleistungen",
+    "types": {
+      "voice": "Sprache",
+      "chat": "Chat",
+      "addon": "Zusatzpaket"
+    },
+    "cycles": {
+      "monthly": "Monatlich",
+      "yearly": "Jährlich",
+      "one-time": "Einmalig"
+    },
+    "active": "Buchbar",
+    "inactive": "Nicht buchbar",
+    "hidden": "Nicht in der Preisliste",
+    "voiceMinutes": "{{count}} Sprachminuten",
+    "chatConversations": "{{count}} Chat-Gespräche",
+    "unlimited": "Ohne Begrenzung",
+    "created": "Tarif angelegt.",
+    "saved": "Tarif gespeichert.",
+    "deleted": "Tarif gelöscht.",
+    "deleteTitle": "Tarif löschen",
+    "deleteMessage": "Der Tarif \"{{name}}\" wird gelöscht. Bestehende Abonnements verhindern das.",
+    "dialog": {
+      "createTitle": "Neuer Tarif",
+      "editTitle": "Tarif bearbeiten",
+      "editIntro": "Art, Abrechnung und Inklusivleistungen eines angelegten Tarifs lassen sich nicht mehr ändern.",
+      "description": "Beschreibung",
+      "price": "Preis in Euro",
+      "voiceMinutes": "Sprachminuten pro Monat",
+      "chatConversations": "Chat-Gespräche pro Monat",
+      "allowanceHint": "Leer lassen für eine Nutzung ohne Begrenzung.",
+      "addonHint": "Bei einem Zusatzpaket ist die Inklusivleistung zugleich die Größe des Pakets.",
+      "features": "Leistungsmerkmale",
+      "featuresHint": "Ein Merkmal je Zeile.",
+      "isActive": "Kann gebucht werden",
+      "isVisible": "In der Preisliste zeigen",
+      "submit": "Tarif anlegen"
+    }
+  },
+  "pricing": {
+    "title": "Preise",
+    "intro": "Diese beiden Preise gelten für den Verbrauch Ihrer Kunden. Dazwischen liegt Ihre Marge.",
+    "basePrice": "Plattformpreis",
+    "yourPrice": "Ihr Preis",
+    "margin": "Marge",
+    "voiceMinute": "Je Sprachminute",
+    "chatSession": "Je Chat-Sitzung",
+    "suggestions": "Vorschläge",
+    "suggestionsIntro": "Ein Vorschlag füllt nur die Felder aus. Gespeichert wird erst, wenn Sie speichern.",
+    "apply": "Übernehmen",
+    "marginPercent": "{{percent}} % Marge",
+    "unsaved": "Nicht gespeicherte Änderungen.",
+    "saved": "Preise gespeichert.",
+    "tiers": {
+      "minimal": "Selbstkosten",
+      "standard": "Standard",
+      "premium": "Premium",
+      "enterprise": "Enterprise"
+    }
+  },
   "users": {
     "title": "Benutzer",
     "invite": "Einladen",

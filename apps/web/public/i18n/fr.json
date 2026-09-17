@@ -15,6 +15,7 @@
     "campaigns": "Campagnes",
     "tickets": "Support",
     "customers": "Clients",
+    "plans": "Forfaits",
     "users": "Utilisateurs",
     "settings": "Paramètres",
     "audit": "Journal",
@@ -83,7 +84,8 @@
     "url": "Veuillez saisir une adresse complète commençant par https://",
     "integer": "Veuillez saisir un nombre entier",
     "invalid": "Saisie invalide",
-    "server": "{{message}}"
+    "server": "{{message}}",
+    "positiveAmount": "Veuillez saisir un montant supérieur à 0"
   },
   "paginator": {
     "itemsPerPage": "Éléments par page",
@@ -208,6 +210,7 @@
     "cannot_impersonate_admin": "Seuls les accès clients peuvent être ouverts de cette manière.",
     "not_impersonating": "Cette session n'a pas été ouverte par un opérateur.",
     "impersonation_read_only": "Tant que vous consultez le portail en tant que client, vous ne pouvez pas modifier ce compte.",
-    "session_ended": "La session a pris fin. Veuillez vous reconnecter."
+    "session_ended": "La session a pris fin. Veuillez vous reconnecter.",
+    "plan_in_use": "Un abonnement utilise encore ce forfait, il ne peut donc pas être supprimé."
   }
 }

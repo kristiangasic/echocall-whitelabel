@@ -133,6 +133,74 @@
       }
     }
   },
+  "plans": {
+    "title": "Plans",
+    "intro": "Plans are what your customers subscribe to. Type, billing cycle and allowances are fixed once a plan exists.",
+    "create": "New plan",
+    "empty": "No plan has been created yet.",
+    "type": "Type",
+    "billingCycle": "Billing",
+    "price": "Price",
+    "allowances": "Allowances",
+    "types": {
+      "voice": "Voice",
+      "chat": "Chat",
+      "addon": "Add-on package"
+    },
+    "cycles": {
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "one-time": "One-time"
+    },
+    "active": "Available",
+    "inactive": "Not available",
+    "hidden": "Not in the price list",
+    "voiceMinutes": "{{count}} voice minutes",
+    "chatConversations": "{{count}} chat conversations",
+    "unlimited": "Unlimited",
+    "created": "Plan created.",
+    "saved": "Plan saved.",
+    "deleted": "Plan deleted.",
+    "deleteTitle": "Delete plan",
+    "deleteMessage": "The plan \"{{name}}\" will be deleted. Existing subscriptions prevent that.",
+    "dialog": {
+      "createTitle": "New plan",
+      "editTitle": "Edit plan",
+      "editIntro": "Type, billing cycle and allowances of an existing plan can no longer be changed.",
+      "description": "Description",
+      "price": "Price in euros",
+      "voiceMinutes": "Voice minutes per month",
+      "chatConversations": "Chat conversations per month",
+      "allowanceHint": "Leave empty for unlimited use.",
+      "addonHint": "On an add-on package the allowance is also the size of the package.",
+      "features": "Features",
+      "featuresHint": "One feature per line.",
+      "isActive": "Can be subscribed to",
+      "isVisible": "Show in the price list",
+      "submit": "Create plan"
+    }
+  },
+  "pricing": {
+    "title": "Prices",
+    "intro": "These two prices apply to what your customers use. Your margin is the difference.",
+    "basePrice": "Platform price",
+    "yourPrice": "Your price",
+    "margin": "Margin",
+    "voiceMinute": "Per voice minute",
+    "chatSession": "Per chat session",
+    "suggestions": "Suggestions",
+    "suggestionsIntro": "A suggestion only fills the fields. Nothing is stored until you save.",
+    "apply": "Apply",
+    "marginPercent": "{{percent}}% margin",
+    "unsaved": "Unsaved changes.",
+    "saved": "Prices saved.",
+    "tiers": {
+      "minimal": "Break-even",
+      "standard": "Standard",
+      "premium": "Premium",
+      "enterprise": "Enterprise"
+    }
+  },
   "users": {
     "title": "Users",
     "invite": "Invite",

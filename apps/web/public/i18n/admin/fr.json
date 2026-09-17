@@ -133,6 +133,74 @@
       }
     }
   },
+  "plans": {
+    "title": "Forfaits",
+    "intro": "Les forfaits sont ce que vos clients souscrivent. Le type, la facturation et les quotas sont figés une fois le forfait créé.",
+    "create": "Nouveau forfait",
+    "empty": "Aucun forfait n'a encore été créé.",
+    "type": "Type",
+    "billingCycle": "Facturation",
+    "price": "Prix",
+    "allowances": "Quotas",
+    "types": {
+      "voice": "Voix",
+      "chat": "Chat",
+      "addon": "Pack complémentaire"
+    },
+    "cycles": {
+      "monthly": "Mensuelle",
+      "yearly": "Annuelle",
+      "one-time": "Unique"
+    },
+    "active": "Disponible",
+    "inactive": "Indisponible",
+    "hidden": "Absent de la liste de prix",
+    "voiceMinutes": "{{count}} minutes vocales",
+    "chatConversations": "{{count}} conversations de chat",
+    "unlimited": "Sans limite",
+    "created": "Forfait créé.",
+    "saved": "Forfait enregistré.",
+    "deleted": "Forfait supprimé.",
+    "deleteTitle": "Supprimer le forfait",
+    "deleteMessage": "Le forfait \"{{name}}\" sera supprimé. Les abonnements existants l'en empêchent.",
+    "dialog": {
+      "createTitle": "Nouveau forfait",
+      "editTitle": "Modifier le forfait",
+      "editIntro": "Le type, la facturation et les quotas d'un forfait existant ne peuvent plus être modifiés.",
+      "description": "Description",
+      "price": "Prix en euros",
+      "voiceMinutes": "Minutes vocales par mois",
+      "chatConversations": "Conversations de chat par mois",
+      "allowanceHint": "Laisser vide pour une utilisation sans limite.",
+      "addonHint": "Pour un pack complémentaire, le quota correspond aussi à la taille du pack.",
+      "features": "Caractéristiques",
+      "featuresHint": "Une caractéristique par ligne.",
+      "isActive": "Peut être souscrit",
+      "isVisible": "Afficher dans la liste de prix",
+      "submit": "Créer le forfait"
+    }
+  },
+  "pricing": {
+    "title": "Prix",
+    "intro": "Ces deux prix s'appliquent à la consommation de vos clients. Votre marge est la différence.",
+    "basePrice": "Prix de la plateforme",
+    "yourPrice": "Votre prix",
+    "margin": "Marge",
+    "voiceMinute": "Par minute vocale",
+    "chatSession": "Par session de chat",
+    "suggestions": "Suggestions",
+    "suggestionsIntro": "Une suggestion ne fait que remplir les champs. Rien n'est enregistré avant que vous enregistriez.",
+    "apply": "Appliquer",
+    "marginPercent": "{{percent}} % de marge",
+    "unsaved": "Modifications non enregistrées.",
+    "saved": "Prix enregistrés.",
+    "tiers": {
+      "minimal": "Prix coûtant",
+      "standard": "Standard",
+      "premium": "Premium",
+      "enterprise": "Enterprise"
+    }
+  },
   "users": {
     "title": "Utilisateurs",
     "invite": "Inviter",

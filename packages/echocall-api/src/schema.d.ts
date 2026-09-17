@@ -7823,7 +7823,7 @@ export interface paths {
         post?: never;
         /**
          * Delete a plan
-         * @description Deletes a plan owned by the reseller. A plan that any subscription still points at cannot be deleted: the handler counts subscriptions on the plan in every status, not only the active ones, and answers 400 `validation_error` with "Cannot delete plan with active subscriptions" when that count is above zero. A plan belonging to another reseller answers 404 `not_found`. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`. This endpoint takes no request body.
+         * @description Deletes a plan owned by the reseller. A plan that any subscription still points at cannot be deleted: the handler counts subscriptions on the plan in every status, not only the active ones, and answers 400 `plan_in_use` with "Cannot delete plan with active subscriptions" when that count is above zero. A plan belonging to another reseller answers 404 `not_found`. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`. This endpoint takes no request body.
          */
         delete: {
             parameters: {
@@ -11384,6 +11384,8 @@ export interface components {
             includesSupportPriority?: boolean;
             /** @description Whether the plan can still be subscribed to. */
             isActive?: boolean;
+            /** @description Whether the plan is offered in the price list. A hidden plan can still be subscribed to by a reseller on behalf of a customer. */
+            isVisible?: boolean;
             /** @description How many agents the plan allows. */
             maxAgents?: number | null;
             /** @description Plan name. */

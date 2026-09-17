@@ -13,7 +13,7 @@ const SIMPLE: Record<string, string> = {
   hexColor: 'validation.hexColor',
   url: 'validation.url',
   integer: 'validation.integer',
-  min: 'validation.integer',
+  min: 'validation.positiveAmount',
 };
 
 /** First error of a control as a translation key; impure because control state is not a signal. */

@@ -90,6 +90,20 @@ type GetBody<P extends keyof paths> = paths[P] extends {
  */
 type ListItem<B> = B extends readonly (infer I)[] ? I : B extends { data: readonly (infer I)[] } ? I : never;
 
+/** The JSON body a POST path expects. */
+type PostBody<P extends keyof paths> = paths[P] extends {
+  post: { requestBody: { content: { 'application/json': infer B } } };
+}
+  ? B
+  : never;
+
+/** The JSON body a PATCH path expects. */
+type PatchBody<P extends keyof paths> = paths[P] extends {
+  patch: { requestBody: { content: { 'application/json': infer B } } };
+}
+  ? B
+  : never;
+
 export type ResellerCustomer = Schemas['ResellerCustomer'];
 export type ResellerStats = Schemas['ResellerStats'];
 export type ResellerActivity = Schemas['ResellerActivity'];
@@ -121,3 +135,8 @@ export type ResellerAvailableNumber = ListItem<GetBody<'/resellers/phone-numbers
 export type ResellerRevenueAnalytics = GetBody<'/resellers/analytics/revenue'>;
 export type ResellerUsageAnalytics = GetBody<'/resellers/analytics/usage'>;
 export type ResellerPricingSuggestions = GetBody<'/resellers/pricing/suggestions'>;
+export type ResellerPricingSuggestion = ListItem<ResellerPricingSuggestions>;
+
+export type CreatePlanInput = PostBody<'/resellers/plans'>;
+export type UpdatePlanInput = PatchBody<'/resellers/plans/{id}'>;
+export type UpdatePricingInput = PatchBody<'/resellers/pricing'>;
