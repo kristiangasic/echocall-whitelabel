@@ -39,6 +39,42 @@
     },
     "unavailable": "Le service n'a pas fourni ces chiffres pour le moment."
   },
+  "customers": {
+    "title": "Clients",
+    "hint": "Comptes chez le service et les accès au portail correspondants.",
+    "create": "Ajouter un client",
+    "account": "Compte du service",
+    "accountStatuses": {
+      "active": "Actif",
+      "suspended": "Suspendu",
+      "trial": "Essai"
+    },
+    "login": "Accès au portail",
+    "noLogin": "Aucun accès",
+    "noLoginHint": "Ce client ne peut pas encore se connecter à ce portail.",
+    "inviteLogin": "Inviter un accès",
+    "balance": "Solde",
+    "created": "Créé le",
+    "empty": "Aucun client pour le moment. Ajoutez le premier.",
+    "suspend": "Suspendre",
+    "unsuspend": "Réactiver",
+    "suspendTitle": "Suspendre le client",
+    "suspendMessage": "Suspendre {{email}} ? Le portail et le service sont bloqués immédiatement.",
+    "unsuspendTitle": "Réactiver le client",
+    "unsuspendMessage": "Autoriser de nouveau {{email}} ?",
+    "deleteTitle": "Supprimer le client",
+    "deleteMessage": "Supprimer définitivement le client {{email}} ? Le compte et l'accès au portail disparaissent ensemble.",
+    "saved": "Modifications enregistrées.",
+    "deleted": "Client supprimé.",
+    "inviteSent": "Invitation envoyée à {{email}}.",
+    "dialog": {
+      "createTitle": "Ajouter un client",
+      "editTitle": "Modifier le client",
+      "createIntro": "Le compte chez le service et l'accès au portail sont créés ensemble.",
+      "createSubmit": "Créer",
+      "sendInvite": "Envoyer l'invitation par e-mail immédiatement"
+    }
+  },
   "users": {
     "title": "Utilisateurs",
     "invite": "Inviter",

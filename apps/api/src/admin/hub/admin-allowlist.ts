@@ -10,6 +10,11 @@
  *   browser session.
  * - POST /resellers/customers/{id}/credits: superseded by the balance endpoints,
  *   which write the same ledger with a proper reason.
+ * - every write on a customer (create, update, suspend, unsuspend, delete):
+ *   each of them has to change the hub account and the portal login together,
+ *   which is what /api/admin/customers does. Forwarding them raw would let the
+ *   browser create a customer nobody can sign in as, or delete one whose portal
+ *   login still works.
  * - everything outside /resellers: the customer surfaces belong to the customer
  *   proxy, which scopes them to the signed-in customer.
  */
@@ -25,10 +30,8 @@ const RULES: readonly (readonly [string, string])[] = [
   ['GET', '/resellers/credits/balance'],
   ['GET', '/resellers/credits/transactions'],
 
-  ['GET|POST', '/resellers/customers'],
-  ['GET|PATCH|DELETE', '/resellers/customers/{id}'],
-  ['PATCH', '/resellers/customers/{id}/suspend'],
-  ['PATCH', '/resellers/customers/{id}/unsuspend'],
+  ['GET', '/resellers/customers'],
+  ['GET', '/resellers/customers/{id}'],
   ['GET', '/resellers/customers/{id}/balance'],
   ['POST', '/resellers/customers/{id}/balance/add'],
   ['POST', '/resellers/customers/{id}/balance/subtract'],

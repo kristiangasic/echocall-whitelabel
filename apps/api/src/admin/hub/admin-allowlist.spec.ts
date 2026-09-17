@@ -5,10 +5,7 @@ describe('matchOperatorCall', () => {
   it('accepts the reseller surfaces the admin panel is built on', () => {
     expect(matchOperatorCall('GET', '/resellers/stats')).toBe(true);
     expect(matchOperatorCall('GET', '/resellers/customers')).toBe(true);
-    expect(matchOperatorCall('POST', '/resellers/customers')).toBe(true);
-    expect(matchOperatorCall('PATCH', '/resellers/customers/42')).toBe(true);
-    expect(matchOperatorCall('DELETE', '/resellers/customers/42')).toBe(true);
-    expect(matchOperatorCall('PATCH', '/resellers/customers/42/suspend')).toBe(true);
+    expect(matchOperatorCall('GET', '/resellers/customers/42')).toBe(true);
     expect(matchOperatorCall('POST', '/resellers/customers/42/balance/add')).toBe(true);
     expect(matchOperatorCall('GET', '/resellers/customers/42/transactions')).toBe(true);
     expect(matchOperatorCall('GET', '/resellers/plans')).toBe(true);
@@ -30,6 +27,14 @@ describe('matchOperatorCall', () => {
     expect(matchOperatorCall('POST', '/resellers/credits/deduct')).toBe(false);
     expect(matchOperatorCall('GET', '/resellers/billing/keys')).toBe(false);
     expect(matchOperatorCall('POST', '/resellers/customers/42/credits')).toBe(false);
+  });
+
+  it('keeps every write on a customer with the service that also owns the portal login', () => {
+    expect(matchOperatorCall('POST', '/resellers/customers')).toBe(false);
+    expect(matchOperatorCall('PATCH', '/resellers/customers/42')).toBe(false);
+    expect(matchOperatorCall('DELETE', '/resellers/customers/42')).toBe(false);
+    expect(matchOperatorCall('PATCH', '/resellers/customers/42/suspend')).toBe(false);
+    expect(matchOperatorCall('PATCH', '/resellers/customers/42/unsuspend')).toBe(false);
   });
 
   it('refuses everything outside the reseller group', () => {

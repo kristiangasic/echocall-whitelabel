@@ -49,6 +49,11 @@ export const routes: Routes = [
               import('./features/admin/overview/admin-overview.page').then((m) => m.AdminOverviewPage),
           },
           {
+            path: 'customers',
+            loadComponent: () =>
+              import('./features/admin/customers/customers.page').then((m) => m.AdminCustomersPage),
+          },
+          {
             path: 'users',
             loadComponent: () =>
               import('./features/admin/users/admin-users.page').then((m) => m.AdminUsersPage),
@@ -85,8 +90,7 @@ export const routes: Routes = [
           },
           {
             path: 'chatbots',
-            loadComponent: () =>
-              import('./features/user/chatbots/chatbots.page').then((m) => m.ChatbotsPage),
+            loadComponent: () => import('./features/user/chatbots/chatbots.page').then((m) => m.ChatbotsPage),
           },
           {
             path: 'chatbots/:id',
@@ -122,8 +126,7 @@ export const routes: Routes = [
           },
           {
             path: 'webhooks',
-            loadComponent: () =>
-              import('./features/user/webhooks/webhooks.page').then((m) => m.WebhooksPage),
+            loadComponent: () => import('./features/user/webhooks/webhooks.page').then((m) => m.WebhooksPage),
           },
           {
             path: 'campaigns',
@@ -133,14 +136,11 @@ export const routes: Routes = [
           {
             path: 'campaigns/:id',
             loadComponent: () =>
-              import('./features/user/campaigns/campaign-detail.page').then(
-                (m) => m.CampaignDetailPage,
-              ),
+              import('./features/user/campaigns/campaign-detail.page').then((m) => m.CampaignDetailPage),
           },
           {
             path: 'tickets',
-            loadComponent: () =>
-              import('./features/user/tickets/tickets.page').then((m) => m.TicketsPage),
+            loadComponent: () => import('./features/user/tickets/tickets.page').then((m) => m.TicketsPage),
           },
           {
             path: 'tickets/:id',
@@ -150,9 +150,7 @@ export const routes: Routes = [
           {
             path: 'notifications',
             loadComponent: () =>
-              import('./features/user/notifications/notifications.page').then(
-                (m) => m.NotificationsPage,
-              ),
+              import('./features/user/notifications/notifications.page').then((m) => m.NotificationsPage),
           },
           {
             path: 'inbox',

@@ -45,7 +45,8 @@ export interface PasswordResetResult {
   mailSent: boolean;
 }
 
-function toAdminRow(row: UserRow): AdminUserRow {
+/** The public shape of a portal login, shared with the customer service. */
+export function toAdminRow(row: UserRow): AdminUserRow {
   return {
     id: row.id,
     email: row.email,
@@ -86,7 +87,15 @@ export class AdminUsersService {
     return rows.map(toAdminRow);
   }
 
-  async invite(input: InviteUserDto, ctx: ActionContext): Promise<InviteResult> {
+  /**
+   * Creates the login and issues its invitation. `sendMail: false` still returns
+   * the link, for the operator who wants to hand it over another way.
+   */
+  async invite(
+    input: InviteUserDto,
+    ctx: ActionContext,
+    opts: { sendMail?: boolean } = {},
+  ): Promise<InviteResult> {
     await this.assertEmailFree(input.email);
     const echocallCustomerId = input.echocallCustomerId ?? null;
     if (echocallCustomerId !== null) await this.assertCustomerFree(echocallCustomerId, null);
@@ -101,7 +110,7 @@ export class AdminUsersService {
       echocallCustomerId,
     });
     const user = await this.require(id);
-    const { link, mailSent } = await this.sendInvite(user);
+    const { link, mailSent } = await this.sendInvite(user, opts.sendMail ?? true);
     await this.audit.record({
       actorUserId: ctx.actor.id,
       action: 'users.invited',
@@ -212,10 +221,10 @@ export class AdminUsersService {
     });
   }
 
-  private async sendInvite(user: UserRow): Promise<{ link: string; mailSent: boolean }> {
+  private async sendInvite(user: UserRow, sendMail = true): Promise<{ link: string; mailSent: boolean }> {
     const token = await this.tokens.issue(user.id, 'invite', INVITE_TTL_MS);
     const link = `${this.config.appUrl}/accept-invite?token=${encodeURIComponent(token)}`;
-    const mailSent = await this.mail.sendInvite(recipient(user), link);
+    const mailSent = sendMail ? await this.mail.sendInvite(recipient(user), link) : false;
     return { link, mailSent };
   }
 
@@ -225,8 +234,11 @@ export class AdminUsersService {
     return row;
   }
 
-  private async assertEmailFree(email: string): Promise<void> {
-    const row = await this.db.selectFrom('users').select('id').where('email', '=', email).executeTakeFirst();
+  /** Every portal login owns its e-mail address; the customer service checks this before it calls the hub. */
+  async assertEmailFree(email: string, exceptUserId: number | null = null): Promise<void> {
+    let query = this.db.selectFrom('users').select('id').where('email', '=', email);
+    if (exceptUserId !== null) query = query.where('id', '!=', exceptUserId);
+    const row = await query.executeTakeFirst();
     if (row) throw apiError(409, 'email_taken', 'An account with this e-mail address already exists');
   }
 

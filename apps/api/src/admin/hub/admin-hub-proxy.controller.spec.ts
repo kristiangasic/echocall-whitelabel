@@ -20,14 +20,14 @@ describe('AdminHubProxyController', () => {
         pagination: { page: 2, perPage: 25, total: 1 },
       },
     },
-    'POST /resellers/customers': (call) => ({
+    'POST /resellers/plans': (call) => ({
       status: 201,
       body: { data: { id: 777, echo: JSON.parse(call.body ?? '{}') } },
     }),
     'GET /resellers/settings': {
       body: { data: { companyName: 'EchoCall Partner GmbH', supportEmail: 'support@example.com' } },
     },
-    'PATCH /resellers/customers/42/suspend': { status: 204 },
+    'POST /resellers/phone-numbers/42/release': { status: 204 },
     'GET /resellers/stats': {
       status: 403,
       body: { error: { code: 'forbidden', message: 'Reseller keys only' } },
@@ -67,18 +67,18 @@ describe('AdminHubProxyController', () => {
 
   it('forwards a POST body and returns the hub status verbatim', async () => {
     const res = await api()
-      .post('/api/admin/hub/resellers/customers')
+      .post('/api/admin/hub/resellers/plans')
       .set('Cookie', admin.cookie)
       .set(XHR)
-      .send({ email: 'new@example.com', language: 'de' });
+      .send({ name: 'Starter', priceEur: 19 });
 
     expect(res.status).toBe(201);
-    expect(res.body.data.echo).toEqual({ email: 'new@example.com', language: 'de' });
+    expect(res.body.data.echo).toEqual({ name: 'Starter', priceEur: 19 });
   });
 
   it('answers 204 without a body', async () => {
     const res = await api()
-      .patch('/api/admin/hub/resellers/customers/42/suspend')
+      .post('/api/admin/hub/resellers/phone-numbers/42/release')
       .set('Cookie', admin.cookie)
       .set(XHR);
 
@@ -121,9 +121,9 @@ describe('AdminHubProxyController', () => {
 
   it('requires the CSRF header on mutating calls', async () => {
     const res = await api()
-      .post('/api/admin/hub/resellers/customers')
+      .post('/api/admin/hub/resellers/plans')
       .set('Cookie', admin.cookie)
-      .send({ email: 'nope@example.com' });
+      .send({ name: 'No CSRF header' });
 
     expect(res.status).toBe(403);
   });

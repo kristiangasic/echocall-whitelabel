@@ -76,7 +76,13 @@ describe('ShellComponent', () => {
 
   it('offers administrators the admin navigation', async () => {
     const fixture = await render(ADMIN);
-    expect(navLinks(fixture)).toEqual(['/admin', '/admin/users', '/admin/settings', '/admin/audit']);
+    expect(navLinks(fixture)).toEqual([
+      '/admin',
+      '/admin/customers',
+      '/admin/users',
+      '/admin/settings',
+      '/admin/audit',
+    ]);
     expect(fixture.nativeElement.textContent).toContain(TEXTS.nav.users);
   });
 

@@ -112,6 +112,37 @@ export interface PasswordResetResult {
   mailSent: boolean;
 }
 
+/** A new customer: the account in the service plus the portal login invited for it. */
+export interface CreateCustomerInput {
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  company?: string;
+  language: Language;
+  sendInvite: boolean;
+}
+
+export interface CreateCustomerResult {
+  customerId: number;
+  user: AdminUser;
+  inviteLink: string;
+  mailSent: boolean;
+}
+
+/** An empty string clears the field; a field that is left out stays as it is. */
+export interface UpdateCustomerInput {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  company?: string;
+  language?: Language;
+}
+
+/** What a customer change did to the portal login, null when the customer has none. */
+export interface CustomerLoginResult {
+  user: AdminUser | null;
+}
+
 export interface AuditEntry {
   id: number;
   actorUserId: number | null;

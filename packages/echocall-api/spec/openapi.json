@@ -4548,6 +4548,20 @@
             "type": "integer",
             "description": "The customer user."
           },
+          "customerReference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Free-text reference the reseller keeps for this customer."
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Free-text note the reseller keeps for this customer."
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time",
@@ -4607,6 +4621,20 @@
                   "null"
                 ],
                 "description": "Chat conversations remaining."
+              },
+              "accountStatus": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "suspended",
+                  "trial"
+                ],
+                "description": "Whether the account can sign in. A suspended account is locked out."
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When the account was created."
               }
             }
           }

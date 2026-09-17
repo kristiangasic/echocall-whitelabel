@@ -39,6 +39,42 @@
     },
     "unavailable": "Der Dienst hat diese Zahlen gerade nicht geliefert."
   },
+  "customers": {
+    "title": "Kunden",
+    "hint": "Konten beim Dienst und die dazugehörigen Portalzugänge.",
+    "create": "Kunde anlegen",
+    "account": "Dienstkonto",
+    "accountStatuses": {
+      "active": "Aktiv",
+      "suspended": "Gesperrt",
+      "trial": "Testphase"
+    },
+    "login": "Portalzugang",
+    "noLogin": "Kein Zugang",
+    "noLoginHint": "Dieser Kunde hat noch keinen Zugang zu diesem Portal.",
+    "inviteLogin": "Zugang einladen",
+    "balance": "Guthaben",
+    "created": "Angelegt",
+    "empty": "Noch keine Kunden. Legen Sie den ersten an.",
+    "suspend": "Sperren",
+    "unsuspend": "Entsperren",
+    "suspendTitle": "Kunde sperren",
+    "suspendMessage": "Soll {{email}} gesperrt werden? Der Zugang zum Portal und zum Dienst wird sofort blockiert.",
+    "unsuspendTitle": "Kunde entsperren",
+    "unsuspendMessage": "Soll {{email}} wieder freigegeben werden?",
+    "deleteTitle": "Kunde löschen",
+    "deleteMessage": "Soll der Kunde {{email}} endgültig gelöscht werden? Konto und Portalzugang verschwinden zusammen.",
+    "saved": "Änderungen gespeichert.",
+    "deleted": "Kunde gelöscht.",
+    "inviteSent": "Einladung an {{email}} gesendet.",
+    "dialog": {
+      "createTitle": "Kunde anlegen",
+      "editTitle": "Kunde bearbeiten",
+      "createIntro": "Das Konto beim Dienst und der Portalzugang werden zusammen angelegt.",
+      "createSubmit": "Anlegen",
+      "sendInvite": "Einladung sofort per E-Mail senden"
+    }
+  },
   "users": {
     "title": "Benutzer",
     "invite": "Einladen",

@@ -31,6 +31,7 @@ interface NavItem {
 
 const ADMIN_NAV: NavItem[] = [
   { path: '/admin', icon: 'dashboard', label: 'nav.overview', exact: true },
+  { path: '/admin/customers', icon: 'groups', label: 'nav.customers', exact: false },
   { path: '/admin/users', icon: 'group', label: 'nav.users', exact: false },
   { path: '/admin/settings', icon: 'tune', label: 'nav.settings', exact: false },
   { path: '/admin/audit', icon: 'history', label: 'nav.audit', exact: false },

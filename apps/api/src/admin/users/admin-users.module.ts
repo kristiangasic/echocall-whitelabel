@@ -8,5 +8,6 @@ import { AdminUsersService } from './admin-users.service.js';
   imports: [AuthModule, AuditModule],
   controllers: [AdminUsersController],
   providers: [AdminUsersService],
+  exports: [AdminUsersService],
 })
 export class AdminUsersModule {}

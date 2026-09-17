@@ -39,6 +39,42 @@
     },
     "unavailable": "The service did not return these figures just now."
   },
+  "customers": {
+    "title": "Customers",
+    "hint": "Accounts with the service and the portal logins that belong to them.",
+    "create": "Add customer",
+    "account": "Service account",
+    "accountStatuses": {
+      "active": "Active",
+      "suspended": "Suspended",
+      "trial": "Trial"
+    },
+    "login": "Portal login",
+    "noLogin": "No login",
+    "noLoginHint": "This customer cannot sign in to this portal yet.",
+    "inviteLogin": "Invite a login",
+    "balance": "Balance",
+    "created": "Created",
+    "empty": "No customers yet. Add the first one.",
+    "suspend": "Suspend",
+    "unsuspend": "Unsuspend",
+    "suspendTitle": "Suspend customer",
+    "suspendMessage": "Suspend {{email}}? The portal and the service are blocked right away.",
+    "unsuspendTitle": "Unsuspend customer",
+    "unsuspendMessage": "Let {{email}} back in?",
+    "deleteTitle": "Delete customer",
+    "deleteMessage": "Delete the customer {{email}} for good? The account and the portal login go together.",
+    "saved": "Changes saved.",
+    "deleted": "Customer deleted.",
+    "inviteSent": "Invitation sent to {{email}}.",
+    "dialog": {
+      "createTitle": "Add customer",
+      "editTitle": "Edit customer",
+      "createIntro": "The account with the service and the portal login are created together.",
+      "createSubmit": "Create",
+      "sendInvite": "Send the invitation by e-mail right away"
+    }
+  },
   "users": {
     "title": "Users",
     "invite": "Invite",

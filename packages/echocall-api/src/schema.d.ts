@@ -11527,18 +11527,32 @@ export interface components {
              * @description When the customer was linked.
              */
             createdAt?: string;
+            /** @description Free-text reference the reseller keeps for this customer. */
+            customerReference?: string | null;
             /** @description Identifier of the link record. */
             id: number;
+            /** @description Free-text note the reseller keeps for this customer. */
+            notes?: string | null;
             /** @description The reseller. */
             resellerId?: number;
             /** @description The customer account itself. */
             user?: {
+                /**
+                 * @description Whether the account can sign in. A suspended account is locked out.
+                 * @enum {string}
+                 */
+                accountStatus?: "active" | "suspended" | "trial";
                 /** @description Prepaid wallet balance in EUR. Returned as a decimal string, not a float. */
                 balanceEur?: string;
                 /** @description Chat conversations remaining. */
                 chatConversations?: number | null;
                 /** @description Company name. */
                 company?: string | null;
+                /**
+                 * Format: date-time
+                 * @description When the account was created.
+                 */
+                createdAt?: string;
                 /**
                  * Format: email
                  * @description Login email.
