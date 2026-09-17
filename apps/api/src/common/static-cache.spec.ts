@@ -20,7 +20,7 @@ describe('isHashedAsset', () => {
 describe('cacheControlFor', () => {
   it('lets a hashed file be kept for a year', () => {
     expect(cacheControlFor('/srv/web/chunk-B1RRq0Nl.js')).toBe('public, max-age=31536000, immutable');
-    expect(cacheControlFor('C:\srv\web\media\material-icons-JLIDJUWE.woff2')).toBe(
+    expect(cacheControlFor(String.raw`C:\srv\web\media\material-icons-JLIDJUWE.woff2`)).toBe(
       'public, max-age=31536000, immutable',
     );
   });

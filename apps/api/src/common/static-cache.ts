@@ -24,7 +24,7 @@ export function isHashedAsset(fileName: string): boolean {
 
 /** The Cache-Control value for one file of the built portal. */
 export function cacheControlFor(filePath: string): string {
-  const fileName = filePath.split(/[\/]/).pop() ?? '';
+  const fileName = filePath.split(/[\\/]/).pop() ?? '';
   if (fileName.endsWith('.html')) return 'no-cache';
   if (isHashedAsset(fileName)) return `public, max-age=${YEAR_SECONDS}, immutable`;
   return 'public, max-age=3600';
