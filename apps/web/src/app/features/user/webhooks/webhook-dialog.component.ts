@@ -68,11 +68,7 @@ export interface WebhookDialogResult {
           </mat-form-field>
 
           <p class="hint">{{ t('user.webhooks.eventsHint') }}</p>
-          <mat-checkbox
-            [checked]="all()"
-            (change)="setAll($event.checked)"
-            data-testid="webhook-all-events"
-          >
+          <mat-checkbox [checked]="all()" (change)="setAll($event.checked)" data-testid="webhook-all-events">
             {{ t('user.webhooks.allEvents') }}
           </mat-checkbox>
           <div class="events">
@@ -139,9 +135,8 @@ export interface WebhookDialogResult {
 })
 export class WebhookDialogComponent implements OnInit {
   readonly data = inject<WebhookDialogData>(MAT_DIALOG_DATA);
-  private readonly dialogRef = inject<MatDialogRef<WebhookDialogComponent, WebhookDialogResult>>(
-    MatDialogRef,
-  );
+  private readonly dialogRef =
+    inject<MatDialogRef<WebhookDialogComponent, WebhookDialogResult>>(MatDialogRef);
   private readonly hub = inject(HubService);
   private readonly notify = inject(NotifyService);
   private readonly transloco = inject(TranslocoService);
@@ -194,9 +189,7 @@ export class WebhookDialogComponent implements OnInit {
   }
 
   toggle(event: string, on: boolean): void {
-    this.events.update((current) =>
-      on ? [...current, event] : current.filter((name) => name !== event),
-    );
+    this.events.update((current) => (on ? [...current, event] : current.filter((name) => name !== event)));
   }
 
   async save(): Promise<void> {

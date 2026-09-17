@@ -22,21 +22,21 @@ Usage, limits, balance and plan data are never stored - they are fetched live pe
 
 NestJS 12, ESM, Express. Modules:
 
-| Module     | Responsibility                                                                                   |
-| ---------- | ------------------------------------------------------------------------------------------------ |
-| `config`   | Loads and validates the environment once at startup (zod); fails fast                            |
-| `db`       | Kysely with a PostgreSQL or MySQL dialect picked from `DATABASE_URL`; runs migrations on startup |
-| `echocall` | Typed client factory for the EchoCall API plus a cached hub status (periodic re-check)           |
-| `auth`     | Sessions (httpOnly cookie), CSRF guard, roles guard, login rate limiting                         |
-| `setup`    | First-run: connection check and creation of the initial admin                                    |
-| `admin/*`  | Overview with hub status and user counts; user management (invite, edit, disable, delete)        |
-| `settings` | Branding (name, logo, color, legal links, default language) and SMTP                             |
-| `account`  | Own profile, password change, the customer usage overview and invoice downloads                  |
-| `hub-proxy`| Forwards allow-listed customer calls to the EchoCall API under `/api/hub`                        |
-| `embed`    | Re-serves the chat widget from the portal's own domain under `/embed`                            |
-| `audit`    | Append-only log of admin actions with actor, IP and outcome                                      |
-| `mail`     | Invite and password reset mails via SMTP; falls back to one-time links                           |
-| `health`   | `/healthz` (liveness) and `/readyz` (database + hub) for orchestration                           |
+| Module      | Responsibility                                                                                   |
+| ----------- | ------------------------------------------------------------------------------------------------ |
+| `config`    | Loads and validates the environment once at startup (zod); fails fast                            |
+| `db`        | Kysely with a PostgreSQL or MySQL dialect picked from `DATABASE_URL`; runs migrations on startup |
+| `echocall`  | Typed client factory for the EchoCall API plus a cached hub status (periodic re-check)           |
+| `auth`      | Sessions (httpOnly cookie), CSRF guard, roles guard, login rate limiting                         |
+| `setup`     | First-run: connection check and creation of the initial admin                                    |
+| `admin/*`   | Overview with hub status and user counts; user management (invite, edit, disable, delete)        |
+| `settings`  | Branding (name, logo, color, legal links, default language) and SMTP                             |
+| `account`   | Own profile, password change, the customer usage overview and invoice downloads                  |
+| `hub-proxy` | Forwards allow-listed customer calls to the EchoCall API under `/api/hub`                        |
+| `embed`     | Re-serves the chat widget from the portal's own domain under `/embed`                            |
+| `audit`     | Append-only log of admin actions with actor, IP and outcome                                      |
+| `mail`      | Invite and password reset mails via SMTP; falls back to one-time links                           |
+| `health`    | `/healthz` (liveness) and `/readyz` (database + hub) for orchestration                           |
 
 Cross-cutting rules:
 

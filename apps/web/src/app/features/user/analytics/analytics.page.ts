@@ -328,7 +328,10 @@ export class AnalyticsPage implements OnInit {
       from.setDate(from.getDate() - this.days());
       const [summary, daily, agents, chatbots] = await Promise.all([
         firstValueFrom(
-          this.hub.get<AnalyticsSummary>('/analytics/summary', { from: isoDate(from), to: isoDate(new Date()) }),
+          this.hub.get<AnalyticsSummary>('/analytics/summary', {
+            from: isoDate(from),
+            to: isoDate(new Date()),
+          }),
         ),
         firstValueFrom(this.hub.get<DailyResponse>('/analytics/daily', { days: this.days() })),
         firstValueFrom(this.hub.list<AgentSummary>('/agents')),
@@ -348,9 +351,7 @@ export class AnalyticsPage implements OnInit {
   private async loadBreakdown(path: string): Promise<void> {
     this.loading.set(true);
     try {
-      const result = await firstValueFrom(
-        this.hub.get<AgentStatsResponse | ChatbotStatsResponse>(path),
-      );
+      const result = await firstValueFrom(this.hub.get<AgentStatsResponse | ChatbotStatsResponse>(path));
       this.breakdown.set(result.stats);
       this.breakdownEmpty.set(result.stats === null);
     } catch (err) {

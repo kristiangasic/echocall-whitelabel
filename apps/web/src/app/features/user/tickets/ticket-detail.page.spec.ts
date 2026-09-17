@@ -85,9 +85,9 @@ describe('TicketDetailPage', () => {
   it('names each writer by their side of the thread, not by the name the hub carries', async () => {
     const fixture = await render();
 
-    const senders = [
-      ...fixture.nativeElement.querySelectorAll('[data-testid="ticket-thread"] .sender'),
-    ].map((element: HTMLElement) => element.textContent?.trim());
+    const senders = [...fixture.nativeElement.querySelectorAll('[data-testid="ticket-thread"] .sender')].map(
+      (element: HTMLElement) => element.textContent?.trim(),
+    );
     expect(senders).toEqual([USER_TEXTS.tickets.you, USER_TEXTS.tickets.support]);
     expect(fixture.nativeElement.textContent).not.toContain('Team');
   });

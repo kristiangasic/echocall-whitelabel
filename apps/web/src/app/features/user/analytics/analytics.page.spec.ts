@@ -103,9 +103,7 @@ describe('AnalyticsPage', () => {
     expect(rows[0].textContent).toContain('2026-09-16');
     expect(rows[0].textContent).toContain('75');
     expect(rows[0].textContent).toContain('1:35');
-    expect(
-      fixture.nativeElement.querySelectorAll('[data-testid="bar-list"] .fill').length,
-    ).toBe(2);
+    expect(fixture.nativeElement.querySelectorAll('[data-testid="bar-list"] .fill').length).toBe(2);
   });
 
   it('reports the empty window without any usage', async () => {

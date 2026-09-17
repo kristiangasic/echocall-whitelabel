@@ -122,9 +122,7 @@ type Priority = (typeof PRIORITIES)[number];
   `,
 })
 export class TicketDialogComponent {
-  private readonly dialogRef = inject<MatDialogRef<TicketDialogComponent, TicketDialogResult>>(
-    MatDialogRef,
-  );
+  private readonly dialogRef = inject<MatDialogRef<TicketDialogComponent, TicketDialogResult>>(MatDialogRef);
   private readonly hub = inject(HubService);
   private readonly notify = inject(NotifyService);
 

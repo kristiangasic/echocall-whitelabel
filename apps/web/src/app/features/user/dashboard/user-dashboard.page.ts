@@ -276,9 +276,7 @@ export class UserDashboardPage implements OnInit {
   /** A side panel, not the point of the page: a failure here leaves the tiles standing. */
   private async loadRecent(): Promise<void> {
     try {
-      const result = await firstValueFrom(
-        this.hub.page<Conversation>('/conversations', { perPage: 5 }),
-      );
+      const result = await firstValueFrom(this.hub.page<Conversation>('/conversations', { perPage: 5 }));
       this.recent.set(result.data);
     } catch {
       this.recent.set([]);

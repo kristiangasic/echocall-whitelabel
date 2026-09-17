@@ -12,10 +12,7 @@ import { firstValueFrom } from 'rxjs';
 import type { Campaign, Recipient } from '../../../core/hub/hub.models';
 import { HubService } from '../../../core/hub/hub.service';
 import { NotifyService } from '../../../core/notify/notify.service';
-import {
-  ConfirmDialogComponent,
-  type ConfirmDialogData,
-} from '../../../shared/confirm-dialog.component';
+import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/confirm-dialog.component';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
 import { providePaginatorIntl } from '../../../shared/paginator-intl';
 
@@ -243,9 +240,7 @@ export class CampaignDetailPage implements OnInit {
       confirmKey: 'user.campaigns.cancel',
       destructive: true,
     };
-    const confirmed = await firstValueFrom(
-      this.dialog.open(ConfirmDialogComponent, { data }).afterClosed(),
-    );
+    const confirmed = await firstValueFrom(this.dialog.open(ConfirmDialogComponent, { data }).afterClosed());
     if (!confirmed) return;
     this.busy.set(true);
     try {
@@ -267,9 +262,7 @@ export class CampaignDetailPage implements OnInit {
       confirmKey: 'actions.delete',
       destructive: true,
     };
-    const confirmed = await firstValueFrom(
-      this.dialog.open(ConfirmDialogComponent, { data }).afterClosed(),
-    );
+    const confirmed = await firstValueFrom(this.dialog.open(ConfirmDialogComponent, { data }).afterClosed());
     if (!confirmed) return;
     this.busy.set(true);
     try {

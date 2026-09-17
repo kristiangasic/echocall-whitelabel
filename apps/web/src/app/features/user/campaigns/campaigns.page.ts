@@ -13,10 +13,7 @@ import type { CampaignSummary } from '../../../core/hub/hub.models';
 import { HubService } from '../../../core/hub/hub.service';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
-import {
-  CampaignDialogComponent,
-  type CampaignDialogResult,
-} from './campaign-dialog.component';
+import { CampaignDialogComponent, type CampaignDialogResult } from './campaign-dialog.component';
 import { providePaginatorIntl } from '../../../shared/paginator-intl';
 
 /** The filter chips above the table. `all` sends no status to the hub. */
@@ -161,9 +158,7 @@ export class CampaignsPage implements OnInit {
   }
 
   async create(): Promise<void> {
-    const result = await firstValueFrom(
-      this.dialog.open(CampaignDialogComponent).afterClosed(),
-    );
+    const result = await firstValueFrom(this.dialog.open(CampaignDialogComponent).afterClosed());
     const created = result as CampaignDialogResult | undefined;
     if (!created) return;
     await this.router.navigate(['/app/campaigns', created.id]);

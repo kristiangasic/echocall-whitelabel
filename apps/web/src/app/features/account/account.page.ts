@@ -1,10 +1,5 @@
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
-import {
-  FormGroupDirective,
-  NonNullableFormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormGroupDirective, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -82,12 +77,7 @@ import { BillingPanel } from './billing.panel';
                 <mat-card-subtitle>{{ t('account.password.intro') }}</mat-card-subtitle>
               </mat-card-header>
               <mat-card-content>
-                <form
-                  [formGroup]="password"
-                  (ngSubmit)="changePassword()"
-                  novalidate
-                  #passwordForm="ngForm"
-                >
+                <form [formGroup]="password" (ngSubmit)="changePassword()" novalidate #passwordForm="ngForm">
                   <mat-form-field appearance="outline" class="full">
                     <mat-label>{{ t('fields.currentPassword') }}</mat-label>
                     <input

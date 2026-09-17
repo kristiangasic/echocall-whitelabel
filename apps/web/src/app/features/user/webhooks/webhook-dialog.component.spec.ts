@@ -44,7 +44,9 @@ describe('WebhookDialogComponent', () => {
     const fixture = await render({});
 
     expect(fixture.nativeElement.querySelector('[data-testid="webhook-event-call.ended"]')).not.toBeNull();
-    expect(fixture.nativeElement.querySelector('[data-testid="webhook-event-ticket.created"]')).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="webhook-event-ticket.created"]'),
+    ).not.toBeNull();
   });
 
   it('explains each event in the reader language', async () => {

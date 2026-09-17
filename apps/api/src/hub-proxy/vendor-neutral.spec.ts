@@ -12,10 +12,7 @@ describe('renameProduct', () => {
   });
 
   it('reaches into nested objects and arrays', () => {
-    const result = renameProduct(
-      { data: [{ name: 'EchoCall Webhook', tags: ['EchoCall'] }] },
-      'Acme Voice',
-    );
+    const result = renameProduct({ data: [{ name: 'EchoCall Webhook', tags: ['EchoCall'] }] }, 'Acme Voice');
 
     expect(result).toEqual({ data: [{ name: 'Acme Voice Webhook', tags: ['Acme Voice'] }] });
   });

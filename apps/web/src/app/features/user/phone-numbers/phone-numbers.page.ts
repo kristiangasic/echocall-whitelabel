@@ -236,9 +236,7 @@ export class PhoneNumbersPage implements OnInit {
       confirmKey: 'user.numbers.cancel',
       destructive: true,
     };
-    const confirmed = await firstValueFrom(
-      this.dialog.open(ConfirmDialogComponent, { data }).afterClosed(),
-    );
+    const confirmed = await firstValueFrom(this.dialog.open(ConfirmDialogComponent, { data }).afterClosed());
     if (!confirmed) return;
     this.loading.set(true);
     try {

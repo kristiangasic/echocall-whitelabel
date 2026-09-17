@@ -100,9 +100,9 @@ describe('UserDashboardPage', () => {
   it('shows the empty hint without conversations', async () => {
     const fixture = await render([]);
 
-    expect(
-      fixture.nativeElement.querySelector('[data-testid="recent-conversations"]').textContent,
-    ).toContain(USER_TEXTS.dashboard.recent.empty);
+    expect(fixture.nativeElement.querySelector('[data-testid="recent-conversations"]').textContent).toContain(
+      USER_TEXTS.dashboard.recent.empty,
+    );
   });
 
   it('keeps the tiles when the conversation list fails', async () => {

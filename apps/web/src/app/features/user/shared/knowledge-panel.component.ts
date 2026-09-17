@@ -179,7 +179,9 @@ export class KnowledgePanelComponent implements OnInit {
   async load(): Promise<void> {
     this.loading.set(true);
     try {
-      this.entries.set(await firstValueFrom(this.hub.list<KnowledgePanelEntry>(`${this.basePath()}/knowledge`)));
+      this.entries.set(
+        await firstValueFrom(this.hub.list<KnowledgePanelEntry>(`${this.basePath()}/knowledge`)),
+      );
     } catch (err) {
       this.notify.apiError(err);
     } finally {
@@ -232,9 +234,7 @@ export class KnowledgePanelComponent implements OnInit {
       confirmKey: 'actions.delete',
       destructive: true,
     };
-    const confirmed = await firstValueFrom(
-      this.dialog.open(ConfirmDialogComponent, { data }).afterClosed(),
-    );
+    const confirmed = await firstValueFrom(this.dialog.open(ConfirmDialogComponent, { data }).afterClosed());
     if (!confirmed) return;
     this.busy.set(true);
     try {

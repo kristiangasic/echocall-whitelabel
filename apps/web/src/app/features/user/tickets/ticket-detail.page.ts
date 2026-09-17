@@ -109,12 +109,7 @@ const SUPPORT_ROLES = ['admin', 'reseller'];
               data-testid="ticket-reply"
             ></textarea>
           </mat-form-field>
-          <button
-            mat-flat-button
-            type="submit"
-            [disabled]="!canSend()"
-            data-testid="ticket-send"
-          >
+          <button mat-flat-button type="submit" [disabled]="!canSend()" data-testid="ticket-send">
             <mat-icon>send</mat-icon>
             {{ t('actions.send') }}
           </button>
@@ -227,9 +222,7 @@ export class TicketDetailPage implements OnInit {
     if (!this.canSend()) return;
     this.sending.set(true);
     try {
-      await firstValueFrom(
-        this.hub.post(`/tickets/${this.id()}/messages`, { message: this.reply().trim() }),
-      );
+      await firstValueFrom(this.hub.post(`/tickets/${this.id()}/messages`, { message: this.reply().trim() }));
       this.reply.set('');
       await this.load();
     } catch (err) {

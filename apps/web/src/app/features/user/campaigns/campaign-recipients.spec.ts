@@ -22,9 +22,7 @@ describe('parseRecipients', () => {
   });
 
   it('drops empty lines and lines without a number', () => {
-    expect(parseRecipients('+4930111\n\n   \n, Ohne Nummer\n')).toEqual([
-      { phoneNumber: '+4930111' },
-    ]);
+    expect(parseRecipients('+4930111\n\n   \n, Ohne Nummer\n')).toEqual([{ phoneNumber: '+4930111' }]);
   });
 
   it('survives the line endings a Windows editor writes', () => {

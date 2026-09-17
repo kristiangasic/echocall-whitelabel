@@ -48,9 +48,7 @@ describe('CampaignDialogComponent', () => {
     await fixture.whenStable();
 
     expect(fixture.componentInstance.parsed().length).toBe(2);
-    expect(fixture.nativeElement.querySelector('[data-testid="campaign-count"]').textContent).toContain(
-      '2',
-    );
+    expect(fixture.nativeElement.querySelector('[data-testid="campaign-count"]').textContent).toContain('2');
   });
 
   it('refuses to save without a name, an agent or recipients', async () => {
@@ -82,10 +80,7 @@ describe('CampaignDialogComponent', () => {
     expect(request.request.body).toEqual({
       name: 'Rueckrufaktion',
       agentId: 'agent_3',
-      recipients: [
-        { phoneNumber: '+4930111', name: 'Maria' },
-        { phoneNumber: '+4930222' },
-      ],
+      recipients: [{ phoneNumber: '+4930111', name: 'Maria' }, { phoneNumber: '+4930222' }],
     });
     request.flush({ id: 9, name: 'Rueckrufaktion', status: 'draft' });
     await pending;

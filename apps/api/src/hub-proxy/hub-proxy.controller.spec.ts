@@ -66,9 +66,7 @@ describe('HubProxyController', () => {
     const res = await api().get('/api/hub/integrations/types').set('Cookie', user.cookie);
 
     expect(res.status).toBe(200);
-    expect(res.body.data[0].description).toBe(
-      'Connect Customer Portal to 5000+ apps through Zapier.',
-    );
+    expect(res.body.data[0].description).toBe('Connect Customer Portal to 5000+ apps through Zapier.');
     expect(res.body.data[0].docsUrl).toBe('https://hub.echocall.de/docs/zapier');
   });
 
@@ -89,10 +87,7 @@ describe('HubProxyController', () => {
   });
 
   it('answers 204 without a body', async () => {
-    const res = await api()
-      .patch('/api/hub/notifications/read-all')
-      .set('Cookie', user.cookie)
-      .set(XHR);
+    const res = await api().patch('/api/hub/notifications/read-all').set('Cookie', user.cookie).set(XHR);
     expect(res.status).toBe(204);
   });
 

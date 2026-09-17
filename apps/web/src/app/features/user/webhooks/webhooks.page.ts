@@ -212,9 +212,7 @@ export class WebhooksPage implements OnInit {
   async test(webhook: Webhook): Promise<void> {
     this.busy.set(true);
     try {
-      const result = await firstValueFrom(
-        this.hub.post<TestDelivery>(`/webhooks/${webhook.id}/test`),
-      );
+      const result = await firstValueFrom(this.hub.post<TestDelivery>(`/webhooks/${webhook.id}/test`));
       if (result.data.delivered) this.notify.success('user.webhooks.testOk');
       else this.notify.error('user.webhooks.testFailed');
       await this.load();
@@ -233,9 +231,7 @@ export class WebhooksPage implements OnInit {
       confirmKey: 'actions.delete',
       destructive: true,
     };
-    const confirmed = await firstValueFrom(
-      this.dialog.open(ConfirmDialogComponent, { data }).afterClosed(),
-    );
+    const confirmed = await firstValueFrom(this.dialog.open(ConfirmDialogComponent, { data }).afterClosed());
     if (!confirmed) return;
     this.busy.set(true);
     try {

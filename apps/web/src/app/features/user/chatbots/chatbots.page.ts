@@ -138,9 +138,7 @@ export class ChatbotsPage implements OnInit {
       confirmKey: 'actions.delete',
       destructive: true,
     };
-    const confirmed = await firstValueFrom(
-      this.dialog.open(ConfirmDialogComponent, { data }).afterClosed(),
-    );
+    const confirmed = await firstValueFrom(this.dialog.open(ConfirmDialogComponent, { data }).afterClosed());
     if (!confirmed) return;
     this.loading.set(true);
     try {

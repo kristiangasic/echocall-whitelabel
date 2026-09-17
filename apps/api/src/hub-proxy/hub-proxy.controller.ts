@@ -25,17 +25,12 @@ export class HubProxyController {
   ) {}
 
   @All('{*path}')
-  async forward(
-    @CurrentUser() user: SessionUser,
-    @Req() req: Request,
-    @Res() res: Response,
-  ): Promise<void> {
+  async forward(@CurrentUser() user: SessionUser, @Req() req: Request, @Res() res: Response): Promise<void> {
     if (user.echocallCustomerId === null)
       throw apiError(409, 'customer_not_linked', 'This account is not linked to a customer yet');
     const url = new URL(req.originalUrl, 'http://internal');
     const hubPath = url.pathname.replace(/^\/api\/hub/, '');
-    if (!matchCustomerCall(req.method, hubPath))
-      throw apiError(404, 'not_found', 'No such portal endpoint');
+    if (!matchCustomerCall(req.method, hubPath)) throw apiError(404, 'not_found', 'No such portal endpoint');
     const result = await this.hub.raw(req.method, hubPath, {
       customerId: user.echocallCustomerId,
       query: url.searchParams,

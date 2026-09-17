@@ -4,10 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import type { IntegrationType } from '../../../core/hub/hub.models';
 import { provideTestI18n } from '../../../testing/i18n';
-import {
-  IntegrationDialogComponent,
-  type IntegrationDialogData,
-} from './integration-dialog.component';
+import { IntegrationDialogComponent, type IntegrationDialogData } from './integration-dialog.component';
 
 const TYPE: IntegrationType = {
   type: 'calcom',

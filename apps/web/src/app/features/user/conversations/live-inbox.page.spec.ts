@@ -63,18 +63,20 @@ describe('LiveInboxPage', () => {
     expect(request.request.body).toEqual({ message: 'Wir melden uns gleich.' });
     request.flush({ data: { id: 5 } }, { status: 201, statusText: 'Created' });
     await new Promise((resolve) => setTimeout(resolve, 0));
-    http.expectOne((req) => req.url === '/api/hub/conversations/44/messages').flush({
-      data: [
-        {
-          id: 5,
-          conversationId: 44,
-          senderType: 'agent',
-          message: 'Wir melden uns gleich.',
-          isRead: true,
-          createdAt: '2026-09-17T09:05:00.000Z',
-        },
-      ],
-    });
+    http
+      .expectOne((req) => req.url === '/api/hub/conversations/44/messages')
+      .flush({
+        data: [
+          {
+            id: 5,
+            conversationId: 44,
+            senderType: 'agent',
+            message: 'Wir melden uns gleich.',
+            isRead: true,
+            createdAt: '2026-09-17T09:05:00.000Z',
+          },
+        ],
+      });
     await pending;
     await fixture.whenStable();
 

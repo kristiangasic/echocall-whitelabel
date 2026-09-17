@@ -122,7 +122,12 @@ const STYLES = ['standard', 'rounded', 'compact'];
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>{{ t('user.chatbots.logoUrl') }}</mat-label>
-              <input matInput type="url" formControlName="logoUrl" placeholder="https://example.com/logo.png" />
+              <input
+                matInput
+                type="url"
+                formControlName="logoUrl"
+                placeholder="https://example.com/logo.png"
+              />
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>{{ t('user.chatbots.widgetPosition') }}</mat-label>

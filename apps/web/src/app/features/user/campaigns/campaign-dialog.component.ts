@@ -118,9 +118,8 @@ export interface CampaignDialogResult {
   `,
 })
 export class CampaignDialogComponent implements OnInit {
-  private readonly dialogRef = inject<MatDialogRef<CampaignDialogComponent, CampaignDialogResult>>(
-    MatDialogRef,
-  );
+  private readonly dialogRef =
+    inject<MatDialogRef<CampaignDialogComponent, CampaignDialogResult>>(MatDialogRef);
   private readonly hub = inject(HubService);
   private readonly notify = inject(NotifyService);
 
@@ -135,10 +134,7 @@ export class CampaignDialogComponent implements OnInit {
   readonly parsed = computed(() => parseRecipients(this.recipients()));
   readonly canSave = computed(
     () =>
-      this.name().trim().length > 0 &&
-      this.agentId() !== null &&
-      this.parsed().length > 0 &&
-      !this.saving(),
+      this.name().trim().length > 0 && this.agentId() !== null && this.parsed().length > 0 && !this.saving(),
   );
 
   ngOnInit(): void {

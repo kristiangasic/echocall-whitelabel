@@ -159,7 +159,9 @@ const SYSTEM_TOOLS = [
               </mat-slider>
             </div>
             <div class="slider-field">
-              <span class="slider-label">{{ t('user.agents.stability') }}: {{ form.controls.stability.value }}</span>
+              <span class="slider-label"
+                >{{ t('user.agents.stability') }}: {{ form.controls.stability.value }}</span
+              >
               <mat-slider [min]="0" [max]="1" [step]="0.05" discrete>
                 <input matSliderThumb formControlName="stability" />
               </mat-slider>
@@ -193,7 +195,9 @@ const SYSTEM_TOOLS = [
               </mat-select>
             </mat-form-field>
             <div class="slider-field">
-              <span class="slider-label">{{ t('user.agents.temperature') }}: {{ form.controls.temperature.value }}</span>
+              <span class="slider-label"
+                >{{ t('user.agents.temperature') }}: {{ form.controls.temperature.value }}</span
+              >
               <mat-slider [min]="0" [max]="100" [step]="1" discrete>
                 <input matSliderThumb formControlName="temperature" />
               </mat-slider>

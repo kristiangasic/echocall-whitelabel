@@ -30,21 +30,21 @@ async function bootstrap(): Promise<void> {
   // uploaded logos are stored as data URLs, so img-src needs data:. Plain-HTTP
   // intranet installs must not upgrade their asset requests to https.
   const baseline = helmet({
-      contentSecurityPolicy: {
-        directives: {
-          ...(config.appUrl.startsWith('https://') ? {} : { 'upgrade-insecure-requests': null }),
-          'default-src': ["'self'"],
-          'script-src': ["'self'"],
-          'style-src': ["'self'", "'unsafe-inline'"],
-          'img-src': ["'self'", 'data:'],
-          'font-src': ["'self'"],
-          'connect-src': ["'self'"],
-          'object-src': ["'none'"],
-          'base-uri': ["'self'"],
-          'form-action': ["'self'"],
-          'frame-ancestors': ["'none'"],
-        },
+    contentSecurityPolicy: {
+      directives: {
+        ...(config.appUrl.startsWith('https://') ? {} : { 'upgrade-insecure-requests': null }),
+        'default-src': ["'self'"],
+        'script-src': ["'self'"],
+        'style-src': ["'self'", "'unsafe-inline'"],
+        'img-src': ["'self'", 'data:'],
+        'font-src': ["'self'"],
+        'connect-src': ["'self'"],
+        'object-src': ["'none'"],
+        'base-uri': ["'self'"],
+        'form-action': ["'self'"],
+        'frame-ancestors': ["'none'"],
       },
+    },
   });
   // The embed surface is framed and scripted by customer sites; its controller
   // sets its own narrow headers instead of the portal baseline.

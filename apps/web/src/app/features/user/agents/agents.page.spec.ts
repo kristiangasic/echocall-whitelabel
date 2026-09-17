@@ -48,9 +48,7 @@ describe('AgentsPage', () => {
   });
 
   it('names the standard voice for an agent that picked none', async () => {
-    const fixture = await render([
-      { id: 'agent_2', name: 'After Hours', language: 'en', status: 'active' },
-    ]);
+    const fixture = await render([{ id: 'agent_2', name: 'After Hours', language: 'en', status: 'active' }]);
 
     const row = fixture.nativeElement.querySelector('table tbody tr');
     expect(row.textContent).toContain(USER_TEXTS.agents.voiceDefault);

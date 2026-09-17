@@ -14,10 +14,7 @@ import type { IntegrationSummary, IntegrationType } from '../../../core/hub/hub.
 import { NotifyService } from '../../../core/notify/notify.service';
 import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/confirm-dialog.component';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
-import {
-  IntegrationDialogComponent,
-  type IntegrationDialogData,
-} from './integration-dialog.component';
+import { IntegrationDialogComponent, type IntegrationDialogData } from './integration-dialog.component';
 import {
   IntegrationToolsDialogComponent,
   type IntegrationToolsDialogData,
@@ -210,9 +207,7 @@ export class IntegrationsPage implements OnInit {
   readonly busy = signal(false);
   readonly columns = ['name', 'status', 'lastUsed', 'actions'];
 
-  private readonly byType = computed(
-    () => new Map(this.catalog().map((entry) => [entry.type, entry.name])),
-  );
+  private readonly byType = computed(() => new Map(this.catalog().map((entry) => [entry.type, entry.name])));
 
   ngOnInit(): void {
     void this.load();
@@ -252,17 +247,13 @@ export class IntegrationsPage implements OnInit {
 
   async connect(type?: string): Promise<void> {
     const data: IntegrationDialogData = { types: this.catalog(), ...(type ? { type } : {}) };
-    const saved = await firstValueFrom(
-      this.dialog.open(IntegrationDialogComponent, { data }).afterClosed(),
-    );
+    const saved = await firstValueFrom(this.dialog.open(IntegrationDialogComponent, { data }).afterClosed());
     if (saved) await this.load();
   }
 
   async edit(integration: IntegrationSummary): Promise<void> {
     const data: IntegrationDialogData = { types: this.catalog(), integrationId: integration.id };
-    const saved = await firstValueFrom(
-      this.dialog.open(IntegrationDialogComponent, { data }).afterClosed(),
-    );
+    const saved = await firstValueFrom(this.dialog.open(IntegrationDialogComponent, { data }).afterClosed());
     if (saved) await this.load();
   }
 
@@ -274,9 +265,7 @@ export class IntegrationsPage implements OnInit {
   async test(integration: IntegrationSummary): Promise<void> {
     this.busy.set(true);
     try {
-      const result = await firstValueFrom(
-        this.hub.post<TestResult>(`/integrations/${integration.id}/test`),
-      );
+      const result = await firstValueFrom(this.hub.post<TestResult>(`/integrations/${integration.id}/test`));
       if (result.success === false) this.notify.error('user.integrations.testFailed');
       else this.notify.success('user.integrations.testOk');
     } catch (err) {
@@ -294,9 +283,7 @@ export class IntegrationsPage implements OnInit {
       confirmKey: 'actions.delete',
       destructive: true,
     };
-    const confirmed = await firstValueFrom(
-      this.dialog.open(ConfirmDialogComponent, { data }).afterClosed(),
-    );
+    const confirmed = await firstValueFrom(this.dialog.open(ConfirmDialogComponent, { data }).afterClosed());
     if (!confirmed) return;
     this.busy.set(true);
     try {

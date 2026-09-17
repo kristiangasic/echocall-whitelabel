@@ -206,7 +206,9 @@ export class PurchaseDialogComponent implements OnInit {
       };
       const areaCode = this.areaCode.trim();
       if (areaCode) params['areaCode'] = areaCode;
-      this.offers.set(await firstValueFrom(this.hub.list<MarketplaceNumber>('/phone-numbers/search', params)));
+      this.offers.set(
+        await firstValueFrom(this.hub.list<MarketplaceNumber>('/phone-numbers/search', params)),
+      );
       this.searched.set(true);
     } catch (err) {
       this.notify.apiError(err);
