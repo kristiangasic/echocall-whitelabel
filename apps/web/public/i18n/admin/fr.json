@@ -233,6 +233,69 @@
       "submit": "Créer"
     }
   },
+  "addons": {
+    "title": "Packs complémentaires",
+    "intro": "Minutes et conversations supplémentaires qu'un client achète en plus de son forfait.",
+    "sell": "Vendre un pack",
+    "types": {
+      "voice_minutes": "Minutes vocales",
+      "chat_conversations": "Conversations de chat"
+    },
+    "units": {
+      "voice_minutes": "{{count}} minutes",
+      "chat_conversations": "{{count}} conversations"
+    },
+    "stats": {
+      "sales": "Ventes",
+      "revenue": "Chiffre d'affaires",
+      "salesHint": "Toutes les écritures, y compris annulées.",
+      "revenueHint": "Ventes terminées uniquement.",
+      "unavailable": "Indisponible."
+    },
+    "packages": {
+      "title": "Packs proposés",
+      "intro": "Chaque pack est un forfait de type pack complémentaire, actif et visible.",
+      "empty": "Aucun pack n'est encore proposé. Créez pour cela un forfait de type pack complémentaire sous Forfaits.",
+      "quantity": "Volume",
+      "price": "Prix"
+    },
+    "purchases": {
+      "title": "Ventes",
+      "intro": "Les {{count}} dernières ventes.",
+      "empty": "Aucun pack n'a encore été vendu.",
+      "customer": "Client",
+      "package": "Pack",
+      "quantity": "Volume",
+      "price": "Prix",
+      "used": "Consommé",
+      "expiry": "Valable jusqu'au",
+      "date": "Vendu le",
+      "statuses": {
+        "pending": "En attente",
+        "processing": "En cours",
+        "completed": "Terminée",
+        "failed": "Échouée",
+        "canceled": "Annulée"
+      }
+    },
+    "dialog": {
+      "title": "Vendre un pack",
+      "intro": "Le crédit est accordé au client immédiatement et expire au bout de douze mois.",
+      "customer": "Client",
+      "package": "Pack",
+      "payment": "Règlement",
+      "payments": {
+        "balance": "Débiter le solde du client",
+        "manual": "Régler en dehors du portail"
+      },
+      "paymentHint": "Avec le second choix aucun montant ne circule et le recouvrement vous revient.",
+      "noPackages": "Aucun pack proposé ne peut être vendu.",
+      "balanceTooLow": "Le solde de ce client est insuffisant.",
+      "noSubscription": "Ce client n'a aucun abonnement en cours auquel un pack pourrait s'ajouter.",
+      "submit": "Vendre"
+    },
+    "sold": "Pack vendu, {{count}} unités accordées."
+  },
   "users": {
     "title": "Utilisateurs",
     "invite": "Inviter",

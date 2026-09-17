@@ -13,6 +13,7 @@ import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type { Plan, ResellerCustomer } from '../../../core/hub/hub.models';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { NotifyService } from '../../../core/notify/notify.service';
+import { type CustomerOption, customerOption } from '../customer-option';
 
 /** The contract lengths the hub accepts, in months and as the strings it wants. */
 const DURATIONS = ['3', '6', '12'] as const;
@@ -112,7 +113,7 @@ export class SubscriptionDialogComponent implements OnInit {
   readonly loading = signal(false);
   readonly busy = signal(false);
   private readonly allPlans = signal<Plan[]>([]);
-  readonly customers = signal<{ id: number; label: string }[]>([]);
+  readonly customers = signal<CustomerOption[]>([]);
 
   /** A plan that is switched off can no longer be sold, so it is not on offer here. */
   readonly plans = computed(() => this.allPlans().filter((plan) => plan.isActive));
@@ -169,13 +170,4 @@ export class SubscriptionDialogComponent implements OnInit {
       this.busy.set(false);
     }
   }
-}
-
-/** One entry of the customer picker: the name when there is one, the address otherwise. */
-function customerOption(customer: ResellerCustomer): { id: number; label: string } {
-  const user = customer.user;
-  const id = customer.userId ?? user?.id ?? 0;
-  const name = [user?.firstName, user?.lastName].filter(Boolean).join(' ');
-  const email = user?.email ?? '';
-  return { id, label: name ? `${name} (${email})` : email || String(id) };
 }

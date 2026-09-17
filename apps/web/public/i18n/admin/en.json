@@ -233,6 +233,69 @@
       "submit": "Create"
     }
   },
+  "addons": {
+    "title": "Add-on packages",
+    "intro": "Extra minutes and conversations a customer buys on top of a plan.",
+    "sell": "Sell a package",
+    "types": {
+      "voice_minutes": "Voice minutes",
+      "chat_conversations": "Chat conversations"
+    },
+    "units": {
+      "voice_minutes": "{{count}} minutes",
+      "chat_conversations": "{{count}} conversations"
+    },
+    "stats": {
+      "sales": "Sales",
+      "revenue": "Revenue",
+      "salesHint": "Every record, cancelled ones included.",
+      "revenueHint": "Completed sales only.",
+      "unavailable": "Not available."
+    },
+    "packages": {
+      "title": "Packages on offer",
+      "intro": "Each package is an add-on plan that is active and visible.",
+      "empty": "No package is on offer yet. Add a plan of type add-on package under Plans.",
+      "quantity": "Size",
+      "price": "Price"
+    },
+    "purchases": {
+      "title": "Sales",
+      "intro": "The latest {{count}} sales.",
+      "empty": "No package has been sold yet.",
+      "customer": "Customer",
+      "package": "Package",
+      "quantity": "Size",
+      "price": "Price",
+      "used": "Used",
+      "expiry": "Valid until",
+      "date": "Sold on",
+      "statuses": {
+        "pending": "Pending",
+        "processing": "Processing",
+        "completed": "Completed",
+        "failed": "Failed",
+        "canceled": "Cancelled"
+      }
+    },
+    "dialog": {
+      "title": "Sell a package",
+      "intro": "The credits reach the customer straight away and lapse after twelve months.",
+      "customer": "Customer",
+      "package": "Package",
+      "payment": "Payment",
+      "payments": {
+        "balance": "Take it from the customer balance",
+        "manual": "Settle it outside the portal"
+      },
+      "paymentHint": "With the second choice no money moves and collecting it is up to you.",
+      "noPackages": "There is no package on offer that could be sold.",
+      "balanceTooLow": "The balance of this customer is not high enough for this.",
+      "noSubscription": "This customer has no running subscription a package could add to.",
+      "submit": "Sell"
+    },
+    "sold": "Package sold, {{count}} units granted."
+  },
   "users": {
     "title": "Users",
     "invite": "Invite",

@@ -72,6 +72,10 @@ export const routes: Routes = [
               ),
           },
           {
+            path: 'addons',
+            loadComponent: () => import('./features/admin/addons/addons.page').then((m) => m.AdminAddonsPage),
+          },
+          {
             path: 'users',
             loadComponent: () =>
               import('./features/admin/users/admin-users.page').then((m) => m.AdminUsersPage),

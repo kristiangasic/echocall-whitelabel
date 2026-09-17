@@ -233,6 +233,69 @@
       "submit": "Anlegen"
     }
   },
+  "addons": {
+    "title": "Zusatzpakete",
+    "intro": "Zusätzliche Minuten und Gespräche, die ein Kunde zu seinem Tarif dazukauft.",
+    "sell": "Paket verkaufen",
+    "types": {
+      "voice_minutes": "Sprachminuten",
+      "chat_conversations": "Chat-Gespräche"
+    },
+    "units": {
+      "voice_minutes": "{{count}} Minuten",
+      "chat_conversations": "{{count}} Gespräche"
+    },
+    "stats": {
+      "sales": "Verkäufe",
+      "revenue": "Umsatz",
+      "salesHint": "Alle Buchungen, auch abgebrochene.",
+      "revenueHint": "Nur abgeschlossene Verkäufe.",
+      "unavailable": "Nicht verfügbar."
+    },
+    "packages": {
+      "title": "Pakete im Angebot",
+      "intro": "Jedes Paket ist ein Tarif vom Typ Zusatzpaket, der aktiv und sichtbar ist.",
+      "empty": "Es ist noch kein Paket im Angebot. Legen Sie dafür unter Tarife einen Tarif vom Typ Zusatzpaket an.",
+      "quantity": "Umfang",
+      "price": "Preis"
+    },
+    "purchases": {
+      "title": "Verkäufe",
+      "intro": "Die neuesten {{count}} Verkäufe.",
+      "empty": "Es wurde noch kein Paket verkauft.",
+      "customer": "Kunde",
+      "package": "Paket",
+      "quantity": "Umfang",
+      "price": "Preis",
+      "used": "Verbraucht",
+      "expiry": "Gültig bis",
+      "date": "Verkauft am",
+      "statuses": {
+        "pending": "Offen",
+        "processing": "In Arbeit",
+        "completed": "Abgeschlossen",
+        "failed": "Fehlgeschlagen",
+        "canceled": "Abgebrochen"
+      }
+    },
+    "dialog": {
+      "title": "Paket verkaufen",
+      "intro": "Das Guthaben wird dem Kunden sofort gutgeschrieben und verfällt nach zwölf Monaten.",
+      "customer": "Kunde",
+      "package": "Paket",
+      "payment": "Abrechnung",
+      "payments": {
+        "balance": "Vom Guthaben des Kunden abbuchen",
+        "manual": "Außerhalb des Portals abrechnen"
+      },
+      "paymentHint": "Bei der zweiten Wahl bewegt sich kein Geld; das Einziehen bleibt Ihre Sache.",
+      "noPackages": "Es ist kein Paket im Angebot, das verkauft werden könnte.",
+      "balanceTooLow": "Das Guthaben des Kunden reicht dafür nicht aus.",
+      "noSubscription": "Dieser Kunde hat kein laufendes Abonnement, zu dem ein Paket passen würde.",
+      "submit": "Verkaufen"
+    },
+    "sold": "Paket verkauft, {{count}} Einheiten gutgeschrieben."
+  },
   "users": {
     "title": "Benutzer",
     "invite": "Einladen",

@@ -90,6 +90,7 @@ describe('ShellComponent', () => {
       '/admin/customers',
       '/admin/plans',
       '/admin/subscriptions',
+      '/admin/addons',
       '/admin/users',
       '/admin/settings',
       '/admin/audit',
