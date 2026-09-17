@@ -114,5 +114,84 @@
     "added": "Wissensquelle hinzugefügt.",
     "deleteTitle": "Wissensquelle löschen?",
     "deleteMessage": "\"{{title}}\" wird dauerhaft gelöscht."
+  },
+  "chatbots": {
+    "title": "Chatbots",
+    "create": "Chatbot anlegen",
+    "createTitle": "Neuen Chatbot anlegen",
+    "editTitle": "Chatbot bearbeiten: {{name}}",
+    "displayName": "Anzeigename im Widget",
+    "language": "Sprache",
+    "greeting": "Begrüßung",
+    "systemPrompt": "Verhaltensanweisung",
+    "systemPromptHint": "Beschreibt Persönlichkeit, Wissen und Verhalten des Chatbots.",
+    "primaryColor": "Akzentfarbe",
+    "logoUrl": "Logo-URL",
+    "widgetPosition": "Position",
+    "widgetSize": "Größe",
+    "widgetStyle": "Stil",
+    "positions": {
+      "bottom-right": "Unten rechts",
+      "bottom-left": "Unten links",
+      "top-right": "Oben rechts",
+      "top-left": "Oben links"
+    },
+    "sizes": {
+      "small": "Klein",
+      "medium": "Mittel",
+      "large": "Groß"
+    },
+    "styles": {
+      "standard": "Standard",
+      "rounded": "Abgerundet",
+      "compact": "Kompakt"
+    },
+    "teaserMessage": "Teaser-Text",
+    "teaserHint": "Wird als Sprechblase neben dem Widget angezeigt.",
+    "widgetLanguage": "Oberflächensprache des Widgets",
+    "widgetLanguageAuto": "Automatisch nach Besucher",
+    "supportedLanguages": "Weitere Sprachen",
+    "allowedDomains": "Erlaubte Domains",
+    "allowedDomainsHint": "Kommagetrennt, zum Beispiel example.com, shop.example.com. Leer lässt jede Domain zu.",
+    "llmModel": "KI-Modell",
+    "textOnlyMode": "Nur Text (keine Sprachausgabe)",
+    "saveConversations": "Unterhaltungen speichern",
+    "zeroPiiRetention": "Keine personenbezogenen Daten speichern",
+    "retentionDays": "Aufbewahrung (Tage)",
+    "retentionDaysHint": "-1 bedeutet unbegrenzt.",
+    "sections": {
+      "identity": "Identität",
+      "appearance": "Erscheinungsbild",
+      "behavior": "Verhalten",
+      "privacy": "Datenschutz",
+      "domains": "Domains"
+    },
+    "statuses": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "empty": "Noch keine Chatbots. Legen Sie den ersten an.",
+    "embed": "Einbetten",
+    "embedTitle": "Chatbot einbetten",
+    "embedHint": "Fügen Sie diesen Code vor dem schließenden body-Tag Ihrer Webseite ein.",
+    "embedCopied": "Code kopiert.",
+    "embedCopyFailed": "Der Code konnte nicht kopiert werden.",
+    "deleteTitle": "Chatbot löschen?",
+    "deleteMessage": "\"{{name}}\" wird dauerhaft gelöscht.",
+    "created": "Chatbot angelegt.",
+    "saved": "Änderungen gespeichert.",
+    "deleted": "Chatbot gelöscht."
+  },
+  "models": {
+    "tts": {
+      "fastest": "Sehr schnell",
+      "fast": "Schnell",
+      "premium": "Höchste Qualität",
+      "multilingual": "Mehrsprachig"
+    },
+    "llm": {
+      "conversation": "Für Gespräche optimiert",
+      "knowledge": "Für Wissensfragen optimiert"
+    }
   }
 }

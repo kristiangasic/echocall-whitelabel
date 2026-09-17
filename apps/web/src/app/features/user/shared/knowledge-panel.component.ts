@@ -10,9 +10,22 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { HubService } from '../../../core/hub/hub.service';
-import type { KnowledgeEntry } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/confirm-dialog.component';
+
+/**
+ * The fields both owners report. Voice agents carry sourceUrl and status,
+ * chatbots carry contentSnippet and fileName instead.
+ */
+export interface KnowledgePanelEntry {
+  id: number;
+  type: 'url' | 'text' | 'file';
+  title?: string | null;
+  sourceUrl?: string | null;
+  status?: string | null;
+  contentSnippet?: string | null;
+  fileName?: string | null;
+}
 
 /**
  * Knowledge sources of one agent or chatbot: list, add a URL or a text,
@@ -41,8 +54,8 @@ import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/
         @for (entry of entries(); track entry.id) {
           <mat-list-item>
             <mat-icon matListItemIcon>{{ entry.type === 'url' ? 'link' : 'notes' }}</mat-icon>
-            <span matListItemTitle>{{ entry.title || entry.sourceUrl || '#' + entry.id }}</span>
-            <span matListItemLine>{{ entry.status }}</span>
+            <span matListItemTitle>{{ label(entry) }}</span>
+            <span matListItemLine>{{ entry.status || entry.contentSnippet || '' }}</span>
             <span matListItemMeta class="entry-actions">
               @if (entry.type === 'url') {
                 <button
@@ -147,7 +160,7 @@ export class KnowledgePanelComponent implements OnInit {
   /** Hub path of the owner, for example /agents/agent_3 or /chatbots/7. */
   readonly basePath = input.required<string>();
 
-  readonly entries = signal<KnowledgeEntry[]>([]);
+  readonly entries = signal<KnowledgePanelEntry[]>([]);
   readonly loading = signal(false);
   readonly busy = signal(false);
 
@@ -159,10 +172,14 @@ export class KnowledgePanelComponent implements OnInit {
     void this.load();
   }
 
+  label(entry: KnowledgePanelEntry): string {
+    return entry.title || entry.sourceUrl || entry.fileName || `#${entry.id}`;
+  }
+
   async load(): Promise<void> {
     this.loading.set(true);
     try {
-      this.entries.set(await firstValueFrom(this.hub.list<KnowledgeEntry>(`${this.basePath()}/knowledge`)));
+      this.entries.set(await firstValueFrom(this.hub.list<KnowledgePanelEntry>(`${this.basePath()}/knowledge`)));
     } catch (err) {
       this.notify.apiError(err);
     } finally {
@@ -186,7 +203,7 @@ export class KnowledgePanelComponent implements OnInit {
     this.textContent = '';
   }
 
-  async refresh(entry: KnowledgeEntry): Promise<void> {
+  async refresh(entry: KnowledgePanelEntry): Promise<void> {
     this.busy.set(true);
     try {
       await firstValueFrom(this.hub.post(`${this.basePath()}/knowledge/${entry.id}/refresh`));
@@ -199,11 +216,11 @@ export class KnowledgePanelComponent implements OnInit {
     }
   }
 
-  async remove(entry: KnowledgeEntry): Promise<void> {
+  async remove(entry: KnowledgePanelEntry): Promise<void> {
     const data: ConfirmDialogData = {
       titleKey: 'user.knowledge.deleteTitle',
       messageKey: 'user.knowledge.deleteMessage',
-      params: { title: entry.title || entry.sourceUrl || `#${entry.id}` },
+      params: { title: this.label(entry) },
       confirmKey: 'actions.delete',
       destructive: true,
     };

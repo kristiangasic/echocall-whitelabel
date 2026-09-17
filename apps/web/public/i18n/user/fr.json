@@ -114,5 +114,84 @@
     "added": "Source de connaissances ajoutée.",
     "deleteTitle": "Supprimer la source ?",
     "deleteMessage": "« {{title}} » sera supprimée définitivement."
+  },
+  "chatbots": {
+    "title": "Chatbots",
+    "create": "Créer un chatbot",
+    "createTitle": "Créer un nouveau chatbot",
+    "editTitle": "Modifier le chatbot : {{name}}",
+    "displayName": "Nom affiché dans le widget",
+    "language": "Langue",
+    "greeting": "Message d’accueil",
+    "systemPrompt": "Instructions de comportement",
+    "systemPromptHint": "Décrit la personnalité, les connaissances et le comportement du chatbot.",
+    "primaryColor": "Couleur d’accent",
+    "logoUrl": "URL du logo",
+    "widgetPosition": "Position",
+    "widgetSize": "Taille",
+    "widgetStyle": "Style",
+    "positions": {
+      "bottom-right": "En bas à droite",
+      "bottom-left": "En bas à gauche",
+      "top-right": "En haut à droite",
+      "top-left": "En haut à gauche"
+    },
+    "sizes": {
+      "small": "Petit",
+      "medium": "Moyen",
+      "large": "Grand"
+    },
+    "styles": {
+      "standard": "Standard",
+      "rounded": "Arrondi",
+      "compact": "Compact"
+    },
+    "teaserMessage": "Texte d’accroche",
+    "teaserHint": "Affiché comme une bulle à côté du widget.",
+    "widgetLanguage": "Langue de l’interface du widget",
+    "widgetLanguageAuto": "Selon le visiteur",
+    "supportedLanguages": "Langues supplémentaires",
+    "allowedDomains": "Domaines autorisés",
+    "allowedDomainsHint": "Séparés par des virgules, par exemple example.com, shop.example.com. Vide autorise tous les domaines.",
+    "llmModel": "Modèle d’IA",
+    "textOnlyMode": "Texte uniquement (sans synthèse vocale)",
+    "saveConversations": "Enregistrer les conversations",
+    "zeroPiiRetention": "Ne conserver aucune donnée personnelle",
+    "retentionDays": "Conservation (jours)",
+    "retentionDaysHint": "-1 signifie illimité.",
+    "sections": {
+      "identity": "Identité",
+      "appearance": "Apparence",
+      "behavior": "Comportement",
+      "privacy": "Confidentialité",
+      "domains": "Domaines"
+    },
+    "statuses": {
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "empty": "Aucun chatbot pour l’instant. Créez le premier.",
+    "embed": "Intégrer",
+    "embedTitle": "Intégrer le chatbot",
+    "embedHint": "Collez ce code avant la balise body fermante de votre site.",
+    "embedCopied": "Code copié.",
+    "embedCopyFailed": "Le code n’a pas pu être copié.",
+    "deleteTitle": "Supprimer le chatbot ?",
+    "deleteMessage": "« {{name}} » sera supprimé définitivement.",
+    "created": "Chatbot créé.",
+    "saved": "Modifications enregistrées.",
+    "deleted": "Chatbot supprimé."
+  },
+  "models": {
+    "tts": {
+      "fastest": "Très rapide",
+      "fast": "Rapide",
+      "premium": "Qualité maximale",
+      "multilingual": "Multilingue"
+    },
+    "llm": {
+      "conversation": "Optimisé pour la conversation",
+      "knowledge": "Optimisé pour les questions de connaissance"
+    }
   }
 }

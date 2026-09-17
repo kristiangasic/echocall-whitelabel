@@ -83,6 +83,16 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/user/agents/agent-edit.page').then((m) => m.AgentEditPage),
           },
+          {
+            path: 'chatbots',
+            loadComponent: () =>
+              import('./features/user/chatbots/chatbots.page').then((m) => m.ChatbotsPage),
+          },
+          {
+            path: 'chatbots/:id',
+            loadComponent: () =>
+              import('./features/user/chatbots/chatbot-edit.page').then((m) => m.ChatbotEditPage),
+          },
         ],
       },
     ],

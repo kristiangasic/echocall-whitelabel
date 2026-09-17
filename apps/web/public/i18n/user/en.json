@@ -114,5 +114,84 @@
     "added": "Knowledge source added.",
     "deleteTitle": "Delete knowledge source?",
     "deleteMessage": "“{{title}}” will be deleted permanently."
+  },
+  "chatbots": {
+    "title": "Chatbots",
+    "create": "Create chatbot",
+    "createTitle": "Create a new chatbot",
+    "editTitle": "Edit chatbot: {{name}}",
+    "displayName": "Display name in the widget",
+    "language": "Language",
+    "greeting": "Greeting",
+    "systemPrompt": "Behaviour instructions",
+    "systemPromptHint": "Describes the personality, knowledge and behaviour of the chatbot.",
+    "primaryColor": "Accent colour",
+    "logoUrl": "Logo URL",
+    "widgetPosition": "Position",
+    "widgetSize": "Size",
+    "widgetStyle": "Style",
+    "positions": {
+      "bottom-right": "Bottom right",
+      "bottom-left": "Bottom left",
+      "top-right": "Top right",
+      "top-left": "Top left"
+    },
+    "sizes": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    },
+    "styles": {
+      "standard": "Standard",
+      "rounded": "Rounded",
+      "compact": "Compact"
+    },
+    "teaserMessage": "Teaser text",
+    "teaserHint": "Shown as a speech bubble next to the widget.",
+    "widgetLanguage": "Widget interface language",
+    "widgetLanguageAuto": "Follow the visitor",
+    "supportedLanguages": "Additional languages",
+    "allowedDomains": "Allowed domains",
+    "allowedDomainsHint": "Comma separated, for example example.com, shop.example.com. Empty allows every domain.",
+    "llmModel": "AI model",
+    "textOnlyMode": "Text only (no speech output)",
+    "saveConversations": "Store conversations",
+    "zeroPiiRetention": "Store no personal data",
+    "retentionDays": "Retention (days)",
+    "retentionDaysHint": "-1 means unlimited.",
+    "sections": {
+      "identity": "Identity",
+      "appearance": "Appearance",
+      "behavior": "Behaviour",
+      "privacy": "Privacy",
+      "domains": "Domains"
+    },
+    "statuses": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "empty": "No chatbots yet. Create your first one.",
+    "embed": "Embed",
+    "embedTitle": "Embed the chatbot",
+    "embedHint": "Paste this code before the closing body tag of your website.",
+    "embedCopied": "Code copied.",
+    "embedCopyFailed": "The code could not be copied.",
+    "deleteTitle": "Delete chatbot?",
+    "deleteMessage": "“{{name}}” will be deleted permanently.",
+    "created": "Chatbot created.",
+    "saved": "Changes saved.",
+    "deleted": "Chatbot deleted."
+  },
+  "models": {
+    "tts": {
+      "fastest": "Fastest",
+      "fast": "Fast",
+      "premium": "Highest quality",
+      "multilingual": "Multilingual"
+    },
+    "llm": {
+      "conversation": "Tuned for conversation",
+      "knowledge": "Tuned for knowledge questions"
+    }
   }
 }

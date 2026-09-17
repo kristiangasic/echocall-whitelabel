@@ -45,6 +45,7 @@
     "signIn": "Se connecter"
   },
   "fields": {
+    "name": "Nom",
     "email": "Adresse e-mail",
     "password": "Mot de passe",
     "newPassword": "Nouveau mot de passe",

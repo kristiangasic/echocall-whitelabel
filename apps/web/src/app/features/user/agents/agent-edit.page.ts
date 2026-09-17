@@ -12,13 +12,16 @@ import { MatSliderModule } from '@angular/material/slider';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import {
+  DEFAULT_VOICE_LLM_MODEL,
+  LLM_MODEL_OPTIONS,
+  TTS_MODEL_OPTIONS,
+} from '../../../core/hub/hub.constants';
 import { HubService } from '../../../core/hub/hub.service';
 import type { Agent, AvailableVoice, Language, Voice } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
-import { KnowledgePanelComponent } from './knowledge-panel.component';
+import { KnowledgePanelComponent } from '../shared/knowledge-panel.component';
 
-const TTS_MODELS = ['echocall-flash', 'echocall-flash-lite', 'echocall-ultra', 'echocall-multilingual'];
-const LLM_MODELS = ['EchoCall-Voice', 'EchoCall-Smart'];
 const SYSTEM_TOOLS = [
   'endCall',
   'voicemailDetection',
@@ -111,8 +114,8 @@ const SYSTEM_TOOLS = [
               <mat-label>{{ t('user.agents.ttsModel') }}</mat-label>
               <mat-select formControlName="ttsModel">
                 <mat-option value="">{{ t('user.agents.ttsAuto') }}</mat-option>
-                @for (model of ttsModels; track model) {
-                  <mat-option [value]="model">{{ model }}</mat-option>
+                @for (model of ttsModels; track model.value) {
+                  <mat-option [value]="model.value">{{ t(model.labelKey) }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -170,8 +173,8 @@ const SYSTEM_TOOLS = [
             <mat-form-field appearance="outline">
               <mat-label>{{ t('user.agents.llmModel') }}</mat-label>
               <mat-select formControlName="llmModel">
-                @for (model of llmModels; track model) {
-                  <mat-option [value]="model">{{ model }}</mat-option>
+                @for (model of llmModels; track model.value) {
+                  <mat-option [value]="model.value">{{ t(model.labelKey) }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -380,8 +383,8 @@ export class AgentEditPage implements OnInit {
   private readonly router = inject(Router);
   private readonly notify = inject(NotifyService);
 
-  readonly ttsModels = TTS_MODELS;
-  readonly llmModels = LLM_MODELS;
+  readonly ttsModels = TTS_MODEL_OPTIONS;
+  readonly llmModels = LLM_MODEL_OPTIONS;
   readonly systemTools = SYSTEM_TOOLS;
 
   readonly id = signal<string | null>(null);
@@ -404,7 +407,7 @@ export class AgentEditPage implements OnInit {
     systemPrompt: [''],
     speed: [1],
     stability: [0.5],
-    llmModel: ['EchoCall-Voice'],
+    llmModel: [DEFAULT_VOICE_LLM_MODEL],
     temperature: [50],
     maxTokens: [1000],
     turnEagerness: ['normal' as 'patient' | 'normal' | 'eager'],
@@ -504,7 +507,7 @@ export class AgentEditPage implements OnInit {
         status: agent.status,
         firstMessage: agent.firstMessage ?? '',
         systemPrompt: agent.systemPrompt ?? '',
-        llmModel: agent.llmModel ?? 'EchoCall-Voice',
+        llmModel: agent.llmModel ?? DEFAULT_VOICE_LLM_MODEL,
         temperature: agent.temperature ?? 50,
         maxTokens: agent.maxTokens ?? 1000,
         enableInterruptions: agent.enableInterruptions ?? true,

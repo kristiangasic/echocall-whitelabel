@@ -45,6 +45,7 @@
     "signIn": "Sign in"
   },
   "fields": {
+    "name": "Name",
     "email": "E-mail address",
     "password": "Password",
     "newPassword": "New password",
