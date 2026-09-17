@@ -484,5 +484,61 @@
     "markAll": "Alle als gelesen markieren",
     "markRead": "Als gelesen markieren",
     "empty": "Keine Benachrichtigungen vorhanden."
+  },
+  "billing": {
+    "plan": {
+      "title": "Tarif",
+      "status": "Status: {{status}}",
+      "renews": "Verlängert sich am {{date}}",
+      "none": "Zurzeit ist kein Tarif gebucht."
+    },
+    "balance": {
+      "title": "Guthaben",
+      "voice": "Noch {{count}} Sprachminuten verfügbar",
+      "chat": "Noch {{count}} Chat-Unterhaltungen verfügbar",
+      "unknown": "Das Guthaben konnte nicht geladen werden."
+    },
+    "invoices": {
+      "title": "Rechnungen",
+      "number": "Nummer",
+      "issued": "Datum",
+      "total": "Betrag",
+      "status": "Status",
+      "download": "Rechnung herunterladen",
+      "empty": "Es liegen noch keine Rechnungen vor."
+    },
+    "transactions": {
+      "title": "Guthabenbewegungen",
+      "booked": "Zeitpunkt",
+      "description": "Vorgang",
+      "amount": "Betrag",
+      "balance": "Saldo danach",
+      "empty": "Es gibt noch keine Bewegungen."
+    },
+    "subscriptionStatuses": {
+      "active": "Aktiv",
+      "paused": "Pausiert",
+      "canceled": "Gekündigt",
+      "cancelled": "Gekündigt",
+      "trialing": "Testphase",
+      "past_due": "Zahlung offen",
+      "expired": "Abgelaufen"
+    },
+    "invoiceStatuses": {
+      "draft": "Entwurf",
+      "pending": "Offen",
+      "sent": "Versendet",
+      "paid": "Bezahlt",
+      "overdue": "Überfällig",
+      "cancelled": "Storniert"
+    },
+    "transactionTypes": {
+      "topup": "Aufladung",
+      "purchase": "Kauf",
+      "adjustment": "Korrektur",
+      "subscription": "Abo",
+      "refund": "Erstattung",
+      "usage": "Verbrauch"
+    }
   }
 }

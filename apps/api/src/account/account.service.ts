@@ -21,6 +21,15 @@ export interface AccountOverview {
   limits: HubLimits;
 }
 
+/** One rendered invoice, ready to be handed to the browser. */
+export interface InvoiceDocument {
+  filename: string;
+  content: Buffer;
+}
+
+/** Filenames the portal is willing to echo back into a Content-Disposition header. */
+const SAFE_FILENAME = /^[A-Za-z0-9._-]{1,120}\.pdf$/;
+
 @Injectable()
 export class AccountService {
   constructor(
@@ -42,6 +51,27 @@ export class AccountService {
       this.hub.call(() => client.GET('/users/me/limits')),
     ]);
     return { profile, usage, limits };
+  }
+
+  /**
+   * Downloads one invoice as a PDF. The hub only hands the bytes to a request
+   * that asks for them; the link it returns otherwise needs a hub session, which
+   * the portal deliberately never has.
+   */
+  async invoicePdf(user: SessionUser, invoiceId: number): Promise<InvoiceDocument> {
+    if (user.echocallCustomerId === null)
+      throw apiError(409, 'customer_not_linked', 'This account is not linked to a customer yet');
+    const result = await this.hub.raw('GET', `/billing/invoices/${invoiceId}/pdf`, {
+      customerId: user.echocallCustomerId,
+      accept: 'binary',
+      headers: { accept: 'application/pdf' },
+    });
+    if (!result.contentType?.startsWith('application/pdf'))
+      throw apiError(502, 'invoice_unavailable', 'The invoice document is not available right now');
+    return {
+      filename: filenameOf(result.headers) ?? `invoice-${invoiceId}.pdf`,
+      content: result.body as Buffer,
+    };
   }
 
   async updateProfile(user: SessionUser, patch: ProfileUpdateDto): Promise<SessionUser> {
@@ -86,4 +116,11 @@ export class AccountService {
       ip,
     });
   }
+}
+
+/** The filename the hub suggested, when it is one the portal can safely repeat. */
+function filenameOf(headers: Headers): string | null {
+  const match = /filename="([^"]+)"/.exec(headers.get('content-disposition') ?? '');
+  const name = match?.[1];
+  return name && SAFE_FILENAME.test(name) ? name : null;
 }

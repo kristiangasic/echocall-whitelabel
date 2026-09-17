@@ -1729,13 +1729,15 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get a download link for an invoice PDF
-         * @description Renders the invoice as a PDF and returns a URL to fetch it from. The document is generated on each call rather than served from a cache, so expect this endpoint to be noticeably slower than the rest of the billing group, and treat the returned URL as temporary: download it promptly instead of storing it. Ownership is checked first, so an invoice belonging to another account answers 404 rather than 403.
+         * Download an invoice as PDF
+         * @description Renders the invoice and answers in whichever form the `Accept` header asks for. Send `Accept: application/pdf` and the response body is the document itself, which is what an API key should use: the `pdfUrl` returned by the JSON form points at a route that only a signed-in browser session can read. The default, `application/json`, keeps that URL for the web app. The document is generated on each call rather than served from a cache, so expect this endpoint to be noticeably slower than the rest of the billing group, and treat the URL as temporary: download it promptly instead of storing it. Ownership is checked first, so an invoice belonging to another account answers 404 rather than 403.
          */
         get: {
             parameters: {
                 query?: never;
                 header?: {
+                    /** @description Set to `application/pdf` to receive the document itself. Anything else returns the JSON download link. */
+                    Accept?: "application/json" | "application/pdf";
                     /** @description Reseller keys only. Runs this request as the named customer of the reseller, exactly as if that customer had sent it with a key of their own: ownership checks, limits and usage all apply to the customer, and none of the reseller operations are reachable while it is set. The value is the customer id returned by `POST /resellers/customers` and listed by `GET /resellers/customers`. Errors: 400 `invalid_customer_header` (not a positive integer), 403 `act_as_requires_reseller` (not a reseller key), 404 `customer_not_found` (no customer of this reseller with that id), 403 `customer_suspended`. The `/resellers/*` and `/provisioning/*` operations never accept it. */
                     "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
                 };
@@ -1747,7 +1749,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The PDF was rendered. */
+                /** @description The PDF was rendered: the document itself, or a link to it. */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -1756,10 +1758,11 @@ export interface paths {
                         "application/json": {
                             /**
                              * Format: uri
-                             * @description Where to download the rendered invoice.
+                             * @description Where to download the rendered invoice. Readable only with a browser session, not with an API key.
                              */
                             pdfUrl: string;
                         };
+                        "application/pdf": string;
                     };
                 };
                 400: components["responses"]["ValidationError"];

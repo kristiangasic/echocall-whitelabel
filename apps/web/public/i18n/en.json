@@ -138,6 +138,10 @@
   },
   "account": {
     "title": "My account",
+    "tabs": {
+      "billing": "Billing",
+      "profile": "Profile"
+    },
     "profile": {
       "title": "Profile",
       "saved": "Profile saved."

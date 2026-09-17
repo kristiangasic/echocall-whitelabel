@@ -26,12 +26,16 @@ export interface RawHubOptions {
   body?: unknown;
   /** 'binary' returns the bytes untouched (invoice PDFs); default parses JSON. */
   accept?: 'json' | 'binary';
+  /** Extra request headers, for example the Accept a hub endpoint negotiates on. */
+  headers?: Record<string, string>;
 }
 
 /** A successful untyped hub response. */
 export interface RawHubResult {
   status: number;
   contentType: string | null;
+  /** Response headers of the hub call, for downloads that carry a filename. */
+  headers: Headers;
   /** Parsed JSON, or a Buffer when accept was 'binary', or null for 204. */
   body: unknown;
 }
@@ -95,6 +99,7 @@ export class HubClientFactory {
           authorization: `Bearer ${this.config.echocall.apiKey}`,
           'x-echocall-customer': String(opts.customerId),
           ...(opts.body !== undefined ? { 'content-type': 'application/json' } : {}),
+          ...opts.headers,
         },
         body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
       });
@@ -106,10 +111,21 @@ export class HubClientFactory {
       const parsed: unknown = await response.json().catch(() => null);
       throw this.hubError(response.status, parsed);
     }
-    if (response.status === 204) return { status: 204, contentType, body: null };
+    const headers = response.headers;
+    if (response.status === 204) return { status: 204, contentType, headers, body: null };
     if (opts.accept === 'binary')
-      return { status: response.status, contentType, body: Buffer.from(await response.arrayBuffer()) };
-    return { status: response.status, contentType, body: await response.json().catch(() => null) };
+      return {
+        status: response.status,
+        contentType,
+        headers,
+        body: Buffer.from(await response.arrayBuffer()),
+      };
+    return {
+      status: response.status,
+      contentType,
+      headers,
+      body: await response.json().catch(() => null),
+    };
   }
 
   private create(customerId?: number): EchoCallClient {

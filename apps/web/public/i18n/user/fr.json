@@ -484,5 +484,61 @@
     "markAll": "Tout marquer comme lu",
     "markRead": "Marquer comme lu",
     "empty": "Aucune notification."
+  },
+  "billing": {
+    "plan": {
+      "title": "Forfait",
+      "status": "Statut : {{status}}",
+      "renews": "Renouvellement le {{date}}",
+      "none": "Aucun forfait n’est souscrit pour le moment."
+    },
+    "balance": {
+      "title": "Solde",
+      "voice": "{{count}} minutes vocales restantes",
+      "chat": "{{count}} conversations de chat restantes",
+      "unknown": "Le solde n’a pas pu être chargé."
+    },
+    "invoices": {
+      "title": "Factures",
+      "number": "Numéro",
+      "issued": "Date",
+      "total": "Montant",
+      "status": "Statut",
+      "download": "Télécharger la facture",
+      "empty": "Aucune facture pour le moment."
+    },
+    "transactions": {
+      "title": "Mouvements du solde",
+      "booked": "Date",
+      "description": "Opération",
+      "amount": "Montant",
+      "balance": "Solde après",
+      "empty": "Aucun mouvement pour le moment."
+    },
+    "subscriptionStatuses": {
+      "active": "Actif",
+      "paused": "En pause",
+      "canceled": "Résilié",
+      "cancelled": "Résilié",
+      "trialing": "Période d’essai",
+      "past_due": "Paiement en attente",
+      "expired": "Expiré"
+    },
+    "invoiceStatuses": {
+      "draft": "Brouillon",
+      "pending": "En attente",
+      "sent": "Envoyée",
+      "paid": "Payée",
+      "overdue": "En retard",
+      "cancelled": "Annulée"
+    },
+    "transactionTypes": {
+      "topup": "Rechargement",
+      "purchase": "Achat",
+      "adjustment": "Ajustement",
+      "subscription": "Abonnement",
+      "refund": "Remboursement",
+      "usage": "Consommation"
+    }
   }
 }

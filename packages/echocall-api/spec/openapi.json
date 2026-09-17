@@ -2,7 +2,7 @@
   "openapi": "3.1.3",
   "info": {
     "title": "EchoCall Developer Platform - High-Performance AI Voice & Chat API",
-    "version": "1.7.0",
+    "version": "1.8.0",
     "contact": {
       "name": "EchoCall Developer Support",
       "url": "https://echocall.de/contact",
@@ -12438,8 +12438,8 @@
         "tags": [
           "Billing"
         ],
-        "summary": "Get a download link for an invoice PDF",
-        "description": "Renders the invoice as a PDF and returns a URL to fetch it from. The document is generated on each call rather than served from a cache, so expect this endpoint to be noticeably slower than the rest of the billing group, and treat the returned URL as temporary: download it promptly instead of storing it. Ownership is checked first, so an invoice belonging to another account answers 404 rather than 403.",
+        "summary": "Download an invoice as PDF",
+        "description": "Renders the invoice and answers in whichever form the `Accept` header asks for. Send `Accept: application/pdf` and the response body is the document itself, which is what an API key should use: the `pdfUrl` returned by the JSON form points at a route that only a signed-in browser session can read. The default, `application/json`, keeps that URL for the web app. The document is generated on each call rather than served from a cache, so expect this endpoint to be noticeably slower than the rest of the billing group, and treat the URL as temporary: download it promptly instead of storing it. Ownership is checked first, so an invoice belonging to another account answers 404 rather than 403.",
         "parameters": [
           {
             "name": "id",
@@ -12451,13 +12451,27 @@
             }
           },
           {
+            "name": "Accept",
+            "in": "header",
+            "required": false,
+            "description": "Set to `application/pdf` to receive the document itself. Anything else returns the JSON download link.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "application/json",
+                "application/pdf"
+              ],
+              "default": "application/json"
+            }
+          },
+          {
             "$ref": "#/components/parameters/ActAsCustomer"
           }
         ],
         "x-required-scope": "read:billing",
         "responses": {
           "200": {
-            "description": "The PDF was rendered.",
+            "description": "The PDF was rendered: the document itself, or a link to it.",
             "content": {
               "application/json": {
                 "schema": {
@@ -12466,12 +12480,19 @@
                     "pdfUrl": {
                       "type": "string",
                       "format": "uri",
-                      "description": "Where to download the rendered invoice."
+                      "description": "Where to download the rendered invoice. Readable only with a browser session, not with an API key."
                     }
                   },
                   "required": [
                     "pdfUrl"
                   ]
+                }
+              },
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary",
+                  "description": "The rendered invoice."
                 }
               }
             }

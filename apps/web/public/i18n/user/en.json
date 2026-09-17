@@ -484,5 +484,61 @@
     "markAll": "Mark all as read",
     "markRead": "Mark as read",
     "empty": "No notifications."
+  },
+  "billing": {
+    "plan": {
+      "title": "Plan",
+      "status": "Status: {{status}}",
+      "renews": "Renews on {{date}}",
+      "none": "No plan is booked at the moment."
+    },
+    "balance": {
+      "title": "Balance",
+      "voice": "{{count}} voice minutes left",
+      "chat": "{{count}} chat conversations left",
+      "unknown": "The balance could not be loaded."
+    },
+    "invoices": {
+      "title": "Invoices",
+      "number": "Number",
+      "issued": "Date",
+      "total": "Amount",
+      "status": "Status",
+      "download": "Download invoice",
+      "empty": "There are no invoices yet."
+    },
+    "transactions": {
+      "title": "Wallet movements",
+      "booked": "Booked",
+      "description": "Description",
+      "amount": "Amount",
+      "balance": "Balance after",
+      "empty": "There are no movements yet."
+    },
+    "subscriptionStatuses": {
+      "active": "Active",
+      "paused": "Paused",
+      "canceled": "Cancelled",
+      "cancelled": "Cancelled",
+      "trialing": "Trial",
+      "past_due": "Payment due",
+      "expired": "Expired"
+    },
+    "invoiceStatuses": {
+      "draft": "Draft",
+      "pending": "Pending",
+      "sent": "Sent",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "cancelled": "Cancelled"
+    },
+    "transactionTypes": {
+      "topup": "Top-up",
+      "purchase": "Purchase",
+      "adjustment": "Adjustment",
+      "subscription": "Subscription",
+      "refund": "Refund",
+      "usage": "Usage"
+    }
   }
 }

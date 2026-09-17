@@ -3,7 +3,12 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AuthModule } from '../auth/auth.module.js';
 import { PasswordService } from '../auth/password.service.js';
 import { SessionService } from '../auth/session.service.js';
-import { createResellerHubFake, RESELLER_PROFILE } from '../testing/hub-fake.js';
+import {
+  createResellerHubFake,
+  type HubFakeCall,
+  type HubFakeReply,
+  RESELLER_PROFILE,
+} from '../testing/hub-fake.js';
 import { createTestApp, type TestApp } from '../testing/test-app.js';
 import { type SignedInUser, signInAs } from '../testing/users.js';
 import { AccountModule } from './account.module.js';
@@ -33,6 +38,15 @@ const LIMITS = {
   chatConversationsRemaining: 160,
   plan: { name: 'Starter', voiceMinutesPerMonth: 100, chatConversationsPerMonth: 200 },
 };
+const PDF = Buffer.from('%PDF-1.4 invoice');
+const INVOICE_ROUTE = (call: HubFakeCall): HubFakeReply =>
+  call.headers.get('accept') === 'application/pdf'
+    ? {
+        binary: PDF,
+        contentType: 'application/pdf',
+        headers: { 'content-disposition': 'attachment; filename="INV-2026-014.pdf"' },
+      }
+    : { body: { pdfUrl: '/invoices/INV-2026-014.pdf' } };
 const HUB_403 = {
   status: 403,
   body: { error: { code: 'forbidden', message: 'This customer does not belong to your reseller account' } },
@@ -51,6 +65,7 @@ describe('AccountController', () => {
           : { body: RESELLER_PROFILE },
       'GET /users/me/usage': { body: USAGE },
       'GET /users/me/limits': { body: LIMITS },
+      'GET /billing/invoices/7/pdf': INVOICE_ROUTE,
     });
     t = await createTestApp([AuthModule, AccountModule], { hub });
     await t.db.reset();
@@ -96,6 +111,37 @@ describe('AccountController', () => {
       expect(res.body.error.code).toBe('forbidden');
     } finally {
       t.hub.on('GET /users/me/limits', { body: LIMITS });
+    }
+  });
+
+  it('streams an invoice and keeps the hub link out of the answer', async () => {
+    const res = await api()
+      .get('/api/account/invoices/7/pdf')
+      .set('Cookie', user.cookie)
+      .responseType('blob');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toBe('application/pdf');
+    expect(res.headers['content-disposition']).toBe('attachment; filename="INV-2026-014.pdf"');
+    expect(Buffer.from(res.body)).toEqual(PDF);
+    const call = t.hub.calls.findLast((c) => c.path === '/billing/invoices/7/pdf');
+    expect(call?.headers.get('accept')).toBe('application/pdf');
+    expect(call?.headers.get('x-echocall-customer')).toBe('501');
+  });
+
+  it('rejects an invoice id that is not a number', async () => {
+    const res = await api().get('/api/account/invoices/7x/pdf').set('Cookie', user.cookie);
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('invalid_id');
+  });
+
+  it('reports 502 when the hub answers with a link instead of the document', async () => {
+    t.hub.on('GET /billing/invoices/7/pdf', { body: { pdfUrl: '/invoices/INV-2026-014.pdf' } });
+    try {
+      const res = await api().get('/api/account/invoices/7/pdf').set('Cookie', user.cookie);
+      expect(res.status).toBe(502);
+      expect(res.body.error.code).toBe('invoice_unavailable');
+    } finally {
+      t.hub.on('GET /billing/invoices/7/pdf', INVOICE_ROUTE);
     }
   });
 

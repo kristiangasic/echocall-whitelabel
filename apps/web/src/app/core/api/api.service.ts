@@ -19,6 +19,11 @@ export class ApiService {
     return this.http.get<T>(url(path), { params, withCredentials: true });
   }
 
+  /** Fetches a file rather than JSON; the caller decides what to do with the bytes. */
+  blob(path: string): Observable<Blob> {
+    return this.http.get(url(path), { responseType: 'blob', withCredentials: true });
+  }
+
   post<T>(path: string, body: unknown = {}): Observable<T> {
     return this.http.post<T>(url(path), body, { withCredentials: true });
   }
