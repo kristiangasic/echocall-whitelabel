@@ -606,6 +606,30 @@
       "test": "Message de test",
       "testTo": "Destinataire",
       "testSent": "Message de test envoyé à {{email}}."
+    },
+    "hub": {
+      "tab": "Service",
+      "intro": "Données de votre société, logo du portail et clés de paiement de votre compte fournisseur. Ces informations sont conservées par le service, pas par le portail.",
+      "company": "Données de la société",
+      "companyHint": "Ces informations figurent sur les factures que vous adressez à vos clients.",
+      "companyName": "Nom commercial",
+      "legalName": "Raison sociale",
+      "address": "Adresse",
+      "vatId": "Numéro de TVA intracommunautaire",
+      "logo": "Logo du portail",
+      "logoUrl": "Adresse du logo",
+      "logoHint": "Le logo n'est pas téléversé. Indiquez l'adresse d'un fichier déjà accessible.",
+      "removeLogo": "Retirer le logo",
+      "payments": "Clés de paiement",
+      "paymentsHint": "Une clé enregistrée n'est jamais réaffichée. Un champ vide laisse la valeur enregistrée inchangée.",
+      "stripePublishableKey": "Clé publique Stripe",
+      "stripeSecretKey": "Clé secrète Stripe",
+      "paypalClientId": "Identifiant client PayPal",
+      "paypalClientSecret": "Secret PayPal",
+      "stored": "Enregistrée",
+      "notStored": "Non enregistrée",
+      "saved": "Enregistré.",
+      "nothingChanged": "Il n'y avait rien à enregistrer."
     }
   },
   "audit": {
@@ -618,6 +642,13 @@
     "target": "Concerne",
     "details": "Détails",
     "ip": "Adresse IP",
-    "empty": "Aucune entrée pour le moment."
+    "empty": "Aucune entrée pour le moment.",
+    "localTab": "Portail",
+    "hub": {
+      "tab": "Service",
+      "intro": "Ce que le service a consigné pour votre compte fournisseur : clients créés, changements de tarifs, identifiants modifiés.",
+      "description": "Opération",
+      "empty": "Le service n'a encore rien consigné."
+    }
   }
 }

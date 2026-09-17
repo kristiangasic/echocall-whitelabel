@@ -606,6 +606,30 @@
       "test": "Test message",
       "testTo": "Recipient",
       "testSent": "Test message sent to {{email}}."
+    },
+    "hub": {
+      "tab": "Service",
+      "intro": "Company data, portal logo and payment keys of your provider account. These are kept by the service, not by the portal.",
+      "company": "Company data",
+      "companyHint": "These details appear on the invoices you issue to your customers.",
+      "companyName": "Trading name",
+      "legalName": "Registered name",
+      "address": "Address",
+      "vatId": "VAT identification number",
+      "logo": "Portal logo",
+      "logoUrl": "Logo address",
+      "logoHint": "The logo is not uploaded. Enter the address of a file that is already reachable.",
+      "removeLogo": "Remove logo",
+      "payments": "Payment keys",
+      "paymentsHint": "A stored key is never shown again. An empty field leaves the stored value untouched.",
+      "stripePublishableKey": "Stripe publishable key",
+      "stripeSecretKey": "Stripe secret key",
+      "paypalClientId": "PayPal client ID",
+      "paypalClientSecret": "PayPal secret",
+      "stored": "Stored",
+      "notStored": "Not stored",
+      "saved": "Saved.",
+      "nothingChanged": "There was nothing to save."
     }
   },
   "audit": {
@@ -618,6 +642,13 @@
     "target": "Concerns",
     "details": "Details",
     "ip": "IP address",
-    "empty": "No entries yet."
+    "empty": "No entries yet.",
+    "localTab": "Portal",
+    "hub": {
+      "tab": "Service",
+      "intro": "What the service recorded about your provider account: customers created, pricing changes, credentials updated.",
+      "description": "Event",
+      "empty": "The service has not recorded anything yet."
+    }
   }
 }

@@ -2,6 +2,7 @@ import { Component, inject, type OnInit, signal } from '@angular/core';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
@@ -10,84 +11,104 @@ import type { AuditEntry, Page } from '../../../core/models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
 import { providePaginatorIntl } from '../../../shared/paginator-intl';
+import { HubActivityComponent } from './hub-activity.component';
 
 @Component({
   selector: 'app-admin-audit-page',
   imports: [
     MatTableModule,
+    MatTabsModule,
     MatPaginatorModule,
     MatProgressBarModule,
     MatTooltipModule,
     TranslocoDirective,
     LocalDatePipe,
+    HubActivityComponent,
   ],
   providers: [provideTranslocoScope('admin'), providePaginatorIntl()],
   template: `
     <ng-container *transloco="let t">
       <h1 class="page-title">{{ t('admin.audit.title') }}</h1>
-      <p class="intro">{{ t('admin.audit.intro') }}</p>
-      @if (loading()) {
-        <mat-progress-bar mode="indeterminate" />
-      }
-      <div class="table-wrap">
-        <table mat-table [dataSource]="page().data" data-testid="audit-table">
-          <ng-container matColumnDef="createdAt">
-            <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.time') }}</th>
-            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.time')" class="nowrap">
-              {{ row.createdAt | localDate }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="actor">
-            <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.actor') }}</th>
-            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.actor')">
-              {{ row.actorEmail ?? t('admin.audit.system') }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="action">
-            <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.action') }}</th>
-            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.action')">
-              <code>{{ row.action }}</code>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="target">
-            <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.target') }}</th>
-            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.target')">
-              @if (row.targetType) {
-                {{ row.targetType }}{{ row.targetId ? ' #' + row.targetId : '' }}
-              }
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="details">
-            <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.details') }}</th>
-            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.details')">
-              @if (row.details) {
-                <code class="details" [matTooltip]="details(row)">{{ details(row) }}</code>
-              }
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="ip">
-            <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.ip') }}</th>
-            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.ip')" class="nowrap">
-              {{ row.ip ?? '' }}
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="columns"></tr>
-          <tr mat-row *matRowDef="let row; columns: columns"></tr>
-          <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell empty" [attr.colspan]="columns.length">{{ t('admin.audit.empty') }}</td>
-          </tr>
-        </table>
-      </div>
-      <mat-paginator
-        [length]="page().meta.total"
-        [pageIndex]="page().meta.page - 1"
-        [pageSize]="page().meta.limit"
-        [pageSizeOptions]="[25, 50, 100]"
-        (page)="onPage($event)"
-      />
+      <mat-tab-group [selectedIndex]="tab()" (selectedIndexChange)="onTab($event)">
+        <mat-tab [label]="t('admin.audit.localTab')">
+          <div class="tab-body">
+            <p class="intro">{{ t('admin.audit.intro') }}</p>
+            @if (loading()) {
+              <mat-progress-bar mode="indeterminate" />
+            }
+            <div class="table-wrap">
+              <table mat-table [dataSource]="page().data" data-testid="audit-table">
+                <ng-container matColumnDef="createdAt">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.time') }}</th>
+                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.time')" class="nowrap">
+                    {{ row.createdAt | localDate }}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="actor">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.actor') }}</th>
+                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.actor')">
+                    {{ row.actorEmail ?? t('admin.audit.system') }}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="action">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.action') }}</th>
+                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.action')">
+                    <code>{{ row.action }}</code>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="target">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.target') }}</th>
+                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.target')">
+                    @if (row.targetType) {
+                      {{ row.targetType }}{{ row.targetId ? ' #' + row.targetId : '' }}
+                    }
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="details">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.details') }}</th>
+                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.details')">
+                    @if (row.details) {
+                      <code class="details" [matTooltip]="details(row)">{{ details(row) }}</code>
+                    }
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="ip">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.ip') }}</th>
+                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.ip')" class="nowrap">
+                    {{ row.ip ?? '' }}
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="columns"></tr>
+                <tr mat-row *matRowDef="let row; columns: columns"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell empty" [attr.colspan]="columns.length">{{ t('admin.audit.empty') }}</td>
+                </tr>
+              </table>
+            </div>
+            <mat-paginator
+              [length]="page().meta.total"
+              [pageIndex]="page().meta.page - 1"
+              [pageSize]="page().meta.limit"
+              [pageSizeOptions]="[25, 50, 100]"
+              (page)="onPage($event)"
+            />
+          </div>
+        </mat-tab>
+
+        <mat-tab [label]="t('admin.audit.hub.tab')">
+          <div class="tab-body">
+            @if (hubOpened()) {
+              <app-hub-activity />
+            }
+          </div>
+        </mat-tab>
+      </mat-tab-group>
     </ng-container>
   `,
   styles: `
+    .tab-body {
+      padding: 24px 0;
+    }
     .intro {
       color: var(--mat-sys-on-surface-variant);
     }
@@ -115,9 +136,20 @@ export class AdminAuditPage implements OnInit {
   readonly columns = ['createdAt', 'actor', 'action', 'target', 'details', 'ip'];
   readonly page = signal<Page<AuditEntry>>({ data: [], meta: { page: 1, limit: 50, total: 0 } });
   readonly loading = signal(false);
+  /**
+   * The service trail is fetched the first time its tab is opened and kept
+   * afterwards, so moving between the tabs costs nothing.
+   */
+  readonly hubOpened = signal(false);
+  readonly tab = signal(0);
 
   ngOnInit(): void {
     void this.load(1, 50);
+  }
+
+  onTab(index: number): void {
+    this.tab.set(index);
+    if (index === 1) this.hubOpened.set(true);
   }
 
   details(row: AuditEntry): string {

@@ -606,6 +606,30 @@
       "test": "Testnachricht",
       "testTo": "Empfänger",
       "testSent": "Testnachricht an {{email}} gesendet."
+    },
+    "hub": {
+      "tab": "Dienst",
+      "intro": "Firmendaten, Portal-Logo und Zahlungsschlüssel Ihres Anbieterkontos. Diese Angaben liegen beim Dienst, nicht im Portal.",
+      "company": "Firmendaten",
+      "companyHint": "Diese Angaben erscheinen auf den Rechnungen, die Sie Ihren Kunden stellen.",
+      "companyName": "Handelsname",
+      "legalName": "Eingetragener Name",
+      "address": "Anschrift",
+      "vatId": "Umsatzsteuer-Identifikationsnummer",
+      "logo": "Portal-Logo",
+      "logoUrl": "Adresse des Logos",
+      "logoHint": "Das Logo wird nicht hochgeladen. Hinterlegen Sie die Adresse einer Datei, die bereits erreichbar ist.",
+      "removeLogo": "Logo entfernen",
+      "payments": "Zahlungsschlüssel",
+      "paymentsHint": "Gespeicherte Schlüssel werden nie wieder angezeigt. Ein leeres Feld lässt den hinterlegten Wert unverändert.",
+      "stripePublishableKey": "Öffentlicher Stripe-Schlüssel",
+      "stripeSecretKey": "Geheimer Stripe-Schlüssel",
+      "paypalClientId": "PayPal-Client-ID",
+      "paypalClientSecret": "PayPal-Geheimnis",
+      "stored": "Hinterlegt",
+      "notStored": "Nicht hinterlegt",
+      "saved": "Gespeichert.",
+      "nothingChanged": "Es gab nichts zu speichern."
     }
   },
   "audit": {
@@ -618,6 +642,13 @@
     "target": "Betrifft",
     "details": "Details",
     "ip": "IP-Adresse",
-    "empty": "Noch keine Einträge."
+    "empty": "Noch keine Einträge.",
+    "localTab": "Portal",
+    "hub": {
+      "tab": "Dienst",
+      "intro": "Was der Dienst zu Ihrem Anbieterkonto festgehalten hat: angelegte Kunden, Preisänderungen, geänderte Zugangsdaten.",
+      "description": "Vorgang",
+      "empty": "Der Dienst hat noch nichts protokolliert."
+    }
   }
 }

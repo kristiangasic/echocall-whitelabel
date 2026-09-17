@@ -23,6 +23,7 @@ import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/
 import { FieldErrorPipe } from '../../../shared/forms/field-error.pipe';
 import { applyServerErrors } from '../../../shared/forms/server-errors';
 import { hexColorValidator, urlValidator } from '../../../shared/forms/validators';
+import { HubSettingsComponent } from './hub-settings.component';
 
 const LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'];
 /** Keeps the base64 data URL under the 200 KB the API accepts. */
@@ -42,12 +43,13 @@ const LOGO_MAX_BYTES = 140 * 1024;
     MatProgressBarModule,
     TranslocoDirective,
     FieldErrorPipe,
+    HubSettingsComponent,
   ],
   providers: [provideTranslocoScope('admin')],
   template: `
     <ng-container *transloco="let t">
       <h1 class="page-title">{{ t('admin.settings.title') }}</h1>
-      <mat-tab-group>
+      <mat-tab-group [selectedIndex]="tab()" (selectedIndexChange)="onTab($event)">
         <mat-tab [label]="t('admin.settings.branding.tab')">
           <form [formGroup]="brandingForm" (ngSubmit)="saveBranding()" novalidate class="tab-body">
             <p class="intro">{{ t('admin.settings.branding.intro') }}</p>
@@ -257,6 +259,14 @@ const LOGO_MAX_BYTES = 140 * 1024;
             </form>
           </div>
         </mat-tab>
+
+        <mat-tab [label]="t('admin.settings.hub.tab')">
+          <div class="tab-body">
+            @if (hubOpened()) {
+              <app-hub-settings />
+            }
+          </div>
+        </mat-tab>
       </mat-tab-group>
     </ng-container>
   `,
@@ -385,6 +395,12 @@ export class AdminSettingsPage implements OnInit {
   private readonly fb = inject(NonNullableFormBuilder);
   readonly languages = LANGUAGES;
   readonly logoTypes = LOGO_TYPES.join(',');
+  /**
+   * The service settings are fetched the first time their tab is opened and
+   * kept afterwards, so moving between the tabs costs nothing.
+   */
+  readonly hubOpened = signal(false);
+  readonly tab = signal(0);
 
   readonly brandingForm = this.fb.group({
     productName: [this.branding.branding().productName, [Validators.required, Validators.maxLength(60)]],
@@ -428,6 +444,11 @@ export class AdminSettingsPage implements OnInit {
 
   ngOnInit(): void {
     void this.loadSmtp();
+  }
+
+  onTab(index: number): void {
+    this.tab.set(index);
+    if (index === 2) this.hubOpened.set(true);
   }
 
   onLogo(event: Event): void {

@@ -4988,13 +4988,17 @@ export interface paths {
         };
         /**
          * Read the reseller audit trail
-         * @description Returns the audit entries written whenever a reseller action changes something: customer creation, pricing changes, credential updates, suspensions and the like. Entries come back newest first. The listing is capped rather than paginated: pass `limit` to change the page size, which defaults to 50 and is clamped into the range 1 to 200, with values above 200 reduced to 200. There is no offset, so older entries beyond the limit are not reachable through this endpoint. Reseller keys only.
+         * @description Returns the audit entries written whenever a reseller action changes something: customer creation, pricing changes, credential updates, suspensions and the like. Entries come back newest first. Without paging the listing is capped rather than paginated: pass `limit` to change the page size, which defaults to 50 and is clamped into the range 1 to 200, with values above 200 reduced to 200, and there is no offset, so older entries beyond the limit are out of reach. Paging is opt-in. Send `page` or `perPage` and the response becomes `{ data, pagination }` with a real `total` counted over the whole log, which does reach the older entries; send neither and the body stays exactly as described above. Reseller keys only.
          */
         get: {
             parameters: {
                 query?: {
-                    /** @description How many entries to return, newest first. Clamped into the range 1 to 200; a value that is not a number falls back to 50. */
+                    /** @description How many entries to return, newest first. Clamped into the range 1 to 200; a value that is not a number falls back to 50. Ignored once page or perPage is present. */
                     limit?: number;
+                    /** @description Page to return. Starts at 1; values below 1 are clamped to 1. */
+                    page?: number;
+                    /** @description Items per page. Clamped to the range 1 to 200; larger values are reduced to 200. */
+                    perPage?: number;
                 };
                 header?: never;
                 path?: never;
@@ -5010,6 +5014,9 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: components["schemas"]["ResellerActivity"][];
+                        } | {
+                            data: components["schemas"]["ResellerActivity"][];
+                            pagination: components["schemas"]["Pagination"];
                         };
                     };
                 };
