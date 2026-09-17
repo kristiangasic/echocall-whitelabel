@@ -4,7 +4,10 @@
  * a new release ships new names. The entry document has no hash and decides which
  * of those files the browser loads, so it must be checked on every visit, and a
  * file someone dropped into the directory by hand gets an hour: long enough to
- * help, short enough to fix a mistake the same day.
+ * help, short enough to fix a mistake the same day. The translations carry no
+ * hash either and belong to the release the way the entry document does: a
+ * build that adds a key shows that key raw until the browser fetches them
+ * again, so they are revalidated too.
  */
 const YEAR_SECONDS = 31_536_000;
 
@@ -24,8 +27,10 @@ export function isHashedAsset(fileName: string): boolean {
 
 /** The Cache-Control value for one file of the built portal. */
 export function cacheControlFor(filePath: string): string {
-  const fileName = filePath.split(/[\\/]/).pop() ?? '';
+  const parts = filePath.split(/[\\/]/);
+  const fileName = parts.pop() ?? '';
   if (fileName.endsWith('.html')) return 'no-cache';
+  if (parts.includes('i18n')) return 'no-cache';
   if (isHashedAsset(fileName)) return `public, max-age=${YEAR_SECONDS}, immutable`;
   return 'public, max-age=3600';
 }

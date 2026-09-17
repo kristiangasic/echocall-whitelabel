@@ -29,6 +29,12 @@ describe('cacheControlFor', () => {
     expect(cacheControlFor('/srv/web/index.html')).toBe('no-cache');
   });
 
+  it('has the translations checked on every visit', () => {
+    expect(cacheControlFor('/srv/web/i18n/de.json')).toBe('no-cache');
+    expect(cacheControlFor('/srv/web/i18n/admin/fr.json')).toBe('no-cache');
+    expect(cacheControlFor(String.raw`C:\srv\web\i18n\user\en.json`)).toBe('no-cache');
+  });
+
   it('keeps an unhashed file for an hour', () => {
     expect(cacheControlFor('/srv/web/favicon.ico')).toBe('public, max-age=3600');
   });
