@@ -73,6 +73,8 @@ describe('ChatbotEditPage', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
     await fixture.whenStable();
     http.expectOne('/api/hub/chatbots/7/knowledge').flush({ data: [] });
+    http.expectOne('/api/hub/chatbots/7/integrations').flush({ data: [] });
+    http.expectOne('/api/hub/integrations').flush([]);
     await fixture.whenStable();
 
     const form = fixture.componentInstance.form;

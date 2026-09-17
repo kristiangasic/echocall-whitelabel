@@ -116,6 +116,16 @@ export const routes: Routes = [
               import('./features/user/analytics/analytics.page').then((m) => m.AnalyticsPage),
           },
           {
+            path: 'integrations',
+            loadComponent: () =>
+              import('./features/user/integrations/integrations.page').then((m) => m.IntegrationsPage),
+          },
+          {
+            path: 'webhooks',
+            loadComponent: () =>
+              import('./features/user/webhooks/webhooks.page').then((m) => m.WebhooksPage),
+          },
+          {
             path: 'inbox',
             loadComponent: () =>
               import('./features/user/conversations/live-inbox.page').then((m) => m.LiveInboxPage),

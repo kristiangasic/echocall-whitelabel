@@ -21,6 +21,7 @@ import { HubService } from '../../../core/hub/hub.service';
 import type { Agent, AvailableVoice, Language, Voice } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { KnowledgePanelComponent } from '../shared/knowledge-panel.component';
+import { IntegrationsPanelComponent } from '../shared/integrations-panel.component';
 
 const SYSTEM_TOOLS = [
   'endCall',
@@ -46,6 +47,7 @@ const SYSTEM_TOOLS = [
     RouterLink,
     TranslocoDirective,
     KnowledgePanelComponent,
+    IntegrationsPanelComponent,
   ],
   providers: [provideTranslocoScope('user')],
   template: `
@@ -314,6 +316,16 @@ const SYSTEM_TOOLS = [
           </mat-card-header>
           <mat-card-content>
             <app-knowledge-panel [basePath]="'/agents/' + id()" />
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card appearance="outlined" class="knowledge">
+          <mat-card-header>
+            <mat-card-title>{{ t('user.integrations.title') }}</mat-card-title>
+            <mat-card-subtitle>{{ t('user.integrations.assistantHint') }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <app-integrations-panel [basePath]="'/agents/' + id()" />
           </mat-card-content>
         </mat-card>
       }

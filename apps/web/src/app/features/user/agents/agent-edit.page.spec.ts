@@ -85,6 +85,8 @@ describe('AgentEditPage', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
     await fixture.whenStable();
     http.expectOne('/api/hub/agents/agent_5/knowledge').flush({ data: [] });
+    http.expectOne('/api/hub/agents/agent_5/integrations').flush({ data: [] });
+    http.expectOne('/api/hub/integrations').flush([]);
     await fixture.whenStable();
 
     const form = fixture.componentInstance.form;
