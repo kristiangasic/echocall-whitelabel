@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { provideTestI18n } from '../../../testing/i18n';
+import { ADMIN_TEXTS, provideTestI18n } from '../../../testing/i18n';
 import { AdminOverviewPage } from './admin-overview.page';
 
 const OVERVIEW = {
@@ -32,6 +32,7 @@ interface Parts {
   statsStatus?: number;
   tickets?: unknown[];
   ticketTotal?: number;
+  subCount?: number;
 }
 
 /** Lets the component's own promises run before the next expectation. */
@@ -65,7 +66,9 @@ describe('AdminOverviewPage', () => {
     else stats.flush(parts.stats ?? STATS);
     http.expectOne('/api/admin/hub/resellers/balance').flush(BALANCE);
     http.expectOne('/api/admin/hub/resellers/credits/balance').flush(CREDITS);
-    http.expectOne('/api/admin/hub/resellers/subscriptions/count').flush(SUB_COUNT);
+    http
+      .expectOne('/api/admin/hub/resellers/subscriptions/count')
+      .flush(parts.subCount === undefined ? SUB_COUNT : { count: parts.subCount });
     const tickets = parts.tickets ?? TICKETS;
     http
       .expectOne((req) => req.url === '/api/admin/hub/resellers/tickets')
@@ -106,6 +109,13 @@ describe('AdminOverviewPage', () => {
     const fixture = await render({ ticketTotal: 240 });
 
     expect(text(fixture, 'tile-tickets')).toContain('2+');
+  });
+
+  it('shows a fresh operator without subscriptions the zero, not an outage', async () => {
+    const fixture = await render({ subCount: 0 });
+
+    expect(text(fixture, 'tile-subscriptions')).toContain('0');
+    expect(text(fixture, 'tile-subscriptions')).not.toContain(ADMIN_TEXTS.overview.unavailable);
   });
 
   it('keeps the other tiles filled when one hub call fails', async () => {

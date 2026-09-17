@@ -207,8 +207,9 @@ interface OpenTickets {
             <mat-card-subtitle>{{ t('admin.overview.subscriptions.total') }}</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
-            @if (subscriptions(); as count) {
-              <p class="figure">{{ count }}</p>
+            <!-- A count of zero is an answer, not a gap: check for null, not for truth. -->
+            @if (subscriptions() !== null) {
+              <p class="figure">{{ subscriptions() }}</p>
             } @else {
               <p class="figure">&ndash;</p>
               <p class="hint">{{ t('admin.overview.unavailable') }}</p>
