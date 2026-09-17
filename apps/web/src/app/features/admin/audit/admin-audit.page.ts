@@ -1,5 +1,5 @@
 import { Component, inject, type OnInit, signal } from '@angular/core';
-import { MatPaginatorIntl, MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
+import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -9,7 +9,6 @@ import { ApiService } from '../../../core/api/api.service';
 import type { AuditEntry, Page } from '../../../core/models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
-import { TranslatedPaginatorIntl } from '../../../shared/paginator-intl';
 
 @Component({
   selector: 'app-admin-audit-page',
@@ -21,10 +20,7 @@ import { TranslatedPaginatorIntl } from '../../../shared/paginator-intl';
     TranslocoDirective,
     LocalDatePipe,
   ],
-  providers: [
-    provideTranslocoScope('admin'),
-    { provide: MatPaginatorIntl, useClass: TranslatedPaginatorIntl },
-  ],
+  providers: [provideTranslocoScope('admin')],
   template: `
     <ng-container *transloco="let t">
       <h1 class="page-title">{{ t('admin.audit.title') }}</h1>
