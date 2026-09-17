@@ -65,6 +65,23 @@ describe('UserDashboardPage', () => {
     expect(tiles.textContent).toContain('Business');
   });
 
+  it('keeps quiet about a remainder an account pays from its balance', async () => {
+    const fixture = TestBed.createComponent(UserDashboardPage);
+    await fixture.whenStable();
+    http.expectOne('/api/account/overview').flush({
+      ...OVERVIEW,
+      limits: { accountStatus: 'active', balanceEur: 50, voiceMinutesRemaining: 0, plan: null },
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    http.expectOne((req) => req.url === '/api/hub/conversations').flush({ data: [] });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await fixture.whenStable();
+
+    const tiles = fixture.nativeElement.querySelector('[data-testid="tiles"]');
+    expect(tiles.textContent).not.toContain('Noch 0 Minuten');
+    expect(tiles.textContent).toContain(USER_TEXTS.dashboard.plan.none);
+  });
+
   it('says what the status on the plan tile is about', async () => {
     const fixture = await render();
 

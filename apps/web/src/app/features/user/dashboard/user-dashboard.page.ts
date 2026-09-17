@@ -71,7 +71,12 @@ import { conversationTitle } from '../conversations/conversation.model';
             <mat-card-content>
               <p class="figure">{{ number(o.usage.voiceMinutesUsed) }}</p>
               <p class="figure-label">{{ t('user.dashboard.voice.used') }}</p>
-              @if (o.limits.voiceMinutesRemaining !== undefined) {
+              <!--
+                A remainder of zero is not a fact about this account: an account
+                that pays from its balance has no monthly allowance to have left
+                over, and "0 minutes left" would read as a stop sign.
+              -->
+              @if (o.limits.voiceMinutesRemaining) {
                 <p class="hint">
                   {{ t('user.dashboard.voice.remaining', { count: number(o.limits.voiceMinutesRemaining) }) }}
                 </p>
@@ -91,7 +96,7 @@ import { conversationTitle } from '../conversations/conversation.model';
             <mat-card-content>
               <p class="figure">{{ number(o.usage.chatSessionsUsed) }}</p>
               <p class="figure-label">{{ t('user.dashboard.chat.used') }}</p>
-              @if (o.limits.chatConversationsRemaining !== undefined) {
+              @if (o.limits.chatConversationsRemaining) {
                 <p class="hint">
                   {{
                     t('user.dashboard.chat.remaining', { count: number(o.limits.chatConversationsRemaining) })
