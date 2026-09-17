@@ -1211,12 +1211,12 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            /** @description The campaign name, the database id of the voice agent that will place the calls, and the recipient list. Optionally `scheduledTime`, an ISO 8601 timestamp for when calls should begin, and `callerPhoneNumberId`, the database id of the number to call from; without it the system default number is used. */
+            /** @description The campaign name, the identifier of the voice agent that will place the calls (`agent_42`, as returned by GET /agents), and the recipient list. Optionally `scheduledTime`, an ISO 8601 timestamp for when calls should begin, and `callerPhoneNumberId`, the database id of the number to call from; without it the system default number is used. */
             requestBody: {
                 content: {
                     "application/json": {
-                        /** @description Database ID of the voice agent to use */
-                        agentId: number;
+                        /** @description Identifier of the voice agent to call with, as returned by GET /agents (agent_42) */
+                        agentId: string;
                         /** @description Database ID of the phone number to call from. If omitted, system default is used. */
                         callerPhoneNumberId?: number;
                         name: string;

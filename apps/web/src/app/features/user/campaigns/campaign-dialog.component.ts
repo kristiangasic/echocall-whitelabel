@@ -129,7 +129,7 @@ export class CampaignDialogComponent implements OnInit {
   readonly saving = signal(false);
 
   readonly name = signal('');
-  readonly agentId = signal<number | null>(null);
+  readonly agentId = signal<string | null>(null);
   readonly recipients = signal('');
 
   readonly parsed = computed(() => parseRecipients(this.recipients()));

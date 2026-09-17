@@ -5,7 +5,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { provideTestI18n } from '../../../testing/i18n';
 import { CampaignDialogComponent } from './campaign-dialog.component';
 
-const AGENT = { id: 3, name: 'Empfang', isActive: true };
+const AGENT = { id: 'agent_3', name: 'Empfang', isActive: true };
 
 describe('CampaignDialogComponent', () => {
   let http: HttpTestingController;
@@ -62,7 +62,7 @@ describe('CampaignDialogComponent', () => {
     component.name.set('Rueckrufaktion');
     expect(component.canSave()).toBe(false);
 
-    component.agentId.set(3);
+    component.agentId.set('agent_3');
     expect(component.canSave()).toBe(false);
 
     component.recipients.set('+4930111');
@@ -73,7 +73,7 @@ describe('CampaignDialogComponent', () => {
     const fixture = await render();
     const component = fixture.componentInstance;
     component.name.set('Rueckrufaktion');
-    component.agentId.set(3);
+    component.agentId.set('agent_3');
     component.recipients.set('+4930111, Maria\n+4930222');
 
     const pending = component.save();
@@ -81,7 +81,7 @@ describe('CampaignDialogComponent', () => {
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toEqual({
       name: 'Rueckrufaktion',
-      agentId: 3,
+      agentId: 'agent_3',
       recipients: [
         { phoneNumber: '+4930111', name: 'Maria' },
         { phoneNumber: '+4930222' },
