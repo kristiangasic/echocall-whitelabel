@@ -1,5 +1,10 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import {
+  FormGroupDirective,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -77,7 +82,12 @@ import { BillingPanel } from './billing.panel';
                 <mat-card-subtitle>{{ t('account.password.intro') }}</mat-card-subtitle>
               </mat-card-header>
               <mat-card-content>
-                <form [formGroup]="password" (ngSubmit)="changePassword()" novalidate>
+                <form
+                  [formGroup]="password"
+                  (ngSubmit)="changePassword()"
+                  novalidate
+                  #passwordForm="ngForm"
+                >
                   <mat-form-field appearance="outline" class="full">
                     <mat-label>{{ t('fields.currentPassword') }}</mat-label>
                     <input
@@ -192,6 +202,8 @@ export class AccountPage {
     }
   }
 
+  private readonly passwordForm = viewChild.required<FormGroupDirective>('passwordForm');
+
   async changePassword(): Promise<void> {
     if (this.password.invalid) {
       this.password.markAllAsTouched();
@@ -201,7 +213,10 @@ export class AccountPage {
     try {
       const { currentPassword, newPassword } = this.password.getRawValue();
       await firstValueFrom(this.api.post<void>('/account/password', { currentPassword, newPassword }));
-      this.password.reset();
+      // Resetting through the directive, not the group: the group alone keeps
+      // the form marked as submitted, and the emptied fields would come back
+      // decorated with "required" the moment the password was accepted.
+      this.passwordForm().resetForm();
       this.notify.success('account.password.saved');
     } catch (err) {
       const error = readApiError(err);
