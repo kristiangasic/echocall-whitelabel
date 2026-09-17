@@ -34,11 +34,11 @@ export interface CampaignDialogResult {
   template: `
     <ng-container *transloco="let t">
       <h2 mat-dialog-title>{{ t('user.campaigns.createTitle') }}</h2>
-      <mat-dialog-content>
-        @if (loading()) {
-          <mat-progress-bar mode="indeterminate" />
-        }
-        <form class="fields">
+      <form (ngSubmit)="save()">
+        <mat-dialog-content class="fields">
+          @if (loading()) {
+            <mat-progress-bar mode="indeterminate" />
+          }
           <mat-form-field appearance="outline">
             <mat-label>{{ t('user.campaigns.name') }}</mat-label>
             <input
@@ -86,20 +86,14 @@ export interface CampaignDialogResult {
           <p class="count" data-testid="campaign-count">
             {{ t('user.campaigns.recipientCount', { count: parsed().length }) }}
           </p>
-        </form>
-      </mat-dialog-content>
-      <mat-dialog-actions align="end">
-        <button mat-button mat-dialog-close type="button">{{ t('actions.cancel') }}</button>
-        <button
-          mat-flat-button
-          type="button"
-          (click)="save()"
-          [disabled]="!canSave()"
-          data-testid="campaign-save"
-        >
-          {{ t('user.campaigns.create') }}
-        </button>
-      </mat-dialog-actions>
+        </mat-dialog-content>
+        <mat-dialog-actions align="end">
+          <button mat-button mat-dialog-close type="button">{{ t('actions.cancel') }}</button>
+          <button mat-flat-button type="submit" [disabled]="!canSave()" data-testid="campaign-save">
+            {{ t('user.campaigns.create') }}
+          </button>
+        </mat-dialog-actions>
+      </form>
     </ng-container>
   `,
   styles: `

@@ -22,7 +22,8 @@
     "check:paginator-intl": "node scripts/check-paginator-intl.mjs",
     "check:table-labels": "node scripts/check-table-labels.mjs",
     "check:table-wrap": "node scripts/check-table-wrap.mjs",
-    "check": "npm run check:vendor-neutral && npm run check:white-label && npm run check:paginator-intl && npm run check:table-labels && npm run check:table-wrap",
+    "check:dialog-submit": "node scripts/check-dialog-submit.mjs",
+    "check": "npm run check:vendor-neutral && npm run check:white-label && npm run check:paginator-intl && npm run check:table-labels && npm run check:table-wrap && npm run check:dialog-submit",
     "format": "prettier --write ."
   },
   "devDependencies": {

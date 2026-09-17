@@ -59,11 +59,11 @@ export interface IntegrationDialogData {
       <h2 mat-dialog-title>
         {{ t(isNew() ? 'user.integrations.connectTitle' : 'user.integrations.editTitle') }}
       </h2>
-      <mat-dialog-content>
-        @if (loading()) {
-          <mat-progress-bar mode="indeterminate" />
-        }
-        <form class="fields" (ngSubmit)="save()">
+      <form (ngSubmit)="save()">
+        <mat-dialog-content class="fields">
+          @if (loading()) {
+            <mat-progress-bar mode="indeterminate" />
+          }
           @if (isNew()) {
             <mat-form-field appearance="outline">
               <mat-label>{{ t('user.integrations.type') }}</mat-label>
@@ -160,20 +160,14 @@ export interface IntegrationDialogData {
               {{ t('user.integrations.active') }}
             </mat-slide-toggle>
           }
-        </form>
-      </mat-dialog-content>
-      <mat-dialog-actions align="end">
-        <button mat-button mat-dialog-close type="button">{{ t('actions.cancel') }}</button>
-        <button
-          mat-flat-button
-          type="button"
-          (click)="save()"
-          [disabled]="!canSave()"
-          data-testid="integration-save"
-        >
-          {{ t('actions.save') }}
-        </button>
-      </mat-dialog-actions>
+        </mat-dialog-content>
+        <mat-dialog-actions align="end">
+          <button mat-button mat-dialog-close type="button">{{ t('actions.cancel') }}</button>
+          <button mat-flat-button type="submit" [disabled]="!canSave()" data-testid="integration-save">
+            {{ t('actions.save') }}
+          </button>
+        </mat-dialog-actions>
+      </form>
     </ng-container>
   `,
   styles: `

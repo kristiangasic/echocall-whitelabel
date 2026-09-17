@@ -37,8 +37,8 @@ type Priority = (typeof PRIORITIES)[number];
   template: `
     <ng-container *transloco="let t">
       <h2 mat-dialog-title>{{ t('user.tickets.createTitle') }}</h2>
-      <mat-dialog-content>
-        <form class="fields">
+      <form (ngSubmit)="save()">
+        <mat-dialog-content>
           <mat-form-field appearance="outline">
             <mat-label>{{ t('user.tickets.subject') }}</mat-label>
             <input
@@ -95,24 +95,18 @@ type Priority = (typeof PRIORITIES)[number];
               required
             ></textarea>
           </mat-form-field>
-        </form>
-      </mat-dialog-content>
-      <mat-dialog-actions align="end">
-        <button mat-button mat-dialog-close type="button">{{ t('actions.cancel') }}</button>
-        <button
-          mat-flat-button
-          type="button"
-          (click)="save()"
-          [disabled]="!canSave()"
-          data-testid="ticket-save"
-        >
-          {{ t('user.tickets.create') }}
-        </button>
-      </mat-dialog-actions>
+        </mat-dialog-content>
+        <mat-dialog-actions align="end">
+          <button mat-button mat-dialog-close type="button">{{ t('actions.cancel') }}</button>
+          <button mat-flat-button type="submit" [disabled]="!canSave()" data-testid="ticket-save">
+            {{ t('user.tickets.create') }}
+          </button>
+        </mat-dialog-actions>
+      </form>
     </ng-container>
   `,
   styles: `
-    .fields {
+    mat-dialog-content {
       display: flex;
       flex-direction: column;
       gap: 4px;
