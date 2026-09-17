@@ -19,6 +19,23 @@ export interface HubCallResult<T> {
   response: Response;
 }
 
+/** Options for one untyped hub request in a customer's context. */
+export interface RawHubOptions {
+  customerId: number;
+  query?: URLSearchParams;
+  body?: unknown;
+  /** 'binary' returns the bytes untouched (invoice PDFs); default parses JSON. */
+  accept?: 'json' | 'binary';
+}
+
+/** A successful untyped hub response. */
+export interface RawHubResult {
+  status: number;
+  contentType: string | null;
+  /** Parsed JSON, or a Buffer when accept was 'binary', or null for 204. */
+  body: unknown;
+}
+
 @Injectable()
 export class HubClientFactory {
   private readonly logger = new Logger(HubClientFactory.name);
@@ -60,6 +77,39 @@ export class HubClientFactory {
       throw this.hubError(result.response.status, result.error);
     }
     return result.data as T;
+  }
+
+  /**
+   * One untyped hub request in a customer's context, for the allow-listed proxy
+   * and binary downloads. Same error mapping as call(): envelopes keep their
+   * status and code, a hub 401 becomes 503, transport failures 502/504.
+   */
+  async raw(method: string, hubPath: string, opts: RawHubOptions): Promise<RawHubResult> {
+    const url = new URL(this.config.echocall.apiUrl.replace(/\/+$/, '') + hubPath);
+    for (const [key, value] of opts.query ?? []) url.searchParams.append(key, value);
+    let response: Response;
+    try {
+      response = await this.fetchImpl(url, {
+        method,
+        headers: {
+          authorization: `Bearer ${this.config.echocall.apiKey}`,
+          'x-echocall-customer': String(opts.customerId),
+          ...(opts.body !== undefined ? { 'content-type': 'application/json' } : {}),
+        },
+        body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+      });
+    } catch (error) {
+      throw this.transportError(error);
+    }
+    const contentType = response.headers.get('content-type');
+    if (!response.ok) {
+      const parsed: unknown = await response.json().catch(() => null);
+      throw this.hubError(response.status, parsed);
+    }
+    if (response.status === 204) return { status: 204, contentType, body: null };
+    if (opts.accept === 'binary')
+      return { status: response.status, contentType, body: Buffer.from(await response.arrayBuffer()) };
+    return { status: response.status, contentType, body: await response.json().catch(() => null) };
   }
 
   private create(customerId?: number): EchoCallClient {

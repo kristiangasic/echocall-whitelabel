@@ -95,6 +95,60 @@ describe('HubClientFactory', () => {
     expect(slowError.code).toBe('upstream_timeout');
   });
 
+  it('raw() forwards method, query, body and the act-as header and parses JSON', async () => {
+    const hub = createHubFake({
+      'POST /agents': (call) => ({ status: 201, body: { id: 5, echo: JSON.parse(call.body ?? '{}') } }),
+      'GET /conversations': { body: { data: [{ id: 1 }] } },
+    });
+    const factory = new HubClientFactory(testConfig(), hub.fetch);
+
+    const list = await factory.raw('GET', '/conversations', {
+      customerId: 501,
+      query: new URLSearchParams({ status: 'open', limit: '10' }),
+    });
+    expect(list.status).toBe(200);
+    expect(list.body).toEqual({ data: [{ id: 1 }] });
+    expect(hub.calls[0].path).toBe('/conversations?status=open&limit=10');
+    expect(hub.calls[0].headers.get('x-echocall-customer')).toBe('501');
+    expect(hub.calls[0].headers.get('authorization')).toBe(`Bearer ${TEST_API_KEY}`);
+
+    const created = await factory.raw('POST', '/agents', { customerId: 501, body: { name: 'Bot' } });
+    expect(created.status).toBe(201);
+    expect(created.body).toEqual({ id: 5, echo: { name: 'Bot' } });
+    expect(hub.calls[1].headers.get('content-type')).toBe('application/json');
+  });
+
+  it('raw() rethrows hub error envelopes with the same status and code', async () => {
+    const hub = createHubFake({
+      'GET /agents': {
+        status: 403,
+        body: { error: { code: 'insufficient_permissions', message: 'Missing scope' } },
+      },
+    });
+    const factory = new HubClientFactory(testConfig(), hub.fetch);
+    const error = (await factory
+      .raw('GET', '/agents', { customerId: 501 })
+      .catch((e: unknown) => e)) as HubException;
+    expect(error).toBeInstanceOf(HubException);
+    expect(error.getStatus()).toBe(403);
+    expect(error.code).toBe('insufficient_permissions');
+  });
+
+  it('raw() returns bytes and the upstream content type for binary responses', async () => {
+    const pdf = new TextEncoder().encode('%PDF-1.7 fake');
+    const hub = createHubFake({
+      'GET /billing/invoices/9/pdf': { binary: pdf, contentType: 'application/pdf' },
+    });
+    const factory = new HubClientFactory(testConfig(), hub.fetch);
+    const result = await factory.raw('GET', '/billing/invoices/9/pdf', {
+      customerId: 501,
+      accept: 'binary',
+    });
+    expect(result.contentType).toBe('application/pdf');
+    expect(Buffer.isBuffer(result.body)).toBe(true);
+    expect((result.body as Buffer).toString()).toBe('%PDF-1.7 fake');
+  });
+
   it('gives every hub request a deadline unless one was passed', async () => {
     let seen: AbortSignal | null | undefined;
     const fetch: typeof globalThis.fetch = async (_input, init) => {

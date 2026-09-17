@@ -11,6 +11,9 @@ export interface HubFakeCall {
 export interface HubFakeReply {
   status?: number;
   body?: unknown;
+  /** When set, answers with these bytes and contentType instead of JSON. */
+  binary?: Uint8Array;
+  contentType?: string;
 }
 
 export type HubFakeRoute = HubFakeReply | ((call: HubFakeCall) => HubFakeReply | Promise<HubFakeReply>);
@@ -62,9 +65,14 @@ export function createHubFake(routes: Record<string, HubFakeRoute> = {}): HubFak
         };
     const status = reply.status ?? 200;
     if (status === 204) return new Response(null, { status });
+    if (reply.binary)
+      return new Response(Buffer.from(reply.binary), {
+        status,
+        headers: { 'content-type': reply.contentType ?? 'application/octet-stream' },
+      });
     return new Response(JSON.stringify(reply.body ?? {}), {
       status,
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': reply.contentType ?? 'application/json' },
     });
   };
   const fake: HubFake = {
