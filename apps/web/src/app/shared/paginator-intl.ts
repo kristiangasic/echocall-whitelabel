@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, type Provider } from '@angular/core';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { TranslocoService } from '@jsverse/transloco';
 
@@ -32,4 +32,14 @@ export class TranslatedPaginatorIntl extends MatPaginatorIntl {
     this.lastPageLabel = this.transloco.translate('paginator.last');
     this.changes.next();
   }
+}
+
+/**
+ * Hands one page's paginator its translated labels. Every component that shows
+ * a paginator lists this, rather than the application providing it once: the
+ * paginator lives in lazily loaded pages, and providing it at the root pulls
+ * the whole control into the first load for readers who never reach a table.
+ */
+export function providePaginatorIntl(): Provider {
+  return { provide: MatPaginatorIntl, useClass: TranslatedPaginatorIntl };
 }

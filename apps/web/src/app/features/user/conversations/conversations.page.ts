@@ -12,6 +12,7 @@ import { HubService } from '../../../core/hub/hub.service';
 import type { Conversation, LiveConversation } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { conversationTitle, type AnyConversation } from './conversation.model';
+import { providePaginatorIntl } from '../../../shared/paginator-intl';
 
 @Component({
   selector: 'app-conversations-page',
@@ -25,7 +26,7 @@ import { conversationTitle, type AnyConversation } from './conversation.model';
     RouterLink,
     TranslocoDirective,
   ],
-  providers: [provideTranslocoScope('user')],
+  providers: [provideTranslocoScope('user'), providePaginatorIntl()],
   template: `
     <ng-container *transloco="let t">
       <div class="page-head">

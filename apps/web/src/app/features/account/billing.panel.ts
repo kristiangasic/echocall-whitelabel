@@ -16,6 +16,7 @@ import { HubService } from '../../core/hub/hub.service';
 import { LanguageService } from '../../core/i18n/language.service';
 import { NotifyService } from '../../core/notify/notify.service';
 import { LocalDatePipe } from '../../shared/local-date.pipe';
+import { providePaginatorIntl } from '../../shared/paginator-intl';
 
 const TRANSACTION_COLUMNS = ['booked', 'description', 'amount', 'balance'];
 const INVOICE_COLUMNS = ['number', 'issued', 'total', 'status', 'download'];
@@ -37,7 +38,7 @@ const INVOICE_COLUMNS = ['number', 'issued', 'total', 'status', 'download'];
     LocalDatePipe,
     TranslocoDirective,
   ],
-  providers: [provideTranslocoScope('user')],
+  providers: [provideTranslocoScope('user'), providePaginatorIntl()],
   template: `
     <ng-container *transloco="let t">
       @if (loading()) {

@@ -17,6 +17,7 @@ import {
   CampaignDialogComponent,
   type CampaignDialogResult,
 } from './campaign-dialog.component';
+import { providePaginatorIntl } from '../../../shared/paginator-intl';
 
 /** The filter chips above the table. `all` sends no status to the hub. */
 const FILTERS = ['all', 'draft', 'running', 'completed'] as const;
@@ -35,7 +36,7 @@ type Filter = (typeof FILTERS)[number];
     LocalDatePipe,
     TranslocoDirective,
   ],
-  providers: [provideTranslocoScope('user')],
+  providers: [provideTranslocoScope('user'), providePaginatorIntl()],
   template: `
     <ng-container *transloco="let t">
       <div class="page-head">

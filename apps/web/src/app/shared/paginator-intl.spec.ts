@@ -1,8 +1,7 @@
-import { MatPaginatorIntl } from '@angular/material/paginator';
 import { TestBed } from '@angular/core/testing';
-import { appConfig } from '../app.config';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 import { provideTestI18n } from '../testing/i18n';
-import { TranslatedPaginatorIntl } from './paginator-intl';
+import { providePaginatorIntl, TranslatedPaginatorIntl } from './paginator-intl';
 
 describe('TranslatedPaginatorIntl', () => {
   beforeEach(async () => {
@@ -27,11 +26,11 @@ describe('TranslatedPaginatorIntl', () => {
     expect(intl.getRangeLabel(0, 25, 0)).toBe('0 bis 0 von 0');
   });
 
-  it('is what the application hands every paginator', () => {
-    const provider = appConfig.providers
-      .flat()
-      .find((entry) => typeof entry === 'object' && 'provide' in entry && entry.provide === MatPaginatorIntl);
+  it('is what a page gets when it asks for translated labels', async () => {
+    await TestBed.resetTestingModule()
+      .configureTestingModule({ imports: [provideTestI18n()], providers: [providePaginatorIntl()] })
+      .compileComponents();
 
-    expect(provider).toEqual({ provide: MatPaginatorIntl, useClass: TranslatedPaginatorIntl });
+    expect(TestBed.inject(MatPaginatorIntl)).toBeInstanceOf(TranslatedPaginatorIntl);
   });
 });

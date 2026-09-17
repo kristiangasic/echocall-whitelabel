@@ -11,6 +11,7 @@ import { HubService } from '../../../core/hub/hub.service';
 import { NotificationsStore } from '../../../core/notifications/notifications.store';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
+import { providePaginatorIntl } from '../../../shared/paginator-intl';
 
 @Component({
   selector: 'app-notifications-page',
@@ -23,7 +24,7 @@ import { LocalDatePipe } from '../../../shared/local-date.pipe';
     LocalDatePipe,
     TranslocoDirective,
   ],
-  providers: [provideTranslocoScope('user')],
+  providers: [provideTranslocoScope('user'), providePaginatorIntl()],
   template: `
     <ng-container *transloco="let t">
       <div class="page-head">

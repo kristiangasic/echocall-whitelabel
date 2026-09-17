@@ -17,6 +17,7 @@ import {
   type ConfirmDialogData,
 } from '../../../shared/confirm-dialog.component';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
+import { providePaginatorIntl } from '../../../shared/paginator-intl';
 
 /** Statuses in which the hub still accepts a cancellation. */
 const CANCELLABLE = ['pending', 'scheduled', 'running'];
@@ -34,7 +35,7 @@ const CANCELLABLE = ['pending', 'scheduled', 'running'];
     LocalDatePipe,
     TranslocoDirective,
   ],
-  providers: [provideTranslocoScope('user')],
+  providers: [provideTranslocoScope('user'), providePaginatorIntl()],
   template: `
     <ng-container *transloco="let t">
       <div class="page-head">

@@ -9,6 +9,7 @@ import { ApiService } from '../../../core/api/api.service';
 import type { AuditEntry, Page } from '../../../core/models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
+import { providePaginatorIntl } from '../../../shared/paginator-intl';
 
 @Component({
   selector: 'app-admin-audit-page',
@@ -20,7 +21,7 @@ import { LocalDatePipe } from '../../../shared/local-date.pipe';
     TranslocoDirective,
     LocalDatePipe,
   ],
-  providers: [provideTranslocoScope('admin')],
+  providers: [provideTranslocoScope('admin'), providePaginatorIntl()],
   template: `
     <ng-container *transloco="let t">
       <h1 class="page-title">{{ t('admin.audit.title') }}</h1>
