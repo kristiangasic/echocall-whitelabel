@@ -28,6 +28,7 @@ import { HubSettingsComponent } from './hub-settings.component';
 const LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'];
 /** Keeps the base64 data URL under the 200 KB the API accepts. */
 const LOGO_MAX_BYTES = 140 * 1024;
+const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
 
 @Component({
   selector: 'app-admin-settings-page',
@@ -95,7 +96,8 @@ const LOGO_MAX_BYTES = 140 * 1024;
                   <input
                     type="color"
                     class="color-picker"
-                    formControlName="primaryColor"
+                    [value]="swatch()"
+                    (input)="onColorPicked($event)"
                     [attr.aria-label]="t('admin.settings.branding.primaryColor')"
                   />
                   <mat-form-field appearance="outline" class="full">
@@ -419,12 +421,16 @@ export class AdminSettingsPage implements OnInit {
   private readonly color = toSignal(this.brandingForm.controls.primaryColor.valueChanges, {
     initialValue: this.brandingForm.controls.primaryColor.value,
   });
-  /** Theme variables for the preview card; falls back to the saved colour while the input is incomplete. */
-  readonly previewStyle = computed(() => {
+  /**
+   * A colour input can only show a complete hex value, and so can the preview,
+   * so both fall back to the saved colour while the field is being typed.
+   */
+  readonly swatch = computed(() => {
     const value = this.color();
-    const color = /^#[0-9a-fA-F]{6}$/.test(value) ? value : this.branding.branding().primaryColor;
-    return brandTheme(color);
+    return HEX_COLOR.test(value) ? value : this.branding.branding().primaryColor;
   });
+  /** Theme variables for the preview card. */
+  readonly previewStyle = computed(() => brandTheme(this.swatch()));
 
   readonly smtp = signal<SmtpView | null>(null);
   readonly smtpLoading = signal(false);
@@ -449,6 +455,17 @@ export class AdminSettingsPage implements OnInit {
   onTab(index: number): void {
     this.tab.set(index);
     if (index === 2) this.hubOpened.set(true);
+  }
+
+  /**
+   * The picker writes through the same control as the hex field, because a
+   * second binding on the control would leave one of the two showing a colour
+   * the portal is not going to save.
+   */
+  onColorPicked(event: Event): void {
+    const control = this.brandingForm.controls.primaryColor;
+    control.setValue((event.target as HTMLInputElement).value);
+    control.markAsDirty();
   }
 
   onLogo(event: Event): void {
