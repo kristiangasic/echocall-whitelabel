@@ -121,19 +121,27 @@ const CANCELLABLE = ['pending', 'scheduled', 'running'];
         <table mat-table [dataSource]="recipients()" data-testid="recipients-table">
           <ng-container matColumnDef="phoneNumber">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.campaigns.phoneNumber') }}</th>
-            <td mat-cell *matCellDef="let r">{{ r.phoneNumber }}</td>
+            <td mat-cell *matCellDef="let r" [attr.data-label]="t('user.campaigns.phoneNumber')">
+              {{ r.phoneNumber }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="callStatus">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-            <td mat-cell *matCellDef="let r">{{ callStatus(t, r) }}</td>
+            <td mat-cell *matCellDef="let r" [attr.data-label]="t('fields.status')">
+              {{ callStatus(t, r) }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="duration">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.campaigns.duration') }}</th>
-            <td mat-cell *matCellDef="let r">{{ duration(r.durationSeconds) }}</td>
+            <td mat-cell *matCellDef="let r" [attr.data-label]="t('user.campaigns.duration')">
+              {{ duration(r.durationSeconds) }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="startedAt">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.campaigns.calledAt') }}</th>
-            <td mat-cell *matCellDef="let r">{{ r.callStartedAt | localDate }}</td>
+            <td mat-cell *matCellDef="let r" [attr.data-label]="t('user.campaigns.calledAt')">
+              {{ r.callStartedAt | localDate }}
+            </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="columns"></tr>
           <tr mat-row *matRowDef="let row; columns: columns"></tr>

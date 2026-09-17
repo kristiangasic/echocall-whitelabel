@@ -100,25 +100,31 @@ const INVOICE_COLUMNS = ['number', 'issued', 'total', 'status', 'download'];
       <table mat-table [dataSource]="invoices()" data-testid="invoices-table">
         <ng-container matColumnDef="number">
           <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.invoices.number') }}</th>
-          <td mat-cell *matCellDef="let invoice">{{ invoice.invoiceNumber ?? invoice.id }}</td>
+          <td mat-cell *matCellDef="let invoice" [attr.data-label]="t('user.billing.invoices.number')">
+            {{ invoice.invoiceNumber ?? invoice.id }}
+          </td>
         </ng-container>
         <ng-container matColumnDef="issued">
           <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.invoices.issued') }}</th>
-          <td mat-cell *matCellDef="let invoice">
+          <td mat-cell *matCellDef="let invoice" [attr.data-label]="t('user.billing.invoices.issued')">
             {{ invoice.issuedDate ?? invoice.createdAt | localDate }}
           </td>
         </ng-container>
         <ng-container matColumnDef="total">
           <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.invoices.total') }}</th>
-          <td mat-cell *matCellDef="let invoice">{{ money(invoice.totalEur) }}</td>
+          <td mat-cell *matCellDef="let invoice" [attr.data-label]="t('user.billing.invoices.total')">
+            {{ money(invoice.totalEur) }}
+          </td>
         </ng-container>
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.invoices.status') }}</th>
-          <td mat-cell *matCellDef="let invoice">{{ invoiceStatus(invoice.status) }}</td>
+          <td mat-cell *matCellDef="let invoice" [attr.data-label]="t('user.billing.invoices.status')">
+            {{ invoiceStatus(invoice.status) }}
+          </td>
         </ng-container>
         <ng-container matColumnDef="download">
           <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let invoice">
+          <td mat-cell *matCellDef="let invoice" class="cell-actions">
             <button
               mat-icon-button
               type="button"
@@ -142,23 +148,32 @@ const INVOICE_COLUMNS = ['number', 'issued', 'total', 'status', 'download'];
       <table mat-table [dataSource]="transactions()" data-testid="transactions-table">
         <ng-container matColumnDef="booked">
           <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.transactions.booked') }}</th>
-          <td mat-cell *matCellDef="let row">{{ row.createdAt | localDate: 'short' }}</td>
+          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.billing.transactions.booked')">
+            {{ row.createdAt | localDate: 'short' }}
+          </td>
         </ng-container>
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.transactions.description') }}</th>
-          <td mat-cell *matCellDef="let row">
+          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.billing.transactions.description')">
             {{ row.description || transactionType(row.type) }}
           </td>
         </ng-container>
         <ng-container matColumnDef="amount">
           <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.transactions.amount') }}</th>
-          <td mat-cell *matCellDef="let row" [class.negative]="row.amount < 0">
+          <td
+            mat-cell
+            *matCellDef="let row"
+            [attr.data-label]="t('user.billing.transactions.amount')"
+            [class.negative]="row.amount < 0"
+          >
             {{ money(row.amount) }}
           </td>
         </ng-container>
         <ng-container matColumnDef="balance">
           <th mat-header-cell *matHeaderCellDef>{{ t('user.billing.transactions.balance') }}</th>
-          <td mat-cell *matCellDef="let row">{{ money(row.balanceAfter) }}</td>
+          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.billing.transactions.balance')">
+            {{ money(row.balanceAfter) }}
+          </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="transactionColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: transactionColumns"></tr>

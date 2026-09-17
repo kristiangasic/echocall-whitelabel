@@ -70,7 +70,7 @@ const DEFAULT_PER_PAGE = 25;
         <table mat-table [dataSource]="rows()" data-testid="customers-table">
           <ng-container matColumnDef="customer">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.email') }}</th>
-            <td mat-cell *matCellDef="let row">
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.email')">
               <a [routerLink]="[row.customerId]" data-testid="open">{{ row.email }}</a>
               @if (subtitle(row); as sub) {
                 <div class="cell-sub">{{ sub }}</div>
@@ -79,7 +79,7 @@ const DEFAULT_PER_PAGE = 25;
           </ng-container>
           <ng-container matColumnDef="account">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.customers.account') }}</th>
-            <td mat-cell *matCellDef="let row">
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.customers.account')">
               @if (row.accountStatus) {
                 <span class="status" [class]="'status status-' + row.accountStatus">
                   {{ t('admin.customers.accountStatuses.' + row.accountStatus) }}
@@ -89,7 +89,7 @@ const DEFAULT_PER_PAGE = 25;
           </ng-container>
           <ng-container matColumnDef="login">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.customers.login') }}</th>
-            <td mat-cell *matCellDef="let row">
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.customers.login')">
               @if (row.login) {
                 <span class="status" [class]="'status status-' + row.login.status">
                   {{ t('statuses.' + row.login.status) }}
@@ -107,11 +107,25 @@ const DEFAULT_PER_PAGE = 25;
           </ng-container>
           <ng-container matColumnDef="balance">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.customers.balance') }}</th>
-            <td mat-cell *matCellDef="let row" class="numeric">{{ money(row.balanceEur) }}</td>
+            <td
+              mat-cell
+              *matCellDef="let row"
+              [attr.data-label]="t('admin.customers.balance')"
+              class="numeric"
+            >
+              {{ money(row.balanceEur) }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="createdAt">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.customers.created') }}</th>
-            <td mat-cell *matCellDef="let row" class="nowrap">{{ row.createdAt | localDate }}</td>
+            <td
+              mat-cell
+              *matCellDef="let row"
+              [attr.data-label]="t('admin.customers.created')"
+              class="nowrap"
+            >
+              {{ row.createdAt | localDate }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef></th>

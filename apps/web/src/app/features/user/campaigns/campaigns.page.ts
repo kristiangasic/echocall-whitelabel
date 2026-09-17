@@ -67,13 +67,13 @@ type Filter = (typeof FILTERS)[number];
         <table mat-table [dataSource]="campaigns()" data-testid="campaigns-table">
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.campaigns.name') }}</th>
-            <td mat-cell *matCellDef="let c">
+            <td mat-cell *matCellDef="let c" [attr.data-label]="t('user.campaigns.name')">
               <a class="row-link" [routerLink]="['/app/campaigns', c.id]">{{ c.name }}</a>
             </td>
           </ng-container>
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-            <td mat-cell *matCellDef="let c">
+            <td mat-cell *matCellDef="let c" [attr.data-label]="t('fields.status')">
               <span class="status" [class]="'status status-' + c.status">
                 {{ t('user.campaigns.statuses.' + c.status) }}
               </span>
@@ -81,11 +81,15 @@ type Filter = (typeof FILTERS)[number];
           </ng-container>
           <ng-container matColumnDef="progress">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.campaigns.progress') }}</th>
-            <td mat-cell *matCellDef="let c">{{ progress(c) }}</td>
+            <td mat-cell *matCellDef="let c" [attr.data-label]="t('user.campaigns.progress')">
+              {{ progress(c) }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="created">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.campaigns.created') }}</th>
-            <td mat-cell *matCellDef="let c">{{ c.createdAt | localDate }}</td>
+            <td mat-cell *matCellDef="let c" [attr.data-label]="t('user.campaigns.created')">
+              {{ c.createdAt | localDate }}
+            </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="columns"></tr>
           <tr mat-row *matRowDef="let row; columns: columns"></tr>

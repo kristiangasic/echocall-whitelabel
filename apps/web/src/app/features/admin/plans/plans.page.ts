@@ -49,7 +49,7 @@ import { AdminPricingPanel } from './pricing.panel';
         <table mat-table [dataSource]="plans()" data-testid="plans-table">
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.name') }}</th>
-            <td mat-cell *matCellDef="let p">
+            <td mat-cell *matCellDef="let p" [attr.data-label]="t('fields.name')">
               <div>{{ p.name }}</div>
               @if (p.description) {
                 <div class="cell-sub">{{ p.description }}</div>
@@ -58,19 +58,25 @@ import { AdminPricingPanel } from './pricing.panel';
           </ng-container>
           <ng-container matColumnDef="type">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.plans.type') }}</th>
-            <td mat-cell *matCellDef="let p">{{ t('admin.plans.types.' + p.type) }}</td>
+            <td mat-cell *matCellDef="let p" [attr.data-label]="t('admin.plans.type')">
+              {{ t('admin.plans.types.' + p.type) }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="billingCycle">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.plans.billingCycle') }}</th>
-            <td mat-cell *matCellDef="let p">{{ t('admin.plans.cycles.' + p.billingCycle) }}</td>
+            <td mat-cell *matCellDef="let p" [attr.data-label]="t('admin.plans.billingCycle')">
+              {{ t('admin.plans.cycles.' + p.billingCycle) }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="price">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.plans.price') }}</th>
-            <td mat-cell *matCellDef="let p" class="numeric">{{ money(p.priceEur) }}</td>
+            <td mat-cell *matCellDef="let p" [attr.data-label]="t('admin.plans.price')" class="numeric">
+              {{ money(p.priceEur) }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="allowances">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.plans.allowances') }}</th>
-            <td mat-cell *matCellDef="let p">
+            <td mat-cell *matCellDef="let p" [attr.data-label]="t('admin.plans.allowances')">
               @if (p.voiceMinutesPerMonth !== null || p.chatConversationsPerMonth !== null) {
                 @if (p.voiceMinutesPerMonth !== null) {
                   <div>{{ t('admin.plans.voiceMinutes', { count: p.voiceMinutesPerMonth }) }}</div>
@@ -85,7 +91,7 @@ import { AdminPricingPanel } from './pricing.panel';
           </ng-container>
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-            <td mat-cell *matCellDef="let p">
+            <td mat-cell *matCellDef="let p" [attr.data-label]="t('fields.status')">
               <span class="status" [class]="p.isActive ? 'status status-active' : 'status status-disabled'">
                 {{ t(p.isActive ? 'admin.plans.active' : 'admin.plans.inactive') }}
               </span>

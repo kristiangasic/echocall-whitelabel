@@ -39,21 +39,25 @@ import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/
         <table mat-table [dataSource]="agents()" data-testid="agents-table">
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.name') }}</th>
-            <td mat-cell *matCellDef="let a">
+            <td mat-cell *matCellDef="let a" [attr.data-label]="t('fields.name')">
               <a class="row-link" [routerLink]="['/app/agents', a.id]">{{ a.name }}</a>
             </td>
           </ng-container>
           <ng-container matColumnDef="language">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.agents.language') }}</th>
-            <td mat-cell *matCellDef="let a">{{ a.language || '' }}</td>
+            <td mat-cell *matCellDef="let a" [attr.data-label]="t('user.agents.language')">
+              {{ a.language || '' }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="voice">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.agents.voice') }}</th>
-            <td mat-cell *matCellDef="let a">{{ a.voice?.name || t('user.agents.voiceDefault') }}</td>
+            <td mat-cell *matCellDef="let a" [attr.data-label]="t('user.agents.voice')">
+              {{ a.voice?.name || t('user.agents.voiceDefault') }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-            <td mat-cell *matCellDef="let a">
+            <td mat-cell *matCellDef="let a" [attr.data-label]="t('fields.status')">
               <span class="status" [class]="'status status-' + a.status">
                 {{ t('user.agents.statuses.' + a.status) }}
               </span>

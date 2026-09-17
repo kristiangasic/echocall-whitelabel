@@ -1,6 +1,4 @@
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component, computed, DestroyRef, inject, type OnInit } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,10 +8,10 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { map } from 'rxjs';
 import { AuthStore } from '../core/auth/auth.store';
 import { BrandingService } from '../core/branding/branding.service';
 import { LanguageService } from '../core/i18n/language.service';
+import { LayoutService } from '../core/layout/layout.service';
 import { LANGUAGES } from '../core/models';
 import { NotificationsStore } from '../core/notifications/notifications.store';
 import { startPolling } from '../core/polling/poll';
@@ -314,12 +312,7 @@ export class ShellComponent implements OnInit {
   readonly unread = this.notifications.unread;
   readonly preview = this.notifications.preview;
 
-  readonly isHandset = toSignal(
-    inject(BreakpointObserver)
-      .observe([Breakpoints.Handset, Breakpoints.TabletPortrait])
-      .pipe(map((state) => state.matches)),
-    { initialValue: false },
-  );
+  readonly isHandset = inject(LayoutService).isHandset;
 
   readonly navItems = computed(() => (this.auth.user()?.role === 'admin' ? ADMIN_NAV : USER_NAV));
 

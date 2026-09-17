@@ -40,17 +40,19 @@ import { EmbedDialogComponent, type EmbedDialogData } from './embed-dialog.compo
         <table mat-table [dataSource]="chatbots()" data-testid="chatbots-table">
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.name') }}</th>
-            <td mat-cell *matCellDef="let c">
+            <td mat-cell *matCellDef="let c" [attr.data-label]="t('fields.name')">
               <a class="row-link" [routerLink]="['/app/chatbots', c.id]">{{ c.name }}</a>
             </td>
           </ng-container>
           <ng-container matColumnDef="language">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.chatbots.language') }}</th>
-            <td mat-cell *matCellDef="let c">{{ c.language || '' }}</td>
+            <td mat-cell *matCellDef="let c" [attr.data-label]="t('user.chatbots.language')">
+              {{ c.language || '' }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-            <td mat-cell *matCellDef="let c">
+            <td mat-cell *matCellDef="let c" [attr.data-label]="t('fields.status')">
               <span class="status" [class]="'status status-' + c.status">
                 {{ t('user.chatbots.statuses.' + c.status) }}
               </span>

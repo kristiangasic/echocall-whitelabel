@@ -64,13 +64,13 @@ type Filter = (typeof FILTERS)[number];
         <table mat-table [dataSource]="tickets()" data-testid="tickets-table">
           <ng-container matColumnDef="subject">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.tickets.subject') }}</th>
-            <td mat-cell *matCellDef="let ticket">
+            <td mat-cell *matCellDef="let ticket" [attr.data-label]="t('user.tickets.subject')">
               <a class="row-link" [routerLink]="['/app/tickets', ticket.id]">{{ ticket.subject }}</a>
             </td>
           </ng-container>
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-            <td mat-cell *matCellDef="let ticket">
+            <td mat-cell *matCellDef="let ticket" [attr.data-label]="t('fields.status')">
               <span class="status" [class]="'status status-' + ticket.status">
                 {{ t('user.tickets.statuses.' + ticket.status) }}
               </span>
@@ -78,13 +78,15 @@ type Filter = (typeof FILTERS)[number];
           </ng-container>
           <ng-container matColumnDef="priority">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.tickets.priority') }}</th>
-            <td mat-cell *matCellDef="let ticket">
+            <td mat-cell *matCellDef="let ticket" [attr.data-label]="t('user.tickets.priority')">
               {{ ticket.priority ? t('user.tickets.priorities.' + ticket.priority) : '' }}
             </td>
           </ng-container>
           <ng-container matColumnDef="updated">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.tickets.updated') }}</th>
-            <td mat-cell *matCellDef="let ticket">{{ ticket.updatedAt | localDate }}</td>
+            <td mat-cell *matCellDef="let ticket" [attr.data-label]="t('user.tickets.updated')">
+              {{ ticket.updatedAt | localDate }}
+            </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="columns"></tr>
           <tr mat-row *matRowDef="let row; columns: columns"></tr>

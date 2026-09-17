@@ -88,7 +88,7 @@ export interface PurchaseResult {
           <table mat-table [dataSource]="offers()" data-testid="purchase-results">
             <ng-container matColumnDef="number">
               <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.number') }}</th>
-              <td mat-cell *matCellDef="let offer">
+              <td mat-cell *matCellDef="let offer" [attr.data-label]="t('user.numbers.number')">
                 {{ offer.number }}
                 @if (offer.areaName) {
                   <span class="area">{{ offer.areaName }}</span>
@@ -97,11 +97,15 @@ export interface PurchaseResult {
             </ng-container>
             <ng-container matColumnDef="setup">
               <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.setupPrice') }}</th>
-              <td mat-cell *matCellDef="let offer">{{ money(offer.setupPrice) }}</td>
+              <td mat-cell *matCellDef="let offer" [attr.data-label]="t('user.numbers.setupPrice')">
+                {{ money(offer.setupPrice) }}
+              </td>
             </ng-container>
             <ng-container matColumnDef="monthly">
               <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.monthly') }}</th>
-              <td mat-cell *matCellDef="let offer">{{ money(offer.monthlyPrice) }}</td>
+              <td mat-cell *matCellDef="let offer" [attr.data-label]="t('user.numbers.monthly')">
+                {{ money(offer.monthlyPrice) }}
+              </td>
             </ng-container>
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef></th>

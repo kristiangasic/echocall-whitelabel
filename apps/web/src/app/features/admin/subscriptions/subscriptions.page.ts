@@ -73,7 +73,7 @@ const STATUSES = ['active', 'past_due', 'canceled', 'paused', 'expired'] as cons
         <table mat-table [dataSource]="rows()" data-testid="subscriptions-table">
           <ng-container matColumnDef="customer">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.subscriptions.customer') }}</th>
-            <td mat-cell *matCellDef="let row">
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.subscriptions.customer')">
               <div>{{ customerName(row) }}</div>
               @if (row.customer?.name && row.customer?.email) {
                 <div class="cell-sub">{{ row.customer.email }}</div>
@@ -82,7 +82,7 @@ const STATUSES = ['active', 'past_due', 'canceled', 'paused', 'expired'] as cons
           </ng-container>
           <ng-container matColumnDef="plan">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.subscriptions.plan') }}</th>
-            <td mat-cell *matCellDef="let row">
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.subscriptions.plan')">
               @if (row.plan) {
                 {{ row.plan.name }}
               } @else {
@@ -92,7 +92,12 @@ const STATUSES = ['active', 'past_due', 'canceled', 'paused', 'expired'] as cons
           </ng-container>
           <ng-container matColumnDef="price">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.subscriptions.price') }}</th>
-            <td mat-cell *matCellDef="let row" class="numeric">
+            <td
+              mat-cell
+              *matCellDef="let row"
+              [attr.data-label]="t('admin.subscriptions.price')"
+              class="numeric"
+            >
               @if (row.plan) {
                 {{ money(row.plan.priceEur) }}
               }
@@ -100,7 +105,12 @@ const STATUSES = ['active', 'past_due', 'canceled', 'paused', 'expired'] as cons
           </ng-container>
           <ng-container matColumnDef="term">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.subscriptions.term') }}</th>
-            <td mat-cell *matCellDef="let row" class="nowrap">
+            <td
+              mat-cell
+              *matCellDef="let row"
+              [attr.data-label]="t('admin.subscriptions.term')"
+              class="nowrap"
+            >
               @if (row.subscription.contractDuration) {
                 {{ t('admin.subscriptions.months', { count: row.subscription.contractDuration }) }}
               }
@@ -108,19 +118,29 @@ const STATUSES = ['active', 'past_due', 'canceled', 'paused', 'expired'] as cons
           </ng-container>
           <ng-container matColumnDef="start">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.subscriptions.start') }}</th>
-            <td mat-cell *matCellDef="let row" class="nowrap">
+            <td
+              mat-cell
+              *matCellDef="let row"
+              [attr.data-label]="t('admin.subscriptions.start')"
+              class="nowrap"
+            >
               {{ row.subscription.startDate | localDate }}
             </td>
           </ng-container>
           <ng-container matColumnDef="end">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.subscriptions.end') }}</th>
-            <td mat-cell *matCellDef="let row" class="nowrap">
+            <td
+              mat-cell
+              *matCellDef="let row"
+              [attr.data-label]="t('admin.subscriptions.end')"
+              class="nowrap"
+            >
               {{ row.subscription.endDate | localDate }}
             </td>
           </ng-container>
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-            <td mat-cell *matCellDef="let row">
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.status')">
               <span class="status" [class]="'status status-' + row.subscription.status">
                 {{ t('admin.subscriptions.statuses.' + row.subscription.status) }}
               </span>

@@ -33,21 +33,25 @@ import { providePaginatorIntl } from '../../../shared/paginator-intl';
         <table mat-table [dataSource]="page().data" data-testid="audit-table">
           <ng-container matColumnDef="createdAt">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.time') }}</th>
-            <td mat-cell *matCellDef="let row" class="nowrap">{{ row.createdAt | localDate }}</td>
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.time')" class="nowrap">
+              {{ row.createdAt | localDate }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="actor">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.actor') }}</th>
-            <td mat-cell *matCellDef="let row">{{ row.actorEmail ?? t('admin.audit.system') }}</td>
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.actor')">
+              {{ row.actorEmail ?? t('admin.audit.system') }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="action">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.action') }}</th>
-            <td mat-cell *matCellDef="let row">
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.action')">
               <code>{{ row.action }}</code>
             </td>
           </ng-container>
           <ng-container matColumnDef="target">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.target') }}</th>
-            <td mat-cell *matCellDef="let row">
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.target')">
               @if (row.targetType) {
                 {{ row.targetType }}{{ row.targetId ? ' #' + row.targetId : '' }}
               }
@@ -55,7 +59,7 @@ import { providePaginatorIntl } from '../../../shared/paginator-intl';
           </ng-container>
           <ng-container matColumnDef="details">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.details') }}</th>
-            <td mat-cell *matCellDef="let row">
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.details')">
               @if (row.details) {
                 <code class="details" [matTooltip]="details(row)">{{ details(row) }}</code>
               }
@@ -63,7 +67,9 @@ import { providePaginatorIntl } from '../../../shared/paginator-intl';
           </ng-container>
           <ng-container matColumnDef="ip">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.ip') }}</th>
-            <td mat-cell *matCellDef="let row" class="nowrap">{{ row.ip ?? '' }}</td>
+            <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.ip')" class="nowrap">
+              {{ row.ip ?? '' }}
+            </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="columns"></tr>
           <tr mat-row *matRowDef="let row; columns: columns"></tr>

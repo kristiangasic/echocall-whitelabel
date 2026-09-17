@@ -62,13 +62,13 @@ interface TestDelivery {
       <table mat-table [dataSource]="webhooks()" data-testid="webhooks-table">
         <ng-container matColumnDef="url">
           <th mat-header-cell *matHeaderCellDef>{{ t('user.webhooks.url') }}</th>
-          <td mat-cell *matCellDef="let row">
+          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.webhooks.url')">
             <span class="url">{{ row.url }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="events">
           <th mat-header-cell *matHeaderCellDef>{{ t('user.webhooks.events') }}</th>
-          <td mat-cell *matCellDef="let row">
+          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.webhooks.events')">
             <mat-chip-set>
               @for (event of events(row); track event) {
                 <mat-chip>{{ event === '*' ? t('user.webhooks.allEvents') : event }}</mat-chip>
@@ -78,7 +78,7 @@ interface TestDelivery {
         </ng-container>
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-          <td mat-cell *matCellDef="let row">
+          <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.status')">
             <mat-chip-set>
               <mat-chip [highlighted]="row.isActive">
                 {{ t(row.isActive ? 'user.webhooks.active' : 'user.webhooks.inactive') }}
@@ -93,7 +93,7 @@ interface TestDelivery {
         </ng-container>
         <ng-container matColumnDef="lastDelivery">
           <th mat-header-cell *matHeaderCellDef>{{ t('user.webhooks.lastDelivery') }}</th>
-          <td mat-cell *matCellDef="let row">
+          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.webhooks.lastDelivery')">
             @if (row.lastDeliveryAt) {
               {{ row.lastDeliveryAt | localDate: 'short' }}
               <span class="sub">{{ row.lastDeliveryStatus }}</span>

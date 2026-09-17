@@ -65,7 +65,7 @@ interface CancelResult {
         <table mat-table [dataSource]="numbers()" data-testid="numbers-table">
           <ng-container matColumnDef="number">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.number') }}</th>
-            <td mat-cell *matCellDef="let n">
+            <td mat-cell *matCellDef="let n" [attr.data-label]="t('user.numbers.number')">
               <span class="number">{{ n.phoneNumber }}</span>
               <span class="sub">{{ typeLabel(t, n.numberType) }}</span>
             </td>
@@ -73,7 +73,7 @@ interface CancelResult {
 
           <ng-container matColumnDef="label">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.label') }}</th>
-            <td mat-cell *matCellDef="let n">
+            <td mat-cell *matCellDef="let n" [attr.data-label]="t('user.numbers.label')">
               <mat-form-field appearance="outline" subscriptSizing="dynamic" class="inline-field">
                 <input
                   matInput
@@ -88,7 +88,7 @@ interface CancelResult {
 
           <ng-container matColumnDef="agent">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.agent') }}</th>
-            <td mat-cell *matCellDef="let n">
+            <td mat-cell *matCellDef="let n" [attr.data-label]="t('user.numbers.agent')">
               <mat-form-field appearance="outline" subscriptSizing="dynamic" class="inline-field">
                 <mat-select
                   [ngModel]="n.voiceAgentId"
@@ -107,7 +107,7 @@ interface CancelResult {
 
           <ng-container matColumnDef="kyc">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.kyc') }}</th>
-            <td mat-cell *matCellDef="let n">
+            <td mat-cell *matCellDef="let n" [attr.data-label]="t('user.numbers.kyc')">
               <span
                 class="status"
                 [class]="'status status-kyc-' + kyc(n)"
@@ -120,7 +120,9 @@ interface CancelResult {
 
           <ng-container matColumnDef="monthly">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.numbers.monthly') }}</th>
-            <td mat-cell *matCellDef="let n">{{ money(n.monthlyPrice) }}</td>
+            <td mat-cell *matCellDef="let n" [attr.data-label]="t('user.numbers.monthly')">
+              {{ money(n.monthlyPrice) }}
+            </td>
           </ng-container>
 
           <ng-container matColumnDef="actions">

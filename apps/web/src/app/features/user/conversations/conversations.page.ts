@@ -54,23 +54,25 @@ import { providePaginatorIntl } from '../../../shared/paginator-intl';
         <table mat-table [dataSource]="rows()" data-testid="conversations-table">
           <ng-container matColumnDef="partner">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.conversations.partner') }}</th>
-            <td mat-cell *matCellDef="let c">
+            <td mat-cell *matCellDef="let c" [attr.data-label]="t('user.conversations.partner')">
               <a class="row-link" [routerLink]="['/app/conversations', c.id]">{{ title(c) }}</a>
             </td>
           </ng-container>
           <ng-container matColumnDef="started">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.conversations.started') }}</th>
-            <td mat-cell *matCellDef="let c">
+            <td mat-cell *matCellDef="let c" [attr.data-label]="t('user.conversations.started')">
               {{ (c.startedAt || c.createdAt | date: 'short') || '' }}
             </td>
           </ng-container>
           <ng-container matColumnDef="duration">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.conversations.duration') }}</th>
-            <td mat-cell *matCellDef="let c">{{ duration(c.duration) }}</td>
+            <td mat-cell *matCellDef="let c" [attr.data-label]="t('user.conversations.duration')">
+              {{ duration(c.duration) }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-            <td mat-cell *matCellDef="let c">
+            <td mat-cell *matCellDef="let c" [attr.data-label]="t('fields.status')">
               <span class="status" [class]="'status status-' + c.status">{{ statusLabel(t, c) }}</span>
             </td>
           </ng-container>

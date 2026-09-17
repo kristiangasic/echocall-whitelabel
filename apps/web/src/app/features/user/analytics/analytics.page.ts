@@ -96,19 +96,27 @@ interface DailyResponse {
           <table mat-table [dataSource]="daily()" class="daily" data-testid="analytics-daily">
             <ng-container matColumnDef="date">
               <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.day') }}</th>
-              <td mat-cell *matCellDef="let row">{{ row.date }}</td>
+              <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.day')">
+                {{ row.date }}
+              </td>
             </ng-container>
             <ng-container matColumnDef="calls">
               <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.calls') }}</th>
-              <td mat-cell *matCellDef="let row">{{ row.callCount ?? 0 }}</td>
+              <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.calls')">
+                {{ row.callCount ?? 0 }}
+              </td>
             </ng-container>
             <ng-container matColumnDef="successRate">
               <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.successRate') }}</th>
-              <td mat-cell *matCellDef="let row">{{ percent(row.successRate) }}</td>
+              <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.successRate')">
+                {{ percent(row.successRate) }}
+              </td>
             </ng-container>
             <ng-container matColumnDef="duration">
               <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.averageDuration') }}</th>
-              <td mat-cell *matCellDef="let row">{{ seconds(row.averageDuration) }}</td>
+              <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.averageDuration')">
+                {{ seconds(row.averageDuration) }}
+              </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="dailyColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: dailyColumns"></tr>

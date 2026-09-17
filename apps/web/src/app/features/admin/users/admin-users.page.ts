@@ -45,7 +45,7 @@ import { UserDialogComponent, type UserDialogData, type UserDialogResult } from 
         <table mat-table [dataSource]="users()" data-testid="users-table">
           <ng-container matColumnDef="email">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.email') }}</th>
-            <td mat-cell *matCellDef="let u">
+            <td mat-cell *matCellDef="let u" [attr.data-label]="t('fields.email')">
               <div>{{ u.email }}</div>
               @if (name(u); as n) {
                 <div class="cell-sub">{{ n }}</div>
@@ -54,11 +54,13 @@ import { UserDialogComponent, type UserDialogData, type UserDialogResult } from 
           </ng-container>
           <ng-container matColumnDef="role">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.role') }}</th>
-            <td mat-cell *matCellDef="let u">{{ t('roles.' + u.role) }}</td>
+            <td mat-cell *matCellDef="let u" [attr.data-label]="t('fields.role')">
+              {{ t('roles.' + u.role) }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-            <td mat-cell *matCellDef="let u">
+            <td mat-cell *matCellDef="let u" [attr.data-label]="t('fields.status')">
               <span class="status" [class]="'status status-' + u.status">{{
                 t('statuses.' + u.status)
               }}</span>
@@ -66,11 +68,15 @@ import { UserDialogComponent, type UserDialogData, type UserDialogResult } from 
           </ng-container>
           <ng-container matColumnDef="customer">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.customerId') }}</th>
-            <td mat-cell *matCellDef="let u">{{ u.echocallCustomerId ?? '' }}</td>
+            <td mat-cell *matCellDef="let u" [attr.data-label]="t('fields.customerId')">
+              {{ u.echocallCustomerId ?? '' }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="lastLogin">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.users.lastLogin') }}</th>
-            <td mat-cell *matCellDef="let u">{{ u.lastLoginAt | localDate }}</td>
+            <td mat-cell *matCellDef="let u" [attr.data-label]="t('admin.users.lastLogin')">
+              {{ u.lastLoginAt | localDate }}
+            </td>
           </ng-container>
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef></th>

@@ -63,14 +63,14 @@ interface TestResult {
       <table mat-table [dataSource]="integrations()" data-testid="integrations-table">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>{{ t('user.integrations.name') }}</th>
-          <td mat-cell *matCellDef="let row">
+          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.integrations.name')">
             <strong>{{ row.name }}</strong>
             <span class="sub">{{ typeName(row.type) }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-          <td mat-cell *matCellDef="let row">
+          <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.status')">
             <mat-chip-set>
               <mat-chip [highlighted]="row.isActive">
                 {{ t(row.isActive ? 'user.integrations.active' : 'user.integrations.inactive') }}
@@ -80,7 +80,7 @@ interface TestResult {
         </ng-container>
         <ng-container matColumnDef="lastUsed">
           <th mat-header-cell *matHeaderCellDef>{{ t('user.integrations.lastUsed') }}</th>
-          <td mat-cell *matCellDef="let row">
+          <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.integrations.lastUsed')">
             {{ row.lastUsedAt ? (row.lastUsedAt | localDate: 'short') : t('user.integrations.never') }}
           </td>
         </ng-container>

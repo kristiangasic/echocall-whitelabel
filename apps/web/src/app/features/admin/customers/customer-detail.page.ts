@@ -151,13 +151,13 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
             <table mat-table [dataSource]="subscriptions()" data-testid="subscriptions-table">
               <ng-container matColumnDef="plan">
                 <th mat-header-cell *matHeaderCellDef>{{ t('admin.customer.subscriptions.plan') }}</th>
-                <td mat-cell *matCellDef="let row">
+                <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.customer.subscriptions.plan')">
                   {{ row.plan?.name ?? t('admin.customer.subscriptions.planGone') }}
                 </td>
               </ng-container>
               <ng-container matColumnDef="status">
                 <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-                <td mat-cell *matCellDef="let row">
+                <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.status')">
                   <span class="status" [class]="'status status-' + row.subscription.status">
                     {{ t('admin.subscriptions.statuses.' + row.subscription.status) }}
                   </span>
@@ -165,19 +165,34 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
               </ng-container>
               <ng-container matColumnDef="price">
                 <th mat-header-cell *matHeaderCellDef>{{ t('admin.customer.subscriptions.price') }}</th>
-                <td mat-cell *matCellDef="let row" class="numeric">
+                <td
+                  mat-cell
+                  *matCellDef="let row"
+                  [attr.data-label]="t('admin.customer.subscriptions.price')"
+                  class="numeric"
+                >
                   {{ money(row.plan?.priceEur ?? null) }}
                 </td>
               </ng-container>
               <ng-container matColumnDef="start">
                 <th mat-header-cell *matHeaderCellDef>{{ t('admin.customer.subscriptions.start') }}</th>
-                <td mat-cell *matCellDef="let row" class="nowrap">
+                <td
+                  mat-cell
+                  *matCellDef="let row"
+                  [attr.data-label]="t('admin.customer.subscriptions.start')"
+                  class="nowrap"
+                >
                   {{ row.subscription.startDate | localDate }}
                 </td>
               </ng-container>
               <ng-container matColumnDef="end">
                 <th mat-header-cell *matHeaderCellDef>{{ t('admin.customer.subscriptions.end') }}</th>
-                <td mat-cell *matCellDef="let row" class="nowrap">
+                <td
+                  mat-cell
+                  *matCellDef="let row"
+                  [attr.data-label]="t('admin.customer.subscriptions.end')"
+                  class="nowrap"
+                >
                   {{ row.subscription.endDate | localDate }}
                 </td>
               </ng-container>
@@ -196,25 +211,48 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
           <table mat-table [dataSource]="transactions()" data-testid="transactions-table">
             <ng-container matColumnDef="createdAt">
               <th mat-header-cell *matHeaderCellDef>{{ t('admin.customer.transactions.when') }}</th>
-              <td mat-cell *matCellDef="let row" class="nowrap">{{ row.createdAt | localDate }}</td>
+              <td
+                mat-cell
+                *matCellDef="let row"
+                [attr.data-label]="t('admin.customer.transactions.when')"
+                class="nowrap"
+              >
+                {{ row.createdAt | localDate }}
+              </td>
             </ng-container>
             <ng-container matColumnDef="type">
               <th mat-header-cell *matHeaderCellDef>{{ t('admin.customer.transactions.type') }}</th>
-              <td mat-cell *matCellDef="let row">
+              <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.customer.transactions.type')">
                 {{ t('admin.customer.transactions.types.' + row.type) }}
               </td>
             </ng-container>
             <ng-container matColumnDef="description">
               <th mat-header-cell *matHeaderCellDef>{{ t('admin.customer.transactions.reason') }}</th>
-              <td mat-cell *matCellDef="let row">{{ row.description }}</td>
+              <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.customer.transactions.reason')">
+                {{ row.description }}
+              </td>
             </ng-container>
             <ng-container matColumnDef="amount">
               <th mat-header-cell *matHeaderCellDef>{{ t('admin.customer.transactions.amount') }}</th>
-              <td mat-cell *matCellDef="let row" class="numeric">{{ money(row.amount) }}</td>
+              <td
+                mat-cell
+                *matCellDef="let row"
+                [attr.data-label]="t('admin.customer.transactions.amount')"
+                class="numeric"
+              >
+                {{ money(row.amount) }}
+              </td>
             </ng-container>
             <ng-container matColumnDef="balanceAfter">
               <th mat-header-cell *matHeaderCellDef>{{ t('admin.customer.transactions.after') }}</th>
-              <td mat-cell *matCellDef="let row" class="numeric">{{ money(row.balanceAfter) }}</td>
+              <td
+                mat-cell
+                *matCellDef="let row"
+                [attr.data-label]="t('admin.customer.transactions.after')"
+                class="numeric"
+              >
+                {{ money(row.balanceAfter) }}
+              </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="transactionColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: transactionColumns"></tr>
