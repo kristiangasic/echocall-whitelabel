@@ -108,106 +108,108 @@ const USER_NAV: NavItem[] = [
       </mat-sidenav>
 
       <mat-sidenav-content class="shell-content">
-        @if (impersonator()) {
-          <div class="shell-impersonation" role="status" data-testid="impersonation-banner">
-            <mat-icon aria-hidden="true">visibility</mat-icon>
-            <span class="shell-impersonation-text">
-              {{ t('impersonation.banner', { email: auth.user()?.email }) }}
-            </span>
-            <button
-              mat-flat-button
-              type="button"
-              (click)="stopImpersonation()"
-              data-testid="impersonation-stop"
-            >
-              {{ t('impersonation.back') }}
-            </button>
-          </div>
-        }
-        <mat-toolbar class="shell-toolbar">
-          @if (isHandset()) {
-            <button
-              mat-icon-button
-              type="button"
-              (click)="nav.toggle()"
-              [attr.aria-label]="t('nav.openMenu')"
-            >
-              <mat-icon>menu</mat-icon>
-            </button>
+        <div class="shell-header" data-testid="shell-header">
+          @if (impersonator()) {
+            <div class="shell-impersonation" role="status" data-testid="impersonation-banner">
+              <mat-icon aria-hidden="true">visibility</mat-icon>
+              <span class="shell-impersonation-text">
+                {{ t('impersonation.banner', { email: auth.user()?.email }) }}
+              </span>
+              <button
+                mat-flat-button
+                type="button"
+                (click)="stopImpersonation()"
+                data-testid="impersonation-stop"
+              >
+                {{ t('impersonation.back') }}
+              </button>
+            </div>
           }
-          <span class="shell-title">{{ branding().productName }}</span>
-          <span class="shell-spacer"></span>
-          <button
-            mat-button
-            type="button"
-            [matMenuTriggerFor]="langMenu"
-            [attr.aria-label]="t('nav.language')"
-          >
-            <mat-icon>language</mat-icon>
-            {{ t('languages.' + language.current()) }}
-          </button>
-          <mat-menu #langMenu="matMenu">
-            @for (lang of languages; track lang) {
-              <button mat-menu-item type="button" (click)="language.change(lang)">
-                {{ t('languages.' + lang) }}
+          <mat-toolbar class="shell-toolbar">
+            @if (isHandset()) {
+              <button
+                mat-icon-button
+                type="button"
+                (click)="nav.toggle()"
+                [attr.aria-label]="t('nav.openMenu')"
+              >
+                <mat-icon>menu</mat-icon>
               </button>
             }
-          </mat-menu>
-          @if (showBell()) {
+            <span class="shell-title">{{ branding().productName }}</span>
+            <span class="shell-spacer"></span>
+            <button
+              mat-button
+              type="button"
+              [matMenuTriggerFor]="langMenu"
+              [attr.aria-label]="t('nav.language')"
+            >
+              <mat-icon>language</mat-icon>
+              {{ t('languages.' + language.current()) }}
+            </button>
+            <mat-menu #langMenu="matMenu">
+              @for (lang of languages; track lang) {
+                <button mat-menu-item type="button" (click)="language.change(lang)">
+                  {{ t('languages.' + lang) }}
+                </button>
+              }
+            </mat-menu>
+            @if (showBell()) {
+              <button
+                mat-icon-button
+                type="button"
+                [matMenuTriggerFor]="bellMenu"
+                (menuOpened)="refreshNotifications()"
+                [attr.aria-label]="t('nav.notifications')"
+                data-testid="notifications-bell"
+              >
+                <mat-icon
+                  [matBadge]="unread()"
+                  [matBadgeHidden]="unread() === 0"
+                  matBadgeColor="warn"
+                  matBadgeSize="small"
+                >
+                  notifications
+                </mat-icon>
+              </button>
+              <mat-menu #bellMenu="matMenu" class="bell-menu">
+                @for (item of preview(); track item.id) {
+                  <a mat-menu-item routerLink="/app/notifications">
+                    <span class="bell-title">{{ item.title }}</span>
+                  </a>
+                } @empty {
+                  <span mat-menu-item disabled data-testid="bell-empty">
+                    {{ t('nav.noNotifications') }}
+                  </span>
+                }
+                <a mat-menu-item routerLink="/app/notifications" data-testid="bell-all">
+                  <mat-icon>list</mat-icon>
+                  <span>{{ t('nav.showAllNotifications') }}</span>
+                </a>
+              </mat-menu>
+            }
             <button
               mat-icon-button
               type="button"
-              [matMenuTriggerFor]="bellMenu"
-              (menuOpened)="refreshNotifications()"
-              [attr.aria-label]="t('nav.notifications')"
-              data-testid="notifications-bell"
+              [matMenuTriggerFor]="accountMenu"
+              [attr.aria-label]="t('nav.accountMenu')"
+              data-testid="account-menu"
             >
-              <mat-icon
-                [matBadge]="unread()"
-                [matBadgeHidden]="unread() === 0"
-                matBadgeColor="warn"
-                matBadgeSize="small"
-              >
-                notifications
-              </mat-icon>
+              <mat-icon>account_circle</mat-icon>
             </button>
-            <mat-menu #bellMenu="matMenu" class="bell-menu">
-              @for (item of preview(); track item.id) {
-                <a mat-menu-item routerLink="/app/notifications">
-                  <span class="bell-title">{{ item.title }}</span>
-                </a>
-              } @empty {
-                <span mat-menu-item disabled data-testid="bell-empty">
-                  {{ t('nav.noNotifications') }}
-                </span>
-              }
-              <a mat-menu-item routerLink="/app/notifications" data-testid="bell-all">
-                <mat-icon>list</mat-icon>
-                <span>{{ t('nav.showAllNotifications') }}</span>
+            <mat-menu #accountMenu="matMenu">
+              <div class="shell-user">{{ userLabel() }}</div>
+              <a mat-menu-item routerLink="/account">
+                <mat-icon>manage_accounts</mat-icon>
+                <span>{{ t('nav.account') }}</span>
               </a>
+              <button mat-menu-item type="button" (click)="logout()">
+                <mat-icon>logout</mat-icon>
+                <span>{{ t('nav.logout') }}</span>
+              </button>
             </mat-menu>
-          }
-          <button
-            mat-icon-button
-            type="button"
-            [matMenuTriggerFor]="accountMenu"
-            [attr.aria-label]="t('nav.accountMenu')"
-            data-testid="account-menu"
-          >
-            <mat-icon>account_circle</mat-icon>
-          </button>
-          <mat-menu #accountMenu="matMenu">
-            <div class="shell-user">{{ userLabel() }}</div>
-            <a mat-menu-item routerLink="/account">
-              <mat-icon>manage_accounts</mat-icon>
-              <span>{{ t('nav.account') }}</span>
-            </a>
-            <button mat-menu-item type="button" (click)="logout()">
-              <mat-icon>logout</mat-icon>
-              <span>{{ t('nav.logout') }}</span>
-            </button>
-          </mat-menu>
-        </mat-toolbar>
+          </mat-toolbar>
+        </div>
         <main class="shell-main">
           <router-outlet />
         </main>
@@ -242,10 +244,17 @@ const USER_NAV: NavItem[] = [
     .shell-name {
       font: var(--mat-sys-title-medium);
     }
-    .shell-toolbar {
+    /*
+     * The banner belongs to the header, not to the page: an operator who has
+     * scrolled past it is looking at someone else's portal with nothing left
+     * on screen to say so.
+     */
+    .shell-header {
       position: sticky;
       top: 0;
       z-index: 2;
+    }
+    .shell-toolbar {
       gap: 4px;
       background: var(--mat-sys-surface);
       border-bottom: 1px solid var(--mat-sys-outline-variant);

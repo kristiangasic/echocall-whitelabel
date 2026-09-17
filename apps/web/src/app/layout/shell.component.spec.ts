@@ -159,6 +159,17 @@ describe('ShellComponent', () => {
     expect(TestBed.inject(Router).url).toBe('/admin');
   });
 
+  it('keeps the banner on screen while the operator scrolls', async () => {
+    const fixture = await render(IMPERSONATED);
+
+    const banner = fixture.nativeElement.querySelector('[data-testid="impersonation-banner"]');
+    const header = fixture.nativeElement.querySelector('[data-testid="shell-header"]');
+
+    expect(header).not.toBeNull();
+    expect(header.contains(banner)).toBe(true);
+    expect(header.querySelector('mat-toolbar')).not.toBeNull();
+  });
+
   it('keeps the banner away from a customer signing in themselves', async () => {
     const fixture = await render(CUSTOMER);
 
