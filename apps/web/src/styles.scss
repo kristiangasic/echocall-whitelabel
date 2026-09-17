@@ -131,6 +131,9 @@ body {
 
     tr {
       position: relative;
+      // A row keeps the single-line height of the wide layout, so the stacked
+      // cells of a card would spill out of it and under whatever follows.
+      height: auto;
       border: 1px solid var(--mat-sys-outline-variant);
       border-radius: 12px;
       background: var(--mat-sys-surface);
