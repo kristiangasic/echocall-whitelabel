@@ -55,7 +55,6 @@ export class AuthController {
     const ok = await this.passwords.verify(user?.passwordHash ?? null, body.password);
     if (!user || !ok) throw apiError(401, 'invalid_credentials', 'E-mail or password is incorrect');
     if (user.status !== 'active') throw apiError(403, 'account_disabled', 'This account is disabled');
-    await this.db.updateTable('users').set({ lastLoginAt: new Date() }).where('id', '=', user.id).execute();
     return this.logins.startSession(user, req, res);
   }
 

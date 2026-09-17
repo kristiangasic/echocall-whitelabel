@@ -207,6 +207,14 @@ describe('AuthController', () => {
     const cookie = accepted.headers['set-cookie'][0];
     await c.get('/api/auth/me').set('Cookie', cookie).expect(200);
 
+    // Accepting the invitation is the user's first sign-in, and the user list says so.
+    const row = await t.db.db
+      .selectFrom('users')
+      .select('lastLoginAt')
+      .where('id', '=', userId)
+      .executeTakeFirstOrThrow();
+    expect(row.lastLoginAt).not.toBeNull();
+
     const reuse = await c
       .post('/api/auth/accept-invite')
       .send({ token, password: 'welcome aboard 1' })
