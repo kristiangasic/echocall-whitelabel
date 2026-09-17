@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
+import type { NextFunction, Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import { JSON_BODY_LIMIT } from './common/http.js';
 import helmet from 'helmet';
@@ -28,8 +29,7 @@ async function bootstrap(): Promise<void> {
   // Angular emits inline style tags at runtime, so style-src needs 'unsafe-inline';
   // uploaded logos are stored as data URLs, so img-src needs data:. Plain-HTTP
   // intranet installs must not upgrade their asset requests to https.
-  app.use(
-    helmet({
+  const baseline = helmet({
       contentSecurityPolicy: {
         directives: {
           ...(config.appUrl.startsWith('https://') ? {} : { 'upgrade-insecure-requests': null }),
@@ -45,11 +45,15 @@ async function bootstrap(): Promise<void> {
           'frame-ancestors': ["'none'"],
         },
       },
-    }),
+  });
+  // The embed surface is framed and scripted by customer sites; its controller
+  // sets its own narrow headers instead of the portal baseline.
+  app.use((req: Request, res: Response, next: NextFunction) =>
+    req.path.startsWith('/embed/') ? next() : baseline(req, res, next),
   );
   app.useBodyParser('json', { limit: JSON_BODY_LIMIT });
   app.use(cookieParser());
-  app.setGlobalPrefix('api', { exclude: ['healthz', 'readyz'] });
+  app.setGlobalPrefix('api', { exclude: ['healthz', 'readyz', 'embed/{*path}'] });
   app.enableShutdownHooks();
   await app.listen(config.port);
 }

@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { type AppConfig, APP_CONFIG } from './config/env.js';
 import { DbModule } from './db/db.module.js';
 import { EchoCallModule } from './echocall/echocall.module.js';
+import { EmbedModule } from './embed/embed.module.js';
 import { HealthModule } from './health/health.module.js';
 import { HubProxyModule } from './hub-proxy/hub-proxy.module.js';
 import { MailModule } from './mail/mail.module.js';
@@ -29,13 +30,14 @@ import { SetupModule } from './setup/setup.module.js';
     AdminUsersModule,
     AccountModule,
     HubProxyModule,
+    EmbedModule,
     HealthModule,
     // Serves the built Angular app next to the API when WEB_DIST_DIR points at it.
     ServeStaticModule.forRootAsync({
       inject: [APP_CONFIG],
       useFactory: (config: AppConfig) =>
         config.webDistDir
-          ? [{ rootPath: config.webDistDir, exclude: ['/api/{*path}', '/healthz', '/readyz'] }]
+          ? [{ rootPath: config.webDistDir, exclude: ['/api/{*path}', '/embed/{*path}', '/healthz', '/readyz'] }]
           : [],
     }),
   ],

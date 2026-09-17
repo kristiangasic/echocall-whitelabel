@@ -106,7 +106,7 @@ export async function createTestApp(
   app.set('trust proxy', 1);
   app.useBodyParser('json', { limit: JSON_BODY_LIMIT });
   app.use(cookieParser());
-  app.setGlobalPrefix('api', { exclude: ['healthz', 'readyz'] });
+  app.setGlobalPrefix('api', { exclude: ['healthz', 'readyz', 'embed/{*path}'] });
   await app.init();
   return {
     app,

@@ -23,6 +23,7 @@ required values stop the server with a clear message. In development you can put
 | `COOKIE_SECURE`    | on when `APP_URL` is `https`     | Force or disable the `Secure` flag on the session cookie.                                                                                                                                                         |
 | `TRUST_PROXY`      | `1`                              | Number of reverse proxies in front of the app; needed for correct client IPs in the audit log and rate limiting. `0` when exposed directly.                                                                       |
 | `ECHOCALL_API_URL` | `https://hub.echocall.de/api/v1` | Base URL of the EchoCall public API. Only change on instruction from EchoCall support.                                                                                                                            |
+| `ECHOCALL_WIDGET_URL` | `https://cdn.echocall.de`     | Origin of the chat widget files. The portal re-serves them under `/embed` on its own domain, so customer sites embed `<script src="{your portal}/embed/chat.js">` and never see the upstream.                     |
 | `WEB_DIST_DIR`     | unset                            | Absolute path to the built Angular app (`apps/web/dist/web/browser`). When set, the API serves the web UI itself; the Docker image sets it for you. When unset, only `/api`, `/healthz` and `/readyz` are served. |
 
 ## Mail (optional)

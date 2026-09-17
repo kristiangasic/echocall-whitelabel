@@ -24,6 +24,7 @@ const schema = z.object({
   ECHOCALL_API_KEY: z
     .string()
     .regex(/^eck_(live|test)_[a-f0-9]{64}$/, 'ECHOCALL_API_KEY must look like eck_live_<64 hex characters>'),
+  ECHOCALL_WIDGET_URL: z.url().default('https://cdn.echocall.de'),
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
   SMTP_SECURE: bool.default(false),
@@ -55,7 +56,7 @@ export interface AppConfig {
   /** Defaults to true when the app URL uses https. */
   cookieSecure: boolean;
   trustProxy: number;
-  echocall: { apiUrl: string; apiKey: string };
+  echocall: { apiUrl: string; apiKey: string; widgetUrl: string };
   smtp: SmtpConfig | null;
   /** Serve the Angular build from this directory when set. */
   webDistDir: string | null;
@@ -82,7 +83,11 @@ export function loadEnv(source: NodeJS.ProcessEnv): AppConfig {
     database: { url: e.DATABASE_URL, ssl: e.DATABASE_SSL },
     cookieSecure: e.COOKIE_SECURE ?? e.APP_URL.startsWith('https://'),
     trustProxy: e.TRUST_PROXY,
-    echocall: { apiUrl: e.ECHOCALL_API_URL.replace(/\/+$/, ''), apiKey: e.ECHOCALL_API_KEY },
+    echocall: {
+      apiUrl: e.ECHOCALL_API_URL.replace(/\/+$/, ''),
+      apiKey: e.ECHOCALL_API_KEY,
+      widgetUrl: e.ECHOCALL_WIDGET_URL.replace(/\/+$/, ''),
+    },
     smtp: e.SMTP_HOST
       ? {
           host: e.SMTP_HOST,
