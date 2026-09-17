@@ -20,6 +20,7 @@
     "addons": "Packs",
     "invoices": "Factures",
     "users": "Utilisateurs",
+    "customerAgents": "Agents clients",
     "settings": "Paramètres",
     "audit": "Journal",
     "account": "Compte",

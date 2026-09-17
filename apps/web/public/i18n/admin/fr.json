@@ -533,6 +533,39 @@
       "customerHint": "Numéro de client issu de votre compte partenaire auprès du service. Sans lui, la personne ne voit aucune donnée de consommation."
     }
   },
+  "analytics": {
+    "title": "Analyse",
+    "intro": "Ce que vos clients ont consommé et ce que cela a rapporté.",
+    "window": "Période",
+    "lastDays": "{{count}} derniers jours",
+    "chatSessions": "Sessions de chat",
+    "voiceMinutes": "Minutes vocales",
+    "revenue": "Chiffre d'affaires",
+    "platformCost": "Coût de la plateforme",
+    "margin": "Marge",
+    "marginNote": "{{percent}} du chiffre d'affaires",
+    "revenueSplit": "Chiffre d'affaires par service",
+    "costSplit": "Coûts par service",
+    "chat": "Chat",
+    "voice": "Voix",
+    "noUsage": "Rien n'a été consommé sur cette période.",
+    "billedNote": "Les chiffres proviennent de la consommation facturée, pas des factures ouvertes."
+  },
+  "agents": {
+    "title": "Agents de vos clients",
+    "intro": "Tous les agents vocaux et chatbots du portail, avec leur propriétaire.",
+    "voiceAgents": "Agents vocaux",
+    "chatbots": "Chatbots",
+    "name": "Nom",
+    "customer": "Client",
+    "language": "Langue",
+    "created": "Créé le",
+    "open": "Ouvrir en tant que client",
+    "openHint": "Ouvre le portail dans la vue de ce client.",
+    "emptyAgents": "Aucun agent vocal n'a encore été créé.",
+    "emptyChatbots": "Aucun chatbot n'a encore été créé.",
+    "unknownCustomer": "Client inconnu"
+  },
   "settings": {
     "title": "Paramètres",
     "branding": {

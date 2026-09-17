@@ -533,6 +533,39 @@
       "customerHint": "Customer number from your partner account with the service. Without it the person sees no usage data."
     }
   },
+  "analytics": {
+    "title": "Analytics",
+    "intro": "What your customers used and what it earned.",
+    "window": "Period",
+    "lastDays": "Last {{count}} days",
+    "chatSessions": "Chat sessions",
+    "voiceMinutes": "Voice minutes",
+    "revenue": "Revenue",
+    "platformCost": "Platform cost",
+    "margin": "Margin",
+    "marginNote": "{{percent}} of revenue",
+    "revenueSplit": "Revenue by service",
+    "costSplit": "Cost by service",
+    "chat": "Chat",
+    "voice": "Voice",
+    "noUsage": "Nothing was used in this period.",
+    "billedNote": "The figures come from billed usage, not from open invoices."
+  },
+  "agents": {
+    "title": "Customer agents",
+    "intro": "Every voice agent and chatbot in the portal, with its owner.",
+    "voiceAgents": "Voice agents",
+    "chatbots": "Chatbots",
+    "name": "Name",
+    "customer": "Customer",
+    "language": "Language",
+    "created": "Created",
+    "open": "Open as customer",
+    "openHint": "Opens the portal in this customer's view.",
+    "emptyAgents": "No voice agent has been created yet.",
+    "emptyChatbots": "No chatbot has been created yet.",
+    "unknownCustomer": "Unknown customer"
+  },
   "settings": {
     "title": "Settings",
     "branding": {

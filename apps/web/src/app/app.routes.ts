@@ -108,6 +108,16 @@ export const routes: Routes = [
               import('./features/admin/users/admin-users.page').then((m) => m.AdminUsersPage),
           },
           {
+            path: 'analytics',
+            loadComponent: () =>
+              import('./features/admin/analytics/admin-analytics.page').then((m) => m.AdminAnalyticsPage),
+          },
+          {
+            path: 'agents',
+            loadComponent: () =>
+              import('./features/admin/agents/admin-agents.page').then((m) => m.AdminAgentsPage),
+          },
+          {
             path: 'settings',
             loadComponent: () =>
               import('./features/admin/settings/admin-settings.page').then((m) => m.AdminSettingsPage),

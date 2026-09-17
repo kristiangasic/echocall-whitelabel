@@ -533,6 +533,39 @@
       "customerHint": "Kundennummer aus Ihrem Partnerkonto beim Dienst. Ohne Zuordnung sieht die Person keine Verbrauchsdaten."
     }
   },
+  "analytics": {
+    "title": "Auswertung",
+    "intro": "Was Ihre Kunden verbraucht haben und was daran verdient wurde.",
+    "window": "Zeitraum",
+    "lastDays": "Letzte {{count}} Tage",
+    "chatSessions": "Chat-Sitzungen",
+    "voiceMinutes": "Sprachminuten",
+    "revenue": "Umsatz",
+    "platformCost": "Plattformkosten",
+    "margin": "Marge",
+    "marginNote": "{{percent}} vom Umsatz",
+    "revenueSplit": "Umsatz nach Leistung",
+    "costSplit": "Kosten nach Leistung",
+    "chat": "Chat",
+    "voice": "Sprache",
+    "noUsage": "In diesem Zeitraum wurde nichts verbraucht.",
+    "billedNote": "Die Zahlen stammen aus der abgerechneten Nutzung, nicht aus offenen Rechnungen."
+  },
+  "agents": {
+    "title": "Agenten Ihrer Kunden",
+    "intro": "Alle Sprachagenten und Chatbots im Portal, mit ihrem Besitzer.",
+    "voiceAgents": "Sprachagenten",
+    "chatbots": "Chatbots",
+    "name": "Name",
+    "customer": "Kunde",
+    "language": "Sprache",
+    "created": "Angelegt",
+    "open": "Als Kunde öffnen",
+    "openHint": "Öffnet das Portal in der Ansicht dieses Kunden.",
+    "emptyAgents": "Noch kein Sprachagent angelegt.",
+    "emptyChatbots": "Noch kein Chatbot angelegt.",
+    "unknownCustomer": "Unbekannter Kunde"
+  },
   "settings": {
     "title": "Einstellungen",
     "branding": {
