@@ -39,6 +39,63 @@
     },
     "unavailable": "The service did not return these figures just now."
   },
+  "tickets": {
+    "title": "Support requests",
+    "intro": "Every request your customers raised, newest first.",
+    "filter": "Status",
+    "allStatuses": "All statuses",
+    "customerFilter": "Customer",
+    "allCustomers": "All customers",
+    "subject": "Subject",
+    "customer": "Customer",
+    "priority": "Priority",
+    "category": "Category",
+    "created": "Raised",
+    "updated": "Last change",
+    "empty": "No requests found.",
+    "escalatedBadge": "Handed over",
+    "detail": {
+      "missing": "This request no longer exists.",
+      "description": "Original description",
+      "thread": "Conversation",
+      "noMessages": "Nothing has been written on this request yet.",
+      "operator": "Your team",
+      "customerSide": "Customer",
+      "system": "System",
+      "internalBadge": "Internal note",
+      "reply": "Your reply",
+      "internalToggle": "Keep this as an internal note",
+      "internalHint": "Your customer never sees an internal note, and the status of the request stays as it is.",
+      "sent": "Reply sent to the customer",
+      "noteSaved": "Internal note saved",
+      "setStatus": "Change status",
+      "statusChanged": "Status changed",
+      "escalate": "Hand over to platform support",
+      "escalateTitle": "Hand this request over?",
+      "escalateMessage": "The request \"{{subject}}\" goes to the support team of the platform operator and is set back to open. Your customer is not told about it.",
+      "escalateDone": "Request handed over to platform support",
+      "escalatedHint": "This request sits with platform support."
+    },
+    "statuses": {
+      "open": "Open",
+      "in_progress": "In progress",
+      "waiting": "Waiting for the customer",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "categories": {
+      "technical": "Technical",
+      "billing": "Billing",
+      "feature": "Feature request",
+      "other": "Other"
+    }
+  },
   "customers": {
     "title": "Customers",
     "hint": "Accounts with the service and the portal logins that belong to them.",

@@ -39,6 +39,63 @@
     },
     "unavailable": "Der Dienst hat diese Zahlen gerade nicht geliefert."
   },
+  "tickets": {
+    "title": "Support-Anfragen",
+    "intro": "Alle Anfragen Ihrer Kunden an einem Ort, neueste zuerst.",
+    "filter": "Status",
+    "allStatuses": "Alle Status",
+    "customerFilter": "Kunde",
+    "allCustomers": "Alle Kunden",
+    "subject": "Betreff",
+    "customer": "Kunde",
+    "priority": "Priorität",
+    "category": "Kategorie",
+    "created": "Erstellt",
+    "updated": "Zuletzt aktualisiert",
+    "empty": "Keine Anfragen gefunden.",
+    "escalatedBadge": "Übergeben",
+    "detail": {
+      "missing": "Diese Anfrage gibt es nicht mehr.",
+      "description": "Ursprüngliche Beschreibung",
+      "thread": "Verlauf",
+      "noMessages": "Zu dieser Anfrage wurde noch nichts geschrieben.",
+      "operator": "Ihr Team",
+      "customerSide": "Kunde",
+      "system": "System",
+      "internalBadge": "Interne Notiz",
+      "reply": "Ihre Antwort",
+      "internalToggle": "Nur intern notieren",
+      "internalHint": "Interne Notizen sieht Ihr Kunde nicht, und der Status der Anfrage bleibt unverändert.",
+      "sent": "Antwort an den Kunden gesendet",
+      "noteSaved": "Interne Notiz gespeichert",
+      "setStatus": "Status ändern",
+      "statusChanged": "Status geändert",
+      "escalate": "An den Plattform-Support geben",
+      "escalateTitle": "Anfrage weitergeben?",
+      "escalateMessage": "Die Anfrage \"{{subject}}\" geht an den Support des Plattform-Betreibers und wird dabei wieder auf offen gesetzt. Ihr Kunde sieht davon nichts.",
+      "escalateDone": "Anfrage an den Plattform-Support übergeben",
+      "escalatedHint": "Diese Anfrage liegt beim Plattform-Support."
+    },
+    "statuses": {
+      "open": "Offen",
+      "in_progress": "In Bearbeitung",
+      "waiting": "Wartet auf den Kunden",
+      "resolved": "Gelöst",
+      "closed": "Geschlossen"
+    },
+    "priorities": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "urgent": "Dringend"
+    },
+    "categories": {
+      "technical": "Technik",
+      "billing": "Abrechnung",
+      "feature": "Wunsch",
+      "other": "Sonstiges"
+    }
+  },
   "customers": {
     "title": "Kunden",
     "hint": "Konten beim Dienst und die dazugehörigen Portalzugänge.",

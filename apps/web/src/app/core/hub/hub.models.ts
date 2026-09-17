@@ -122,6 +122,7 @@ export type ResellerInvoiceRow = ListItem<GetBody<'/resellers/invoices'>>;
 export type ResellerInvoiceDetail = GetBody<'/resellers/invoices/{id}'>;
 export type ResellerTicketRow = ListItem<GetBody<'/resellers/tickets'>>;
 export type ResellerTicketDetail = GetBody<'/resellers/tickets/{id}'>;
+export type ResellerTicketMessage = NonNullable<ResellerTicketDetail['messages']>[number];
 export type ResellerAddonPackage = ListItem<GetBody<'/resellers/addons/packages'>>;
 export type ResellerAddonPurchase = ListItem<GetBody<'/resellers/addons/purchases'>>;
 export type ResellerAddonStats = GetBody<'/resellers/addons/stats'>;

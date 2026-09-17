@@ -91,6 +91,18 @@ export const routes: Routes = [
               import('./features/admin/numbers/admin-numbers.page').then((m) => m.AdminNumbersPage),
           },
           {
+            path: 'tickets',
+            loadComponent: () =>
+              import('./features/admin/tickets/admin-tickets.page').then((m) => m.AdminTicketsPage),
+          },
+          {
+            path: 'tickets/:id',
+            loadComponent: () =>
+              import('./features/admin/tickets/admin-ticket-detail.page').then(
+                (m) => m.AdminTicketDetailPage,
+              ),
+          },
+          {
             path: 'users',
             loadComponent: () =>
               import('./features/admin/users/admin-users.page').then((m) => m.AdminUsersPage),

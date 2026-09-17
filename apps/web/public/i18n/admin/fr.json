@@ -39,6 +39,63 @@
     },
     "unavailable": "Le service n'a pas fourni ces chiffres pour le moment."
   },
+  "tickets": {
+    "title": "Demandes d'assistance",
+    "intro": "Toutes les demandes de vos clients au même endroit, les plus récentes en premier.",
+    "filter": "Statut",
+    "allStatuses": "Tous les statuts",
+    "customerFilter": "Client",
+    "allCustomers": "Tous les clients",
+    "subject": "Objet",
+    "customer": "Client",
+    "priority": "Priorité",
+    "category": "Catégorie",
+    "created": "Créée le",
+    "updated": "Dernière modification",
+    "empty": "Aucune demande trouvée.",
+    "escalatedBadge": "Transmise",
+    "detail": {
+      "missing": "Cette demande n'existe plus.",
+      "description": "Description initiale",
+      "thread": "Historique",
+      "noMessages": "Rien n'a encore été écrit sur cette demande.",
+      "operator": "Votre équipe",
+      "customerSide": "Client",
+      "system": "Système",
+      "internalBadge": "Note interne",
+      "reply": "Votre réponse",
+      "internalToggle": "Enregistrer comme note interne",
+      "internalHint": "Votre client ne voit jamais une note interne et le statut de la demande reste inchangé.",
+      "sent": "Réponse envoyée au client",
+      "noteSaved": "Note interne enregistrée",
+      "setStatus": "Changer le statut",
+      "statusChanged": "Statut modifié",
+      "escalate": "Transmettre à l'assistance de la plateforme",
+      "escalateTitle": "Transmettre cette demande ?",
+      "escalateMessage": "La demande \"{{subject}}\" part vers l'assistance de l'exploitant de la plateforme et repasse au statut ouvert. Votre client n'en est pas informé.",
+      "escalateDone": "Demande transmise à l'assistance de la plateforme",
+      "escalatedHint": "Cette demande se trouve chez l'assistance de la plateforme."
+    },
+    "statuses": {
+      "open": "Ouverte",
+      "in_progress": "En cours",
+      "waiting": "En attente du client",
+      "resolved": "Résolue",
+      "closed": "Fermée"
+    },
+    "priorities": {
+      "low": "Basse",
+      "medium": "Moyenne",
+      "high": "Haute",
+      "urgent": "Urgente"
+    },
+    "categories": {
+      "technical": "Technique",
+      "billing": "Facturation",
+      "feature": "Demande d'évolution",
+      "other": "Autre"
+    }
+  },
   "customers": {
     "title": "Clients",
     "hint": "Comptes chez le service et les accès au portail correspondants.",

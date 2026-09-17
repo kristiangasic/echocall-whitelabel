@@ -2,7 +2,7 @@
   "openapi": "3.1.3",
   "info": {
     "title": "EchoCall Developer Platform - High-Performance AI Voice & Chat API",
-    "version": "1.8.0",
+    "version": "1.9.0",
     "contact": {
       "name": "EchoCall Developer Support",
       "url": "https://echocall.de/contact",
@@ -13918,8 +13918,34 @@
           "Reseller"
         ],
         "summary": "List tickets raised by reseller customers",
-        "description": "Lists the support tickets opened by the customers of this reseller, newest first. There is no filtering and no message thread: without paging the response is a bare JSON array of ticket rows, and a reseller with no customers gets an empty array. These are the raw ticket records, so the identifier is a plain integer rather than the `ticket_<number>` form used by the /tickets endpoints, and they carry the escalation and reseller-scope columns as well. Paging is opt-in. Send `page` or `perPage` and the response becomes `{ data, pagination }` with a real `total` counted over the whole result set; send neither and the body stays exactly as described above. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.",
+        "description": "Lists the support tickets opened by the customers of this reseller, newest first, without their message threads: fetch a single ticket for the conversation. Two filters are available, and a `customerId` that is not a positive integer is rejected with 400 `invalid_id`; a `customerId` that is not a customer of this reseller simply matches nothing. Without paging the response is a bare JSON array of ticket rows, and a reseller with no customers gets an empty array. These are the raw ticket records, so the identifier is a plain integer rather than the `ticket_<number>` form used by the /tickets endpoints, and they carry the escalation and reseller-scope columns as well. Paging is opt-in. Send `page` or `perPage` and the response becomes `{ data, pagination }` with a real `total` counted over the whole result set; send neither and the body stays exactly as described above. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.",
         "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Return only tickets in this state. Omit for all of them.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "open",
+                "in_progress",
+                "waiting",
+                "resolved",
+                "closed"
+              ]
+            }
+          },
+          {
+            "name": "customerId",
+            "in": "query",
+            "required": false,
+            "description": "Return only tickets of this customer. A non-numeric or zero value is rejected with 400; an empty value means no filter.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
           {
             "name": "page",
             "in": "query",
@@ -14193,6 +14219,343 @@
         "x-required-scope": "read:resellers"
       }
     },
+    "/resellers/tickets/{id}": {
+      "get": {
+        "tags": [
+          "Reseller"
+        ],
+        "summary": "Get one customer ticket with its conversation",
+        "description": "Returns a single ticket raised by one of the reseller customers, together with the customer who raised it and the whole message thread in the order it was written. Internal notes are part of the thread here, flagged by `isInternal`, because the reseller is both their author and their only audience. A ticket that does not exist answers 404, and one belonging to a customer of another reseller answers 403 `forbidden`. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Numeric ticket identifier, as returned by GET /resellers/tickets. A value that is not an integer is answered with 400 `invalid_id`.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The ticket, its customer and its messages. Note the top-level shape: `ticket`, `customer` and `messages` are siblings, and the response is not wrapped in `data`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ticket": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Ticket identifier. Numeric here, unlike the `ticket_<number>` form used by the /tickets endpoints."
+                        },
+                        "userId": {
+                          "type": "integer",
+                          "description": "The customer who raised the ticket."
+                        },
+                        "resellerId": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "The reseller the ticket is scoped to."
+                        },
+                        "subject": {
+                          "type": "string",
+                          "description": "One-line summary of the issue."
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "The full text the reporter wrote."
+                        },
+                        "category": {
+                          "type": "string",
+                          "enum": [
+                            "technical",
+                            "billing",
+                            "feature",
+                            "other"
+                          ],
+                          "description": "What the ticket is about."
+                        },
+                        "priority": {
+                          "type": "string",
+                          "enum": [
+                            "low",
+                            "medium",
+                            "high",
+                            "urgent"
+                          ],
+                          "description": "How urgent it is."
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "open",
+                            "in_progress",
+                            "waiting",
+                            "resolved",
+                            "closed"
+                          ],
+                          "description": "Where the ticket stands."
+                        },
+                        "assignedToAdmin": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Platform administrator the ticket was escalated to. Set to 1 by the escalate endpoint."
+                        },
+                        "resolvedAt": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date-time",
+                          "description": "When it was resolved."
+                        },
+                        "closedAt": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date-time",
+                          "description": "When it was closed."
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "When it was opened."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "When it last changed."
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "userId",
+                        "subject",
+                        "status"
+                      ]
+                    },
+                    "customer": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/components/schemas/OwnerRef"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "The customer who raised the ticket. Null when the user row could not be read."
+                    },
+                    "messages": {
+                      "type": "array",
+                      "description": "The conversation, oldest first. Empty when nobody has replied yet: the opening text lives on the ticket itself, in `description`.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Message identifier."
+                          },
+                          "message": {
+                            "type": "string",
+                            "description": "The text that was written."
+                          },
+                          "isInternal": {
+                            "type": "boolean",
+                            "description": "True for a note meant for the reseller only. The customer never sees these; they are returned here because the reseller wrote them."
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "When it was written."
+                          },
+                          "attachments": {
+                            "type": "array",
+                            "description": "Files attached to the message, as metadata only: the platform stores no file, it stores where the file is. Empty when there are none, and also empty when the stored value could not be read back.",
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": true
+                            }
+                          },
+                          "sender": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ],
+                                "description": "Account that wrote the message. Null for a message written by the platform itself."
+                              },
+                              "name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "Display name of the writer, `System` for a platform message, and null for an account that carries no name on record."
+                              },
+                              "role": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "Role of the writer, as stored on the account."
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "message",
+                          "isInternal",
+                          "createdAt",
+                          "attachments",
+                          "sender"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "ticket",
+                    "messages"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "read:resellers"
+            ]
+          }
+        ],
+        "x-required-scope": "read:resellers"
+      },
+      "patch": {
+        "tags": [
+          "Reseller"
+        ],
+        "summary": "Set the status of a customer ticket",
+        "description": "Moves a ticket raised by one of the reseller customers to a new status and emits a `ticket.updated` webhook. Status is the only field this route changes. Any of the five statuses can be set from any other, there is no state machine. A ticket that does not exist answers 404, and one belonging to a customer of another reseller answers 403 `forbidden`. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Numeric ticket identifier. A value that is not an integer is answered with 400 `invalid_id`.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "The status to set.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "in_progress",
+                      "waiting",
+                      "resolved",
+                      "closed"
+                    ]
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "description": "Update Ticket Status Request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The status was changed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always true."
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "write:resellers"
+            ]
+          }
+        ],
+        "x-required-scope": "write:resellers"
+      }
+    },
     "/resellers/tickets/{id}/reply": {
       "post": {
         "tags": [
@@ -14281,100 +14644,6 @@
                   "required": [
                     "success",
                     "messageId"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/InsufficientScope"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimited"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalError"
-          }
-        },
-        "security": [
-          {
-            "ApiKeyAuth": [
-              "write:resellers"
-            ]
-          }
-        ],
-        "x-required-scope": "write:resellers"
-      }
-    },
-    "/resellers/tickets/{id}": {
-      "patch": {
-        "tags": [
-          "Reseller"
-        ],
-        "summary": "Set the status of a customer ticket",
-        "description": "Moves a ticket raised by one of the reseller customers to a new status and emits a `ticket.updated` webhook. Status is the only field this route changes. Any of the five statuses can be set from any other, there is no state machine. A ticket that does not exist answers 404, and one belonging to a customer of another reseller answers 403 `forbidden`. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Numeric ticket identifier. A value that is not an integer is answered with 400 `invalid_id`.",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "description": "The status to set.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "string",
-                    "enum": [
-                      "open",
-                      "in_progress",
-                      "waiting",
-                      "resolved",
-                      "closed"
-                    ]
-                  }
-                },
-                "required": [
-                  "status"
-                ],
-                "description": "Update Ticket Status Request"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "The status was changed.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "description": "Always true."
-                    }
-                  },
-                  "required": [
-                    "success"
                   ]
                 }
               }

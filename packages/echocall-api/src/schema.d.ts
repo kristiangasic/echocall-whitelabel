@@ -8718,15 +8718,19 @@ export interface paths {
         };
         /**
          * List tickets raised by reseller customers
-         * @description Lists the support tickets opened by the customers of this reseller, newest first. There is no filtering and no message thread: without paging the response is a bare JSON array of ticket rows, and a reseller with no customers gets an empty array. These are the raw ticket records, so the identifier is a plain integer rather than the `ticket_<number>` form used by the /tickets endpoints, and they carry the escalation and reseller-scope columns as well. Paging is opt-in. Send `page` or `perPage` and the response becomes `{ data, pagination }` with a real `total` counted over the whole result set; send neither and the body stays exactly as described above. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
+         * @description Lists the support tickets opened by the customers of this reseller, newest first, without their message threads: fetch a single ticket for the conversation. Two filters are available, and a `customerId` that is not a positive integer is rejected with 400 `invalid_id`; a `customerId` that is not a customer of this reseller simply matches nothing. Without paging the response is a bare JSON array of ticket rows, and a reseller with no customers gets an empty array. These are the raw ticket records, so the identifier is a plain integer rather than the `ticket_<number>` form used by the /tickets endpoints, and they carry the escalation and reseller-scope columns as well. Paging is opt-in. Send `page` or `perPage` and the response becomes `{ data, pagination }` with a real `total` counted over the whole result set; send neither and the body stays exactly as described above. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
          */
         get: {
             parameters: {
                 query?: {
+                    /** @description Return only tickets of this customer. A non-numeric or zero value is rejected with 400; an empty value means no filter. */
+                    customerId?: number;
                     /** @description Page to return. Starts at 1; values below 1 are clamped to 1. */
                     page?: number;
                     /** @description Items per page. Clamped to the range 1 to 100; larger values are reduced to 100. */
                     perPage?: number;
+                    /** @description Return only tickets in this state. Omit for all of them. */
+                    status?: "open" | "in_progress" | "waiting" | "resolved" | "closed";
                 };
                 header?: never;
                 path?: never;
@@ -8863,7 +8867,117 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Get one customer ticket with its conversation
+         * @description Returns a single ticket raised by one of the reseller customers, together with the customer who raised it and the whole message thread in the order it was written. Internal notes are part of the thread here, flagged by `isInternal`, because the reseller is both their author and their only audience. A ticket that does not exist answers 404, and one belonging to a customer of another reseller answers 403 `forbidden`. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Numeric ticket identifier, as returned by GET /resellers/tickets. A value that is not an integer is answered with 400 `invalid_id`. */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The ticket, its customer and its messages. Note the top-level shape: `ticket`, `customer` and `messages` are siblings, and the response is not wrapped in `data`. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description The customer who raised the ticket. Null when the user row could not be read. */
+                            customer?: components["schemas"]["OwnerRef"] | null;
+                            /** @description The conversation, oldest first. Empty when nobody has replied yet: the opening text lives on the ticket itself, in `description`. */
+                            messages: {
+                                /** @description Files attached to the message, as metadata only: the platform stores no file, it stores where the file is. Empty when there are none, and also empty when the stored value could not be read back. */
+                                attachments: {
+                                    [key: string]: unknown;
+                                }[];
+                                /**
+                                 * Format: date-time
+                                 * @description When it was written.
+                                 */
+                                createdAt: string;
+                                /** @description Message identifier. */
+                                id: number;
+                                /** @description True for a note meant for the reseller only. The customer never sees these; they are returned here because the reseller wrote them. */
+                                isInternal: boolean;
+                                /** @description The text that was written. */
+                                message: string;
+                                sender: {
+                                    /** @description Account that wrote the message. Null for a message written by the platform itself. */
+                                    id: number | null;
+                                    /** @description Display name of the writer, `System` for a platform message, and null for an account that carries no name on record. */
+                                    name: string | null;
+                                    /** @description Role of the writer, as stored on the account. */
+                                    role?: string | null;
+                                };
+                            }[];
+                            ticket: {
+                                /** @description Platform administrator the ticket was escalated to. Set to 1 by the escalate endpoint. */
+                                assignedToAdmin?: number | null;
+                                /**
+                                 * @description What the ticket is about.
+                                 * @enum {string}
+                                 */
+                                category?: "technical" | "billing" | "feature" | "other";
+                                /**
+                                 * Format: date-time
+                                 * @description When it was closed.
+                                 */
+                                closedAt?: string | null;
+                                /**
+                                 * Format: date-time
+                                 * @description When it was opened.
+                                 */
+                                createdAt?: string;
+                                /** @description The full text the reporter wrote. */
+                                description?: string;
+                                /** @description Ticket identifier. Numeric here, unlike the `ticket_<number>` form used by the /tickets endpoints. */
+                                id: number;
+                                /**
+                                 * @description How urgent it is.
+                                 * @enum {string}
+                                 */
+                                priority?: "low" | "medium" | "high" | "urgent";
+                                /** @description The reseller the ticket is scoped to. */
+                                resellerId?: number | null;
+                                /**
+                                 * Format: date-time
+                                 * @description When it was resolved.
+                                 */
+                                resolvedAt?: string | null;
+                                /**
+                                 * @description Where the ticket stands.
+                                 * @enum {string}
+                                 */
+                                status: "open" | "in_progress" | "waiting" | "resolved" | "closed";
+                                /** @description One-line summary of the issue. */
+                                subject: string;
+                                /**
+                                 * Format: date-time
+                                 * @description When it last changed.
+                                 */
+                                updatedAt?: string;
+                                /** @description The customer who raised the ticket. */
+                                userId: number;
+                            };
+                        };
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+            };
+        };
         put?: never;
         post?: never;
         delete?: never;
