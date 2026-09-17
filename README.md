@@ -12,10 +12,18 @@ a portal from scratch.
 
 ## How it works
 
-- You (the operator) sign in to the **admin panel**: connection status, user management,
-  branding, mail settings and an audit log.
-- Your customers sign in to the **customer portal**: usage, remaining volume, balance and
-  plan of the EchoCall customer account you linked to them.
+- You (the operator) sign in to the **admin panel** and run the business there: customers
+  (create an EchoCall account and its portal login in one step, top up and withdraw
+  balance, read transactions and usage), plans and pricing, subscriptions, add-ons,
+  invoices, phone numbers, support tickets, revenue and cost analytics, the agents your
+  customers built, your own company data and payment keys, plus portal branding, mail
+  settings and the audit log.
+- Your customers sign in to the **customer portal**: voice agents and chatbots, phone
+  numbers, conversations with transcripts, analytics, knowledge base, integrations,
+  campaigns and support requests, next to usage, balance, plan and invoices.
+- You can **open the portal as one of your customers** to see what they see. The session
+  carries the customer's role while it lasts, so the administration stays out of reach, and
+  both the start and the end are written to your audit log.
 - The portal keeps only accounts, sessions, settings and the audit log in **your own
   database**. Everything else is fetched live from the EchoCall API with your reseller key,
   which never leaves the server.
@@ -63,10 +71,10 @@ The three you must set: `APP_URL`, `APP_SECRET`, `ECHOCALL_API_KEY`.
 
 ## Roles
 
-| Role      | Sees                                                                          |
-| --------- | ----------------------------------------------------------------------------- |
-| **admin** | Overview, user management, branding and mail settings, audit log, own account |
-| **user**  | Usage dashboard for the linked EchoCall customer account, own account         |
+| Role      | Sees                                                                                                                                                   |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **admin** | The admin panel: customers, plans and pricing, subscriptions, add-ons, invoices, numbers, tickets, analytics, agents, settings, audit log, own account |
+| **user**  | The workspace of the linked EchoCall customer account, and their own account                                                                           |
 
 Admins invite users by email (or hand over a one-time link when no SMTP server is
 configured) and link each user to one of the EchoCall customer accounts under your

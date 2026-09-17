@@ -29,7 +29,8 @@ NestJS 12, ESM, Express. Modules:
 | `echocall`  | Typed client factory for the EchoCall API plus a cached hub status (periodic re-check)           |
 | `auth`      | Sessions (httpOnly cookie), CSRF guard, roles guard, login rate limiting                         |
 | `setup`     | First-run: connection check and creation of the initial admin                                    |
-| `admin/*`   | Overview with hub status and user counts; user management (invite, edit, disable, delete)        |
+| `admin/*`   | Overview, user management (invite, edit, disable, delete), customers, impersonation              |
+| `admin/hub` | Forwards allow-listed operator calls to the EchoCall API under `/api/admin/hub`                  |
 | `settings`  | Branding (name, logo, color, legal links, default language) and SMTP                             |
 | `account`   | Own profile, password change, the customer usage overview and invoice downloads                  |
 | `hub-proxy` | Forwards allow-listed customer calls to the EchoCall API under `/api/hub`                        |
@@ -72,6 +73,53 @@ Anything that is not a plain forward stays in its own controller: the account mo
 instance, fetches an invoice PDF from the hub and streams the bytes, because the hub's own
 download link is readable only by a hub browser session.
 
+## The operator proxy (`/api/admin/hub`)
+
+The admin panel needs the other half of the hub: the reseller surfaces that describe the
+operator's own business - customers, balances, plans, pricing, subscriptions, add-ons,
+invoices, phone numbers, tickets, analytics, the agent inventory, the company profile and
+the activity log. The same reasoning as for the customer proxy applies, so the shape is
+the same, with two differences that matter.
+
+- **Its own allow list.** `admin/hub/admin-allowlist.ts` names every method and path
+  template an operator session may forward, and the file records why each omission is an
+  omission. Payment secrets (`GET /resellers/billing/keys`), the credit purchase and
+  deduction flows, and every raw write on a customer stay off it. A customer write has to
+  change the hub account and the portal login in one go, which is what `/api/admin/customers`
+  does; forwarding the raw call would let the browser create a customer nobody can sign in
+  as, or delete one whose portal login still works.
+- **In the operator's own context.** These calls carry no act-as header, so the hub answers
+  as the reseller behind the configured key. The guard is the admin role: a user session on
+  an operator path is 403, and an operator session on a path outside the list is 404.
+
+The proxy does **not** rename the service in what it returns. Customer-facing texts are the
+operator's brand throughout, but the operator holds the contract with EchoCall and has to
+read its real name - when escalating a ticket, reading an invoice from the service, or
+checking what the activity log recorded. Vendor neutrality is a separate rule and is
+unaffected: the hub never names the AI provider behind voice and chat.
+
+## Impersonation
+
+An operator can open the portal as one of their customers to see exactly what that customer
+sees. The session cookie the browser already holds is handed over to the customer account
+and remembers who opened it, so no guard, proxy call or workspace page has to know about a
+second identity: everything runs in the customer's context, and only the way back reads the
+remembered operator id. The session carries the customer's role while it lasts, which is
+what keeps the administration out of reach.
+
+It refuses more than it allows:
+
+- a customer without a portal login (`no_portal_login`) - there is no session to hand over;
+- an administrator account (`cannot_impersonate_admin`) - this is not a way to become
+  another operator;
+- a login that has not been used yet or is disabled (`login_not_active`);
+- a password change while impersonating, and every `/admin` route, both by role;
+- a session whose operator account is gone by the time it is handed back - the session ends
+  and the browser has to sign in again (`session_ended`).
+
+Start and end are both written to the audit log with the operator, the customer and the IP,
+so a look at someone else's workspace is never invisible.
+
 ## The widget proxy (`/embed`)
 
 Customer sites embed `<script src="{your portal}/embed/chat.js">`. The portal fetches the
@@ -107,5 +155,8 @@ packages/echocall-api` when the upstream API gains endpoints.
   portal small and in step with the upstream API; a resource only gets its own endpoint
   when the portal has to do something the browser cannot, such as fetching a PDF with the
   operator's key.
+- **The operator reads real names, the customer never does.** White-label rules apply to
+  everything a customer can see; the admin panel deliberately shows the service under its
+  own name, because the operator is its customer.
 - **White label enforced by CI.** `npm run check` fails the build when customer-facing
   texts or bundles leak the EchoCall brand or any upstream vendor name.

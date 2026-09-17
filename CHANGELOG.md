@@ -25,6 +25,20 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Allow-listed hub proxy under `/api/hub`: workspace pages reach the documented customer
   endpoints in the context of their own customer account, while reseller, provisioning
   and payment surfaces stay unreachable from the browser.
+- Operator panel for the reseller business: customers (created with their portal login in
+  one step, balance top-ups and withdrawals, transactions, usage, subscriptions), plans and
+  pricing with margin suggestions, subscriptions, add-on sales, invoices, phone number
+  import and assignment, support tickets with replies and escalation, revenue and cost
+  analytics, and an inventory of the agents customers built.
+- Allow-listed operator proxy under `/api/admin/hub`: the admin panel reaches the reseller
+  endpoints in the operator's own context, while payment secrets, credit purchases and raw
+  customer writes stay unreachable from the browser.
+- Service-side operator settings (company data on the invoices you issue, portal logo,
+  payment keys as write-only fields) and the service activity log, each on their own tab
+  next to the portal settings and the portal audit log.
+- Impersonation: an operator can open the portal as one customer and hand the session back,
+  with both steps in the audit log; it refuses accounts without a portal login, other
+  administrators and logins that are not active yet.
 - Notification bell with unread counter, polling, and mark-as-read.
 - Billing tab in the account page: plan, balance, invoices and wallet movements, with
   invoice PDFs streamed through the portal so the upstream host never reaches the browser.
