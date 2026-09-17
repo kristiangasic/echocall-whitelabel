@@ -5,11 +5,57 @@ on:
     tags: ['v*']
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
+  # A tag publishes an image other people run, so it is verified before it is built,
+  # not only on the commit it happens to point at.
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: echocall_light_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # The lockfile is written by npm 12; npm 10 (bundled with Node 22) fails to install it.
+      - run: npm install -g npm@12
+      - run: npm ci
+      - run: npm run check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test
+        env:
+          TEST_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/echocall_light_test
+      - run: npm audit --omit=dev
+      # The version in the workspaces has to be the version on the tag.
+      - name: Check the tag against package.json
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          for file in package.json apps/api/package.json apps/web/package.json packages/echocall-api/package.json; do
+            found=$(node -p "require('./$file').version")
+            if [ "$found" != "$tag" ]; then
+              echo "$file says $found, the tag says $tag"
+              exit 1
+            fi
+          done
+
   image:
+    needs: verify
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,3 +79,26 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  release:
+    needs: image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # The notes are the section this version already has in the changelog.
+      - name: Cut the changelog section for this tag
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          awk -v header="## [$tag]" '
+            index($0, header) == 1 { printing = 1; next }
+            printing && index($0, "## [") == 1 { exit }
+            printing { print }
+          ' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then
+            echo "CHANGELOG.md has no section for $tag"
+            exit 1
+          fi
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md
