@@ -105,6 +105,7 @@ describe('AdminCustomersController', () => {
       company: 'Nina GmbH',
       language: 'fr',
       sendPasswordEmail: false,
+      hubLoginEnabled: false,
     });
     expect(calls[0].headers.get('x-echocall-customer')).toBeNull();
 

@@ -59,6 +59,10 @@ export class AdminCustomersService {
         language: input.language,
         // The portal owns the login, so the hub must not mail a code of its own.
         sendPasswordEmail: false,
+        // The customer signs in here, and the service they are billed on stays
+        // invisible to them. Older services ignore this field and keep their
+        // own login open, which is why the portal never mails a code either.
+        hubLoginEnabled: false,
       },
     });
     const customerId = readCustomerId(created.body);
