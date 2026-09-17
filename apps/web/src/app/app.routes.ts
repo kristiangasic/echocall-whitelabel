@@ -74,6 +74,15 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/user/dashboard/user-dashboard.page').then((m) => m.UserDashboardPage),
           },
+          {
+            path: 'agents',
+            loadComponent: () => import('./features/user/agents/agents.page').then((m) => m.AgentsPage),
+          },
+          {
+            path: 'agents/:id',
+            loadComponent: () =>
+              import('./features/user/agents/agent-edit.page').then((m) => m.AgentEditPage),
+          },
         ],
       },
     ],

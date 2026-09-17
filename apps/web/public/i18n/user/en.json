@@ -31,5 +31,88 @@
       "trial": "Trial",
       "suspended": "Suspended"
     }
+  },
+  "agents": {
+    "title": "Voice agents",
+    "create": "Create agent",
+    "createTitle": "Create a new agent",
+    "editTitle": "Edit agent: {{name}}",
+    "language": "Language",
+    "voice": "Voice",
+    "voiceDefault": "Default voice",
+    "voicesOwn": "Your voices",
+    "voicesLibrary": "Voice library",
+    "supportedLanguages": "Additional languages",
+    "supportedLanguagesHint": "The primary language always comes first.",
+    "ttsModel": "Speech model (TTS)",
+    "ttsAuto": "Automatic for the chosen language",
+    "firstMessage": "Opening line",
+    "systemPrompt": "Behaviour instructions",
+    "systemPromptHint": "Describes the agent’s personality, knowledge and behaviour.",
+    "speed": "Speaking speed",
+    "stability": "Voice stability",
+    "llmModel": "AI model",
+    "maxTokens": "Maximum reply length (tokens)",
+    "temperature": "Creativity",
+    "turnEagerness": "Response pacing",
+    "turnEagernessValues": {
+      "patient": "Patient",
+      "normal": "Normal",
+      "eager": "Eager"
+    },
+    "asrKeywords": "Recognition keywords",
+    "asrKeywordsHint": "Comma separated, for example product and brand names.",
+    "enableInterruptions": "Allow interruptions",
+    "enableBackchannel": "Listening sounds",
+    "enableFillers": "Filler words",
+    "backgroundVoiceDetection": "Ignore background voices",
+    "retentionDays": "Retention (days)",
+    "retentionDaysHint": "-1 means unlimited.",
+    "saveCallAudio": "Store call audio",
+    "zeroPiiRetention": "Store no personal data",
+    "sections": {
+      "identity": "Identity",
+      "voiceTuning": "Voice",
+      "behavior": "Conversation behaviour",
+      "privacy": "Privacy",
+      "systemTools": "System functions",
+      "transfers": "Call transfers"
+    },
+    "tools": {
+      "endCall": "End the call",
+      "voicemailDetection": "Detect voicemail",
+      "languageDetection": "Detect language",
+      "playKeypadTouchTone": "Send keypad tones",
+      "skipTurn": "Skip a turn"
+    },
+    "transferNumber": "Phone number",
+    "transferDescription": "Description",
+    "transfersEmpty": "No transfer targets yet.",
+    "addTransfer": "Add target",
+    "statuses": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "empty": "No agents yet. Create your first one.",
+    "deleteTitle": "Delete agent?",
+    "deleteMessage": "“{{name}}” will be deleted permanently.",
+    "created": "Agent created.",
+    "saved": "Changes saved.",
+    "deleted": "Agent deleted."
+  },
+  "knowledge": {
+    "title": "Knowledge sources",
+    "hint": "Web pages and texts the assistant answers from.",
+    "empty": "No knowledge sources yet.",
+    "addUrlLabel": "Add a web page",
+    "addUrl": "Add URL",
+    "textTitle": "Title (optional)",
+    "textContent": "Text",
+    "addText": "Add text",
+    "refresh": "Re-crawl",
+    "refreshed": "The source is being re-crawled.",
+    "added": "Knowledge source added.",
+    "deleteTitle": "Delete knowledge source?",
+    "deleteMessage": "“{{title}}” will be deleted permanently."
   }
 }

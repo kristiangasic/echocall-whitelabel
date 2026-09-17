@@ -31,5 +31,88 @@
       "trial": "Période d'essai",
       "suspended": "Suspendu"
     }
+  },
+  "agents": {
+    "title": "Agents vocaux",
+    "create": "Créer un agent",
+    "createTitle": "Créer un nouvel agent",
+    "editTitle": "Modifier l’agent : {{name}}",
+    "language": "Langue",
+    "voice": "Voix",
+    "voiceDefault": "Voix par défaut",
+    "voicesOwn": "Vos voix",
+    "voicesLibrary": "Bibliothèque de voix",
+    "supportedLanguages": "Langues supplémentaires",
+    "supportedLanguagesHint": "La langue principale est toujours en premier.",
+    "ttsModel": "Modèle vocal (TTS)",
+    "ttsAuto": "Automatique selon la langue",
+    "firstMessage": "Phrase d’accueil",
+    "systemPrompt": "Instructions de comportement",
+    "systemPromptHint": "Décrit la personnalité, les connaissances et le comportement de l’agent.",
+    "speed": "Débit de parole",
+    "stability": "Stabilité de la voix",
+    "llmModel": "Modèle d’IA",
+    "maxTokens": "Longueur maximale de réponse (tokens)",
+    "temperature": "Créativité",
+    "turnEagerness": "Rythme de réponse",
+    "turnEagernessValues": {
+      "patient": "Patient",
+      "normal": "Normal",
+      "eager": "Rapide"
+    },
+    "asrKeywords": "Mots-clés de reconnaissance",
+    "asrKeywordsHint": "Séparés par des virgules, par exemple noms de produits et de marques.",
+    "enableInterruptions": "Autoriser les interruptions",
+    "enableBackchannel": "Sons d’écoute",
+    "enableFillers": "Mots de remplissage",
+    "backgroundVoiceDetection": "Ignorer les voix en arrière-plan",
+    "retentionDays": "Conservation (jours)",
+    "retentionDaysHint": "-1 signifie illimité.",
+    "saveCallAudio": "Enregistrer l’audio des appels",
+    "zeroPiiRetention": "Ne conserver aucune donnée personnelle",
+    "sections": {
+      "identity": "Identité",
+      "voiceTuning": "Voix",
+      "behavior": "Comportement conversationnel",
+      "privacy": "Confidentialité",
+      "systemTools": "Fonctions système",
+      "transfers": "Transferts d’appel"
+    },
+    "tools": {
+      "endCall": "Terminer l’appel",
+      "voicemailDetection": "Détecter la messagerie vocale",
+      "languageDetection": "Détecter la langue",
+      "playKeypadTouchTone": "Envoyer des tonalités",
+      "skipTurn": "Passer un tour"
+    },
+    "transferNumber": "Numéro de téléphone",
+    "transferDescription": "Description",
+    "transfersEmpty": "Aucune cible de transfert.",
+    "addTransfer": "Ajouter une cible",
+    "statuses": {
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "empty": "Aucun agent pour l’instant. Créez le premier.",
+    "deleteTitle": "Supprimer l’agent ?",
+    "deleteMessage": "« {{name}} » sera supprimé définitivement.",
+    "created": "Agent créé.",
+    "saved": "Modifications enregistrées.",
+    "deleted": "Agent supprimé."
+  },
+  "knowledge": {
+    "title": "Sources de connaissances",
+    "hint": "Pages web et textes utilisés par l’assistant pour répondre.",
+    "empty": "Aucune source de connaissances.",
+    "addUrlLabel": "Ajouter une page web",
+    "addUrl": "Ajouter l’URL",
+    "textTitle": "Titre (facultatif)",
+    "textContent": "Texte",
+    "addText": "Ajouter le texte",
+    "refresh": "Relire",
+    "refreshed": "La source est en cours de relecture.",
+    "added": "Source de connaissances ajoutée.",
+    "deleteTitle": "Supprimer la source ?",
+    "deleteMessage": "« {{title}} » sera supprimée définitivement."
   }
 }
