@@ -159,7 +159,7 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
                 <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
                 <td mat-cell *matCellDef="let row">
                   <span class="status" [class]="'status status-' + row.subscription.status">
-                    {{ t('admin.customer.subscriptions.statuses.' + row.subscription.status) }}
+                    {{ t('admin.subscriptions.statuses.' + row.subscription.status) }}
                   </span>
                 </td>
               </ng-container>

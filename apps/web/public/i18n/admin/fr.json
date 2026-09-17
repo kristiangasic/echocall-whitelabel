@@ -107,14 +107,7 @@
       "price": "Prix",
       "start": "Début",
       "end": "Fin",
-      "empty": "Ce client n'a aucun abonnement.",
-      "statuses": {
-        "active": "Actif",
-        "past_due": "Paiement en attente",
-        "canceled": "Résilié",
-        "paused": "En pause",
-        "expired": "Expiré"
-      }
+      "empty": "Ce client n'a aucun abonnement."
     },
     "transactions": {
       "title": "Écritures",
@@ -199,6 +192,45 @@
       "standard": "Standard",
       "premium": "Premium",
       "enterprise": "Enterprise"
+    }
+  },
+  "subscriptions": {
+    "title": "Abonnements",
+    "intro": "Chaque abonnement relie un client à un forfait et à une durée.",
+    "create": "Nouvel abonnement",
+    "empty": "Il n'y a pas encore d'abonnement.",
+    "customer": "Client",
+    "plan": "Forfait",
+    "planGone": "Forfait supprimé",
+    "term": "Durée",
+    "start": "Début",
+    "end": "Fin",
+    "price": "Prix",
+    "filter": "Statut",
+    "allStatuses": "Tous",
+    "months": "{{count}} mois",
+    "statuses": {
+      "active": "Actif",
+      "past_due": "Paiement en attente",
+      "canceled": "Résilié",
+      "paused": "En pause",
+      "expired": "Expiré"
+    },
+    "cancel": "Résilier à la fin",
+    "cancelTitle": "Résilier l'abonnement",
+    "cancelMessage": "L'abonnement de {{customer}} se poursuit encore 30 jours puis prend fin.",
+    "canceled": "Abonnement résilié.",
+    "cancelImmediate": "Mettre fin immédiatement",
+    "cancelImmediateTitle": "Mettre fin à l'abonnement immédiatement",
+    "cancelImmediateMessage": "L'abonnement de {{customer}} prend fin aussitôt. Rien n'est remboursé et il n'y a pas de retour en arrière.",
+    "endedNow": "Abonnement terminé.",
+    "created": "Abonnement créé.",
+    "dialog": {
+      "title": "Nouvel abonnement",
+      "intro": "L'abonnement commence aussitôt et se termine après la durée choisie.",
+      "customerHint": "Seuls les clients déjà créés peuvent avoir un abonnement.",
+      "noPlans": "Créez d'abord un forfait.",
+      "submit": "Créer"
     }
   },
   "users": {

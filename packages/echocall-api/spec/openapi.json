@@ -14663,11 +14663,25 @@
                                 ]
                               },
                               "plan": {
-                                "$ref": "#/components/schemas/Plan",
+                                "anyOf": [
+                                  {
+                                    "$ref": "#/components/schemas/Plan"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ],
                                 "description": "The plan the subscription is for, read through a left join. Null when the plan row no longer exists. Note that on this response `features` is the stored JSON string, not a parsed array: only GET /resellers/plans parses it."
                               },
                               "customer": {
-                                "$ref": "#/components/schemas/OwnerRef",
+                                "anyOf": [
+                                  {
+                                    "$ref": "#/components/schemas/OwnerRef"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ],
                                 "description": "The customer holding the subscription. Null when the user row could not be joined."
                               }
                             },
@@ -14798,11 +14812,25 @@
                                 ]
                               },
                               "plan": {
-                                "$ref": "#/components/schemas/Plan",
+                                "anyOf": [
+                                  {
+                                    "$ref": "#/components/schemas/Plan"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ],
                                 "description": "The plan the subscription is for, read through a left join. Null when the plan row no longer exists. Note that on this response `features` is the stored JSON string, not a parsed array: only GET /resellers/plans parses it."
                               },
                               "customer": {
-                                "$ref": "#/components/schemas/OwnerRef",
+                                "anyOf": [
+                                  {
+                                    "$ref": "#/components/schemas/OwnerRef"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ],
                                 "description": "The customer holding the subscription. Null when the user row could not be joined."
                               }
                             },
@@ -15256,7 +15284,14 @@
                             ]
                           },
                           "plan": {
-                            "$ref": "#/components/schemas/Plan",
+                            "anyOf": [
+                              {
+                                "$ref": "#/components/schemas/Plan"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
                             "description": "The plan the subscription is for, read through a left join. Null when the plan row no longer exists. Note that on this response `features` is the stored JSON string, not a parsed array: only GET /resellers/plans parses it."
                           }
                         },
@@ -16013,7 +16048,14 @@
                             ]
                           },
                           "customer": {
-                            "$ref": "#/components/schemas/OwnerRef",
+                            "anyOf": [
+                              {
+                                "$ref": "#/components/schemas/OwnerRef"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
                             "description": "The customer who bought it. Null when the user row could not be joined."
                           }
                         },
@@ -16457,7 +16499,14 @@
                                 ]
                               },
                               "customer": {
-                                "$ref": "#/components/schemas/OwnerRef",
+                                "anyOf": [
+                                  {
+                                    "$ref": "#/components/schemas/OwnerRef"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ],
                                 "description": "The customer being invoiced. Null when the user row could not be joined."
                               }
                             },
@@ -16607,7 +16656,14 @@
                                 ]
                               },
                               "customer": {
-                                "$ref": "#/components/schemas/OwnerRef",
+                                "anyOf": [
+                                  {
+                                    "$ref": "#/components/schemas/OwnerRef"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ],
                                 "description": "The customer being invoiced. Null when the user row could not be joined."
                               }
                             },
@@ -16936,7 +16992,14 @@
                       ]
                     },
                     "customer": {
-                      "$ref": "#/components/schemas/OwnerRef",
+                      "anyOf": [
+                        {
+                          "$ref": "#/components/schemas/OwnerRef"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
                       "description": "The customer being invoiced. Null when the user row could not be joined."
                     },
                     "items": {
@@ -17250,7 +17313,15 @@
                             "$ref": "#/components/schemas/PhoneNumber"
                           },
                           "owner": {
-                            "$ref": "#/components/schemas/OwnerRef"
+                            "anyOf": [
+                              {
+                                "$ref": "#/components/schemas/OwnerRef"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "The customer the number is assigned to. Null when the user row could not be joined."
                           }
                         },
                         "required": [
@@ -18180,7 +18251,15 @@
                             ]
                           },
                           "owner": {
-                            "$ref": "#/components/schemas/OwnerRef"
+                            "anyOf": [
+                              {
+                                "$ref": "#/components/schemas/OwnerRef"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "The customer the agent belongs to. Null when the user row could not be joined."
                           }
                         },
                         "required": [
@@ -18286,7 +18365,15 @@
                             ]
                           },
                           "owner": {
-                            "$ref": "#/components/schemas/OwnerRef"
+                            "anyOf": [
+                              {
+                                "$ref": "#/components/schemas/OwnerRef"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "The customer the chatbot belongs to. Null when the user row could not be joined."
                           }
                         },
                         "required": [

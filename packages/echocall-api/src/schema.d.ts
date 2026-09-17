@@ -5173,7 +5173,7 @@ export interface paths {
                                     usedAmount?: number | null;
                                 };
                                 /** @description The customer who bought it. Null when the user row could not be joined. */
-                                customer?: components["schemas"]["OwnerRef"];
+                                customer?: components["schemas"]["OwnerRef"] | null;
                             }[];
                         };
                     };
@@ -5652,7 +5652,8 @@ export interface paths {
                                     /** @description The customer account that owns it. */
                                     userId?: number;
                                 };
-                                owner?: components["schemas"]["OwnerRef"];
+                                /** @description The customer the chatbot belongs to. Null when the user row could not be joined. */
+                                owner?: components["schemas"]["OwnerRef"] | null;
                             }[];
                         };
                     };
@@ -6535,7 +6536,7 @@ export interface paths {
                             /** @description One entry per subscription, newest first. */
                             data: {
                                 /** @description The plan the subscription is for, read through a left join. Null when the plan row no longer exists. Note that on this response `features` is the stored JSON string, not a parsed array: only GET /resellers/plans parses it. */
-                                plan?: components["schemas"]["Plan"];
+                                plan?: components["schemas"]["Plan"] | null;
                                 subscription: {
                                     /** @description Whether the subscription renews without action. */
                                     autoRenew?: boolean;
@@ -6967,7 +6968,7 @@ export interface paths {
                         "application/json": {
                             data: {
                                 /** @description The customer being invoiced. Null when the user row could not be joined. */
-                                customer?: components["schemas"]["OwnerRef"];
+                                customer?: components["schemas"]["OwnerRef"] | null;
                                 invoice: {
                                     /**
                                      * Format: date-time
@@ -7036,7 +7037,7 @@ export interface paths {
                         } | {
                             data: {
                                 /** @description The customer being invoiced. Null when the user row could not be joined. */
-                                customer?: components["schemas"]["OwnerRef"];
+                                customer?: components["schemas"]["OwnerRef"] | null;
                                 invoice: {
                                     /**
                                      * Format: date-time
@@ -7207,7 +7208,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             /** @description The customer being invoiced. Null when the user row could not be joined. */
-                            customer?: components["schemas"]["OwnerRef"];
+                            customer?: components["schemas"]["OwnerRef"] | null;
                             invoice: {
                                 /**
                                  * Format: date-time
@@ -7553,7 +7554,8 @@ export interface paths {
                     content: {
                         "application/json": {
                             data: {
-                                owner?: components["schemas"]["OwnerRef"];
+                                /** @description The customer the number is assigned to. Null when the user row could not be joined. */
+                                owner?: components["schemas"]["OwnerRef"] | null;
                                 phoneNumber: components["schemas"]["PhoneNumber"];
                             }[];
                         };
@@ -8372,9 +8374,9 @@ export interface paths {
                         "application/json": {
                             data: {
                                 /** @description The customer holding the subscription. Null when the user row could not be joined. */
-                                customer?: components["schemas"]["OwnerRef"];
+                                customer?: components["schemas"]["OwnerRef"] | null;
                                 /** @description The plan the subscription is for, read through a left join. Null when the plan row no longer exists. Note that on this response `features` is the stored JSON string, not a parsed array: only GET /resellers/plans parses it. */
-                                plan?: components["schemas"]["Plan"];
+                                plan?: components["schemas"]["Plan"] | null;
                                 subscription: {
                                     /** @description Whether the subscription renews without action. */
                                     autoRenew?: boolean;
@@ -8437,9 +8439,9 @@ export interface paths {
                         } | {
                             data: {
                                 /** @description The customer holding the subscription. Null when the user row could not be joined. */
-                                customer?: components["schemas"]["OwnerRef"];
+                                customer?: components["schemas"]["OwnerRef"] | null;
                                 /** @description The plan the subscription is for, read through a left join. Null when the plan row no longer exists. Note that on this response `features` is the stored JSON string, not a parsed array: only GET /resellers/plans parses it. */
-                                plan?: components["schemas"]["Plan"];
+                                plan?: components["schemas"]["Plan"] | null;
                                 subscription: {
                                     /** @description Whether the subscription renews without action. */
                                     autoRenew?: boolean;
@@ -9083,7 +9085,8 @@ export interface paths {
                                     /** @description The customer account that owns it. */
                                     userId?: number;
                                 };
-                                owner?: components["schemas"]["OwnerRef"];
+                                /** @description The customer the agent belongs to. Null when the user row could not be joined. */
+                                owner?: components["schemas"]["OwnerRef"] | null;
                             }[];
                         };
                     };

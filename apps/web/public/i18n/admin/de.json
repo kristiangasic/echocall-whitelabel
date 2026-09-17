@@ -107,14 +107,7 @@
       "price": "Preis",
       "start": "Beginn",
       "end": "Ende",
-      "empty": "Dieser Kunde hat kein Abonnement.",
-      "statuses": {
-        "active": "Aktiv",
-        "past_due": "Zahlung offen",
-        "canceled": "Gekündigt",
-        "paused": "Pausiert",
-        "expired": "Abgelaufen"
-      }
+      "empty": "Dieser Kunde hat kein Abonnement."
     },
     "transactions": {
       "title": "Buchungen",
@@ -199,6 +192,45 @@
       "standard": "Standard",
       "premium": "Premium",
       "enterprise": "Enterprise"
+    }
+  },
+  "subscriptions": {
+    "title": "Abonnements",
+    "intro": "Jedes Abonnement verbindet einen Kunden mit einem Tarif und einer Laufzeit.",
+    "create": "Abonnement anlegen",
+    "empty": "Es besteht noch kein Abonnement.",
+    "customer": "Kunde",
+    "plan": "Tarif",
+    "planGone": "Tarif gelöscht",
+    "term": "Laufzeit",
+    "start": "Beginn",
+    "end": "Ende",
+    "price": "Preis",
+    "filter": "Status",
+    "allStatuses": "Alle",
+    "months": "{{count}} Monate",
+    "statuses": {
+      "active": "Aktiv",
+      "past_due": "Zahlung offen",
+      "canceled": "Gekündigt",
+      "paused": "Pausiert",
+      "expired": "Abgelaufen"
+    },
+    "cancel": "Zum Ende kündigen",
+    "cancelTitle": "Abonnement kündigen",
+    "cancelMessage": "Das Abonnement von {{customer}} läuft noch 30 Tage weiter und endet dann.",
+    "canceled": "Abonnement gekündigt.",
+    "cancelImmediate": "Sofort beenden",
+    "cancelImmediateTitle": "Abonnement sofort beenden",
+    "cancelImmediateMessage": "Das Abonnement von {{customer}} endet sofort. Es wird nichts erstattet, und es gibt keinen Weg zurück.",
+    "endedNow": "Abonnement beendet.",
+    "created": "Abonnement angelegt.",
+    "dialog": {
+      "title": "Abonnement anlegen",
+      "intro": "Das Abonnement beginnt sofort und endet nach der gewählten Laufzeit.",
+      "customerHint": "Nur Kunden, die bereits angelegt sind, können ein Abonnement erhalten.",
+      "noPlans": "Legen Sie zuerst einen Tarif an.",
+      "submit": "Anlegen"
     }
   },
   "users": {

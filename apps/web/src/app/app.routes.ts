@@ -65,6 +65,13 @@ export const routes: Routes = [
             loadComponent: () => import('./features/admin/plans/plans.page').then((m) => m.AdminPlansPage),
           },
           {
+            path: 'subscriptions',
+            loadComponent: () =>
+              import('./features/admin/subscriptions/subscriptions.page').then(
+                (m) => m.AdminSubscriptionsPage,
+              ),
+          },
+          {
             path: 'users',
             loadComponent: () =>
               import('./features/admin/users/admin-users.page').then((m) => m.AdminUsersPage),

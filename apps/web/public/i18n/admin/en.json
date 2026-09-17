@@ -107,14 +107,7 @@
       "price": "Price",
       "start": "Start",
       "end": "End",
-      "empty": "This customer has no subscription.",
-      "statuses": {
-        "active": "Active",
-        "past_due": "Payment due",
-        "canceled": "Canceled",
-        "paused": "Paused",
-        "expired": "Expired"
-      }
+      "empty": "This customer has no subscription."
     },
     "transactions": {
       "title": "Movements",
@@ -199,6 +192,45 @@
       "standard": "Standard",
       "premium": "Premium",
       "enterprise": "Enterprise"
+    }
+  },
+  "subscriptions": {
+    "title": "Subscriptions",
+    "intro": "Every subscription ties one customer to one plan and a term.",
+    "create": "New subscription",
+    "empty": "There is no subscription yet.",
+    "customer": "Customer",
+    "plan": "Plan",
+    "planGone": "Plan deleted",
+    "term": "Term",
+    "start": "Start",
+    "end": "End",
+    "price": "Price",
+    "filter": "Status",
+    "allStatuses": "All",
+    "months": "{{count}} months",
+    "statuses": {
+      "active": "Active",
+      "past_due": "Payment due",
+      "canceled": "Cancelled",
+      "paused": "Paused",
+      "expired": "Expired"
+    },
+    "cancel": "Cancel at the end",
+    "cancelTitle": "Cancel subscription",
+    "cancelMessage": "The subscription of {{customer}} runs for another 30 days and ends then.",
+    "canceled": "Subscription cancelled.",
+    "cancelImmediate": "End immediately",
+    "cancelImmediateTitle": "End subscription immediately",
+    "cancelImmediateMessage": "The subscription of {{customer}} ends at once. Nothing is refunded and there is no way back.",
+    "endedNow": "Subscription ended.",
+    "created": "Subscription created.",
+    "dialog": {
+      "title": "New subscription",
+      "intro": "The subscription starts at once and ends after the chosen term.",
+      "customerHint": "Only customers that already exist can hold a subscription.",
+      "noPlans": "Create a plan first.",
+      "submit": "Create"
     }
   },
   "users": {
