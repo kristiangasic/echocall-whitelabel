@@ -24,7 +24,9 @@
     "check:table-labels": "node scripts/check-table-labels.mjs",
     "check:table-wrap": "node scripts/check-table-wrap.mjs",
     "check:dialog-submit": "node scripts/check-dialog-submit.mjs",
-    "check": "npm run check:vendor-neutral && npm run check:white-label && npm run check:paginator-intl && npm run check:table-labels && npm run check:table-wrap && npm run check:dialog-submit",
+    "check:icons": "node scripts/check-icons.mjs",
+    "check": "npm run check:vendor-neutral && npm run check:white-label && npm run check:paginator-intl && npm run check:table-labels && npm run check:table-wrap && npm run check:dialog-submit && npm run check:icons",
+    "icons:build": "python scripts/build-icon-font.py",
     "format": "prettier --write ."
   },
   "devDependencies": {

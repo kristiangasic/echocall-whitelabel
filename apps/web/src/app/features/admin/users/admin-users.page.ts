@@ -127,7 +127,7 @@ import { UserDialogComponent, type UserDialogData, type UserDialogResult } from 
           }
           @if (user.twoFactorEnabled && user.id !== myId()) {
             <button mat-menu-item type="button" (click)="clearTwoFactor(user)">
-              <mat-icon>shield_lock</mat-icon>
+              <mat-icon>remove_moderator</mat-icon>
               <span>{{ t('admin.users.clearTwoFactor') }}</span>
             </button>
           }
