@@ -9,6 +9,20 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
   </head>
   <body>
+    <!--
+      A font is only fetched once something on the page is set in it, and the
+      icons are drawn by the application, so on a slow phone the icon file was
+      asked for two seconds after the stylesheet that names it and arrived a
+      second behind the text it belongs to. One glyph, drawn behind the page in
+      no space at all, has the browser ask for the file while the scripts are
+      still on their way.
+    -->
+    <span
+      class="material-icons"
+      aria-hidden="true"
+      style="position: fixed; top: 0; left: 0; z-index: -1; font-size: 1px; opacity: 0"
+      >menu</span
+    >
     <app-root></app-root>
   </body>
 </html>
