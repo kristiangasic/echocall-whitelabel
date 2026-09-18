@@ -32,6 +32,10 @@ import {
 
 const DEFAULT_PER_PAGE = 25;
 
+/** How far the customer list is walked when one customer has to be found in it. */
+const LIST_PER_PAGE = 100;
+const LIST_PAGES = 20;
+
 /** The two kinds of consumption the service meters; anything else is shown as it comes. */
 const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
 
@@ -414,30 +418,63 @@ export class AdminCustomerDetailPage implements OnInit {
   async load(): Promise<void> {
     this.loading.set(true);
     this.missing.set(false);
+    const customerId = this.id();
+
+    let customer: ResellerCustomerDetail | null;
     try {
-      const customerId = this.id();
-      const [customer, balance, usage, subscriptions] = await Promise.all([
-        firstValueFrom(this.hub.get<ResellerCustomerDetail>(`/resellers/customers/${customerId}`)),
-        firstValueFrom(this.hub.get<ResellerCustomerBalance>(`/resellers/customers/${customerId}/balance`)),
-        firstValueFrom(this.hub.get<ResellerCustomerUsage>(`/resellers/customers/${customerId}/usage`)),
-        firstValueFrom(
-          this.hub.get<{ data: ResellerCustomerSubscription[] }>(
-            `/resellers/customers/${customerId}/subscriptions`,
-          ),
-        ),
-      ]);
-      this.customer.set(customer);
-      this.balance.set(balance.balance);
-      this.usage.set(usage);
-      this.subscriptions.set(subscriptions.data ?? []);
+      customer = await firstValueFrom(
+        this.hub.get<ResellerCustomerDetail>(`/resellers/customers/${customerId}`),
+      );
     } catch (err) {
-      if (readApiError(err).status === 404) this.missing.set(true);
-      else this.notify.apiError(err);
+      const error = readApiError(err);
+      // A service release that does not answer the single-customer route at
+      // all reads as 404 here, exactly like a customer who is not ours. The
+      // list knows both apart: it holds every customer this portal may see.
+      if (error.status === 404) customer = await this.findInList(customerId);
+      else {
+        this.notify.apiError(err);
+        this.loading.set(false);
+        return;
+      }
+    }
+
+    if (!customer) {
+      this.missing.set(true);
       this.loading.set(false);
       return;
     }
+    this.customer.set(customer);
+
+    // The wallet, the consumption and the subscriptions are three separate
+    // questions: one the service cannot answer leaves the rest standing.
+    const [balance, usage, subscriptions] = await Promise.allSettled([
+      firstValueFrom(this.hub.get<ResellerCustomerBalance>(`/resellers/customers/${customerId}/balance`)),
+      firstValueFrom(this.hub.get<ResellerCustomerUsage>(`/resellers/customers/${customerId}/usage`)),
+      firstValueFrom(
+        this.hub.get<{ data: ResellerCustomerSubscription[] }>(
+          `/resellers/customers/${customerId}/subscriptions`,
+        ),
+      ),
+    ]);
+    if (balance.status === 'fulfilled') this.balance.set(balance.value.balance);
+    if (usage.status === 'fulfilled') this.usage.set(usage.value);
+    if (subscriptions.status === 'fulfilled') this.subscriptions.set(subscriptions.value.data ?? []);
+
     this.loading.set(false);
     await this.loadTransactions();
+  }
+
+  /** Walks the customer list for one customer, newest link first. */
+  private async findInList(customerId: number): Promise<ResellerCustomerDetail | null> {
+    for (let page = 1; page <= LIST_PAGES; page++) {
+      const answer = await firstValueFrom(
+        this.hub.page<ResellerCustomerDetail>('/resellers/customers', { page, perPage: LIST_PER_PAGE }),
+      );
+      const row = answer.data.find((entry) => entry.userId === customerId);
+      if (row) return row;
+      if (answer.data.length < LIST_PER_PAGE) return null;
+    }
+    return null;
   }
 
   async loadTransactions(): Promise<void> {

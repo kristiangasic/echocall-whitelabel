@@ -100,9 +100,15 @@ describe('AdminCustomerDetailPage', () => {
 
   afterEach(() => http.verify());
 
-  /** Answers the four calls the page opens with, then the paged transactions. */
+  /** Answers the customer itself, then the three calls that follow it, then
+   *  the paged transactions. The three only leave once the customer is here. */
   async function answerLoad(parts: Parts = {}) {
     http.expectOne('/api/admin/hub/resellers/customers/501').flush(CUSTOMER);
+    await settle();
+    return answerParts(parts);
+  }
+
+  async function answerParts(parts: Parts = {}) {
     http
       .expectOne('/api/admin/hub/resellers/customers/501/balance')
       .flush({ balance: parts.balance ?? 42.5, email: CUSTOMER.user.email });
@@ -226,17 +232,49 @@ describe('AdminCustomerDetailPage', () => {
   it('says so when the customer is not one of ours', async () => {
     const fixture = TestBed.createComponent(AdminCustomerDetailPage);
     await fixture.whenStable();
-    for (const path of ['', '/balance', '/usage', '/subscriptions']) {
-      http
-        .expectOne(`/api/admin/hub/resellers/customers/501${path}`)
-        .flush(
-          { error: { code: 'not_found', message: 'Customer not found' } },
-          { status: 404, statusText: 'Not Found' },
-        );
-    }
+    answerMissing();
+    await settle();
+    answerList([]);
     await settle();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[data-testid="missing"]')).not.toBeNull();
   });
+
+  it('takes the customer from the list when the service answers no single one', async () => {
+    const fixture = TestBed.createComponent(AdminCustomerDetailPage);
+    await fixture.whenStable();
+    answerMissing();
+    await settle();
+    const list = answerList([CUSTOMER]);
+    await settle();
+    await answerParts();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(list.params.get('perPage')).toBe('100');
+    expect(fixture.nativeElement.querySelector('[data-testid="missing"]')).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('linked@example.com');
+  });
+
+  /** The service does not know this route, which reads exactly like a 404. */
+  function answerMissing() {
+    http
+      .expectOne('/api/admin/hub/resellers/customers/501')
+      .flush(
+        { error: { code: 'not_found', message: 'Customer not found' } },
+        { status: 404, statusText: 'Not Found' },
+      );
+  }
+
+  function answerList(rows: unknown[]) {
+    const request = http.expectOne(
+      (req) => req.url === '/api/admin/hub/resellers/customers',
+    );
+    request.flush({
+      data: rows,
+      pagination: { page: 1, perPage: 100, total: rows.length },
+    });
+    return request.request;
+  }
 });
