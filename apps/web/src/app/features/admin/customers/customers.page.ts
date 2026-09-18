@@ -19,6 +19,7 @@ import type { AdminUser } from '../../../core/models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/confirm-dialog.component';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
+import { NO_VALUE } from '../../../shared/no-value';
 import { providePaginatorIntl } from '../../../shared/paginator-intl';
 import {
   CustomerDialogComponent,
@@ -83,6 +84,8 @@ const DEFAULT_PER_PAGE = 25;
                 <span class="status" [class]="'status status-' + row.accountStatus">
                   {{ t('admin.customers.accountStatuses.' + row.accountStatus) }}
                 </span>
+              } @else {
+                <span class="empty">{{ noValue }}</span>
               }
             </td>
           </ng-container>
@@ -229,6 +232,8 @@ export class AdminCustomersPage implements OnInit {
   private readonly logins = inject(PortalLoginService);
   private readonly language = inject(LanguageService);
 
+  /** What a cell shows where there is nothing to put in it. */
+  readonly noValue = NO_VALUE;
   readonly columns = ['customer', 'account', 'login', 'balance', 'createdAt', 'actions'];
   readonly rows = signal<CustomerRow[]>([]);
   readonly total = signal(0);

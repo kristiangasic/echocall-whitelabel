@@ -306,7 +306,9 @@
     "usage": {
       "voice_minute": "Telefonminuten",
       "chat_session": "Chat-Unterhaltungen"
-    }
+    },
+    "pickOne": "Wählen Sie einen Voice-Agenten oder einen Chatbot, um dessen Zahlen zu sehen.",
+    "nothingToPick": "Sie haben noch keinen Voice-Agenten und keinen Chatbot."
   },
   "integrations": {
     "title": "Integrationen",
@@ -404,7 +406,8 @@
     "empty": "Keine offenen Chats.",
     "selectHint": "Wählen Sie einen Chat aus, um ihn zu lesen.",
     "noMessages": "Noch keine Nachrichten.",
-    "reply": "Antwort"
+    "reply": "Antwort",
+    "emptyHint": "Ein Chat, den einer Ihrer Chatbots gerade führt, erscheint hier, und Sie können selbst übernehmen."
   },
   "campaigns": {
     "title": "Kampagnen",

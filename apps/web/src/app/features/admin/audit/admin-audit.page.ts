@@ -10,6 +10,7 @@ import { ApiService } from '../../../core/api/api.service';
 import type { AuditEntry, Page } from '../../../core/models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
+import { NO_VALUE } from '../../../shared/no-value';
 import { providePaginatorIntl } from '../../../shared/paginator-intl';
 import { HubActivityComponent } from './hub-activity.component';
 
@@ -61,6 +62,8 @@ import { HubActivityComponent } from './hub-activity.component';
                   <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.target')">
                     @if (row.targetType) {
                       {{ row.targetType }}{{ row.targetId ? ' #' + row.targetId : '' }}
+                    } @else {
+                      <span class="empty">{{ noValue }}</span>
                     }
                   </td>
                 </ng-container>
@@ -69,13 +72,15 @@ import { HubActivityComponent } from './hub-activity.component';
                   <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.details')">
                     @if (row.details) {
                       <code class="details" [matTooltip]="details(row)">{{ details(row) }}</code>
+                    } @else {
+                      <span class="empty">{{ noValue }}</span>
                     }
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="ip">
                   <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.ip') }}</th>
                   <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.ip')" class="nowrap">
-                    {{ row.ip ?? '' }}
+                    {{ row.ip ?? noValue }}
                   </td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="columns"></tr>
@@ -119,7 +124,7 @@ import { HubActivityComponent } from './hub-activity.component';
     }
     .details {
       display: inline-block;
-      max-width: 320px;
+      max-width: 200px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -135,6 +140,8 @@ export class AdminAuditPage implements OnInit {
   private readonly api = inject(ApiService);
   private readonly notify = inject(NotifyService);
 
+  /** What a cell shows where there is nothing to put in it. */
+  readonly noValue = NO_VALUE;
   readonly columns = ['createdAt', 'actor', 'action', 'target', 'details', 'ip'];
   readonly page = signal<Page<AuditEntry>>({ data: [], meta: { page: 1, limit: 50, total: 0 } });
   readonly loading = signal(false);

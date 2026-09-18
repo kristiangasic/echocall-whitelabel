@@ -36,7 +36,8 @@
     },
     "tickets": {
       "title": "Tickets",
-      "open": "Tickets ouverts"
+      "open": "Tickets ouverts",
+      "hint": "En attente d'une réponse."
     },
     "unavailable": "Le service n'a pas fourni ces chiffres pour le moment."
   },
@@ -308,7 +309,11 @@
       "revenue": "Chiffre d'affaires",
       "salesHint": "Toutes les écritures, y compris annulées.",
       "revenueHint": "Ventes terminées uniquement.",
-      "unavailable": "Indisponible."
+      "unavailable": "Indisponible.",
+      "revenueBy": {
+        "voice_minutes": "Chiffre d'affaires minutes vocales",
+        "chat_conversations": "Chiffre d'affaires conversations de chat"
+      }
     },
     "packages": {
       "title": "Packs proposés",

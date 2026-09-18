@@ -131,36 +131,42 @@ interface DailyResponse {
           <mat-card-title>{{ t('user.analytics.breakdown') }}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <div class="pickers">
-            <mat-form-field appearance="outline" subscriptSizing="dynamic">
-              <mat-label>{{ t('nav.agents') }}</mat-label>
-              <mat-select
-                [ngModel]="agentId()"
-                (ngModelChange)="selectAgent($event)"
-                data-testid="analytics-agent"
-              >
-                <mat-option [value]="null">{{ t('user.analytics.noSelection') }}</mat-option>
-                @for (agent of agents(); track agent.id) {
-                  <mat-option [value]="agent.id">{{ agent.name }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="outline" subscriptSizing="dynamic">
-              <mat-label>{{ t('nav.chatbots') }}</mat-label>
-              <mat-select
-                [ngModel]="chatbotId()"
-                (ngModelChange)="selectChatbot($event)"
-                data-testid="analytics-chatbot"
-              >
-                <mat-option [value]="null">{{ t('user.analytics.noSelection') }}</mat-option>
-                @for (chatbot of chatbots(); track chatbot.id) {
-                  <mat-option [value]="chatbot.id">{{ chatbot.name }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
+          @if (agents().length || chatbots().length) {
+            <div class="pickers">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{ t('nav.agents') }}</mat-label>
+                <mat-select
+                  [ngModel]="agentId()"
+                  (ngModelChange)="selectAgent($event)"
+                  data-testid="analytics-agent"
+                >
+                  <mat-option [value]="null">{{ t('user.analytics.noSelection') }}</mat-option>
+                  @for (agent of agents(); track agent.id) {
+                    <mat-option [value]="agent.id">{{ agent.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{ t('nav.chatbots') }}</mat-label>
+                <mat-select
+                  [ngModel]="chatbotId()"
+                  (ngModelChange)="selectChatbot($event)"
+                  data-testid="analytics-chatbot"
+                >
+                  <mat-option [value]="null">{{ t('user.analytics.noSelection') }}</mat-option>
+                  @for (chatbot of chatbots(); track chatbot.id) {
+                    <mat-option [value]="chatbot.id">{{ chatbot.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+          }
 
-          @if (breakdown(); as stats) {
+          @if (!agents().length && !chatbots().length) {
+            <p class="hint" data-testid="analytics-nothing-to-pick">
+              {{ t('user.analytics.nothingToPick') }}
+            </p>
+          } @else if (breakdown(); as stats) {
             <dl class="facts" data-testid="analytics-breakdown">
               <dt>{{ t('user.analytics.total') }}</dt>
               <dd>{{ stats.totalCalls ?? 0 }}</dd>
@@ -177,6 +183,8 @@ interface DailyResponse {
             <p class="hint" data-testid="analytics-breakdown-empty">
               {{ t('user.analytics.noActivity') }}
             </p>
+          } @else {
+            <p class="hint" data-testid="analytics-pick-one">{{ t('user.analytics.pickOne') }}</p>
           }
         </mat-card-content>
       </mat-card>

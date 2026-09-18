@@ -100,7 +100,7 @@ import { ImportNumberDialogComponent, type ImportNumberResult } from './import-n
           </table>
         </div>
       } @else {
-        <p class="empty" data-testid="available-empty">{{ t('admin.numbers.empty') }}</p>
+        <p class="empty empty-panel" data-testid="available-empty">{{ t('admin.numbers.empty') }}</p>
       }
 
       <h2 class="section">{{ t('admin.numbers.tabs.assigned') }}</h2>
@@ -154,7 +154,9 @@ import { ImportNumberDialogComponent, type ImportNumberResult } from './import-n
           </table>
         </div>
       } @else {
-        <p class="empty" data-testid="assigned-empty">{{ t('admin.numbers.emptyAssigned') }}</p>
+        <p class="empty empty-panel" data-testid="assigned-empty">
+          {{ t('admin.numbers.emptyAssigned') }}
+        </p>
       }
     </ng-container>
   `,
@@ -177,10 +179,6 @@ import { ImportNumberDialogComponent, type ImportNumberResult } from './import-n
     }
     .nowrap {
       white-space: nowrap;
-    }
-    .empty {
-      padding: 16px 0;
-      color: var(--mat-sys-on-surface-variant);
     }
   `,
 })

@@ -306,7 +306,9 @@
     "usage": {
       "voice_minute": "Call minutes",
       "chat_session": "Chat conversations"
-    }
+    },
+    "pickOne": "Pick a voice agent or a chatbot to see its own figures.",
+    "nothingToPick": "You have no voice agent and no chatbot yet."
   },
   "integrations": {
     "title": "Integrations",
@@ -404,7 +406,8 @@
     "empty": "No open chats.",
     "selectHint": "Pick a chat to read it.",
     "noMessages": "No messages yet.",
-    "reply": "Reply"
+    "reply": "Reply",
+    "emptyHint": "A chat one of your chatbots is having right now shows up here, and you can step in and answer yourself."
   },
   "campaigns": {
     "title": "Campaigns",

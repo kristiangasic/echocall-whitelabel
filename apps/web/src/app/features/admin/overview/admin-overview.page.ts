@@ -144,7 +144,7 @@ interface OpenTickets {
             <span class="stat-label">{{ t('admin.overview.tickets.open') }}</span>
             @if (openTickets(); as tickets) {
               <span class="stat-value">{{ tickets.count }}{{ tickets.partial ? '+' : '' }}</span>
-              <p class="stat-foot">{{ t('admin.overview.tickets.title') }}</p>
+              <p class="stat-foot">{{ t('admin.overview.tickets.hint') }}</p>
             } @else {
               <span class="stat-value">&ndash;</span>
               <p class="stat-foot">{{ t('admin.overview.unavailable') }}</p>

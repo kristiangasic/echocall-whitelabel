@@ -84,7 +84,7 @@ const PURCHASE_LIMIT = 50;
         </div>
         @for (type of types; track type) {
           <div class="stat">
-            <span class="stat-label">{{ t('admin.addons.types.' + type) }}</span>
+            <span class="stat-label">{{ t('admin.addons.stats.revenueBy.' + type) }}</span>
             <span class="stat-value">{{ stats() ? money(byType(type).revenue) : '–' }}</span>
             <p class="stat-foot">
               {{ t('admin.addons.stats.sales') }}: {{ stats() ? byType(type).count : '–' }}

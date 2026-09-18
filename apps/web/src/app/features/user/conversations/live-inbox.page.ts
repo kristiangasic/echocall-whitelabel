@@ -42,74 +42,84 @@ const POLL_INTERVAL_MS = 5000;
         <h1 class="page-title">{{ t('user.inbox.title') }}</h1>
       </div>
 
-      <div class="inbox">
-        <mat-card appearance="outlined" class="threads">
+      @if (loaded() && !threads().length) {
+        <mat-card appearance="outlined" class="nothing" data-testid="inbox-nothing">
           <mat-card-content>
-            <mat-nav-list data-testid="inbox-threads">
-              @for (thread of threads(); track thread.id) {
-                <a
-                  mat-list-item
-                  href="#"
-                  (click)="select(thread, $event)"
-                  [class.selected]="thread.id === selectedId()"
-                >
-                  <span matListItemTitle>{{ title(thread) }}</span>
-                  <span matListItemLine>
-                    {{ t('user.conversations.statuses.' + thread.status) }} &middot;
-                    {{ thread.lastActivityAt || thread.startedAt | date: 'short' }}
-                  </span>
-                </a>
-              } @empty {
-                <p class="hint">{{ t('user.inbox.empty') }}</p>
-              }
-            </mat-nav-list>
+            <mat-icon>forum</mat-icon>
+            <p class="hint">{{ t('user.inbox.empty') }}</p>
+            <p class="hint">{{ t('user.inbox.emptyHint') }}</p>
           </mat-card-content>
         </mat-card>
-
-        <mat-card appearance="outlined" class="thread">
-          @if (selected(); as thread) {
-            <mat-card-header>
-              <mat-card-title>{{ title(thread) }}</mat-card-title>
-              <mat-card-subtitle>{{ thread.visitorLocation || '' }}</mat-card-subtitle>
-            </mat-card-header>
+      } @else {
+        <div class="inbox">
+          <mat-card appearance="outlined" class="threads">
             <mat-card-content>
-              <ol class="messages" data-testid="inbox-messages">
-                @for (message of messages(); track message.id) {
-                  <li [class]="'turn turn-' + message.senderType">
-                    <span class="who">{{ senderLabel(t, message) }}</span>
-                    <p class="what">{{ message.message }}</p>
-                    <time>{{ message.createdAt | date: 'short' }}</time>
-                  </li>
+              <mat-nav-list data-testid="inbox-threads">
+                @for (thread of threads(); track thread.id) {
+                  <a
+                    mat-list-item
+                    href="#"
+                    (click)="select(thread, $event)"
+                    [class.selected]="thread.id === selectedId()"
+                  >
+                    <span matListItemTitle>{{ title(thread) }}</span>
+                    <span matListItemLine>
+                      {{ t('user.conversations.statuses.' + thread.status) }} &middot;
+                      {{ thread.lastActivityAt || thread.startedAt | date: 'short' }}
+                    </span>
+                  </a>
                 } @empty {
-                  <p class="hint">{{ t('user.inbox.noMessages') }}</p>
+                  <p class="hint">{{ t('user.inbox.empty') }}</p>
                 }
-              </ol>
-              <form class="reply" (ngSubmit)="send()">
-                <mat-form-field appearance="outline" class="grow">
-                  <mat-label>{{ t('user.inbox.reply') }}</mat-label>
-                  <input matInput name="reply" [(ngModel)]="reply" data-testid="inbox-reply" />
-                </mat-form-field>
-                <button mat-flat-button type="submit" [disabled]="!reply.trim() || busy()">
-                  {{ t('actions.send') }}
-                </button>
-                <button
-                  mat-stroked-button
-                  type="button"
-                  (click)="closeThread()"
-                  [disabled]="busy()"
-                  data-testid="inbox-close"
-                >
-                  {{ t('user.conversations.close') }}
-                </button>
-              </form>
+              </mat-nav-list>
             </mat-card-content>
-          } @else {
-            <mat-card-content class="blank">
-              <p class="hint">{{ t('user.inbox.selectHint') }}</p>
-            </mat-card-content>
-          }
-        </mat-card>
-      </div>
+          </mat-card>
+
+          <mat-card appearance="outlined" class="thread">
+            @if (selected(); as thread) {
+              <mat-card-header>
+                <mat-card-title>{{ title(thread) }}</mat-card-title>
+                <mat-card-subtitle>{{ thread.visitorLocation || '' }}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <ol class="messages" data-testid="inbox-messages">
+                  @for (message of messages(); track message.id) {
+                    <li [class]="'turn turn-' + message.senderType">
+                      <span class="who">{{ senderLabel(t, message) }}</span>
+                      <p class="what">{{ message.message }}</p>
+                      <time>{{ message.createdAt | date: 'short' }}</time>
+                    </li>
+                  } @empty {
+                    <p class="hint">{{ t('user.inbox.noMessages') }}</p>
+                  }
+                </ol>
+                <form class="reply" (ngSubmit)="send()">
+                  <mat-form-field appearance="outline" class="grow">
+                    <mat-label>{{ t('user.inbox.reply') }}</mat-label>
+                    <input matInput name="reply" [(ngModel)]="reply" data-testid="inbox-reply" />
+                  </mat-form-field>
+                  <button mat-flat-button type="submit" [disabled]="!reply.trim() || busy()">
+                    {{ t('actions.send') }}
+                  </button>
+                  <button
+                    mat-stroked-button
+                    type="button"
+                    (click)="closeThread()"
+                    [disabled]="busy()"
+                    data-testid="inbox-close"
+                  >
+                    {{ t('user.conversations.close') }}
+                  </button>
+                </form>
+              </mat-card-content>
+            } @else {
+              <mat-card-content class="blank">
+                <p class="hint">{{ t('user.inbox.selectHint') }}</p>
+              </mat-card-content>
+            }
+          </mat-card>
+        </div>
+      }
     </ng-container>
   `,
   styles: `
@@ -128,6 +138,21 @@ const POLL_INTERVAL_MS = 5000;
     }
     .inbox > mat-card > mat-card-content {
       flex: 1;
+    }
+    /* No chat has ever come in, so the split workplace would be two empty
+       boxes. One card says what will appear here instead. */
+    .nothing mat-card-content {
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      padding: 48px 24px;
+      text-align: center;
+    }
+    .nothing mat-icon {
+      color: var(--mat-sys-on-surface-variant);
+    }
+    .nothing .hint {
+      margin: 0;
     }
     /* Nothing to read yet, so the sentence sits in the middle of the space it
        is waiting to fill. */
@@ -200,6 +225,8 @@ export class LiveInboxPage implements OnInit {
   readonly messages = signal<LiveMessage[]>([]);
   readonly selectedId = signal<number | null>(null);
   readonly busy = signal(false);
+  /** The list is only known to be empty once the service has answered once. */
+  readonly loaded = signal(false);
 
   readonly selected = computed(
     () => this.threads().find((thread) => thread.id === this.selectedId()) ?? null,
@@ -266,6 +293,7 @@ export class LiveInboxPage implements OnInit {
         this.hub.page<LiveConversation>('/conversations', { type: 'chat', perPage: 50 }),
       );
       this.threads.set(result.data.filter((thread) => thread.status !== 'closed'));
+      this.loaded.set(true);
       if (this.selectedId() !== null) await this.loadMessages();
     } catch (err) {
       this.notify.apiError(err);

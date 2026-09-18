@@ -101,6 +101,18 @@ body {
   margin: 0 0 12px;
 }
 
+// A card subtitle explains the title above it. Material gives it the title
+// font, which makes the explanation the loudest line in the card, so it is set
+// back to running text.
+mat-card {
+  --mat-card-subtitle-text-color: var(--mat-sys-on-surface-variant);
+  --mat-card-subtitle-text-font: var(--mat-sys-body-medium-font);
+  --mat-card-subtitle-text-line-height: var(--mat-sys-body-medium-line-height);
+  --mat-card-subtitle-text-size: var(--mat-sys-body-medium-size);
+  --mat-card-subtitle-text-tracking: var(--mat-sys-body-medium-tracking);
+  --mat-card-subtitle-text-weight: var(--mat-sys-body-medium-weight);
+}
+
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--mat-sys-outline-variant);
@@ -167,6 +179,9 @@ mat-dialog-content .table-wrap {
         grid-template-columns: minmax(6rem, 40%) 1fr;
         gap: 12px;
         align-items: baseline;
+        // A value is a grid item here, and a stretched one would blow a status
+        // chip up to the width of the card.
+        justify-items: start;
       }
 
       &[data-label]::before {
@@ -490,6 +505,17 @@ a.stat:focus-visible {
 // What a page says when it has nothing to show yet.
 .empty {
   color: var(--mat-sys-on-surface-variant);
+}
+
+// The same sentence where it stands for a whole section rather than sitting
+// inside a card: it keeps the frame the table would have drawn, so it reads as
+// an empty list and not as a line that lost its surroundings.
+.empty-panel {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  background: var(--mat-sys-surface);
+  padding: 16px;
+  margin: 0;
 }
 
 // A link in a table is a row that opens, so it takes the accent colour and

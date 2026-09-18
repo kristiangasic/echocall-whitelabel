@@ -15,6 +15,7 @@ import { NotifyService } from '../../../core/notify/notify.service';
 import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/confirm-dialog.component';
 import { LinkDialogComponent, type LinkDialogData } from '../../../shared/link-dialog.component';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
+import { NO_VALUE } from '../../../shared/no-value';
 import { UserDialogComponent, type UserDialogData, type UserDialogResult } from './user-dialog.component';
 
 @Component({
@@ -75,13 +76,13 @@ import { UserDialogComponent, type UserDialogData, type UserDialogResult } from 
           <ng-container matColumnDef="customer">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.customerId') }}</th>
             <td mat-cell *matCellDef="let u" [attr.data-label]="t('fields.customerId')">
-              {{ u.echocallCustomerId ?? '' }}
+              {{ u.echocallCustomerId ?? noValue }}
             </td>
           </ng-container>
           <ng-container matColumnDef="lastLogin">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.users.lastLogin') }}</th>
             <td mat-cell *matCellDef="let u" [attr.data-label]="t('admin.users.lastLogin')">
-              {{ u.lastLoginAt | localDate }}
+              {{ (u.lastLoginAt | localDate) || noValue }}
             </td>
           </ng-container>
           <ng-container matColumnDef="actions">
@@ -182,6 +183,8 @@ export class AdminUsersPage implements OnInit {
   private readonly branding = inject(BrandingService);
   private readonly auth = inject(AuthStore);
 
+  /** What a cell shows where there is nothing to put in it. */
+  readonly noValue = NO_VALUE;
   readonly columns = ['email', 'role', 'status', 'customer', 'lastLogin', 'actions'];
   readonly users = signal<AdminUser[]>([]);
   readonly loading = signal(false);
