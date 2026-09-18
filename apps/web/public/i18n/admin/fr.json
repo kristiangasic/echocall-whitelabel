@@ -12,6 +12,7 @@
       "recheck": "Vérifier maintenant"
     },
     "users": {
+      "all": "Total",
       "title": "Comptes utilisateurs",
       "total": "{{count}} comptes au total",
       "manage": "Gérer les utilisateurs"

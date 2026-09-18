@@ -96,7 +96,7 @@ const INVOICE_COLUMNS = ['number', 'issued', 'total', 'status', 'download'];
         </mat-card>
       </div>
 
-      <h2 class="section">{{ t('user.billing.invoices.title') }}</h2>
+      <h2 class="section-title">{{ t('user.billing.invoices.title') }}</h2>
       <div class="table-wrap">
         <table mat-table [dataSource]="invoices()" data-testid="invoices-table">
           <ng-container matColumnDef="number">
@@ -146,7 +146,7 @@ const INVOICE_COLUMNS = ['number', 'issued', 'total', 'status', 'download'];
         <p class="empty">{{ t('user.billing.invoices.empty') }}</p>
       }
 
-      <h2 class="section">{{ t('user.billing.transactions.title') }}</h2>
+      <h2 class="section-title">{{ t('user.billing.transactions.title') }}</h2>
       <div class="table-wrap">
         <table mat-table [dataSource]="transactions()" data-testid="transactions-table">
           <ng-container matColumnDef="booked">
@@ -197,9 +197,15 @@ const INVOICE_COLUMNS = ['number', 'issued', 'total', 'status', 'download'];
   styles: `
     .tiles {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
-      align-items: start;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      align-items: stretch;
+      max-width: 960px;
+    }
+    @media (max-width: 699px) {
+      .tiles {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
     .figure {
       font: var(--mat-sys-headline-small);
@@ -212,8 +218,7 @@ const INVOICE_COLUMNS = ['number', 'issued', 'total', 'status', 'download'];
       color: var(--mat-sys-on-surface-variant);
       margin: 4px 0 0;
     }
-    .section {
-      font: var(--mat-sys-title-medium);
+    .section-title {
       margin: 32px 0 12px;
     }
     table {

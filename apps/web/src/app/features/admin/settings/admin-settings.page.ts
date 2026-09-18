@@ -59,12 +59,16 @@ const ROUTE = '/admin/settings/registration';
   template: `
     <ng-container *transloco="let t">
       <h1 class="page-title">{{ t('admin.settings.title') }}</h1>
-      <mat-tab-group [selectedIndex]="tab()" (selectedIndexChange)="onTab($event)">
+      <mat-tab-group
+        [mat-stretch-tabs]="false"
+        [selectedIndex]="tab()"
+        (selectedIndexChange)="onTab($event)"
+      >
         <mat-tab [label]="t('admin.settings.branding.tab')">
           <form [formGroup]="brandingForm" (ngSubmit)="saveBranding()" novalidate class="tab-body">
             <p class="intro">{{ t('admin.settings.branding.intro') }}</p>
             <div class="settings-grid">
-              <div>
+              <div class="panel">
                 <mat-form-field appearance="outline" class="full">
                   <mat-label>{{ t('admin.settings.branding.productName') }}</mat-label>
                   <input matInput formControlName="productName" maxlength="60" data-testid="product-name" />
@@ -152,6 +156,16 @@ const ROUTE = '/admin/settings/registration';
                     }
                   </mat-select>
                 </mat-form-field>
+                <div class="form-actions">
+                  <button
+                    mat-flat-button
+                    type="submit"
+                    [disabled]="savingBranding()"
+                    data-testid="save-branding"
+                  >
+                    {{ t('actions.save') }}
+                  </button>
+                </div>
               </div>
 
               <aside class="preview" [style]="previewStyle()" aria-hidden="true">
@@ -173,9 +187,6 @@ const ROUTE = '/admin/settings/registration';
                 </div>
               </aside>
             </div>
-            <button mat-flat-button type="submit" [disabled]="savingBranding()" data-testid="save-branding">
-              {{ t('actions.save') }}
-            </button>
           </form>
         </mat-tab>
 
@@ -197,7 +208,7 @@ const ROUTE = '/admin/settings/registration';
                 }}
               </p>
             }
-            <form [formGroup]="smtpForm" (ngSubmit)="saveSmtp()" novalidate>
+            <form [formGroup]="smtpForm" (ngSubmit)="saveSmtp()" novalidate class="panel form-max">
               <div class="row">
                 <mat-form-field appearance="outline">
                   <mat-label>{{ t('admin.settings.mail.host') }}</mat-label>
@@ -243,7 +254,7 @@ const ROUTE = '/admin/settings/registration';
                   <mat-error>{{ t(e.key, e.params) }}</mat-error>
                 }
               </mat-form-field>
-              <div class="actions">
+              <div class="form-actions">
                 <button mat-flat-button type="submit" [disabled]="savingSmtp()" data-testid="save-smtp">
                   {{ t('actions.save') }}
                 </button>
@@ -256,7 +267,7 @@ const ROUTE = '/admin/settings/registration';
             </form>
 
             <h2 class="section-title">{{ t('admin.settings.mail.test') }}</h2>
-            <form [formGroup]="testForm" (ngSubmit)="sendTest()" novalidate class="test-row">
+            <form [formGroup]="testForm" (ngSubmit)="sendTest()" novalidate class="panel test-row">
               <mat-form-field appearance="outline" class="full">
                 <mat-label>{{ t('admin.settings.mail.testTo') }}</mat-label>
                 <input matInput type="email" formControlName="to" />
@@ -282,7 +293,12 @@ const ROUTE = '/admin/settings/registration';
                   {{ t('admin.settings.registration.mailRequired') }}
                 </p>
               }
-              <form [formGroup]="registrationForm" (ngSubmit)="saveRegistration()" novalidate>
+              <form
+                [formGroup]="registrationForm"
+                (ngSubmit)="saveRegistration()"
+                novalidate
+                class="panel form-max"
+              >
                 <mat-slide-toggle
                   formControlName="selfServiceEnabled"
                   class="toggle"
@@ -290,7 +306,7 @@ const ROUTE = '/admin/settings/registration';
                   >{{ t('admin.settings.registration.selfService') }}</mat-slide-toggle
                 >
                 <p class="hint">{{ t('admin.settings.registration.selfServiceHint') }}</p>
-                <div class="actions">
+                <div class="form-actions">
                   <button
                     mat-flat-button
                     type="submit"
@@ -333,7 +349,8 @@ const ROUTE = '/admin/settings/registration';
     .settings-grid {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
-      gap: 32px;
+      gap: 24px;
+      align-items: start;
       margin-bottom: 16px;
     }
     @media (max-width: 800px) {
@@ -347,6 +364,13 @@ const ROUTE = '/admin/settings/registration';
       align-items: center;
       gap: 12px;
       flex-wrap: wrap;
+    }
+    /* The field is the flexible half of the row: full width would push the
+       swatch onto a line of its own. */
+    .color-row mat-form-field {
+      flex: 1;
+      min-width: 180px;
+      width: auto;
     }
     .logo-preview {
       max-height: 48px;
@@ -419,17 +443,19 @@ const ROUTE = '/admin/settings/registration';
       flex-wrap: wrap;
     }
     .section-title {
-      font: var(--mat-sys-title-medium);
       margin: 32px 0 8px;
     }
     .test-row {
       display: flex;
       gap: 12px;
       align-items: flex-start;
-      max-width: 560px;
+      max-width: 640px;
+    }
+    .test-row mat-form-field {
+      flex: 1;
     }
     .test-row button {
-      margin-top: 4px;
+      margin-top: 8px;
     }
   `,
 })

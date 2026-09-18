@@ -49,7 +49,7 @@ const SUPPORT_ROLES = ['admin', 'reseller'];
       @if (ticket(); as ticketDetail) {
         <mat-card appearance="outlined">
           <mat-card-content>
-            <dl class="facts">
+            <dl class="facts inline">
               <div>
                 <dt>{{ t('fields.status') }}</dt>
                 <dd data-testid="ticket-status">
@@ -120,20 +120,6 @@ const SUPPORT_ROLES = ['admin', 'reseller'];
     </ng-container>
   `,
   styles: `
-    .facts {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 16px;
-      margin: 0;
-    }
-    .facts dt {
-      color: var(--mat-sys-on-surface-variant);
-      font: var(--mat-sys-body-small);
-    }
-    .facts dd {
-      margin: 4px 0 0;
-      font: var(--mat-sys-title-small);
-    }
     .description {
       margin: 16px 0 0;
       white-space: pre-wrap;

@@ -54,47 +54,40 @@ const WINDOWS = [7, 30, 90] as const;
         <mat-progress-bar mode="indeterminate" />
       }
 
-      <div class="tiles" data-testid="analytics-tiles">
-        <mat-card appearance="outlined">
-          <mat-card-content>
-            <span class="tile-label">{{ t('admin.analytics.chatSessions') }}</span>
-            <strong class="tile-value">{{ number(usage()?.totalChatSessions ?? 0) }}</strong>
-          </mat-card-content>
-        </mat-card>
-        <mat-card appearance="outlined">
-          <mat-card-content>
-            <span class="tile-label">{{ t('admin.analytics.voiceMinutes') }}</span>
-            <strong class="tile-value">{{ number(usage()?.totalVoiceMinutes ?? 0) }}</strong>
-          </mat-card-content>
-        </mat-card>
-        <mat-card appearance="outlined">
-          <mat-card-content>
-            <span class="tile-label">{{ t('admin.analytics.revenue') }}</span>
-            <strong class="tile-value">{{ money(usage()?.totalRevenue ?? 0) }}</strong>
-          </mat-card-content>
-        </mat-card>
-        <mat-card appearance="outlined">
-          <mat-card-content>
-            <span class="tile-label">{{ t('admin.analytics.platformCost') }}</span>
-            <strong class="tile-value">{{ money(usage()?.totalBaseCost ?? 0) }}</strong>
-          </mat-card-content>
-        </mat-card>
-        <mat-card appearance="outlined">
-          <mat-card-content>
-            <span class="tile-label">{{ t('admin.analytics.margin') }}</span>
-            <strong class="tile-value">{{ money(usage()?.totalMargin ?? 0) }}</strong>
-            <span class="tile-note">
-              {{ t('admin.analytics.marginNote', { percent: percent(revenue()?.marginPercent ?? 0) }) }}
-            </span>
-          </mat-card-content>
-        </mat-card>
+      <!--
+        Four figures, four columns, and two of them carry the line that explains
+        them: what was used on the left, what it earned on the right.
+      -->
+      <div class="stat-grid" data-testid="analytics-tiles">
+        <div class="stat">
+          <span class="stat-label">{{ t('admin.analytics.chatSessions') }}</span>
+          <span class="stat-value">{{ number(usage()?.totalChatSessions ?? 0) }}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">{{ t('admin.analytics.voiceMinutes') }}</span>
+          <span class="stat-value">{{ number(usage()?.totalVoiceMinutes ?? 0) }}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">{{ t('admin.analytics.revenue') }}</span>
+          <span class="stat-value">{{ money(usage()?.totalRevenue ?? 0) }}</span>
+          <p class="stat-foot">
+            {{ t('admin.analytics.platformCost') }}: {{ money(usage()?.totalBaseCost ?? 0) }}
+          </p>
+        </div>
+        <div class="stat">
+          <span class="stat-label">{{ t('admin.analytics.margin') }}</span>
+          <span class="stat-value">{{ money(usage()?.totalMargin ?? 0) }}</span>
+          <p class="stat-foot">
+            {{ t('admin.analytics.marginNote', { percent: percent(revenue()?.marginPercent ?? 0) }) }}
+          </p>
+        </div>
       </div>
 
       @if (empty()) {
         <p class="hint" data-testid="analytics-empty">{{ t('admin.analytics.noUsage') }}</p>
       }
 
-      <div class="splits">
+      <div class="splits section">
         <mat-card appearance="outlined">
           <mat-card-header>
             <mat-card-title>{{ t('admin.analytics.revenueSplit') }}</mat-card-title>
@@ -120,36 +113,19 @@ const WINDOWS = [7, 30, 90] as const;
     .window {
       min-width: 200px;
     }
-    .tiles {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-    .tile-label {
-      display: block;
-      color: var(--mat-sys-on-surface-variant);
-      font: var(--mat-sys-label-medium);
-    }
-    .tile-value {
-      display: block;
-      font: var(--mat-sys-headline-medium);
-      font-variant-numeric: tabular-nums;
-      margin: 4px 0;
-    }
-    .tile-note {
-      color: var(--mat-sys-on-surface-variant);
-      font: var(--mat-sys-body-small);
-    }
     .splits {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
-      margin-bottom: 16px;
+    }
+    @media (max-width: 899px) {
+      .splits {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
     .hint {
       color: var(--mat-sys-on-surface-variant);
-      margin: 0 0 16px;
+      margin: 16px 0 0;
     }
   `,
 })

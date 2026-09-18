@@ -165,8 +165,14 @@ function toPrice(value: number | null | undefined): number | null {
   styles: `
     .panel {
       background: var(--mat-sys-surface-container-low);
-      border-radius: 12px;
+      border: 1px solid var(--mat-sys-outline-variant);
+      border-radius: 16px;
       padding: 24px;
+    }
+    @media (max-width: 599px) {
+      .panel {
+        padding: 16px;
+      }
     }
     .panel-title {
       font: var(--mat-sys-title-medium);
@@ -178,11 +184,18 @@ function toPrice(value: number | null | undefined): number | null {
     }
     .price-grid {
       display: grid;
-      gap: 24px;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 8px 24px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+    /* A unit price is four characters wide; the field says so. */
     .price-row mat-form-field {
       width: 100%;
+      max-width: 240px;
+    }
+    @media (max-width: 699px) {
+      .price-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
     .price-label {
       font: var(--mat-sys-title-small);
@@ -198,16 +211,35 @@ function toPrice(value: number | null | undefined): number | null {
       font: var(--mat-sys-title-small);
       margin: 8px 0 4px;
     }
+    /* Four tiers, four columns, halved and then stacked: the row is never
+       three across with a stray fourth underneath. */
     .suggestions {
       display: grid;
       gap: 12px;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       margin-bottom: 24px;
     }
+    @media (max-width: 1099px) {
+      .suggestions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 599px) {
+      .suggestions {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
     .suggestion {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
       border: 1px solid var(--mat-sys-outline-variant);
       border-radius: 12px;
-      padding: 12px;
+      padding: 14px;
+      background: var(--mat-sys-surface);
+    }
+    .suggestion button {
+      margin-top: auto;
     }
     .suggestion-name {
       font: var(--mat-sys-title-small);

@@ -12,6 +12,7 @@
       "recheck": "Check now"
     },
     "users": {
+      "all": "Total",
       "title": "User accounts",
       "total": "{{count}} accounts in total",
       "manage": "Manage users"

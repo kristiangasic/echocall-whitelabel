@@ -51,7 +51,7 @@ type ConversationDetail = AnyConversation & { messages?: ConversationTranscriptM
       @if (conversation(); as c) {
         <mat-card appearance="outlined">
           <mat-card-content>
-            <dl class="facts">
+            <dl class="facts inline">
               <div>
                 <dt>{{ t('fields.status') }}</dt>
                 <dd data-testid="conversation-status">{{ c.status || '' }}</dd>
@@ -103,20 +103,6 @@ type ConversationDetail = AnyConversation & { messages?: ConversationTranscriptM
     .head-actions {
       display: flex;
       gap: 8px;
-    }
-    .facts {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px 24px;
-      margin: 0;
-    }
-    .facts dt {
-      font: var(--mat-sys-body-small);
-      color: var(--mat-sys-on-surface-variant);
-    }
-    .facts dd {
-      margin: 2px 0 0;
-      font-weight: 500;
     }
     .transcript-card {
       margin-top: 24px;

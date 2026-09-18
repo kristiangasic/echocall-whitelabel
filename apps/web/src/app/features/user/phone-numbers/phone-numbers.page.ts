@@ -256,7 +256,9 @@ export class PhoneNumbersPage implements OnInit {
   async openPurchase(): Promise<void> {
     const result = await firstValueFrom(
       this.dialog
-        .open<PurchaseDialogComponent, undefined, PurchaseResult>(PurchaseDialogComponent)
+        .open<PurchaseDialogComponent, undefined, PurchaseResult>(PurchaseDialogComponent, {
+          panelClass: 'dialog-wide',
+        })
         .afterClosed(),
     );
     if (!result) return;

@@ -145,7 +145,7 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
           </mat-card>
         </div>
 
-        <h2 class="section">{{ t('admin.customer.subscriptions.title') }}</h2>
+        <h2 class="section-title">{{ t('admin.customer.subscriptions.title') }}</h2>
         @if (subscriptions().length) {
           <div class="table-wrap">
             <table mat-table [dataSource]="subscriptions()" data-testid="subscriptions-table">
@@ -206,7 +206,7 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
           </p>
         }
 
-        <h2 class="section">{{ t('admin.customer.transactions.title') }}</h2>
+        <h2 class="section-title">{{ t('admin.customer.transactions.title') }}</h2>
         <div class="table-wrap">
           <table mat-table [dataSource]="transactions()" data-testid="transactions-table">
             <ng-container matColumnDef="createdAt">
@@ -283,11 +283,19 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
       gap: 12px;
       flex-wrap: wrap;
     }
+    /* Two cards, so two columns: wallet on the left, what it paid for on the right. */
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
       gap: 16px;
-      margin-bottom: 24px;
+      margin-bottom: 8px;
+      max-width: 1040px;
+    }
+    @media (max-width: 899px) {
+      .cards {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
     .amount {
       font: var(--mat-sys-headline-medium);
@@ -319,9 +327,8 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
       color: var(--mat-sys-on-surface-variant);
       margin-left: 8px;
     }
-    .section {
-      font: var(--mat-sys-title-medium);
-      margin: 24px 0 8px;
+    .section-title {
+      margin: 32px 0 8px;
     }
     .numeric {
       text-align: right;

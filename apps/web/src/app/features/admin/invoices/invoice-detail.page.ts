@@ -56,7 +56,7 @@ import { LocalDatePipe } from '../../../shared/local-date.pipe';
           </span>
         </div>
 
-        <dl class="facts">
+        <dl class="facts panel">
           <div>
             <dt>{{ t('admin.invoices.detail.customer') }}</dt>
             <dd>
@@ -94,7 +94,7 @@ import { LocalDatePipe } from '../../../shared/local-date.pipe';
           }
         </dl>
 
-        <h2 class="section">{{ t('admin.invoices.detail.items') }}</h2>
+        <h2 class="section-title">{{ t('admin.invoices.detail.items') }}</h2>
         @if (d.items.length) {
           <div class="table-wrap">
             <table mat-table [dataSource]="d.items" data-testid="items-table">
@@ -176,27 +176,18 @@ import { LocalDatePipe } from '../../../shared/local-date.pipe';
     .back {
       margin-bottom: 8px;
     }
+    /* Grid and labels come from the shared .facts rules; only the frame is local. */
     .facts {
-      margin: 0 0 24px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
-    .facts dt {
-      font: var(--mat-sys-label-medium);
-      color: var(--mat-sys-on-surface-variant);
-    }
-    .facts dd {
-      margin: 4px 0 0;
+      margin-bottom: 8px;
+      max-width: 760px;
     }
     .sub {
       display: block;
       font: var(--mat-sys-body-small);
       color: var(--mat-sys-on-surface-variant);
     }
-    .section {
-      font: var(--mat-sys-title-medium);
-      margin: 24px 0 8px;
+    .section-title {
+      margin: 32px 0 8px;
     }
     .numeric {
       text-align: right;

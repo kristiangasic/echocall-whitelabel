@@ -41,7 +41,7 @@ import { conversationTitle } from '../conversations/conversation.model';
           {{ t('actions.refresh') }}
         </button>
       </div>
-      <p class="intro">{{ t('user.dashboard.welcome', { name: displayName() }) }}</p>
+      <p class="page-hint">{{ t('user.dashboard.welcome', { name: displayName() }) }}</p>
       @if (loading()) {
         <mat-progress-bar mode="indeterminate" />
       }
@@ -61,85 +61,63 @@ import { conversationTitle } from '../conversations/conversation.model';
         </mat-card>
       }
       @if (overview(); as o) {
-        <div class="tiles" data-testid="tiles">
-          <mat-card appearance="outlined">
-            <mat-card-header>
-              <mat-icon mat-card-avatar>call</mat-icon>
-              <mat-card-title>{{ t('user.dashboard.voice.title') }}</mat-card-title>
-              <mat-card-subtitle>{{ t('user.dashboard.thisPeriod') }}</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <p class="figure">{{ number(o.usage.voiceMinutesUsed) }}</p>
-              <p class="figure-label">{{ t('user.dashboard.voice.used') }}</p>
-              <!--
-                A remainder of zero is not a fact about this account: an account
-                that pays from its balance has no monthly allowance to have left
-                over, and "0 minutes left" would read as a stop sign.
-              -->
-              @if (o.limits.voiceMinutesRemaining) {
-                <p class="hint">
-                  {{ t('user.dashboard.voice.remaining', { count: number(o.limits.voiceMinutesRemaining) }) }}
-                </p>
-              }
-              @if (o.limits.plan?.voiceMinutesPerMonth; as perMonth) {
-                <p class="hint">{{ t('user.dashboard.voice.perMonth', { count: number(perMonth) }) }}</p>
-              }
-            </mat-card-content>
-          </mat-card>
+        <div class="stat-grid section" data-testid="tiles">
+          <div class="stat">
+            <span class="stat-label">{{ t('user.dashboard.voice.title') }}</span>
+            <span class="stat-value">{{ number(o.usage.voiceMinutesUsed) }}</span>
+            <p class="stat-foot">{{ t('user.dashboard.voice.used') }}</p>
+            <!--
+              A remainder of zero is not a fact about this account: an account
+              that pays from its balance has no monthly allowance to have left
+              over, and "0 minutes left" would read as a stop sign.
+            -->
+            @if (o.limits.voiceMinutesRemaining) {
+              <p class="stat-foot">
+                {{ t('user.dashboard.voice.remaining', { count: number(o.limits.voiceMinutesRemaining) }) }}
+              </p>
+            }
+            @if (o.limits.plan?.voiceMinutesPerMonth; as perMonth) {
+              <p class="stat-foot">{{ t('user.dashboard.voice.perMonth', { count: number(perMonth) }) }}</p>
+            }
+          </div>
 
-          <mat-card appearance="outlined">
-            <mat-card-header>
-              <mat-icon mat-card-avatar>chat</mat-icon>
-              <mat-card-title>{{ t('user.dashboard.chat.title') }}</mat-card-title>
-              <mat-card-subtitle>{{ t('user.dashboard.thisPeriod') }}</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <p class="figure">{{ number(o.usage.chatSessionsUsed) }}</p>
-              <p class="figure-label">{{ t('user.dashboard.chat.used') }}</p>
-              @if (o.limits.chatConversationsRemaining) {
-                <p class="hint">
-                  {{
-                    t('user.dashboard.chat.remaining', { count: number(o.limits.chatConversationsRemaining) })
-                  }}
-                </p>
-              }
-              @if (o.limits.plan?.chatConversationsPerMonth; as perMonth) {
-                <p class="hint">{{ t('user.dashboard.chat.perMonth', { count: number(perMonth) }) }}</p>
-              }
-            </mat-card-content>
-          </mat-card>
+          <div class="stat">
+            <span class="stat-label">{{ t('user.dashboard.chat.title') }}</span>
+            <span class="stat-value">{{ number(o.usage.chatSessionsUsed) }}</span>
+            <p class="stat-foot">{{ t('user.dashboard.chat.used') }}</p>
+            @if (o.limits.chatConversationsRemaining) {
+              <p class="stat-foot">
+                {{
+                  t('user.dashboard.chat.remaining', { count: number(o.limits.chatConversationsRemaining) })
+                }}
+              </p>
+            }
+            @if (o.limits.plan?.chatConversationsPerMonth; as perMonth) {
+              <p class="stat-foot">{{ t('user.dashboard.chat.perMonth', { count: number(perMonth) }) }}</p>
+            }
+          </div>
 
-          <mat-card appearance="outlined">
-            <mat-card-header>
-              <mat-icon mat-card-avatar>account_balance_wallet</mat-icon>
-              <mat-card-title>{{ t('user.dashboard.balance.title') }}</mat-card-title>
-              <mat-card-subtitle>{{ t('user.dashboard.balance.hint') }}</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <p class="figure">{{ money(o.limits.balanceEur) }}</p>
-            </mat-card-content>
-          </mat-card>
+          <div class="stat">
+            <span class="stat-label">{{ t('user.dashboard.balance.title') }}</span>
+            <span class="stat-value">{{ money(o.limits.balanceEur) }}</span>
+            <p class="stat-foot">{{ t('user.dashboard.balance.hint') }}</p>
+          </div>
 
-          <mat-card appearance="outlined">
-            <mat-card-header>
-              <mat-icon mat-card-avatar>workspace_premium</mat-icon>
-              <mat-card-title>{{ t('user.dashboard.plan.title') }}</mat-card-title>
-              <mat-card-subtitle>{{ statusLabel(o.limits.accountStatus) }}</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <p class="figure figure-text">{{ o.limits.plan?.name || t('user.dashboard.plan.none') }}</p>
-              @if (o.usage.period.from || o.usage.period.to) {
-                <p class="hint">
-                  {{
-                    t('user.dashboard.period', {
-                      from: o.usage.period.from | localDate: 'short',
-                      to: o.usage.period.to | localDate: 'short',
-                    })
-                  }}
-                </p>
-              }
-            </mat-card-content>
-          </mat-card>
+          <div class="stat">
+            <span class="stat-label">{{ t('user.dashboard.plan.title') }}</span>
+            <span class="stat-value plan">{{ o.limits.plan?.name || t('user.dashboard.plan.none') }}</span>
+            <p class="stat-foot">{{ statusLabel(o.limits.accountStatus) }}</p>
+            @if (o.usage.period.from || o.usage.period.to) {
+              <p class="stat-foot">
+                {{
+                  t('user.dashboard.period', {
+                    from: o.usage.period.from | localDate: 'short',
+                    to: o.usage.period.to | localDate: 'short',
+                  })
+                }}
+              </p>
+            }
+          </div>
         </div>
 
         <mat-card appearance="outlined" class="recent">
@@ -168,7 +146,6 @@ import { conversationTitle } from '../conversations/conversation.model';
     </ng-container>
   `,
   styles: `
-    .intro,
     .hint {
       color: var(--mat-sys-on-surface-variant);
     }
@@ -176,23 +153,9 @@ import { conversationTitle } from '../conversations/conversation.model';
       font: var(--mat-sys-body-small);
       margin: 4px 0 0;
     }
-    .tiles {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 24px;
-      align-items: start;
-    }
-    .figure {
-      font: var(--mat-sys-display-small);
-      font-variant-numeric: tabular-nums;
-      margin: 8px 0 0;
-    }
-    .figure-text {
-      font: var(--mat-sys-headline-small);
-    }
-    .figure-label {
-      margin: 0;
-      font: var(--mat-sys-label-large);
+    /* A plan name is words, not a figure, so it does not take the digit face. */
+    .stat-value.plan {
+      font: var(--mat-sys-title-large);
     }
     .notice mat-card-content {
       display: flex;

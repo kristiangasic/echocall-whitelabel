@@ -47,7 +47,7 @@ const CODE_LENGTH = 6;
       </mat-card-header>
       <mat-card-content>
         @if (recoveryCodes(); as codes) {
-          <h2 class="section">{{ t('account.twoFactor.recoveryTitle') }}</h2>
+          <h2 class="section-title">{{ t('account.twoFactor.recoveryTitle') }}</h2>
           <p class="hint">{{ t('account.twoFactor.recoveryIntro') }}</p>
           <ul class="codes" data-testid="recovery-codes">
             @for (code of codes; track code) {
@@ -63,7 +63,7 @@ const CODE_LENGTH = 6;
           <p class="hint">{{ t('account.twoFactor.manual') }}</p>
           <p class="secret" data-testid="two-factor-secret">{{ setup.secret }}</p>
           <form [formGroup]="activation" (ngSubmit)="activate()" novalidate>
-            <mat-form-field appearance="outline" class="full">
+            <mat-form-field appearance="outline" class="field-sm">
               <mat-label>{{ t('account.twoFactor.code') }}</mat-label>
               <input
                 matInput
@@ -89,10 +89,10 @@ const CODE_LENGTH = 6;
           </form>
         } @else if (enabled()) {
           <p class="status" data-testid="two-factor-status">{{ t('account.twoFactor.statusOn') }}</p>
-          <h2 class="section">{{ t('account.twoFactor.disableTitle') }}</h2>
+          <h2 class="section-title">{{ t('account.twoFactor.disableTitle') }}</h2>
           <p class="hint">{{ t('account.twoFactor.disableIntro') }}</p>
           <form [formGroup]="removal" (ngSubmit)="disable()" novalidate>
-            <mat-form-field appearance="outline" class="full">
+            <mat-form-field appearance="outline" class="field-sm">
               <mat-label>{{ t('account.twoFactor.code') }}</mat-label>
               <input
                 matInput
@@ -130,8 +130,7 @@ const CODE_LENGTH = 6;
     mat-card-content {
       padding-top: 16px;
     }
-    .section {
-      font: var(--mat-sys-title-medium);
+    .section-title {
       margin: 0 0 4px;
     }
     .hint,
@@ -157,15 +156,24 @@ const CODE_LENGTH = 6;
       overflow-wrap: anywhere;
       margin: 0 0 16px;
     }
+    /* Ten codes, so two columns divide them evenly at every width. */
     .codes {
       list-style: none;
       padding: 0;
       margin: 0 0 16px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
+      max-width: 440px;
+    }
+    .codes li {
+      padding: 8px 12px;
+      border: 1px solid var(--mat-sys-outline-variant);
+      border-radius: 10px;
+      background: var(--mat-sys-surface-container-low);
       font-family: ui-monospace, 'SFMono-Regular', 'Consolas', monospace;
       letter-spacing: 0.08em;
+      text-align: center;
     }
     .actions {
       display: flex;

@@ -1,6 +1,5 @@
 import { Component, inject, type OnInit, signal, type WritableSignal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterLink } from '@angular/router';
@@ -29,7 +28,6 @@ interface OpenTickets {
 @Component({
   selector: 'app-admin-overview-page',
   imports: [
-    MatCardModule,
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
@@ -48,237 +46,208 @@ interface OpenTickets {
         <button mat-stroked-button type="button" (click)="load()">{{ t('actions.retry') }}</button>
       }
       @if (overview(); as o) {
-        <div class="cards">
-          <mat-card
-            appearance="outlined"
-            [class.hub-ok]="o.hub.ok"
-            [class.hub-bad]="!o.hub.ok"
-            data-testid="hub-card"
-          >
-            <mat-card-header>
-              <mat-icon mat-card-avatar class="hub-icon">{{ o.hub.ok ? 'check_circle' : 'error' }}</mat-icon>
-              <mat-card-title>{{ t('admin.overview.hub.title') }}</mat-card-title>
-              <mat-card-subtitle>
-                {{
-                  o.hub.ok
-                    ? t('admin.overview.hub.ok', { email: o.hub.email ?? '' })
-                    : t('admin.overview.hub.failed')
-                }}
-              </mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              @if (!o.hub.ok) {
-                <p role="alert" class="hub-error">
-                  {{ t(notify.errorKey(o.hub.error?.code ?? 'not_checked')) }}
-                </p>
+        <!--
+          The connection is not one figure among others: it decides whether the
+          rest of the page means anything, so it runs across the top as the line
+          the operator reads before looking any further.
+        -->
+        <section class="hub" [class.hub-bad]="!o.hub.ok" data-testid="hub-card">
+          <mat-icon class="hub-icon" aria-hidden="true">{{
+            o.hub.ok ? 'check_circle' : 'error'
+          }}</mat-icon>
+          <div class="hub-text">
+            <p class="hub-title">{{ t('admin.overview.hub.title') }}</p>
+            <p class="hub-status">
+              {{
+                o.hub.ok
+                  ? t('admin.overview.hub.ok', { email: o.hub.email ?? '' })
+                  : t('admin.overview.hub.failed')
+              }}
+            </p>
+            @if (!o.hub.ok) {
+              <p role="alert" class="hub-reason">
+                {{ t(notify.errorKey(o.hub.error?.code ?? 'not_checked')) }}
                 @if (o.hub.error?.code === 'no_active_subscription') {
-                  <p class="hint">
-                    {{ t('admin.overview.hub.subscriptionHint') }}
-                    <a href="https://echocall.de" target="_blank" rel="noopener">echocall.de</a>
-                  </p>
+                  {{ t('admin.overview.hub.subscriptionHint') }}
+                  <a href="https://echocall.de" target="_blank" rel="noopener">echocall.de</a>
                 } @else {
-                  <p class="hint">{{ t('admin.overview.hub.keyHint') }}</p>
-                }
-              }
-              <p class="hint">
-                @if (o.hub.checkedAt) {
-                  {{ t('admin.overview.hub.checkedAt', { time: o.hub.checkedAt | localDate }) }}
-                } @else {
-                  {{ t('errors.not_checked') }}
+                  {{ t('admin.overview.hub.keyHint') }}
                 }
               </p>
-            </mat-card-content>
-            <mat-card-actions>
-              <button
-                mat-stroked-button
-                type="button"
-                (click)="recheck()"
-                [disabled]="checking()"
-                data-testid="recheck"
-              >
-                <mat-icon>refresh</mat-icon>
-                {{ t('admin.overview.hub.recheck') }}
-              </button>
-            </mat-card-actions>
-          </mat-card>
+            }
+            <p class="hub-checked">
+              @if (o.hub.checkedAt) {
+                {{ t('admin.overview.hub.checkedAt', { time: o.hub.checkedAt | localDate }) }}
+              } @else {
+                {{ t('errors.not_checked') }}
+              }
+            </p>
+          </div>
+          <button
+            mat-stroked-button
+            type="button"
+            class="hub-action"
+            (click)="recheck()"
+            [disabled]="checking()"
+            data-testid="recheck"
+          >
+            <mat-icon>refresh</mat-icon>
+            {{ t('admin.overview.hub.recheck') }}
+          </button>
+        </section>
 
-          <mat-card appearance="outlined">
-            <mat-card-header>
-              <mat-icon mat-card-avatar>group</mat-icon>
-              <mat-card-title>{{ t('admin.overview.users.title') }}</mat-card-title>
-              <mat-card-subtitle>{{
-                t('admin.overview.users.total', { count: o.users.total })
-              }}</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <dl class="counts">
-                <div>
-                  <dt>{{ t('roles.admin') }}</dt>
-                  <dd>{{ o.users.admins }}</dd>
-                </div>
-                <div>
-                  <dt>{{ t('roles.user') }}</dt>
-                  <dd>{{ o.users.users }}</dd>
-                </div>
-                <div>
-                  <dt>{{ t('statuses.active') }}</dt>
-                  <dd>{{ o.users.active }}</dd>
-                </div>
-                <div>
-                  <dt>{{ t('statuses.invited') }}</dt>
-                  <dd>{{ o.users.invited }}</dd>
-                </div>
-                <div>
-                  <dt>{{ t('statuses.disabled') }}</dt>
-                  <dd>{{ o.users.disabled }}</dd>
-                </div>
-              </dl>
-            </mat-card-content>
-            <mat-card-actions>
-              <a mat-button routerLink="/admin/users">{{ t('admin.overview.users.manage') }}</a>
-            </mat-card-actions>
-          </mat-card>
-        </div>
-      }
-
-      <div class="cards operator" data-testid="operator-tiles">
-        <mat-card appearance="outlined" data-testid="tile-customers">
-          <mat-card-header>
-            <mat-icon mat-card-avatar>groups</mat-icon>
-            <mat-card-title>{{ t('admin.overview.customers.title') }}</mat-card-title>
-            <mat-card-subtitle>
-              {{ t('admin.overview.customers.usage') }}: {{ usageCost() }}
-            </mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
+        <div class="stat-grid section" data-testid="operator-tiles">
+          <a class="stat" routerLink="/admin/customers" data-testid="tile-customers">
+            <span class="stat-label">{{ t('admin.overview.customers.title') }}</span>
             @if (stats(); as s) {
-              <p class="figure">{{ s.totalCustomers }}</p>
-              <p class="figure-label">{{ t('admin.overview.customers.customers') }}</p>
-              <dl class="counts">
-                <div>
-                  <dt>{{ t('admin.overview.customers.voiceAgents') }}</dt>
-                  <dd>{{ s.totalVoiceAgents }}</dd>
-                </div>
-                <div>
-                  <dt>{{ t('admin.overview.customers.chatbots') }}</dt>
-                  <dd>{{ s.totalChatbots }}</dd>
-                </div>
-              </dl>
+              <span class="stat-value">{{ number(s.totalCustomers) }}</span>
+              <p class="stat-foot">
+                {{ number(s.totalVoiceAgents) }} {{ t('admin.overview.customers.voiceAgents') }}
+                &middot; {{ number(s.totalChatbots) }} {{ t('admin.overview.customers.chatbots') }}
+              </p>
+              <p class="stat-foot">{{ t('admin.overview.customers.usage') }}: {{ usageCost() }}</p>
             } @else {
-              <p class="figure">&ndash;</p>
-              <p class="hint">{{ t('admin.overview.unavailable') }}</p>
+              <span class="stat-value">&ndash;</span>
+              <p class="stat-foot">{{ t('admin.overview.unavailable') }}</p>
             }
-          </mat-card-content>
-        </mat-card>
+          </a>
 
-        <mat-card appearance="outlined" data-testid="tile-balance">
-          <mat-card-header>
-            <mat-icon mat-card-avatar>account_balance_wallet</mat-icon>
-            <mat-card-title>{{ t('admin.overview.balance.title') }}</mat-card-title>
-            <mat-card-subtitle>{{ t('admin.overview.balance.credit') }}</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            @if (balanceEur(); as amount) {
-              <p class="figure">{{ amount }}</p>
-            } @else {
-              <p class="figure">&ndash;</p>
-            }
-            @if (credits(); as c) {
-              <dl class="counts">
-                <div>
-                  <dt>{{ t('admin.overview.balance.voiceMinutes') }}</dt>
-                  <dd>{{ number(c.voiceMinutesAvailable) }}</dd>
-                </div>
-                <div>
-                  <dt>{{ t('admin.overview.balance.chatMessages') }}</dt>
-                  <dd>{{ number(c.chatMessagesAvailable) }}</dd>
-                </div>
-              </dl>
-            } @else {
-              <p class="hint">{{ t('admin.overview.unavailable') }}</p>
-            }
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card appearance="outlined" data-testid="tile-subscriptions">
-          <mat-card-header>
-            <mat-icon mat-card-avatar>workspace_premium</mat-icon>
-            <mat-card-title>{{ t('admin.overview.subscriptions.title') }}</mat-card-title>
-            <mat-card-subtitle>{{ t('admin.overview.subscriptions.total') }}</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
+          <a class="stat" routerLink="/admin/subscriptions" data-testid="tile-subscriptions">
+            <span class="stat-label">{{ t('admin.overview.subscriptions.title') }}</span>
             <!-- A count of zero is an answer, not a gap: check for null, not for truth. -->
             @if (subscriptions() !== null) {
-              <p class="figure">{{ subscriptions() }}</p>
+              <span class="stat-value">{{ subscriptions() }}</span>
+              <p class="stat-foot">{{ t('admin.overview.subscriptions.total') }}</p>
             } @else {
-              <p class="figure">&ndash;</p>
-              <p class="hint">{{ t('admin.overview.unavailable') }}</p>
+              <span class="stat-value">&ndash;</span>
+              <p class="stat-foot">{{ t('admin.overview.unavailable') }}</p>
             }
-          </mat-card-content>
-        </mat-card>
+          </a>
 
-        <mat-card appearance="outlined" data-testid="tile-tickets">
-          <mat-card-header>
-            <mat-icon mat-card-avatar>support_agent</mat-icon>
-            <mat-card-title>{{ t('admin.overview.tickets.title') }}</mat-card-title>
-            <mat-card-subtitle>{{ t('admin.overview.tickets.open') }}</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            @if (openTickets(); as tickets) {
-              <p class="figure">{{ tickets.count }}{{ tickets.partial ? '+' : '' }}</p>
+          <div class="stat" data-testid="tile-balance">
+            <span class="stat-label">{{ t('admin.overview.balance.title') }}</span>
+            @if (balanceEur(); as amount) {
+              <span class="stat-value">{{ amount }}</span>
             } @else {
-              <p class="figure">&ndash;</p>
-              <p class="hint">{{ t('admin.overview.unavailable') }}</p>
+              <span class="stat-value">&ndash;</span>
             }
-          </mat-card-content>
-        </mat-card>
-      </div>
+            @if (credits(); as c) {
+              <p class="stat-foot">
+                {{ number(c.voiceMinutesAvailable) }} {{ t('admin.overview.balance.voiceMinutes') }}
+                &middot; {{ number(c.chatMessagesAvailable) }}
+                {{ t('admin.overview.balance.chatMessages') }}
+              </p>
+            } @else {
+              <p class="stat-foot">{{ t('admin.overview.unavailable') }}</p>
+            }
+          </div>
+
+          <a class="stat" routerLink="/admin/tickets" data-testid="tile-tickets">
+            <span class="stat-label">{{ t('admin.overview.tickets.open') }}</span>
+            @if (openTickets(); as tickets) {
+              <span class="stat-value">{{ tickets.count }}{{ tickets.partial ? '+' : '' }}</span>
+              <p class="stat-foot">{{ t('admin.overview.tickets.title') }}</p>
+            } @else {
+              <span class="stat-value">&ndash;</span>
+              <p class="stat-foot">{{ t('admin.overview.unavailable') }}</p>
+            }
+          </a>
+        </div>
+
+        <section class="section">
+          <div class="page-head">
+            <h2 class="section-title">{{ t('admin.overview.users.title') }}</h2>
+            <a mat-stroked-button routerLink="/admin/users">{{
+              t('admin.overview.users.manage')
+            }}</a>
+          </div>
+          <div class="stat-grid compact cols-6" data-testid="user-counts">
+            <div class="stat">
+              <span class="stat-label">{{ t('admin.overview.users.all') }}</span>
+              <span class="stat-value">{{ o.users.total }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">{{ t('roles.admin') }}</span>
+              <span class="stat-value">{{ o.users.admins }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">{{ t('roles.user') }}</span>
+              <span class="stat-value">{{ o.users.users }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">{{ t('statuses.active') }}</span>
+              <span class="stat-value">{{ o.users.active }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">{{ t('statuses.invited') }}</span>
+              <span class="stat-value">{{ o.users.invited }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">{{ t('statuses.disabled') }}</span>
+              <span class="stat-value">{{ o.users.disabled }}</span>
+            </div>
+          </div>
+        </section>
+      }
     </ng-container>
   `,
   styles: `
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-      align-items: start;
+    .hub {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border: 1px solid var(--mat-sys-outline-variant);
+      border-radius: 16px;
+      background: var(--mat-sys-surface-container-low);
     }
-    .hub-ok .hub-icon {
+    .hub-icon {
       color: var(--mat-sys-primary);
+      flex: none;
     }
-    .hub-bad .hub-icon,
-    .hub-error {
-      color: var(--mat-sys-error);
+    .hub-text {
+      flex: 1;
+      min-width: 0;
     }
-    .hint {
+    .hub-text p {
+      margin: 0;
+    }
+    .hub-title {
+      font: var(--mat-sys-label-large);
+      color: var(--mat-sys-on-surface-variant);
+    }
+    .hub-status {
+      font: var(--mat-sys-title-medium);
+      overflow-wrap: anywhere;
+    }
+    .hub-checked,
+    .hub-reason {
       font: var(--mat-sys-body-small);
       color: var(--mat-sys-on-surface-variant);
+      margin-top: 2px;
     }
-    .counts {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-      gap: 12px;
-      margin: 0;
+    .hub-action {
+      flex: none;
     }
-    .counts dt {
-      font: var(--mat-sys-label-medium);
-      color: var(--mat-sys-on-surface-variant);
+    .hub-bad {
+      border-color: var(--mat-sys-error);
+      background: var(--mat-sys-error-container);
+      color: var(--mat-sys-on-error-container);
     }
-    .counts dd {
-      margin: 0;
-      font: var(--mat-sys-headline-small);
-      font-variant-numeric: tabular-nums;
+    .hub-bad .hub-icon,
+    .hub-bad .hub-title,
+    .hub-bad .hub-reason,
+    .hub-bad .hub-checked {
+      color: inherit;
     }
-    .operator {
-      margin-top: 24px;
-    }
-    .figure {
-      font: var(--mat-sys-display-small);
-      font-variant-numeric: tabular-nums;
-      margin: 8px 0 0;
-    }
-    .figure-label {
-      margin: 0 0 8px;
-      font: var(--mat-sys-label-large);
+    @media (max-width: 599px) {
+      .hub {
+        flex-wrap: wrap;
+        padding: 16px;
+      }
+      .hub-action {
+        width: 100%;
+      }
     }
   `,
 })
@@ -315,7 +284,7 @@ export class AdminOverviewPage implements OnInit {
   /** The cost of the last thirty days of customer usage, or a dash while the service is quiet. */
   usageCost(): string {
     const cost = this.stats()?.thisMonthUsageCost;
-    return cost === undefined ? '\u2013' : formatMoney(cost, this.language.current());
+    return cost === undefined ? '–' : formatMoney(cost, this.language.current());
   }
 
   async load(): Promise<void> {

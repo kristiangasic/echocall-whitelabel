@@ -35,7 +35,7 @@ import { TwoFactorPanel } from './two-factor.panel';
   template: `
     <ng-container *transloco="let t">
       <h1 class="page-title">{{ t('account.title') }}</h1>
-      <mat-tab-group>
+      <mat-tab-group [mat-stretch-tabs]="false">
         <mat-tab [label]="t('account.tabs.profile')">
           <div class="cards">
             <mat-card appearance="outlined">
@@ -63,9 +63,11 @@ import { TwoFactorPanel } from './two-factor.panel';
                       }
                     </mat-select>
                   </mat-form-field>
-                  <button mat-flat-button type="submit" [disabled]="savingProfile()">
-                    {{ t('actions.save') }}
-                  </button>
+                  <div class="form-actions">
+                    <button mat-flat-button type="submit" [disabled]="savingProfile()">
+                      {{ t('actions.save') }}
+                    </button>
+                  </div>
                 </form>
               </mat-card-content>
             </mat-card>
@@ -95,8 +97,8 @@ import { TwoFactorPanel } from './two-factor.panel';
     .cards {
       padding-top: 24px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 24px;
+      max-width: 720px;
       align-items: start;
     }
     mat-card-content {

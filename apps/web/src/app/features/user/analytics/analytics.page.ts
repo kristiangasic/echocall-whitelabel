@@ -71,17 +71,15 @@ interface DailyResponse {
         <mat-progress-bar mode="indeterminate" />
       }
 
-      <div class="tiles" data-testid="analytics-tiles">
+      <div class="stat-row" data-testid="analytics-tiles">
         @for (metric of metrics(); track metric.usageType) {
-          <mat-card appearance="outlined">
-            <mat-card-content>
-              <span class="tile-label">{{ usageLabel(t, metric.usageType) }}</span>
-              <strong class="tile-value">{{ number(metric.totalQuantity ?? 0) }}</strong>
-              <span class="tile-note">
-                {{ t('user.analytics.charged', { amount: money(metric.totalRevenue ?? 0) }) }}
-              </span>
-            </mat-card-content>
-          </mat-card>
+          <div class="stat">
+            <span class="stat-label">{{ usageLabel(t, metric.usageType) }}</span>
+            <span class="stat-value">{{ number(metric.totalQuantity ?? 0) }}</span>
+            <p class="stat-foot">
+              {{ t('user.analytics.charged', { amount: money(metric.totalRevenue ?? 0) }) }}
+            </p>
+          </div>
         } @empty {
           <p class="hint">{{ t('user.analytics.noUsage') }}</p>
         }
@@ -191,27 +189,6 @@ interface DailyResponse {
     .window {
       min-width: 200px;
     }
-    .tiles {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-    .tile-label {
-      display: block;
-      color: var(--mat-sys-on-surface-variant);
-      font: var(--mat-sys-label-medium);
-    }
-    .tile-value {
-      display: block;
-      font: var(--mat-sys-headline-medium);
-      font-variant-numeric: tabular-nums;
-      margin: 4px 0;
-    }
-    .tile-note {
-      color: var(--mat-sys-on-surface-variant);
-      font: var(--mat-sys-body-small);
-    }
     .section {
       margin-bottom: 16px;
     }
@@ -229,17 +206,8 @@ interface DailyResponse {
       flex: 1;
       min-width: 200px;
     }
-    .facts {
-      display: grid;
-      grid-template-columns: max-content 1fr;
-      gap: 4px 16px;
-      margin: 0;
-    }
-    .facts dt {
-      color: var(--mat-sys-on-surface-variant);
-    }
+    /* Grid and labels are shared; the figures line up on their digits here. */
     .facts dd {
-      margin: 0;
       font-variant-numeric: tabular-nums;
     }
     .hint {

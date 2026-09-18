@@ -138,7 +138,7 @@ interface TestResult {
         </table>
       </div>
 
-      <h2 class="catalog-title">{{ t('user.integrations.catalog') }}</h2>
+      <h2 class="section-title catalog-title">{{ t('user.integrations.catalog') }}</h2>
       <div class="catalog" data-testid="integrations-catalog">
         @for (entry of catalog(); track entry.type) {
           <mat-card appearance="outlined">
@@ -182,13 +182,37 @@ interface TestResult {
       color: var(--mat-sys-on-surface-variant);
     }
     .catalog-title {
-      font: var(--mat-sys-title-medium);
       margin: 32px 0 12px;
     }
+    /* A fixed column count per width: the cards keep their alignment down the
+       gallery instead of resizing with every entry the service adds. */
     .catalog {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 16px;
+      align-items: stretch;
+    }
+    .catalog mat-card {
+      display: flex;
+      flex-direction: column;
+    }
+    .catalog mat-card-actions {
+      margin-top: auto;
+    }
+    @media (max-width: 1299px) {
+      .catalog {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 899px) {
+      .catalog {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 599px) {
+      .catalog {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
     .description {
       margin: 8px 0 0;

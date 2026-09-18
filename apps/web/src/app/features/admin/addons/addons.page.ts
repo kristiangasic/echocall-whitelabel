@@ -23,6 +23,9 @@ import {
   type SellAddonResult,
 } from './sell-addon-dialog.component';
 
+/** Both kinds of package, in the order the figures read best. */
+const ADDON_TYPES = ['voice_minutes', 'chat_conversations'] as const;
+
 /** How many sales the page shows; the hub has no paging here, only a limit. */
 const PURCHASE_LIMIT = 50;
 
@@ -60,41 +63,33 @@ const PURCHASE_LIMIT = 50;
         <mat-progress-bar mode="indeterminate" />
       }
 
-      <div class="cards" data-testid="stats">
-        <mat-card appearance="outlined">
-          <mat-card-content>
-            @if (stats(); as s) {
-              <p class="figure">{{ s.totalAddons }}</p>
-              <p class="figure-label">{{ t('admin.addons.stats.sales') }}</p>
-              <p class="hint">{{ t('admin.addons.stats.salesHint') }}</p>
-            } @else {
-              <p class="figure">&ndash;</p>
-              <p class="hint">{{ t('admin.addons.stats.unavailable') }}</p>
-            }
-          </mat-card-content>
-        </mat-card>
-        <mat-card appearance="outlined">
-          <mat-card-content>
-            @if (stats(); as s) {
-              <p class="figure">{{ money(s.totalRevenue) }}</p>
-              <p class="figure-label">{{ t('admin.addons.stats.revenue') }}</p>
-              <p class="hint">{{ t('admin.addons.stats.revenueHint') }}</p>
-            } @else {
-              <p class="figure">&ndash;</p>
-              <p class="hint">{{ t('admin.addons.stats.unavailable') }}</p>
-            }
-          </mat-card-content>
-        </mat-card>
-        @if (stats(); as s) {
-          @for (row of s.byType; track row.type) {
-            <mat-card appearance="outlined">
-              <mat-card-content>
-                <p class="figure">{{ money(row.revenue) }}</p>
-                <p class="figure-label">{{ t('admin.addons.types.' + row.type) }}</p>
-                <p class="hint">{{ t('admin.addons.stats.sales') }}: {{ row.count }}</p>
-              </mat-card-content>
-            </mat-card>
-          }
+      <!--
+        Four figures, always the same four: both kinds of package keep their
+        tile even in a week nobody bought one, so the row never goes ragged.
+      -->
+      <div class="stat-grid" data-testid="stats">
+        <div class="stat">
+          <span class="stat-label">{{ t('admin.addons.stats.sales') }}</span>
+          <span class="stat-value">{{ stats() ? stats()?.totalAddons : '–' }}</span>
+          <p class="stat-foot">
+            {{ stats() ? t('admin.addons.stats.salesHint') : t('admin.addons.stats.unavailable') }}
+          </p>
+        </div>
+        <div class="stat">
+          <span class="stat-label">{{ t('admin.addons.stats.revenue') }}</span>
+          <span class="stat-value">{{ stats() ? money(stats()?.totalRevenue) : '–' }}</span>
+          <p class="stat-foot">
+            {{ stats() ? t('admin.addons.stats.revenueHint') : t('admin.addons.stats.unavailable') }}
+          </p>
+        </div>
+        @for (type of types; track type) {
+          <div class="stat">
+            <span class="stat-label">{{ t('admin.addons.types.' + type) }}</span>
+            <span class="stat-value">{{ stats() ? money(byType(type).revenue) : '–' }}</span>
+            <p class="stat-foot">
+              {{ t('admin.addons.stats.sales') }}: {{ stats() ? byType(type).count : '–' }}
+            </p>
+          </div>
         }
       </div>
 
@@ -227,28 +222,7 @@ const PURCHASE_LIMIT = 50;
     </ng-container>
   `,
   styles: `
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-bottom: 8px;
-    }
-    .figure {
-      font: var(--mat-sys-headline-medium);
-      font-variant-numeric: tabular-nums;
-      margin: 0;
-    }
-    .figure-label {
-      margin: 4px 0 0;
-      font: var(--mat-sys-label-large);
-    }
-    .hint {
-      margin: 4px 0 0;
-      font: var(--mat-sys-body-small);
-      color: var(--mat-sys-on-surface-variant);
-    }
     .section-title {
-      font: var(--mat-sys-title-medium);
       margin: 32px 0 4px;
     }
     .cell-sub {
@@ -279,6 +253,7 @@ export class AdminAddonsPage implements OnInit {
   private readonly language = inject(LanguageService);
 
   readonly limit = PURCHASE_LIMIT;
+  readonly types = ADDON_TYPES;
   readonly packageColumns = ['name', 'type', 'price', 'actions'];
   readonly purchaseColumns = ['customer', 'package', 'quantity', 'price', 'status', 'date'];
   readonly packages = signal<ResellerAddonPackage[]>([]);
@@ -292,6 +267,12 @@ export class AdminAddonsPage implements OnInit {
 
   money(value: string | number | null | undefined): string {
     return formatMoney(value, this.language.current());
+  }
+
+  /** What one kind of package earned, zero included, so its tile is always there. */
+  byType(type: string): { revenue: string | number; count: number } {
+    const row = this.stats()?.byType?.find((entry) => entry.type === type);
+    return { revenue: row?.revenue ?? 0, count: row?.count ?? 0 };
   }
 
   /**

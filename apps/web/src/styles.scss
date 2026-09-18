@@ -70,7 +70,8 @@ body {
   flex-wrap: wrap;
   margin-bottom: 16px;
 
-  .page-title {
+  .page-title,
+  .section-title {
     margin: 0;
   }
 }
@@ -234,4 +235,258 @@ $status-bad: disabled suspended failed past_due no-answer busy;
     background: var(--mat-sys-error-container);
     color: var(--mat-sys-on-error-container);
   }
+}
+
+// ---------------------------------------------------------------------------
+// The shared layout layer. Pages compose from these; a page style sheet only
+// carries what is true for that page alone.
+// ---------------------------------------------------------------------------
+
+// The sentence under a page title. Prose stops at a readable measure even when
+// the window is a metre wide.
+.page-hint {
+  margin: -8px 0 24px;
+  color: var(--mat-sys-on-surface-variant);
+  max-width: 90ch;
+}
+
+.section {
+  margin-top: 32px;
+}
+
+.section-title {
+  font: var(--mat-sys-title-medium);
+  margin: 0 0 4px;
+}
+
+.section-hint {
+  margin: 0 0 16px;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-small);
+  max-width: 90ch;
+}
+
+// A row of figures. The column count is a number the page chooses, never one
+// the browser guesses from the available width, so the last row is as full as
+// the first: three tiles are 3-1-1, never 2 and a stray one underneath.
+.stat-grid {
+  --cols: 4;
+  --cols-md: 2;
+  --cols-sm: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: 16px;
+}
+
+.stat-grid.cols-2 {
+  --cols: 2;
+  --cols-md: 2;
+  --cols-sm: 1;
+}
+
+.stat-grid.cols-3 {
+  --cols: 3;
+  --cols-md: 3;
+  --cols-sm: 1;
+}
+
+/* Where the number of tiles comes from the data, a row beats a grid: every
+   tile keeps one width, and a short last row sits left instead of stretching. */
+.stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.stat-row > .stat {
+  flex: 1 1 200px;
+  max-width: 320px;
+}
+
+.stat-grid.cols-6 {
+  --cols: 6;
+  --cols-md: 3;
+  --cols-sm: 2;
+}
+
+@media (max-width: 1099px) {
+  .stat-grid {
+    grid-template-columns: repeat(var(--cols-md), minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 599px) {
+  .stat-grid {
+    grid-template-columns: repeat(var(--cols-sm), minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+// One figure. Label, value, and an optional line underneath that explains it;
+// the explanation is pushed to the bottom edge so the figures of a row keep
+// one baseline whether or not their neighbour carries one.
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 18px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 16px;
+  background: var(--mat-sys-surface-container-low);
+  min-width: 0;
+}
+
+.stat-label {
+  font: var(--mat-sys-label-large);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.stat-value {
+  font: var(--mat-sys-headline-medium);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.stat-foot {
+  margin: 8px 0 0;
+  margin-top: auto;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// Only the first note is pushed to the bottom; the rest stack under it,
+// otherwise the free space is shared out and the notes drift apart.
+.stat-foot ~ .stat-foot {
+  margin-top: 2px;
+}
+
+// Counts rather than headline figures: the same tile, quieter.
+.stat-grid.compact .stat {
+  padding: 12px 14px;
+  gap: 0;
+}
+
+.stat-grid.compact .stat-value {
+  font: var(--mat-sys-title-large);
+  font-variant-numeric: tabular-nums;
+}
+
+// A tile that is also the way to the page behind it.
+a.stat {
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+a.stat:hover,
+a.stat:focus-visible {
+  border-color: var(--mat-sys-primary);
+  background: var(--mat-sys-surface-container);
+}
+
+// Label and value pairs that describe one thing: an invoice, a customer, a
+// call. Two columns keep the pairs close to each other instead of stretching a
+// value across the whole window.
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 24px;
+  margin: 0;
+}
+
+.facts.cols-1 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* A short strip of metadata: items take the width they need, so a row of
+   three never leaves a stretched gap the way a grid column would. */
+.facts.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 40px;
+}
+
+.facts.inline > div {
+  min-width: 0;
+}
+
+.facts > div {
+  min-width: 0;
+}
+
+.facts dt {
+  font: var(--mat-sys-label-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.facts dd {
+  margin: 2px 0 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 599px) {
+  .facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// A block of settings or figures that belongs together. Cards are for lists of
+// like things; a panel frames one piece of work.
+.panel {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 16px;
+  background: var(--mat-sys-surface-container-low);
+  padding: 24px;
+}
+
+@media (max-width: 599px) {
+  .panel {
+    padding: 16px;
+  }
+}
+
+// A form is read line by line, so it stops at a comfortable measure; a field
+// never grows to the width of a desk monitor just because the window did.
+.form-max {
+  max-width: 720px;
+}
+
+// Fields that hold a price, a count or a code are as wide as what they hold.
+.field-sm {
+  max-width: 220px;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.span-all {
+  grid-column: 1 / -1;
+}
+
+// What a page says when it has nothing to show yet.
+.empty {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// ---------------------------------------------------------------------------
+// Dialogs. A dialog is a single task, read across in one line of sight: past
+// about 640px the eye loses the line, and on a laptop a wider one buries the
+// page it belongs to. Content decides the width up to that cap.
+// ---------------------------------------------------------------------------
+.cdk-overlay-pane.mat-mdc-dialog-panel {
+  --mat-dialog-container-max-width: min(94vw, 640px);
+  max-width: min(94vw, 640px);
+}
+
+// The two dialogs that hold a table of their own get one step more room.
+.cdk-overlay-pane.dialog-wide {
+  --mat-dialog-container-max-width: min(94vw, 880px);
+  max-width: min(94vw, 880px);
 }

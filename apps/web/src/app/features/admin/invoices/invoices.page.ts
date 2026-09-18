@@ -320,7 +320,10 @@ export class AdminInvoicesPage implements OnInit {
 
   create(): void {
     this.dialog
-      .open<InvoiceDialogComponent, unknown, InvoiceDialogResult>(InvoiceDialogComponent, { data: {} })
+      .open<InvoiceDialogComponent, unknown, InvoiceDialogResult>(InvoiceDialogComponent, {
+        data: {},
+        panelClass: 'dialog-wide',
+      })
       .afterClosed()
       .subscribe((created) => {
         if (!created) return;
