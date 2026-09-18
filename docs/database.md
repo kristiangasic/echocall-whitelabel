@@ -42,8 +42,8 @@ pg_restore --dbname="$DATABASE_URL" --clean --if-exists portal.dump
 Bundled Compose database:
 
 ```bash
-docker compose -f docker/docker-compose.yml exec db pg_dump -U light --format=custom echocall_light > portal.dump
-docker compose -f docker/docker-compose.yml exec -T db pg_restore -U light --dbname=echocall_light --clean --if-exists < portal.dump
+docker compose exec db pg_dump -U light --format=custom echocall_light > portal.dump
+docker compose exec -T db pg_restore -U light --dbname=echocall_light --clean --if-exists < portal.dump
 ```
 
 MariaDB / MySQL:

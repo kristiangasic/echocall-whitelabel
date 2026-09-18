@@ -1,5 +1,7 @@
-# Run from the repository root: docker compose -f docker/docker-compose.yml up -d
-# Reads the remaining settings (APP_URL, APP_SECRET, ECHOCALL_API_KEY, ...) from ../.env.
+# Run from the repository root: docker compose up -d
+# Settings come from .env next to this file (APP_URL, APP_SECRET, ECHOCALL_API_KEY, ...).
+name: echocall-light
+
 services:
   db:
     image: postgres:18-alpine
@@ -18,13 +20,14 @@ services:
 
   app:
     build:
-      context: ..
+      context: .
       dockerfile: docker/Dockerfile
-    env_file: ../.env
+    env_file: .env
     environment:
       DATABASE_URL: postgres://light:${DB_PASSWORD}@db:5432/echocall_light
     ports:
-      - '3000:3000'
+      # The port on the host is yours to choose; 3000 is often taken already.
+      - '${HTTP_PORT:-3000}:3000'
     depends_on:
       db:
         condition: service_healthy

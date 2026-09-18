@@ -46,9 +46,13 @@ shown there as locked.
 
 ## Docker Compose only
 
-| Variable      | Description                                                                                          |
-| ------------- | ---------------------------------------------------------------------------------------------------- |
-| `DB_PASSWORD` | Password of the bundled PostgreSQL container; also used to build `DATABASE_URL` for the app service. |
+Compose reads these from the `.env` next to `compose.yaml`, which is why `docker compose
+up -d` is run from the repository root.
+
+| Variable      | Default | Description                                                                                                                               |
+| ------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `DB_PASSWORD` | unset   | Password of the bundled PostgreSQL container; also used to build `DATABASE_URL` for the app service. Compose refuses to start without it. |
+| `HTTP_PORT`   | `3000`  | Port the portal is published on **on the host**. Move it when 3000 is taken; the container keeps 3000, so `PORT` stays untouched.         |
 
 ## Test suite
 

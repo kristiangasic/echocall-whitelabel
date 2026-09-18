@@ -54,7 +54,7 @@ restart:
 
 1. Create the new key in your service account.
 2. Put it in `ECHOCALL_API_KEY` (`.env`, or your orchestrator's secret store).
-3. Restart the portal. Docker Compose: `docker compose -f docker/docker-compose.yml up -d`.
+3. Restart the portal. Docker Compose, from the repository root: `docker compose up -d`.
 4. Open the admin overview and press the re-check. It has to say the key belongs to your
    reseller account.
 5. Retire the old key at the service.
@@ -131,7 +131,7 @@ different secret, and the SMTP password and every second factor are lost.
 ```bash
 git fetch --tags
 git checkout v0.2.0          # or: git pull, for the tip of main
-docker compose -f docker/docker-compose.yml up -d --build
+docker compose up -d --build
 ```
 
 Migrations run at startup, before the server listens, and a failed migration stops the

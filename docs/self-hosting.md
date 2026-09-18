@@ -7,12 +7,19 @@ git clone https://github.com/echocall/echocall-light.git
 cd echocall-light
 cp .env.example .env
 # set APP_URL, APP_SECRET, ECHOCALL_API_KEY, DB_PASSWORD
-docker compose -f docker/docker-compose.yml up -d
+docker compose up -d
 ```
 
 This builds the image, starts a PostgreSQL container with a named volume, waits for it to
 become healthy, and starts the app on port 3000. On the first visit the portal runs its
 setup: it verifies the connection to EchoCall and creates your admin account.
+
+Run it from the repository root, where `compose.yaml` and your `.env` are: Compose reads
+the `.env` next to the compose file, so calling it with a path from somewhere else leaves
+every setting empty.
+
+Port 3000 on the host is already taken on many servers. Set `HTTP_PORT` in `.env` to move
+it; the container keeps its own port, so nothing else changes.
 
 To use your own database server instead of the bundled container, set `DATABASE_URL` in
 `.env` and remove the `db` service (or use the plain Dockerfile, below).
@@ -92,7 +99,7 @@ they should not be reachable from the internet.
 ```bash
 git fetch --tags
 git checkout v0.1.0          # or: git pull, for the tip of main
-docker compose -f docker/docker-compose.yml up -d --build
+docker compose up -d --build
 ```
 
 Take a database dump first. Migrations run at startup, before the server listens, and a

@@ -43,7 +43,7 @@ git clone https://github.com/echocall/echocall-light.git
 cd echocall-light
 cp .env.example .env
 # Edit .env: set APP_URL, APP_SECRET, ECHOCALL_API_KEY and DB_PASSWORD
-docker compose -f docker/docker-compose.yml up -d
+docker compose up -d
 ```
 
 Open the app (port 3000, put a TLS-terminating reverse proxy in front for production) and
