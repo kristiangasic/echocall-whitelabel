@@ -49,6 +49,26 @@ describe('TranslocoHttpLoader', () => {
     expect(second).toEqual(first);
   });
 
+  /*
+   * Holding on to a failure would be worse than not holding on at all: the
+   * library retries a translation file it did not get, and every retry would
+   * be answered with the same remembered error, leaving the portal without
+   * its words for as long as the page stays open. Sharing resets itself on an
+   * error, which is what makes the cache above safe; this holds that down.
+   */
+  it('forgets a file that did not arrive', () => {
+    let failed = false;
+    loader.getTranslation('de').subscribe({ error: () => (failed = true) });
+    http.expectOne('/i18n/de.json').flush('nothing here', { status: 503, statusText: 'Unavailable' });
+    expect(failed).toBe(true);
+
+    let seen: unknown;
+    loader.getTranslation('de').subscribe((t) => (seen = t));
+    http.expectOne('/i18n/de.json').flush({ 'actions.save': 'Speichern' });
+
+    expect(seen).toEqual({ 'actions.save': 'Speichern' });
+  });
+
   it('still asks again for a different file', () => {
     loader.getTranslation('user/en').subscribe();
     loader.getTranslation('user/de').subscribe();

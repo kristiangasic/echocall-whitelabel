@@ -6,6 +6,7 @@ import { AuthStore } from '../auth/auth.store';
 import type { SessionUser } from '../models';
 import { provideTestI18n } from '../../testing/i18n';
 import { LanguageService } from './language.service';
+import { provideI18n } from './transloco.config';
 
 const CUSTOMER: SessionUser = {
   id: 7,
@@ -64,5 +65,46 @@ describe('LanguageService', () => {
     await language.change('fr');
 
     expect(transloco.getActiveLang()).toBe('fr');
+  });
+});
+
+/*
+ * With the real loader behind it, so that the moment the file is asked for is
+ * part of the test. The library fetches a language the first time something on
+ * screen wants a word from it, which on a slow line was half a second after
+ * the language itself was already known: the texts then arrived after the
+ * pages that needed them, and the first frame of the portal was blank boxes.
+ */
+describe('LanguageService, on a real connection', () => {
+  let http: HttpTestingController;
+  let auth: AuthStore;
+  let language: LanguageService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting(), ...provideI18n()],
+    });
+    http = TestBed.inject(HttpTestingController);
+    auth = TestBed.inject(AuthStore);
+    language = TestBed.inject(LanguageService);
+  });
+
+  afterEach(() => http.verify());
+
+  it('asks for the interface texts as soon as it knows the language', () => {
+    auth.user.set({ ...CUSTOMER, language: 'fr' });
+
+    language.init();
+
+    http.expectOne('/i18n/fr.json').flush({ 'actions.save': 'Enregistrer' });
+    // English rides along: it is what fills in a line a translation is missing.
+    http.expectOne('/i18n/en.json').flush({ 'actions.save': 'Save' });
+  });
+
+  /* English being both the language and its own fallback must not cost two requests. */
+  it('starts the visitor sign-in page in the language the portal defaults to', () => {
+    language.init();
+
+    http.expectOne('/i18n/en.json').flush({ 'actions.save': 'Save' });
   });
 });

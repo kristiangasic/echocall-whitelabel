@@ -26,7 +26,18 @@ export class LanguageService {
 
   init(): void {
     const user = this.auth.user();
-    this.apply(user?.language ?? this.branding.branding().defaultLanguage ?? this.fromBrowser());
+    const language = user?.language ?? this.branding.branding().defaultLanguage ?? this.fromBrowser();
+    this.apply(language);
+    /*
+     * The library fetches a language the first time something on screen wants
+     * a word from it, which is after the first page has rendered: on a slow
+     * line the texts then queue behind the code for those pages, and the
+     * portal's first frame is empty boxes. The language is already settled
+     * here, so the file can travel alongside that code instead of after it.
+     * Nothing waits on this; a file that does not arrive is reported where
+     * the words are missed, not from a head start nobody asked for.
+     */
+    this.transloco.load(language).subscribe({ error: () => undefined });
   }
 
   /**
