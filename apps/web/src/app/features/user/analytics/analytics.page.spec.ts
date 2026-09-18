@@ -45,17 +45,17 @@ describe('AnalyticsPage', () => {
 
   afterEach(() => http.verify());
 
-  function flushLoad(summary: Record<string, unknown> = SUMMARY, daily: unknown[] = DAILY) {
+  function flushLoad(summary: Record<string, unknown> = SUMMARY, daily: unknown[] = DAILY, owned = true) {
     http.expectOne((req) => req.url === '/api/hub/analytics/summary').flush(summary);
     http.expectOne((req) => req.url === '/api/hub/analytics/daily').flush({ data: daily });
-    http.expectOne((req) => req.url === '/api/hub/agents').flush({ data: [AGENT] });
-    http.expectOne((req) => req.url === '/api/hub/chatbots').flush({ data: [CHATBOT] });
+    http.expectOne((req) => req.url === '/api/hub/agents').flush({ data: owned ? [AGENT] : [] });
+    http.expectOne((req) => req.url === '/api/hub/chatbots').flush({ data: owned ? [CHATBOT] : [] });
   }
 
-  async function render(summary: Record<string, unknown> = SUMMARY, daily: unknown[] = DAILY) {
+  async function render(summary: Record<string, unknown> = SUMMARY, daily: unknown[] = DAILY, owned = true) {
     const fixture = TestBed.createComponent(AnalyticsPage);
     await fixture.whenStable();
-    flushLoad(summary, daily);
+    flushLoad(summary, daily, owned);
     await new Promise((resolve) => setTimeout(resolve, 0));
     await fixture.whenStable();
     return fixture;
@@ -106,11 +106,23 @@ describe('AnalyticsPage', () => {
     expect(fixture.nativeElement.querySelectorAll('[data-testid="bar-list"] .fill').length).toBe(2);
   });
 
-  it('reports the empty window without any usage', async () => {
+  it('reports the empty window once instead of in every part of the page', async () => {
     const fixture = await render({ period: {}, metrics: [] }, []);
+    const page = fixture.nativeElement.textContent;
 
-    expect(fixture.nativeElement.textContent).toContain(USER_TEXTS.analytics.noUsage);
-    expect(fixture.nativeElement.textContent).toContain(USER_TEXTS.analytics.noCalls);
+    expect(fixture.nativeElement.querySelector('[data-testid="analytics-nothing"]')).not.toBeNull();
+    expect(page).toContain(USER_TEXTS.analytics.noUsage);
+    expect(page).toContain(USER_TEXTS.analytics.otherPeriod);
+    expect(fixture.nativeElement.querySelector('[data-testid="analytics-tiles"]')).toBeNull();
+    expect(page).not.toContain(USER_TEXTS.analytics.noCalls);
+  });
+
+  it('tells an account that owns nothing why there is nothing to show', async () => {
+    const fixture = await render({ period: {}, metrics: [] }, [], false);
+    const page = fixture.nativeElement.textContent;
+
+    expect(page).toContain(USER_TEXTS.analytics.nothingToPick);
+    expect(page).not.toContain(USER_TEXTS.analytics.otherPeriod);
   });
 
   it('reloads the window when another period is picked', async () => {

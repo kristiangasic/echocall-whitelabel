@@ -20,7 +20,7 @@
     },
     "balance": {
       "title": "Balance",
-      "hint": "Available balance"
+      "hint": "What is left to spend."
     },
     "plan": {
       "title": "Plan",
@@ -33,7 +33,6 @@
     },
     "recent": {
       "title": "Recent conversations",
-      "hint": "The five most recent calls.",
       "empty": "No conversations yet.",
       "all": "All conversations"
     }
@@ -308,7 +307,8 @@
       "chat_session": "Chat conversations"
     },
     "pickOne": "Pick a voice agent or a chatbot to see its own figures.",
-    "nothingToPick": "You have no voice agent and no chatbot yet."
+    "nothingToPick": "You have no voice agent and no chatbot yet.",
+    "otherPeriod": "Try another period, or come back once a call or a chat has come in."
   },
   "integrations": {
     "title": "Integrations",

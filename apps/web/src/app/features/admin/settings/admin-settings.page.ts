@@ -109,7 +109,7 @@ const ROUTE = '/admin/settings/registration';
                     (input)="onColorPicked($event)"
                     [attr.aria-label]="t('admin.settings.branding.primaryColor')"
                   />
-                  <mat-form-field appearance="outline" class="full">
+                  <mat-form-field appearance="outline" class="field-sm">
                     <mat-label>{{ t('admin.settings.branding.primaryColor') }}</mat-label>
                     <input
                       matInput

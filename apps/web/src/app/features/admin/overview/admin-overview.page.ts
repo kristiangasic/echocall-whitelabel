@@ -115,7 +115,7 @@ interface OpenTickets {
             <!-- A count of zero is an answer, not a gap: check for null, not for truth. -->
             @if (subscriptions() !== null) {
               <span class="stat-value">{{ subscriptions() }}</span>
-              <p class="stat-foot">{{ t('admin.overview.subscriptions.total') }}</p>
+              <p class="stat-foot">{{ t('admin.overview.subscriptions.hint') }}</p>
             } @else {
               <span class="stat-value">&ndash;</span>
               <p class="stat-foot">{{ t('admin.overview.unavailable') }}</p>
@@ -157,31 +157,40 @@ interface OpenTickets {
             <h2 class="section-title">{{ t('admin.overview.users.title') }}</h2>
             <a mat-stroked-button routerLink="/admin/users">{{ t('admin.overview.users.manage') }}</a>
           </div>
-          <div class="stat-grid compact cols-6" data-testid="user-counts">
-            <div class="stat">
-              <span class="stat-label">{{ t('admin.overview.users.all') }}</span>
-              <span class="stat-value">{{ o.users.total }}</span>
+          <!--
+            The same accounts counted by role and by status: three sums that are
+            all the same number, so one panel holds the total once and the two
+            ways of splitting it beside each other.
+          -->
+          <div class="users" data-testid="user-counts">
+            <div class="users-total">
+              <span class="users-label">{{ t('admin.overview.users.all') }}</span>
+              <span class="users-count">{{ o.users.total }}</span>
             </div>
-            <div class="stat">
-              <span class="stat-label">{{ t('roles.admin') }}</span>
-              <span class="stat-value">{{ o.users.admins }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">{{ t('roles.user') }}</span>
-              <span class="stat-value">{{ o.users.users }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">{{ t('statuses.active') }}</span>
-              <span class="stat-value">{{ o.users.active }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">{{ t('statuses.invited') }}</span>
-              <span class="stat-value">{{ o.users.invited }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">{{ t('statuses.disabled') }}</span>
-              <span class="stat-value">{{ o.users.disabled }}</span>
-            </div>
+            <dl class="users-part">
+              <div class="users-line">
+                <dt>{{ t('roles.admin') }}</dt>
+                <dd>{{ o.users.admins }}</dd>
+              </div>
+              <div class="users-line">
+                <dt>{{ t('roles.user') }}</dt>
+                <dd>{{ o.users.users }}</dd>
+              </div>
+            </dl>
+            <dl class="users-part">
+              <div class="users-line">
+                <dt>{{ t('statuses.active') }}</dt>
+                <dd>{{ o.users.active }}</dd>
+              </div>
+              <div class="users-line">
+                <dt>{{ t('statuses.invited') }}</dt>
+                <dd>{{ o.users.invited }}</dd>
+              </div>
+              <div class="users-line">
+                <dt>{{ t('statuses.disabled') }}</dt>
+                <dd>{{ o.users.disabled }}</dd>
+              </div>
+            </dl>
           </div>
         </section>
       }
@@ -236,6 +245,48 @@ interface OpenTickets {
     .hub-bad .hub-checked {
       color: inherit;
     }
+    .users {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px 56px;
+      padding: 16px 20px;
+      border: 1px solid var(--mat-sys-outline-variant);
+      border-radius: 16px;
+      background: var(--mat-sys-surface);
+    }
+    .users-total {
+      display: grid;
+      gap: 2px;
+      align-content: start;
+    }
+    .users-label {
+      font: var(--mat-sys-label-large);
+      color: var(--mat-sys-on-surface-variant);
+    }
+    .users-count {
+      font: var(--mat-sys-headline-medium);
+      font-variant-numeric: tabular-nums;
+    }
+    .users-part {
+      margin: 0;
+      display: grid;
+      gap: 4px;
+      align-content: start;
+      min-width: 180px;
+    }
+    .users-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      font: var(--mat-sys-body-medium);
+    }
+    .users-line dt {
+      color: var(--mat-sys-on-surface-variant);
+    }
+    .users-line dd {
+      margin: 0;
+      font-variant-numeric: tabular-nums;
+    }
     @media (max-width: 599px) {
       .hub {
         flex-wrap: wrap;
@@ -243,6 +294,15 @@ interface OpenTickets {
       }
       .hub-action {
         width: 100%;
+      }
+      // Two columns of figures do not fit beside the total, and a panel that
+      // wraps into three ragged blocks reads worse than three stacked ones.
+      .users {
+        display: grid;
+        gap: 16px;
+      }
+      .users-part {
+        min-width: 0;
       }
     }
   `,

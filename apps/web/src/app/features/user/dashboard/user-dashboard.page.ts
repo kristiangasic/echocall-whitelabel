@@ -123,7 +123,6 @@ import { conversationTitle } from '../conversations/conversation.model';
         <mat-card appearance="outlined" class="recent">
           <mat-card-header>
             <mat-card-title>{{ t('user.dashboard.recent.title') }}</mat-card-title>
-            <mat-card-subtitle>{{ t('user.dashboard.recent.hint') }}</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
             @if (recent().length) {

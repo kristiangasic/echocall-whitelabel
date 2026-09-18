@@ -2,6 +2,7 @@ import { Component, computed, inject, type OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
@@ -46,6 +47,7 @@ interface DailyResponse {
     FormsModule,
     MatCardModule,
     MatFormFieldModule,
+    MatIconModule,
     MatProgressBarModule,
     MatSelectModule,
     MatTableModule,
@@ -71,123 +73,141 @@ interface DailyResponse {
         <mat-progress-bar mode="indeterminate" />
       }
 
-      <div class="stat-row" data-testid="analytics-tiles">
-        @for (metric of metrics(); track metric.usageType) {
-          <div class="stat">
-            <span class="stat-label">{{ usageLabel(t, metric.usageType) }}</span>
-            <span class="stat-value">{{ number(metric.totalQuantity ?? 0) }}</span>
-            <p class="stat-foot">
-              {{ t('user.analytics.charged', { amount: money(metric.totalRevenue ?? 0) }) }}
-            </p>
-          </div>
-        } @empty {
-          <p class="hint">{{ t('user.analytics.noUsage') }}</p>
-        }
-      </div>
-
-      <mat-card appearance="outlined" class="section">
-        <mat-card-header>
-          <mat-card-title>{{ t('user.analytics.perDay') }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <app-bar-list [items]="dailyBars()" [emptyText]="t('user.analytics.noCalls')" />
-          @if (daily().length) {
-            <div class="table-wrap">
-              <table mat-table [dataSource]="daily()" class="daily" data-testid="analytics-daily">
-                <ng-container matColumnDef="date">
-                  <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.day') }}</th>
-                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.day')">
-                    {{ row.date }}
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="calls">
-                  <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.calls') }}</th>
-                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.calls')">
-                    {{ row.callCount ?? 0 }}
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="successRate">
-                  <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.successRate') }}</th>
-                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.successRate')">
-                    {{ percent(row.successRate) }}
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="duration">
-                  <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.averageDuration') }}</th>
-                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.averageDuration')">
-                    {{ seconds(row.averageDuration) }}
-                  </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="dailyColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: dailyColumns"></tr>
-              </table>
+      @if (loaded() && nothing()) {
+        <mat-card appearance="outlined" class="nothing" data-testid="analytics-nothing">
+          <mat-card-content>
+            <mat-icon>insights</mat-icon>
+            <p>{{ t('user.analytics.noUsage') }}</p>
+            @if (agents().length || chatbots().length) {
+              <p class="hint">{{ t('user.analytics.otherPeriod') }}</p>
+            } @else {
+              <p class="hint">{{ t('user.analytics.nothingToPick') }}</p>
+            }
+          </mat-card-content>
+        </mat-card>
+      } @else {
+        <div class="stat-row" data-testid="analytics-tiles">
+          @for (metric of metrics(); track metric.usageType) {
+            <div class="stat">
+              <span class="stat-label">{{ usageLabel(t, metric.usageType) }}</span>
+              <span class="stat-value">{{ number(metric.totalQuantity ?? 0) }}</span>
+              <p class="stat-foot">
+                {{ t('user.analytics.charged', { amount: money(metric.totalRevenue ?? 0) }) }}
+              </p>
             </div>
+          } @empty {
+            <p class="hint">{{ t('user.analytics.noUsage') }}</p>
           }
-        </mat-card-content>
-      </mat-card>
+        </div>
 
-      <mat-card appearance="outlined" class="section">
-        <mat-card-header>
-          <mat-card-title>{{ t('user.analytics.breakdown') }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          @if (agents().length || chatbots().length) {
-            <div class="pickers">
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                <mat-label>{{ t('nav.agents') }}</mat-label>
-                <mat-select
-                  [ngModel]="agentId()"
-                  (ngModelChange)="selectAgent($event)"
-                  data-testid="analytics-agent"
-                >
-                  <mat-option [value]="null">{{ t('user.analytics.noSelection') }}</mat-option>
-                  @for (agent of agents(); track agent.id) {
-                    <mat-option [value]="agent.id">{{ agent.name }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                <mat-label>{{ t('nav.chatbots') }}</mat-label>
-                <mat-select
-                  [ngModel]="chatbotId()"
-                  (ngModelChange)="selectChatbot($event)"
-                  data-testid="analytics-chatbot"
-                >
-                  <mat-option [value]="null">{{ t('user.analytics.noSelection') }}</mat-option>
-                  @for (chatbot of chatbots(); track chatbot.id) {
-                    <mat-option [value]="chatbot.id">{{ chatbot.name }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            </div>
-          }
+        <mat-card appearance="outlined" class="section">
+          <mat-card-header>
+            <mat-card-title>{{ t('user.analytics.perDay') }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <app-bar-list [items]="dailyBars()" [emptyText]="t('user.analytics.noCalls')" />
+            @if (daily().length) {
+              <div class="table-wrap">
+                <table mat-table [dataSource]="daily()" class="daily" data-testid="analytics-daily">
+                  <ng-container matColumnDef="date">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.day') }}</th>
+                    <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.day')">
+                      {{ row.date }}
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="calls">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.calls') }}</th>
+                    <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.calls')">
+                      {{ row.callCount ?? 0 }}
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="successRate">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.successRate') }}</th>
+                    <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.successRate')">
+                      {{ percent(row.successRate) }}
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="duration">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.averageDuration') }}</th>
+                    <td
+                      mat-cell
+                      *matCellDef="let row"
+                      [attr.data-label]="t('user.analytics.averageDuration')"
+                    >
+                      {{ seconds(row.averageDuration) }}
+                    </td>
+                  </ng-container>
+                  <tr mat-header-row *matHeaderRowDef="dailyColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: dailyColumns"></tr>
+                </table>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
 
-          @if (!agents().length && !chatbots().length) {
-            <p class="hint" data-testid="analytics-nothing-to-pick">
-              {{ t('user.analytics.nothingToPick') }}
-            </p>
-          } @else if (breakdown(); as stats) {
-            <dl class="facts" data-testid="analytics-breakdown">
-              <dt>{{ t('user.analytics.total') }}</dt>
-              <dd>{{ stats.totalCalls ?? 0 }}</dd>
-              <dt>{{ t('user.analytics.successful') }}</dt>
-              <dd>{{ stats.successfulCalls ?? 0 }}</dd>
-              <dt>{{ t('user.analytics.failed') }}</dt>
-              <dd>{{ stats.failedCalls ?? 0 }}</dd>
-              <dt>{{ t('user.analytics.averageDuration') }}</dt>
-              <dd>{{ seconds(stats.averageDuration) }}</dd>
-              <dt>{{ t('user.analytics.successRate') }}</dt>
-              <dd>{{ percent(stats.successRate) }}</dd>
-            </dl>
-          } @else if (breakdownEmpty()) {
-            <p class="hint" data-testid="analytics-breakdown-empty">
-              {{ t('user.analytics.noActivity') }}
-            </p>
-          } @else {
-            <p class="hint" data-testid="analytics-pick-one">{{ t('user.analytics.pickOne') }}</p>
-          }
-        </mat-card-content>
-      </mat-card>
+        <mat-card appearance="outlined" class="section">
+          <mat-card-header>
+            <mat-card-title>{{ t('user.analytics.breakdown') }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @if (agents().length || chatbots().length) {
+              <div class="pickers">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>{{ t('nav.agents') }}</mat-label>
+                  <mat-select
+                    [ngModel]="agentId()"
+                    (ngModelChange)="selectAgent($event)"
+                    data-testid="analytics-agent"
+                  >
+                    <mat-option [value]="null">{{ t('user.analytics.noSelection') }}</mat-option>
+                    @for (agent of agents(); track agent.id) {
+                      <mat-option [value]="agent.id">{{ agent.name }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>{{ t('nav.chatbots') }}</mat-label>
+                  <mat-select
+                    [ngModel]="chatbotId()"
+                    (ngModelChange)="selectChatbot($event)"
+                    data-testid="analytics-chatbot"
+                  >
+                    <mat-option [value]="null">{{ t('user.analytics.noSelection') }}</mat-option>
+                    @for (chatbot of chatbots(); track chatbot.id) {
+                      <mat-option [value]="chatbot.id">{{ chatbot.name }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            }
+
+            @if (!agents().length && !chatbots().length) {
+              <p class="hint" data-testid="analytics-nothing-to-pick">
+                {{ t('user.analytics.nothingToPick') }}
+              </p>
+            } @else if (breakdown(); as stats) {
+              <dl class="facts" data-testid="analytics-breakdown">
+                <dt>{{ t('user.analytics.total') }}</dt>
+                <dd>{{ stats.totalCalls ?? 0 }}</dd>
+                <dt>{{ t('user.analytics.successful') }}</dt>
+                <dd>{{ stats.successfulCalls ?? 0 }}</dd>
+                <dt>{{ t('user.analytics.failed') }}</dt>
+                <dd>{{ stats.failedCalls ?? 0 }}</dd>
+                <dt>{{ t('user.analytics.averageDuration') }}</dt>
+                <dd>{{ seconds(stats.averageDuration) }}</dd>
+                <dt>{{ t('user.analytics.successRate') }}</dt>
+                <dd>{{ percent(stats.successRate) }}</dd>
+              </dl>
+            } @else if (breakdownEmpty()) {
+              <p class="hint" data-testid="analytics-breakdown-empty">
+                {{ t('user.analytics.noActivity') }}
+              </p>
+            } @else {
+              <p class="hint" data-testid="analytics-pick-one">{{ t('user.analytics.pickOne') }}</p>
+            }
+          </mat-card-content>
+        </mat-card>
+      }
     </ng-container>
   `,
   styles: `
@@ -234,9 +254,17 @@ export class AnalyticsPage implements OnInit {
   readonly breakdown = signal<AgentStats | ChatbotStats | null>(null);
   readonly breakdownEmpty = signal(false);
   readonly loading = signal(false);
+  /** The window is only known to be empty once the service has answered once. */
+  readonly loaded = signal(false);
   readonly days = signal<number>(30);
   readonly agentId = signal<string | null>(null);
   readonly chatbotId = signal<number | null>(null);
+
+  /**
+   * Neither a figure nor a day with a call: the three parts of the page would
+   * each say so on their own, so one sentence stands for the whole window.
+   */
+  readonly nothing = computed(() => !this.metrics().length && !this.daily().length);
 
   readonly windows = WINDOWS;
   readonly dailyColumns = ['date', 'calls', 'successRate', 'duration'];
@@ -325,6 +353,7 @@ export class AnalyticsPage implements OnInit {
       this.daily.set(daily.data);
       this.agents.set(agents);
       this.chatbots.set(chatbots);
+      this.loaded.set(true);
     } catch (err) {
       this.notify.apiError(err);
     } finally {

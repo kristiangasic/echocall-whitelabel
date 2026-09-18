@@ -31,8 +31,8 @@
       "chatMessages": "Messages de chat"
     },
     "subscriptions": {
-      "title": "Abonnements",
-      "total": "Abonnements au total"
+      "hint": "Toutes les écritures, y compris résiliées.",
+      "title": "Abonnements"
     },
     "tickets": {
       "title": "Tickets",

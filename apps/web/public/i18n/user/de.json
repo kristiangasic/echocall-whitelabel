@@ -20,7 +20,7 @@
     },
     "balance": {
       "title": "Guthaben",
-      "hint": "Verfügbares Guthaben"
+      "hint": "Was noch zur Verfügung steht."
     },
     "plan": {
       "title": "Tarif",
@@ -33,7 +33,6 @@
     },
     "recent": {
       "title": "Letzte Gespräche",
-      "hint": "Die fünf jüngsten Telefonate.",
       "empty": "Noch keine Gespräche.",
       "all": "Alle Gespräche"
     }
@@ -308,7 +307,8 @@
       "chat_session": "Chat-Unterhaltungen"
     },
     "pickOne": "Wählen Sie einen Voice-Agenten oder einen Chatbot, um dessen Zahlen zu sehen.",
-    "nothingToPick": "Sie haben noch keinen Voice-Agenten und keinen Chatbot."
+    "nothingToPick": "Sie haben noch keinen Voice-Agenten und keinen Chatbot.",
+    "otherPeriod": "Wählen Sie einen anderen Zeitraum, oder kommen Sie wieder, sobald ein Anruf oder Chat eingegangen ist."
   },
   "integrations": {
     "title": "Integrationen",

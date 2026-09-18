@@ -31,8 +31,8 @@
       "chatMessages": "Chat messages"
     },
     "subscriptions": {
-      "title": "Subscriptions",
-      "total": "Subscriptions in total"
+      "hint": "Every record, cancelled ones included.",
+      "title": "Subscriptions"
     },
     "tickets": {
       "title": "Tickets",

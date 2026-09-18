@@ -231,7 +231,7 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
             </table>
           </div>
         } @else {
-          <p class="empty" data-testid="subscriptions-empty">
+          <p class="empty empty-panel" data-testid="subscriptions-empty">
             {{ t('admin.customer.subscriptions.empty') }}
           </p>
         }
@@ -369,9 +369,10 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
     .nowrap {
       white-space: nowrap;
     }
-    .empty {
+    /* Inside the usage card the sentence is the card's content and needs no
+       frame of its own, unlike the one that stands for a whole section. */
+    mat-card .empty {
       padding: 16px 0;
-      color: var(--mat-sys-on-surface-variant);
     }
   `,
 })
@@ -426,8 +427,12 @@ export class AdminCustomerDetailPage implements OnInit {
     return new Intl.NumberFormat(this.language.current(), { maximumFractionDigits: 2 }).format(value ?? 0);
   }
 
+  /** A day of the billing period, in the same spelling as every other date here. */
   fromDate(value: string): string {
-    return new Date(value).toLocaleDateString(this.language.current());
+    return new Intl.DateTimeFormat(this.language.current(), {
+      dateStyle: 'medium',
+      timeZone: 'UTC',
+    }).format(new Date(value));
   }
 
   usageRows() {

@@ -84,27 +84,29 @@ const WINDOWS = [7, 30, 90] as const;
       </div>
 
       @if (empty()) {
-        <p class="hint" data-testid="analytics-empty">{{ t('admin.analytics.noUsage') }}</p>
+        <div class="section">
+          <p class="hint empty-panel" data-testid="analytics-empty">{{ t('admin.analytics.noUsage') }}</p>
+        </div>
+      } @else {
+        <div class="splits section">
+          <mat-card appearance="outlined">
+            <mat-card-header>
+              <mat-card-title>{{ t('admin.analytics.revenueSplit') }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <app-bar-list [items]="revenueBars(t)" [emptyText]="t('admin.analytics.noUsage')" />
+            </mat-card-content>
+          </mat-card>
+          <mat-card appearance="outlined">
+            <mat-card-header>
+              <mat-card-title>{{ t('admin.analytics.costSplit') }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <app-bar-list [items]="costBars(t)" [emptyText]="t('admin.analytics.noUsage')" />
+            </mat-card-content>
+          </mat-card>
+        </div>
       }
-
-      <div class="splits section">
-        <mat-card appearance="outlined">
-          <mat-card-header>
-            <mat-card-title>{{ t('admin.analytics.revenueSplit') }}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <app-bar-list [items]="revenueBars(t)" [emptyText]="t('admin.analytics.noUsage')" />
-          </mat-card-content>
-        </mat-card>
-        <mat-card appearance="outlined">
-          <mat-card-header>
-            <mat-card-title>{{ t('admin.analytics.costSplit') }}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <app-bar-list [items]="costBars(t)" [emptyText]="t('admin.analytics.noUsage')" />
-          </mat-card-content>
-        </mat-card>
-      </div>
 
       <p class="hint">{{ t('admin.analytics.billedNote') }}</p>
     </ng-container>

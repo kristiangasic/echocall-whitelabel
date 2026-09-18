@@ -31,8 +31,8 @@
       "chatMessages": "Chat-Nachrichten"
     },
     "subscriptions": {
-      "title": "Abonnements",
-      "total": "Abonnements insgesamt"
+      "hint": "Alle Buchungen, auch gekündigte.",
+      "title": "Abonnements"
     },
     "tickets": {
       "title": "Tickets",

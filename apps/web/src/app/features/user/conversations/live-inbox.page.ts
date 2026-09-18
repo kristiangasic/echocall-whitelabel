@@ -139,21 +139,6 @@ const POLL_INTERVAL_MS = 5000;
     .inbox > mat-card > mat-card-content {
       flex: 1;
     }
-    /* No chat has ever come in, so the split workplace would be two empty
-       boxes. One card says what will appear here instead. */
-    .nothing mat-card-content {
-      display: grid;
-      justify-items: center;
-      gap: 8px;
-      padding: 48px 24px;
-      text-align: center;
-    }
-    .nothing mat-icon {
-      color: var(--mat-sys-on-surface-variant);
-    }
-    .nothing .hint {
-      margin: 0;
-    }
     /* Nothing to read yet, so the sentence sits in the middle of the space it
        is waiting to fill. */
     .blank {

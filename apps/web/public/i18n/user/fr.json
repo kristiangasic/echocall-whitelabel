@@ -20,7 +20,7 @@
     },
     "balance": {
       "title": "Solde",
-      "hint": "Solde disponible"
+      "hint": "Ce qu'il reste à dépenser."
     },
     "plan": {
       "title": "Forfait",
@@ -33,7 +33,6 @@
     },
     "recent": {
       "title": "Conversations récentes",
-      "hint": "Les cinq appels les plus récents.",
       "empty": "Aucune conversation pour le moment.",
       "all": "Toutes les conversations"
     }
@@ -308,7 +307,8 @@
       "chat_session": "Conversations de chat"
     },
     "pickOne": "Choisissez un agent vocal ou un chatbot pour voir ses propres chiffres.",
-    "nothingToPick": "Vous n'avez encore ni agent vocal ni chatbot."
+    "nothingToPick": "Vous n'avez encore ni agent vocal ni chatbot.",
+    "otherPeriod": "Choisissez une autre période, ou revenez dès qu'un appel ou un chat est arrivé."
   },
   "integrations": {
     "title": "Intégrations",
