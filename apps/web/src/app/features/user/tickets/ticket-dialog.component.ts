@@ -110,8 +110,6 @@ type Priority = (typeof PRIORITIES)[number];
       display: flex;
       flex-direction: column;
       gap: 4px;
-      min-width: min(480px, 80vw);
-      padding-top: 8px;
     }
   `,
 })

@@ -197,30 +197,6 @@ import { LocalDatePipe } from '../../../shared/local-date.pipe';
       padding: 16px 0;
       color: var(--mat-sys-on-surface-variant);
     }
-    .totals {
-      margin: 16px 0 0;
-      margin-left: auto;
-      display: grid;
-      gap: 4px;
-      max-width: 320px;
-    }
-    .totals div {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-    }
-    .totals dt,
-    .totals dd {
-      margin: 0;
-    }
-    .totals dd {
-      font-variant-numeric: tabular-nums;
-    }
-    .totals .gross {
-      font: var(--mat-sys-title-medium);
-      border-top: 1px solid var(--mat-sys-outline-variant);
-      padding-top: 4px;
-    }
   `,
 })
 export class AdminInvoiceDetailPage implements OnInit {

@@ -140,9 +140,6 @@ export interface PurchaseResult {
     </ng-container>
   `,
   styles: `
-    mat-dialog-content {
-      min-width: min(720px, 80vw);
-    }
     .search {
       display: flex;
       gap: 12px;

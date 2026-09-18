@@ -119,7 +119,7 @@ export class ChatbotsPage implements OnInit {
 
   showEmbed(chatbot: ChatbotSummary): void {
     const data: EmbedDialogData = { chatbotId: chatbot.id };
-    this.dialog.open(EmbedDialogComponent, { data, width: '640px' });
+    this.dialog.open(EmbedDialogComponent, { data });
   }
 
   async remove(chatbot: ChatbotSummary): Promise<void> {

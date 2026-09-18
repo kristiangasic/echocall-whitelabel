@@ -184,10 +184,6 @@ export interface ImportNumberResult {
     </ng-container>
   `,
   styles: `
-    mat-dialog-content {
-      min-width: min(620px, 90vw);
-      padding-top: 8px;
-    }
     .hint {
       margin: 0 0 16px;
       color: var(--mat-sys-on-surface-variant);

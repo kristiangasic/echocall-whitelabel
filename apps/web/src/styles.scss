@@ -610,6 +610,41 @@ mat-button-toggle-group {
   }
 }
 
+// ---------------------------------------------------------------------------
+// The figures under an invoice. They sit at the right edge, where the eye
+// leaves the lines they sum, and stop at a width it can cross in one go rather
+// than spanning a whole dialog with a label at one end and a figure at the
+// other.
+// ---------------------------------------------------------------------------
+.totals {
+  margin: 16px 0 0 auto;
+  max-width: 320px;
+  display: grid;
+  gap: 4px;
+}
+
+.totals div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.totals dt,
+.totals dd {
+  margin: 0;
+}
+
+.totals dd {
+  font-variant-numeric: tabular-nums;
+}
+
+// What is actually owed, ruled off from the parts it is made of.
+.totals .gross {
+  font: var(--mat-sys-title-medium);
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  padding-top: 4px;
+}
+
 // A link in a table is a row that opens, so it takes the accent colour and
 // underlines only when it is the target of the pointer or the keyboard.
 td a {
@@ -633,15 +668,28 @@ td a.row-link {
 // ---------------------------------------------------------------------------
 // Dialogs. A dialog is a single task, read across in one line of sight: past
 // about 640px the eye loses the line, and on a laptop a wider one buries the
-// page it belongs to. Content decides the width up to that cap.
+// page it belongs to. The panel sets the width rather than the form inside it,
+// so that a second dialog opens where the first one stood: letting each form
+// ask for its own left twelve of them at eleven different sizes, from a 420px
+// slip to an 829px slab, and the reader had to find the buttons again every
+// time.
 // ---------------------------------------------------------------------------
 .cdk-overlay-pane.mat-mdc-dialog-panel {
   --mat-dialog-container-max-width: min(94vw, 640px);
+  width: min(94vw, 640px);
   max-width: min(94vw, 640px);
 }
 
-// The two dialogs that hold a table of their own get one step more room.
+// The dialogs that hold a table of their own get one step more room.
 .cdk-overlay-pane.dialog-wide {
   --mat-dialog-container-max-width: min(94vw, 880px);
+  width: min(94vw, 880px);
   max-width: min(94vw, 880px);
+}
+
+// A question is not a form. The box that only asks one stops where the
+// sentence does, so that "delete this customer" does not arrive looking like
+// the dialog that creates one.
+.cdk-overlay-pane.mat-mdc-dialog-panel:has(app-confirm-dialog) {
+  width: min(94vw, 440px);
 }

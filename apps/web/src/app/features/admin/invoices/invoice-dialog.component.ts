@@ -170,10 +170,6 @@ function cents(value: number): number {
     </ng-container>
   `,
   styles: `
-    mat-dialog-content {
-      min-width: min(760px, 90vw);
-      padding-top: 8px;
-    }
     .hint {
       margin: 0 0 16px;
       color: var(--mat-sys-on-surface-variant);
@@ -209,26 +205,6 @@ function cents(value: number): number {
     }
     .notes {
       margin-top: 16px;
-    }
-    .totals {
-      margin: 16px 0 0;
-      display: grid;
-      gap: 4px;
-    }
-    .totals div {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-    }
-    .totals dt,
-    .totals dd {
-      margin: 0;
-    }
-    .totals dd {
-      font-variant-numeric: tabular-nums;
-    }
-    .totals .gross {
-      font: var(--mat-sys-title-medium);
     }
     @media (max-width: 700px) {
       .item {
