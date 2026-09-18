@@ -88,7 +88,7 @@ const SYSTEM_TOOLS = [
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field appearance="outline" [class.span-all]="isNew()">
+            <mat-form-field appearance="outline" [class.span-all]="isNew()" subscriptSizing="dynamic">
               <mat-label>{{ t('user.agents.supportedLanguages') }}</mat-label>
               <mat-select formControlName="supportedLanguages" multiple>
                 @for (lang of languages(); track lang.code) {
@@ -110,7 +110,7 @@ const SYSTEM_TOOLS = [
               <mat-label>{{ t('user.agents.firstMessage') }}</mat-label>
               <textarea matInput formControlName="firstMessage" rows="2"></textarea>
             </mat-form-field>
-            <mat-form-field appearance="outline" class="span-all">
+            <mat-form-field appearance="outline" class="span-all" subscriptSizing="dynamic">
               <mat-label>{{ t('user.agents.systemPrompt') }}</mat-label>
               <textarea
                 matInput
@@ -199,7 +199,7 @@ const SYSTEM_TOOLS = [
               <mat-label>{{ t('user.agents.maxTokens') }}</mat-label>
               <input matInput type="number" formControlName="maxTokens" min="1" />
             </mat-form-field>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
               <mat-label>{{ t('user.agents.asrKeywords') }}</mat-label>
               <input matInput formControlName="asrKeywords" />
               <mat-hint>{{ t('user.agents.asrKeywordsHint') }}</mat-hint>
@@ -244,7 +244,7 @@ const SYSTEM_TOOLS = [
             <mat-card-title>{{ t('user.agents.sections.privacy') }}</mat-card-title>
           </mat-card-header>
           <mat-card-content class="grid">
-            <mat-form-field appearance="outline" class="field-sm">
+            <mat-form-field appearance="outline" class="field-sm" subscriptSizing="dynamic">
               <mat-label>{{ t('user.agents.retentionDays') }}</mat-label>
               <input matInput type="number" formControlName="retentionDays" min="-1" />
               <mat-hint>{{ t('user.agents.retentionDaysHint') }}</mat-hint>
@@ -356,12 +356,6 @@ const SYSTEM_TOOLS = [
     }
     .span-all {
       grid-column: 1 / -1;
-    }
-    .toggles {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px 24px;
-      padding: 8px 0;
     }
     .slider-field {
       display: flex;

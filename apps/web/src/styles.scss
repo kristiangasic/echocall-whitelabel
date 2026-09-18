@@ -531,6 +531,21 @@ a.stat:focus-visible {
   width: 100%;
 }
 
+// A row of switches. Each one is a sentence, so on a phone they stand one per
+// line rather than wrapping into a ragged two-and-one.
+.toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 8px 0;
+}
+
+@media (max-width: 599px) {
+  .toggles {
+    flex-direction: column;
+  }
+}
+
 // A field that sizes its own subscript is one whose hint is too long for the
 // single line Material reserves. Letting the hint grow also hands that line
 // back, so a two-line hint ends flush against the next field. The gap the

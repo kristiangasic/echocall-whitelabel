@@ -155,11 +155,6 @@ const CYCLES = ['monthly', 'yearly', 'one-time'] as const;
     .limits {
       grid-template-columns: 1fr;
     }
-    .toggles {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 24px;
-    }
   `,
 })
 export class PlanDialogComponent {
