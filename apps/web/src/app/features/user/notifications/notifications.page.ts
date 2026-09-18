@@ -104,6 +104,7 @@ import { providePaginatorIntl } from '../../../shared/paginator-intl';
     .empty {
       margin: 0;
       padding: 24px;
+      text-align: center;
       color: var(--mat-sys-on-surface-variant);
     }
   `,

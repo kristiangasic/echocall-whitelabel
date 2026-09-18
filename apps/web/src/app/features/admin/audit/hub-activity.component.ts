@@ -91,13 +91,6 @@ const PER_PAGE = 25;
     .intro {
       color: var(--mat-sys-on-surface-variant);
     }
-    .nowrap {
-      white-space: nowrap;
-    }
-    .empty {
-      padding: 24px 16px;
-      color: var(--mat-sys-on-surface-variant);
-    }
   `,
 })
 export class HubActivityComponent implements OnInit {

@@ -41,7 +41,7 @@ import { AdminPricingPanel } from './pricing.panel';
           {{ t('admin.plans.create') }}
         </button>
       </div>
-      <p class="intro">{{ t('admin.plans.intro') }}</p>
+      <p class="page-hint">{{ t('admin.plans.intro') }}</p>
       @if (loading()) {
         <mat-progress-bar mode="indeterminate" />
       }
@@ -139,10 +139,6 @@ import { AdminPricingPanel } from './pricing.panel';
     </ng-container>
   `,
   styles: `
-    .intro {
-      margin: 0 0 16px;
-      color: var(--mat-sys-on-surface-variant);
-    }
     .cell-sub {
       font: var(--mat-sys-body-small);
       color: var(--mat-sys-on-surface-variant);
@@ -154,10 +150,6 @@ import { AdminPricingPanel } from './pricing.panel';
     .numeric {
       text-align: right;
       font-variant-numeric: tabular-nums;
-    }
-    .empty {
-      padding: 24px 16px;
-      color: var(--mat-sys-on-surface-variant);
     }
     app-admin-pricing-panel {
       display: block;

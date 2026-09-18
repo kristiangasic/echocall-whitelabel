@@ -212,13 +212,7 @@ const DEFAULT_PER_PAGE = 25;
       text-align: right;
       font-variant-numeric: tabular-nums;
     }
-    .nowrap {
-      white-space: nowrap;
-    }
     .status-none {
-      color: var(--mat-sys-on-surface-variant);
-    }
-    .empty {
       color: var(--mat-sys-on-surface-variant);
     }
   `,

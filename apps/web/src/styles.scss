@@ -235,6 +235,12 @@ mat-dialog-content .table-wrap {
   }
 }
 
+// A date, a phone number, a figure with its currency: a value that means one
+// thing broken across two lines means nothing on either.
+.nowrap {
+  white-space: nowrap;
+}
+
 .status {
   display: inline-block;
   padding: 2px 10px;
@@ -565,13 +571,15 @@ td.empty {
 
 // The same sentence where it stands for a whole section rather than sitting
 // inside a card: it keeps the frame the table would have drawn, so it reads as
-// an empty list and not as a line that lost its surroundings.
+// an empty list and not as a line that lost its surroundings, and it sits where
+// an empty table's sentence sits.
 .empty-panel {
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 12px;
   background: var(--mat-sys-surface);
   padding: 16px;
   margin: 0;
+  text-align: center;
 }
 
 // A link in a table is a row that opens, so it takes the accent colour and

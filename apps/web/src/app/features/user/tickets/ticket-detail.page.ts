@@ -152,9 +152,6 @@ const SUPPORT_ROLES = ['admin', 'reseller'];
       margin: 6px 0 0;
       white-space: pre-wrap;
     }
-    .empty {
-      color: var(--mat-sys-on-surface-variant);
-    }
     .reply {
       display: flex;
       gap: 12px;

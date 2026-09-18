@@ -366,9 +366,6 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
       text-align: right;
       font-variant-numeric: tabular-nums;
     }
-    .nowrap {
-      white-space: nowrap;
-    }
     /* Inside the usage card the sentence is the card's content and needs no
        frame of its own, unlike the one that stands for a whole section. */
     mat-card .empty {

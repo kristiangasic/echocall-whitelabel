@@ -309,6 +309,11 @@ interface OpenTickets {
         grid-template-columns: minmax(0, 1fr);
         gap: 16px;
       }
+      // One column is as wide as the phone, and the figure belongs at its far
+      // edge again rather than a third of the way across it.
+      .users-line {
+        max-width: none;
+      }
       .users-part {
         min-width: 0;
         padding-left: 0;

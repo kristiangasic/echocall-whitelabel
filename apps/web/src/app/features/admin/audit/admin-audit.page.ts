@@ -65,7 +65,12 @@ import { HubActivityComponent } from './hub-activity.component';
                 </ng-container>
                 <ng-container matColumnDef="target">
                   <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.target') }}</th>
-                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.target')">
+                  <td
+                    mat-cell
+                    *matCellDef="let row"
+                    [attr.data-label]="t('admin.audit.target')"
+                    class="nowrap"
+                  >
                     @if (row.targetType) {
                       {{ targetLabel(row) }}
                     } @else {
@@ -125,9 +130,6 @@ import { HubActivityComponent } from './hub-activity.component';
     .intro {
       color: var(--mat-sys-on-surface-variant);
     }
-    .nowrap {
-      white-space: nowrap;
-    }
     .details {
       display: inline-block;
       max-width: 280px;
@@ -143,9 +145,6 @@ import { HubActivityComponent } from './hub-activity.component';
         max-width: none;
         white-space: normal;
       }
-    }
-    .empty {
-      color: var(--mat-sys-on-surface-variant);
     }
   `,
 })

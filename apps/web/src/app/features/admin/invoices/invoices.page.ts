@@ -215,13 +215,6 @@ const PAYABLE = new Set(['draft', 'pending', 'failed']);
       text-align: right;
       font-variant-numeric: tabular-nums;
     }
-    .nowrap {
-      white-space: nowrap;
-    }
-    .empty {
-      padding: 24px 16px;
-      color: var(--mat-sys-on-surface-variant);
-    }
   `,
 })
 export class AdminInvoicesPage implements OnInit {

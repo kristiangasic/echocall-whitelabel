@@ -170,13 +170,6 @@ const STATUSES = ['open', 'in_progress', 'waiting', 'resolved', 'closed'] as con
       font-weight: 600;
       color: var(--mat-sys-error);
     }
-    .nowrap {
-      white-space: nowrap;
-    }
-    .empty {
-      padding: 24px 16px;
-      color: var(--mat-sys-on-surface-variant);
-    }
   `,
 })
 export class AdminTicketsPage implements OnInit {

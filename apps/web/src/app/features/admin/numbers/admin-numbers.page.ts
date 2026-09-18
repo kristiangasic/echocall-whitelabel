@@ -177,9 +177,6 @@ import { ImportNumberDialogComponent, type ImportNumberResult } from './import-n
       text-align: right;
       font-variant-numeric: tabular-nums;
     }
-    .nowrap {
-      white-space: nowrap;
-    }
   `,
 })
 export class AdminNumbersPage implements OnInit {

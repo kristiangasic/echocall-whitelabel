@@ -170,10 +170,6 @@ import { UserDialogComponent, type UserDialogData, type UserDialogResult } from 
       text-align: right;
       width: 56px;
     }
-    .empty {
-      padding: 24px 16px;
-      color: var(--mat-sys-on-surface-variant);
-    }
   `,
 })
 export class AdminUsersPage implements OnInit {

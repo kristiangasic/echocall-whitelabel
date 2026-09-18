@@ -109,6 +109,9 @@ import { TwoFactorPanel } from './two-factor.panel';
     mat-card-header {
       padding-bottom: 8px;
     }
+    mat-card-title {
+      overflow-wrap: anywhere;
+    }
   `,
 })
 export class AccountPage {

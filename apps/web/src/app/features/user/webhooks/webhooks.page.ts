@@ -53,7 +53,7 @@ interface TestDelivery {
           {{ t('user.webhooks.create') }}
         </button>
       </div>
-      <p class="hint">{{ t('user.webhooks.hint') }}</p>
+      <p class="page-hint">{{ t('user.webhooks.hint') }}</p>
 
       @if (loading()) {
         <mat-progress-bar mode="indeterminate" />
@@ -163,10 +163,6 @@ interface TestDelivery {
     .row-actions {
       white-space: nowrap;
       text-align: right;
-    }
-    .empty,
-    .hint {
-      color: var(--mat-sys-on-surface-variant);
     }
   `,
 })

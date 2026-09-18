@@ -237,13 +237,6 @@ const PURCHASE_LIMIT = 50;
       text-align: right;
       font-variant-numeric: tabular-nums;
     }
-    .nowrap {
-      white-space: nowrap;
-    }
-    .empty {
-      padding: 24px 16px;
-      color: var(--mat-sys-on-surface-variant);
-    }
   `,
 })
 export class AdminAddonsPage implements OnInit {

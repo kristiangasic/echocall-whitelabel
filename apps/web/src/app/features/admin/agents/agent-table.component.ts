@@ -76,15 +76,8 @@ export interface AgentRow {
     </ng-container>
   `,
   styles: `
-    .nowrap {
-      white-space: nowrap;
-    }
     .cell-actions {
       text-align: right;
-    }
-    .empty {
-      padding: 24px 16px;
-      color: var(--mat-sys-on-surface-variant);
     }
   `,
 })

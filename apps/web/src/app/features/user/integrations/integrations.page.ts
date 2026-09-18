@@ -79,7 +79,7 @@ const GROUP_ORDER = [
           {{ t('user.integrations.connect') }}
         </button>
       </div>
-      <p class="hint">{{ t('user.integrations.hint') }}</p>
+      <p class="page-hint">{{ t('user.integrations.hint') }}</p>
 
       @if (loading()) {
         <mat-progress-bar mode="indeterminate" />
@@ -204,10 +204,6 @@ const GROUP_ORDER = [
     .row-actions {
       white-space: nowrap;
       text-align: right;
-    }
-    .empty,
-    .hint {
-      color: var(--mat-sys-on-surface-variant);
     }
     .catalog-title {
       margin: 32px 0 12px;
