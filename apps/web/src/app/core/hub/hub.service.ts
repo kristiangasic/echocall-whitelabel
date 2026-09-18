@@ -13,6 +13,22 @@ export interface HubPage<T> {
 }
 
 /**
+ * How a collection can arrive. Which of the two shapes the hub sends depends on
+ * the endpoint and on the release the hub runs: customers, tickets and plans
+ * still answer as a bare array, everything else wraps its items in { data }.
+ */
+type Collection<T> = HubPage<T> | T[] | null;
+
+function toPage<T>(body: Collection<T>): HubPage<T> {
+  if (Array.isArray(body)) return { data: body };
+  return { data: body?.data ?? [], ...(body?.pagination ? { pagination: body.pagination } : {}) };
+}
+
+function toItems<T>(body: Collection<T>): T[] {
+  return toPage(body).data;
+}
+
+/**
  * Calls the hub through one of the portal's allow-listed proxies.
  * Paths are the documented hub paths, for example get('/agents/3').
  */
@@ -28,12 +44,12 @@ export abstract class HubApi {
 
   /** Fetches a hub collection and unwraps its { data } envelope. */
   list<T>(path: string, params?: Params): Observable<T[]> {
-    return this.get<{ data: T[] }>(path, params).pipe(map((res) => res.data));
+    return this.get<Collection<T>>(path, params).pipe(map(toItems));
   }
 
   /** Fetches one page of a paginated hub collection, envelope included. */
   page<T>(path: string, params?: Params): Observable<HubPage<T>> {
-    return this.get<HubPage<T>>(path, params);
+    return this.get<Collection<T>>(path, params).pipe(map(toPage));
   }
 
   post<T>(path: string, body: unknown = {}): Observable<T> {

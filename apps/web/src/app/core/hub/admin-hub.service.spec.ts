@@ -29,6 +29,37 @@ describe('AdminHubService', () => {
     expect(seen).toEqual({ data: [{ id: 1 }], pagination: { page: 2, perPage: 25, total: 1 } });
   });
 
+  it('reads a collection the service answers as a bare array', () => {
+    let seen: unknown;
+    hub.page('/resellers/customers', { page: 1, perPage: 25 }).subscribe((res) => (seen = res));
+
+    // Older releases of the service answer some collections without the envelope.
+    http.expectOne((r) => r.url === '/api/admin/hub/resellers/customers').flush([{ id: 1 }, { id: 2 }]);
+
+    expect(seen).toEqual({ data: [{ id: 1 }, { id: 2 }] });
+  });
+
+  it('reads a bare array for list() as well', () => {
+    let seen: unknown[] = [];
+    hub.list<{ id: number }>('/resellers/plans').subscribe((res) => (seen = res));
+
+    http.expectOne('/api/admin/hub/resellers/plans').flush([{ id: 4 }]);
+
+    expect(seen).toEqual([{ id: 4 }]);
+  });
+
+  it('answers with an empty collection when the service sends neither shape', () => {
+    let page: unknown;
+    let items: unknown[] = [];
+    hub.page('/resellers/tickets').subscribe((res) => (page = res));
+    http.expectOne('/api/admin/hub/resellers/tickets').flush(null);
+    hub.list('/resellers/tickets').subscribe((res) => (items = res));
+    http.expectOne('/api/admin/hub/resellers/tickets').flush(null);
+
+    expect(page).toEqual({ data: [] });
+    expect(items).toEqual([]);
+  });
+
   it('unwraps a { data } envelope for list()', () => {
     let seen: unknown[] = [];
     hub.list<{ id: number }>('/resellers/plans').subscribe((res) => (seen = res));

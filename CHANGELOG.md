@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Collections are read whether the service answers them as a bare array or wrapped in a
+  `{ data }` envelope. Which of the two arrives depends on the endpoint and on the release
+  the service runs; the portal used to require the envelope, so an operator panel talking
+  to an older service showed an empty customer list and an error instead of the customers.
+
 ## [0.1.0] - 2026-09-17
 
 First public release.
