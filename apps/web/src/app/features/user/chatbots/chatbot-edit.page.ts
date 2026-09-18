@@ -321,7 +321,7 @@ export class ChatbotEditPage implements OnInit {
   readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],
     chatbotDisplayName: [''],
-    language: ['de', Validators.required],
+    language: ['en', Validators.required],
     supportedLanguages: [[] as string[]],
     status: ['active' as 'active' | 'inactive'],
     greeting: [''],
@@ -386,7 +386,7 @@ export class ChatbotEditPage implements OnInit {
       this.form.patchValue({
         name: bot.name,
         chatbotDisplayName: bot.chatbotDisplayName ?? '',
-        language: bot.language ?? 'de',
+        language: bot.language ?? 'en',
         supportedLanguages: bot.supportedLanguages ?? [],
         status: bot.status,
         greeting: bot.greeting ?? '',

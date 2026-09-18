@@ -29,8 +29,8 @@ const DAILY = [
   { date: '2026-09-17', callCount: 2, successfulCalls: 2, failedCalls: 0, successRate: 1 },
 ];
 
-const AGENT = { id: 'agent_5', name: 'Empfang', language: 'de', status: 'active' };
-const CHATBOT = { id: 8, name: 'Support', language: 'de', status: 'active' };
+const AGENT = { id: 'agent_5', name: 'Empfang', language: 'en', status: 'active' };
+const CHATBOT = { id: 8, name: 'Support', language: 'en', status: 'active' };
 
 describe('AnalyticsPage', () => {
   let http: HttpTestingController;
@@ -83,16 +83,16 @@ describe('AnalyticsPage', () => {
 
     const tiles = fixture.nativeElement.querySelector('[data-testid="analytics-tiles"]');
     expect(tiles.textContent).toContain(USER_TEXTS.analytics.usage.voice_minute);
-    expect(tiles.textContent).toContain('128,5');
-    expect(tiles.textContent).toContain('25,70');
+    expect(tiles.textContent).toContain('128.5');
+    expect(tiles.textContent).toContain('25.70');
   });
 
   it('keeps the platform cost and margin out of the customer view', async () => {
     const fixture = await render();
 
     const page = fixture.nativeElement.textContent;
-    expect(page).not.toContain('9,10');
-    expect(page).not.toContain('16,60');
+    expect(page).not.toContain('9.10');
+    expect(page).not.toContain('16.60');
   });
 
   it('renders one table row and one bar per day', async () => {

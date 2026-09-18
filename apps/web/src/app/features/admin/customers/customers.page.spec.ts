@@ -49,7 +49,7 @@ const LOGINS = [
     status: 'active',
     firstName: null,
     lastName: null,
-    language: 'de',
+    language: 'en',
     echocallCustomerId: null,
     lastLoginAt: null,
     createdAt: '2026-07-01T09:00:00.000Z',
@@ -61,7 +61,7 @@ const LOGINS = [
     status: 'invited',
     firstName: 'Lina',
     lastName: 'Mayer',
-    language: 'de',
+    language: 'en',
     echocallCustomerId: 501,
     lastLoginAt: null,
     createdAt: '2026-08-01T09:05:00.000Z',
@@ -126,7 +126,7 @@ describe('AdminCustomersPage', () => {
     expect(rows[0].textContent).toContain('linked@example.com');
     expect(rows[0].textContent).toContain('Lina Mayer');
     expect(rows[0].textContent).toContain('Mayer GmbH');
-    expect(rows[0].textContent).toContain('42,50');
+    expect(rows[0].textContent).toContain('42.50');
     expect(rows[0].textContent).toContain(ADMIN_TEXTS.customers.accountStatuses.active);
     expect(rows[1].textContent).toContain(ADMIN_TEXTS.customers.accountStatuses.suspended);
     expect(rows[1].querySelector('[data-testid="no-login"]')).not.toBeNull();

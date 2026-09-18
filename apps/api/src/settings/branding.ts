@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const LANGUAGES = ['de', 'en', 'fr'] as const;
+export const LANGUAGES = ['en', 'de', 'fr'] as const;
 export type Language = (typeof LANGUAGES)[number];
 
 /** Everything the portal shows about its operator. Nothing in here is secret. */
@@ -23,7 +23,7 @@ export const DEFAULT_BRANDING: Branding = {
   supportEmail: null,
   imprintUrl: null,
   privacyUrl: null,
-  defaultLanguage: 'de',
+  defaultLanguage: 'en',
 };
 
 /** 200 KB of base64 keeps the logo small enough to inline into every page. */

@@ -1,7 +1,8 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ADMIN_TEXTS, provideTestI18n } from '../../../testing/i18n';
+import { TranslocoService } from '@jsverse/transloco';
+import { ADMIN_TEXTS, ADMIN_TEXTS_DE, provideTestI18n } from '../../../testing/i18n';
 import { AdminPricingPanel } from './pricing.panel';
 
 const PRICING = {
@@ -88,8 +89,8 @@ describe('AdminPricingPanel', () => {
     const text = fixture.nativeElement.textContent as string;
 
     expect(text).toContain(ADMIN_TEXTS.pricing.voiceMinute);
-    expect(text).toContain('0,30');
-    expect(text).toContain('0,15');
+    expect(text).toContain('0.30');
+    expect(text).toContain('0.15');
     expect(input(fixture, 'voice-price').value).toBe('0.45');
     expect(input(fixture, 'chat-price').value).toBe('0.5');
   });
@@ -100,8 +101,16 @@ describe('AdminPricingPanel', () => {
 
     expect(text).toContain(ADMIN_TEXTS.pricing.tiers.minimal);
     expect(text).toContain(ADMIN_TEXTS.pricing.tiers.enterprise);
-    expect(text).not.toContain('Break-even');
-    expect(text).not.toContain('Margin');
+    // The names the hub sends are never shown as they arrive.
+    expect(text).not.toContain('Minimal (Break-even)');
+    expect(text).not.toContain('Margin)');
+
+    TestBed.inject(TranslocoService).setActiveLang('de');
+    fixture.detectChanges();
+    const german = fixture.nativeElement.textContent as string;
+
+    expect(german).toContain(ADMIN_TEXTS_DE.pricing.tiers.minimal);
+    expect(german).not.toContain('Break-even');
   });
 
   it('only fills the form when a suggestion is applied and says it is unsaved', async () => {
@@ -160,7 +169,7 @@ describe('AdminPricingPanel', () => {
     const text = fixture.nativeElement.textContent as string;
 
     expect(text).not.toContain('24.999999999999993');
-    expect(text).toContain('25 %');
+    expect(text).toContain('25%');
   });
 
   it('refuses to save a price of zero', async () => {

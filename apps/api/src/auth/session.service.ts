@@ -26,7 +26,7 @@ export interface SessionUser {
   role: UserRole;
   firstName: string | null;
   lastName: string | null;
-  language: 'de' | 'en' | 'fr';
+  language: 'en' | 'de' | 'fr';
   echocallCustomerId: number | null;
   /** True once a second factor is enrolled and confirmed; the portal shows and offers it. */
   twoFactorEnabled: boolean;

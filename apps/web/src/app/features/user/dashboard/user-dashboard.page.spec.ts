@@ -61,7 +61,7 @@ describe('UserDashboardPage', () => {
 
     const tiles = fixture.nativeElement.querySelector('[data-testid="tiles"]');
     expect(tiles.textContent).toContain('42');
-    expect(tiles.textContent).toContain('19,50');
+    expect(tiles.textContent).toContain('19.50');
     expect(tiles.textContent).toContain('Business');
   });
 
@@ -78,7 +78,7 @@ describe('UserDashboardPage', () => {
     await fixture.whenStable();
 
     const tiles = fixture.nativeElement.querySelector('[data-testid="tiles"]');
-    expect(tiles.textContent).not.toContain('Noch 0 Minuten');
+    expect(tiles.textContent).not.toContain('0 minutes still available');
     expect(tiles.textContent).toContain(USER_TEXTS.dashboard.plan.none);
   });
 
@@ -87,7 +87,7 @@ describe('UserDashboardPage', () => {
 
     const tiles = fixture.nativeElement.querySelector('[data-testid="tiles"]');
     expect(tiles.textContent).toContain(USER_TEXTS.dashboard.statuses.active);
-    expect(USER_TEXTS.dashboard.statuses.active).toBe('Konto aktiv');
+    expect(USER_TEXTS.dashboard.statuses.active).toBe('Account active');
   });
 
   it('lists the most recent conversations', async () => {

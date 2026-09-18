@@ -132,7 +132,7 @@ export class CustomerDialogComponent {
     company: [this.customer?.company ?? '', Validators.maxLength(200)],
     language: [
       this.data.mode === 'edit'
-        ? (this.data.customer.login?.language ?? 'de')
+        ? (this.data.customer.login?.language ?? 'en')
         : (this.data.defaultLanguage as Language),
     ],
     sendInvite: [true],

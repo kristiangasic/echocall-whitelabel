@@ -54,7 +54,7 @@ describe('LoginPage', () => {
       role: 'admin',
       firstName: 'Ada',
       lastName: null,
-      language: 'de',
+      language: 'en',
       echocallCustomerId: null,
     });
     await fixture.whenStable();
@@ -99,7 +99,7 @@ describe('LoginPage', () => {
     role: 'user',
     firstName: 'Lena',
     lastName: null,
-    language: 'de',
+    language: 'en',
     echocallCustomerId: 141467,
   };
 

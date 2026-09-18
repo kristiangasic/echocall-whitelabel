@@ -7,6 +7,6 @@ export const setupAdminSchema = z.object({
   password: passwordSchema,
   firstName: nameSchema.optional(),
   lastName: nameSchema.optional(),
-  language: z.enum(LANGUAGES).default('de'),
+  language: z.enum(LANGUAGES).default('en'),
 });
 export type SetupAdminDto = z.infer<typeof setupAdminSchema>;

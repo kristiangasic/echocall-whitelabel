@@ -86,7 +86,7 @@ describe('HubActivityComponent', () => {
 
     const text = fixture.nativeElement.textContent as string;
     expect(text).toContain(ADMIN_TEXTS.audit.hub.details.subscriptionCanceled.split('{{')[0].trim());
-    expect(text).toContain('17.10.2026');
+    expect(text).toContain('Oct 17, 2026');
     expect(text).not.toContain('Subscription #203 canceled');
   });
 

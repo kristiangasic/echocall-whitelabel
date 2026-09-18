@@ -11,7 +11,7 @@ export const inviteUserSchema = z
     role: roleSchema,
     firstName: nameSchema.optional(),
     lastName: nameSchema.optional(),
-    language: z.enum(LANGUAGES).default('de'),
+    language: z.enum(LANGUAGES).default('en'),
     /** Customer id in the hub; required for role user, ignored for administrators. */
     echocallCustomerId: customerIdSchema.optional(),
   })

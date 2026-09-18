@@ -93,7 +93,7 @@ describe('AdminOverviewPage', () => {
     expect(text(fixture, 'tile-customers')).toContain('12');
     expect(text(fixture, 'tile-customers')).toContain('7');
     expect(text(fixture, 'tile-customers')).toContain('4');
-    expect(text(fixture, 'tile-balance')).toContain('250,75 €');
+    expect(text(fixture, 'tile-balance')).toContain('€250.75');
     expect(text(fixture, 'tile-balance')).toContain('950');
     expect(text(fixture, 'tile-subscriptions')).toContain('9');
     expect(text(fixture, 'hub-card')).toContain('operator@example.com');
@@ -122,7 +122,7 @@ describe('AdminOverviewPage', () => {
     const fixture = await render({ statsStatus: 403 });
 
     expect(text(fixture, 'tile-customers')).toContain('–');
-    expect(text(fixture, 'tile-balance')).toContain('250,75 €');
+    expect(text(fixture, 'tile-balance')).toContain('€250.75');
     expect(text(fixture, 'tile-subscriptions')).toContain('9');
   });
 });

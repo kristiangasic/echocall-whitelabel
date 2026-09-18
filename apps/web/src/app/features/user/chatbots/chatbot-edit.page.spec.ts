@@ -39,7 +39,7 @@ describe('ChatbotEditPage', () => {
 
     fixture.componentInstance.form.patchValue({
       name: 'Shop Helper',
-      language: 'de',
+      language: 'en',
       allowedDomains: 'example.com, shop.example.com',
     });
     const pending = fixture.componentInstance.save();
@@ -48,7 +48,7 @@ describe('ChatbotEditPage', () => {
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toMatchObject({
       name: 'Shop Helper',
-      language: 'de',
+      language: 'en',
       allowedDomains: ['example.com', 'shop.example.com'],
       widgetPosition: 'bottom-right',
       textOnlyMode: true,
@@ -65,7 +65,7 @@ describe('ChatbotEditPage', () => {
     http.expectOne('/api/hub/chatbots/7').flush({
       id: 7,
       name: 'Shop Helper',
-      language: 'de',
+      language: 'en',
       status: 'active',
       greeting: 'Hallo',
       allowedDomains: ['example.com'],

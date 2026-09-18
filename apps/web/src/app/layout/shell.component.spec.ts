@@ -18,7 +18,7 @@ const ADMIN: SessionUser = {
   role: 'admin',
   firstName: 'Ada',
   lastName: 'Lovelace',
-  language: 'de',
+  language: 'en',
   echocallCustomerId: null,
 };
 

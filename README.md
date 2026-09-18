@@ -97,7 +97,7 @@ reseller account.
 
 | Path                    | What it is                                                            |
 | ----------------------- | --------------------------------------------------------------------- |
-| `apps/web`              | Angular front end (standalone, zoneless, Angular Material, DE/EN/FR)  |
+| `apps/web`              | Angular front end (standalone, zoneless, Angular Material, EN/DE/FR)  |
 | `apps/api`              | NestJS back end for the front end; holds the API key and the database |
 | `packages/echocall-api` | Typed client generated from the published OpenAPI document            |
 | `docker/`               | Dockerfile and Compose setup                                          |

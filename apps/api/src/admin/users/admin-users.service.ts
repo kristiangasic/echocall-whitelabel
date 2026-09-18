@@ -22,7 +22,7 @@ export interface AdminUserRow {
   status: 'invited' | 'active' | 'disabled';
   firstName: string | null;
   lastName: string | null;
-  language: 'de' | 'en' | 'fr';
+  language: 'en' | 'de' | 'fr';
   echocallCustomerId: number | null;
   /** Whether this login asks for a code from an authenticator app as well. */
   twoFactorEnabled: boolean;

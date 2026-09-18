@@ -94,16 +94,16 @@ describe('AdminInvoiceDetailPage', () => {
     expect(rows[0].textContent).toContain('Tarif Business');
     expect(rows[0].textContent).toContain(ADMIN_TEXTS.invoices.itemTypes.subscription);
     expect(rows[1].textContent).toContain(ADMIN_TEXTS.invoices.itemTypes.voice_minutes);
-    expect(rows[1].textContent).toContain('0,20');
+    expect(rows[1].textContent).toContain('0.20');
   });
 
   it('shows the net, the tax and the gross the hub stored', async () => {
     const fixture = await render();
     const totals = fixture.nativeElement.querySelector('[data-testid="totals"]') as HTMLElement;
 
-    expect(totals.textContent).toContain('100,00');
-    expect(totals.textContent).toContain('19,00');
-    expect(totals.textContent).toContain('119,00');
+    expect(totals.textContent).toContain('100.00');
+    expect(totals.textContent).toContain('19.00');
+    expect(totals.textContent).toContain('119.00');
   });
 
   it('says so instead of showing an empty item table', async () => {

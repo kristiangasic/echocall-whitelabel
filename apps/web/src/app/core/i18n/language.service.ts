@@ -15,7 +15,7 @@ export class LanguageService {
   private readonly branding = inject(BrandingService);
   private readonly document = inject(DOCUMENT);
 
-  readonly current = signal<Language>('de');
+  readonly current = signal<Language>('en');
 
   constructor() {
     effect(() => {
@@ -46,6 +46,6 @@ export class LanguageService {
 
   private fromBrowser(): Language {
     const code = (this.document.defaultView?.navigator.language ?? '').slice(0, 2).toLowerCase();
-    return isLanguage(code) ? code : 'de';
+    return isLanguage(code) ? code : 'en';
   }
 }

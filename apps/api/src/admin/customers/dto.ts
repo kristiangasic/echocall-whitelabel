@@ -13,7 +13,7 @@ export const createCustomerSchema = z.object({
   firstName: nameSchema.optional(),
   lastName: nameSchema.optional(),
   company: companySchema.optional(),
-  language: z.enum(LANGUAGES).default('de'),
+  language: z.enum(LANGUAGES).default('en'),
   /** Whether the invitation is mailed right away. The link is returned either way. */
   sendInvite: z.boolean().default(true),
 });

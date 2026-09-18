@@ -171,7 +171,7 @@ export class AccountPage {
   readonly profile = this.fb.group({
     firstName: [this.user()?.firstName ?? '', Validators.maxLength(100)],
     lastName: [this.user()?.lastName ?? '', Validators.maxLength(100)],
-    language: [this.user()?.language ?? 'de'],
+    language: [this.user()?.language ?? 'en'],
   });
   readonly password = this.fb.group(
     {

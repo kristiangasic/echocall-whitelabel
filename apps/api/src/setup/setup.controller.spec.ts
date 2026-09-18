@@ -25,7 +25,7 @@ describe('SetupController', () => {
     expect(res.body).toMatchObject({
       needsAdmin: true,
       hub: { ok: true, role: 'reseller', email: 'operator@example.com' },
-      branding: { productName: 'Customer Portal', primaryColor: '#2563eb', defaultLanguage: 'de' },
+      branding: { productName: 'Customer Portal', primaryColor: '#2563eb', defaultLanguage: 'en' },
     });
   });
 

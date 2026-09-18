@@ -42,9 +42,10 @@ Docker image build. All of them must pass.
 - **Both database families.** Schema changes and queries must work on PostgreSQL and
   MariaDB/MySQL; migrations are forward-only and run at startup.
 - **Stable error codes.** The API returns `{ error: { code, message } }`; the front end
-  translates codes. New errors need a code and translations in DE, EN and FR.
-- **Three languages.** Every user-facing string needs `de`, `en` and `fr` entries in the
-  Transloco files.
+  translates codes. New errors need a code and translations in EN, DE and FR.
+- **English first, three languages.** English is the primary language: write the string in
+  `en` first, then add the `de` and `fr` entries. Every user-facing string needs all three
+  in the Transloco files.
 - **Tests come with the change.** New endpoints get supertest specs; new front-end logic
   gets Vitest specs. A change to a path the smoke run walks (first-run setup, sign-in,
   inviting a customer, the workspace, support requests) gets checked with `npm run e2e`

@@ -17,7 +17,7 @@ const NUMBER = {
   kycStatus: 'pending',
 };
 
-const AGENT = { id: 'agent_5', name: 'Empfang', language: 'de', status: 'active' };
+const AGENT = { id: 'agent_5', name: 'Empfang', language: 'en', status: 'active' };
 
 describe('PhoneNumbersPage', () => {
   let http: HttpTestingController;

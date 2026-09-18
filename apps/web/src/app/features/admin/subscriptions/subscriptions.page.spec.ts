@@ -88,7 +88,7 @@ describe('AdminSubscriptionsPage', () => {
     expect(rows).toHaveLength(2);
     expect(rows[0].textContent).toContain('Lina Mayer');
     expect(rows[0].textContent).toContain('Starter');
-    expect(rows[0].textContent).toContain('49,00');
+    expect(rows[0].textContent).toContain('49.00');
     expect(rows[0].textContent).toContain(ADMIN_TEXTS.subscriptions.statuses.active);
     expect(rows[1].textContent).toContain('timo@example.com');
     expect(rows[1].textContent).toContain(ADMIN_TEXTS.subscriptions.planGone);

@@ -19,7 +19,7 @@ const CUSTOMER_SESSION = {
   role: 'user',
   firstName: 'Lina',
   lastName: 'Mayer',
-  language: 'de',
+  language: 'en',
   echocallCustomerId: 501,
   impersonator: { id: 1, email: 'admin@example.com' },
 };
@@ -146,7 +146,7 @@ describe('AdminCustomerDetailPage', () => {
 
     expect(text).toContain('linked@example.com');
     expect(text).toContain('Lina Mayer');
-    expect(fixture.nativeElement.querySelector('[data-testid="balance"]').textContent).toContain('42,50');
+    expect(fixture.nativeElement.querySelector('[data-testid="balance"]').textContent).toContain('42.50');
     expect(text).toContain(ADMIN_TEXTS.customer.usage.types.voice_minute);
     expect(text).toContain('Business');
     expect(text).toContain('Gutschrift');
@@ -173,7 +173,7 @@ describe('AdminCustomerDetailPage', () => {
     await answerTransactions();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('[data-testid="balance"]').textContent).toContain('67,50');
+    expect(fixture.nativeElement.querySelector('[data-testid="balance"]').textContent).toContain('67.50');
   });
 
   it('says what is left when the deduction is larger than the wallet', async () => {
@@ -196,7 +196,7 @@ describe('AdminCustomerDetailPage', () => {
 
     const alert = fixture.nativeElement.querySelector('[data-testid="balance-error"]');
     expect(alert).not.toBeNull();
-    expect(alert.textContent).toContain('42,50');
+    expect(alert.textContent).toContain('42.50');
   });
 
   it('asks the service for the next page of movements', async () => {

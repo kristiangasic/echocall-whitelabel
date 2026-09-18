@@ -101,7 +101,7 @@ describe('AdminPlansPage', () => {
     expect(rows[0].textContent).toContain('Starter');
     expect(rows[0].textContent).toContain(ADMIN_TEXTS.plans.types.voice);
     expect(rows[0].textContent).toContain(ADMIN_TEXTS.plans.cycles.monthly);
-    expect(rows[0].textContent).toContain('49,00');
+    expect(rows[0].textContent).toContain('49.00');
     expect(rows[0].textContent).toContain('500');
     expect(rows[1].textContent).toContain(ADMIN_TEXTS.plans.cycles.yearly);
     expect(rows[1].textContent).toContain(ADMIN_TEXTS.plans.unlimited);

@@ -61,7 +61,7 @@ describe('AdminAnalyticsPage', () => {
     const text = fixture.nativeElement.textContent as string;
 
     expect(text).toContain(ADMIN_TEXTS.analytics.chatSessions);
-    expect(text).toContain('1.200');
+    expect(text).toContain('1,200');
     expect(text).toContain('480');
     expect(text).toContain(ADMIN_TEXTS.analytics.margin);
   });

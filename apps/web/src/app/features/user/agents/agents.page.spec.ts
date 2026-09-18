@@ -32,7 +32,7 @@ describe('AgentsPage', () => {
       {
         id: 'agent_1',
         name: 'Support Line',
-        language: 'de',
+        language: 'en',
         status: 'active',
         voice: { id: 'voice_2', name: 'Clara' },
       },

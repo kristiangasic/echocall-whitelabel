@@ -9,7 +9,7 @@ export interface UsersTable {
   echocallCustomerId: number | null;
   firstName: string | null;
   lastName: string | null;
-  language: 'de' | 'en' | 'fr';
+  language: 'en' | 'de' | 'fr';
   status: 'invited' | 'active' | 'disabled';
   lastLoginAt: Date | null;
   /** The encrypted TOTP secret, or null when the account has no second factor. */

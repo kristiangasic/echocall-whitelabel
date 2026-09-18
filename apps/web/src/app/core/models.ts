@@ -1,6 +1,6 @@
 export type Role = 'admin' | 'user';
-export type Language = 'de' | 'en' | 'fr';
-export const LANGUAGES: readonly Language[] = ['de', 'en', 'fr'];
+export type Language = 'en' | 'de' | 'fr';
+export const LANGUAGES: readonly Language[] = ['en', 'de', 'fr'];
 
 export function isLanguage(value: unknown): value is Language {
   return typeof value === 'string' && (LANGUAGES as readonly string[]).includes(value);

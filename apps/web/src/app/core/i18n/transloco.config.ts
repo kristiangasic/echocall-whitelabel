@@ -8,7 +8,7 @@ export function provideI18n(): (Provider | EnvironmentProviders)[] {
   return provideTransloco({
     config: {
       availableLangs: [...LANGUAGES],
-      defaultLang: 'de',
+      defaultLang: 'en',
       fallbackLang: 'en',
       missingHandler: { useFallbackTranslation: true, logMissingKey: isDevMode() },
       reRenderOnLangChange: true,

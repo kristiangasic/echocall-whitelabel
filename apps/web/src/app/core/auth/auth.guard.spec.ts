@@ -47,7 +47,7 @@ describe('authGuard', () => {
       role: 'admin',
       firstName: null,
       lastName: null,
-      language: 'de',
+      language: 'en',
       echocallCustomerId: null,
     });
     auth.loaded.set(true);

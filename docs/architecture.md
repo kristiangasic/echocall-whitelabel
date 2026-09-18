@@ -131,7 +131,7 @@ upstream host, and a brief outage of the widget origin is covered by the cached 
 ## Front end (`apps/web`)
 
 Angular (standalone components, zoneless, signals) with Angular Material and Transloco
-(DE/EN/FR). The shell lazy-loads one route chunk per page. Branding is applied at runtime:
+(EN/DE/FR). The shell lazy-loads one route chunk per page. Branding is applied at runtime:
 the API serves the operator's name, logo and color, and the theme is re-tinted from that
 color - no rebuild needed. Test infrastructure is Vitest with jsdom.
 

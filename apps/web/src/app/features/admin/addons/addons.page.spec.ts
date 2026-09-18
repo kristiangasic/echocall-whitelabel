@@ -127,7 +127,7 @@ describe('AdminAddonsPage', () => {
     expect(rows).toHaveLength(2);
     expect(rows[0].textContent).toContain('500 Minuten');
     expect(rows[0].textContent).toContain(ADMIN_TEXTS.addons.types.voice_minutes);
-    expect(rows[0].textContent).toContain('79,00');
+    expect(rows[0].textContent).toContain('79.00');
     expect(rows[1].textContent).toContain(ADMIN_TEXTS.addons.types.chat_conversations);
   });
 
@@ -138,7 +138,7 @@ describe('AdminAddonsPage', () => {
     expect(rows).toHaveLength(2);
     expect(rows[0].textContent).toContain('Lina Mayer');
     expect(rows[0].textContent).toContain(ADMIN_TEXTS.addons.purchases.statuses.completed);
-    expect(rows[0].textContent).toContain('79,00');
+    expect(rows[0].textContent).toContain('79.00');
     expect(rows[1].textContent).toContain('502');
     expect(rows[1].textContent).toContain(ADMIN_TEXTS.addons.purchases.statuses.failed);
   });
@@ -156,7 +156,7 @@ describe('AdminAddonsPage', () => {
     const stats = fixture.nativeElement.querySelector('[data-testid="stats"]') as HTMLElement;
 
     expect(stats.textContent).toContain('2');
-    expect(stats.textContent).toContain('79,00');
+    expect(stats.textContent).toContain('79.00');
     expect(stats.textContent).toContain(ADMIN_TEXTS.addons.types.voice_minutes);
   });
 

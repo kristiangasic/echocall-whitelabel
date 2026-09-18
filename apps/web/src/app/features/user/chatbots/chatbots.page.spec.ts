@@ -29,7 +29,7 @@ describe('ChatbotsPage', () => {
 
   it('lists the chatbots the hub reports', async () => {
     const fixture = await render([
-      { id: 7, name: 'Shop Helper', language: 'de', status: 'active' },
+      { id: 7, name: 'Shop Helper', language: 'en', status: 'active' },
       { id: 8, name: 'Docs Bot', language: 'en', status: 'inactive' },
     ]);
 

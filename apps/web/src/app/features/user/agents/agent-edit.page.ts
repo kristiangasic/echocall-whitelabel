@@ -419,7 +419,7 @@ export class AgentEditPage implements OnInit {
 
   readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],
-    language: ['de', Validators.required],
+    language: ['en', Validators.required],
     supportedLanguages: [[] as string[]],
     voiceId: [''],
     ttsModel: [''],
@@ -523,7 +523,7 @@ export class AgentEditPage implements OnInit {
       this.title.set(agent.name);
       this.form.patchValue({
         name: agent.name,
-        language: agent.language ?? 'de',
+        language: agent.language ?? 'en',
         supportedLanguages: [agent.language, ...(agent.additionalLanguages ?? [])].filter(
           (v): v is string => !!v,
         ),

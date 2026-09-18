@@ -43,7 +43,7 @@ describe('AgentEditPage', () => {
 
     fixture.componentInstance.form.patchValue({
       name: 'Sales',
-      language: 'de',
+      language: 'en',
       systemPrompt: 'Be helpful.',
     });
     const pending = fixture.componentInstance.save();
@@ -52,7 +52,7 @@ describe('AgentEditPage', () => {
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toMatchObject({
       name: 'Sales',
-      language: 'de',
+      language: 'en',
       systemPrompt: 'Be helpful.',
       llmModel: 'EchoCall-Voice',
       enableInterruptions: true,
@@ -67,7 +67,7 @@ describe('AgentEditPage', () => {
     });
     expect(request.request.body).not.toHaveProperty('voiceId');
     expect(request.request.body).not.toHaveProperty('status');
-    request.flush({ id: 'agent_9', name: 'Sales', language: 'de' }, { status: 201, statusText: 'Created' });
+    request.flush({ id: 'agent_9', name: 'Sales', language: 'en' }, { status: 201, statusText: 'Created' });
     await pending;
     expect(router.url).toBe('/app/agents');
   });
@@ -77,7 +77,7 @@ describe('AgentEditPage', () => {
     http.expectOne('/api/hub/agents/agent_5').flush({
       id: 'agent_5',
       name: 'Support Line',
-      language: 'de',
+      language: 'en',
       status: 'active',
       systemPrompt: 'Old prompt',
       voice: { id: 'voice_1', name: 'Clara' },

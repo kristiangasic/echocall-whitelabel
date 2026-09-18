@@ -99,8 +99,9 @@ describe('MailService', () => {
     expect(mailbox.messages[0].subject).toBe('Reset your password for Customer Portal');
     expect(mailbox.messages[0].text).toContain('Hello,');
 
+    // The test mail has no recipient on record, so it follows the portal default.
     await mail.sendTest('admin@example.com');
-    expect(mailbox.messages[1].subject).toBe('Testnachricht von Customer Portal');
+    expect(mailbox.messages[1].subject).toBe('Test message from Customer Portal');
   });
 
   it('returns false for transactional mail and 502 smtp_failed for the test mail when the server refuses', async () => {

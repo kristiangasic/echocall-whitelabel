@@ -15,7 +15,7 @@ const AGENTS = [
     agent: {
       id: 12,
       name: 'Empfang',
-      language: 'de',
+      language: 'en',
       userId: 501,
       createdAt: '2026-09-01T08:00:00.000Z',
     },
@@ -32,7 +32,7 @@ const CHATBOTS = [
     chatbot: {
       id: 4,
       name: 'Webchat',
-      language: 'de',
+      language: 'en',
       userId: 501,
       createdAt: '2026-09-02T08:00:00.000Z',
     },

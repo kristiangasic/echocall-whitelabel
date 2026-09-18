@@ -7,6 +7,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- English is the primary language. A fresh portal starts in English, the sign-in page and
+  every unauthenticated page are English, and a browser that asks for a language the portal
+  does not carry is answered in English rather than German. German and French are unchanged
+  and still complete; an operator can still make either the default under Settings. New
+  strings are written in English first.
+
 ### Fixed
 
 - Collections are read whether the service answers them as a bare array or wrapped in a

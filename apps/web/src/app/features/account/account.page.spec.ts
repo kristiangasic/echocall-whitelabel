@@ -12,7 +12,7 @@ const CUSTOMER: SessionUser = {
   role: 'user',
   firstName: 'Kai',
   lastName: 'Kunde',
-  language: 'de',
+  language: 'en',
   echocallCustomerId: 501,
 };
 
@@ -93,7 +93,7 @@ describe('AccountPage', () => {
     expect(fixture.componentInstance.profile.getRawValue()).toEqual({
       firstName: 'Kai',
       lastName: 'Kunde',
-      language: 'de',
+      language: 'en',
     });
   });
 });

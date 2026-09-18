@@ -13,7 +13,7 @@ const USER: SessionUser = {
   role: 'user',
   firstName: 'Kai',
   lastName: 'Kunde',
-  language: 'de',
+  language: 'en',
   echocallCustomerId: 501,
 };
 

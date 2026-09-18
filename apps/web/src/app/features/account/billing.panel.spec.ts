@@ -92,7 +92,7 @@ describe('BillingPanel', () => {
     expect(plan.textContent).toContain('Starter');
     expect(plan.textContent).toContain(USER_TEXTS.billing.subscriptionStatuses.active);
     const balance = fixture.nativeElement.querySelector('[data-testid="billing-balance"]');
-    expect(balance.textContent).toContain('42,50');
+    expect(balance.textContent).toContain('42.50');
   });
 
   it('treats an account without a plan as an answer, not a failure', async () => {

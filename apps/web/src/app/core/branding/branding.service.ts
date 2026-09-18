@@ -11,7 +11,7 @@ export const DEFAULT_BRANDING: Branding = {
   supportEmail: null,
   imprintUrl: null,
   privacyUrl: null,
-  defaultLanguage: 'de',
+  defaultLanguage: 'en',
 };
 
 /** Loads the operator's branding once and applies it to the document: title, theme colours and favicon. */
