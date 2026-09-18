@@ -290,13 +290,6 @@ const ROUTE = '/admin/settings/registration';
                   >{{ t('admin.settings.registration.selfService') }}</mat-slide-toggle
                 >
                 <p class="hint">{{ t('admin.settings.registration.selfServiceHint') }}</p>
-                <mat-slide-toggle
-                  formControlName="signInLinksEnabled"
-                  class="toggle"
-                  data-testid="sign-in-links"
-                  >{{ t('admin.settings.registration.signInLinks') }}</mat-slide-toggle
-                >
-                <p class="hint">{{ t('admin.settings.registration.signInLinksHint') }}</p>
                 <div class="actions">
                   <button
                     mat-flat-button
@@ -499,10 +492,7 @@ export class AdminSettingsPage implements OnInit {
   });
   readonly registration = signal<RegistrationView | null>(null);
   readonly savingRegistration = signal(false);
-  readonly registrationForm = this.fb.group({
-    selfServiceEnabled: [false],
-    signInLinksEnabled: [false],
-  });
+  readonly registrationForm = this.fb.group({ selfServiceEnabled: [false] });
   readonly testForm = this.fb.group({
     to: [this.auth.user()?.email ?? '', [Validators.required, Validators.email]],
   });
@@ -658,12 +648,9 @@ export class AdminSettingsPage implements OnInit {
       const body: Registration = this.registrationForm.getRawValue();
       const saved = await firstValueFrom(this.api.put<RegistrationView>(ROUTE, body));
       this.registration.set(saved);
-      // The sign-in page reads these two from the public settings, and it is
-      // one route away, so the portal must not wait for a reload to follow.
-      this.branding.setRegistration({
-        selfServiceEnabled: saved.selfServiceEnabled,
-        signInLinksEnabled: saved.signInLinksEnabled,
-      });
+      // The sign-in page reads this from the public settings, and it is one
+      // route away, so the portal must not wait for a reload to follow.
+      this.branding.setRegistration({ selfServiceEnabled: saved.selfServiceEnabled });
       this.notify.success('admin.settings.registration.saved');
     } catch (err) {
       this.notify.apiError(err);

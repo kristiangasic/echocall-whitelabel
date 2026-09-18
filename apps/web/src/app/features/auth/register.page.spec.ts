@@ -29,7 +29,7 @@ describe('RegisterPage', () => {
   afterEach(() => http.verify());
 
   async function render(selfServiceEnabled = true) {
-    TestBed.inject(BrandingService).setRegistration({ selfServiceEnabled, signInLinksEnabled: false });
+    TestBed.inject(BrandingService).setRegistration({ selfServiceEnabled });
     const fixture = TestBed.createComponent(RegisterPage);
     await fixture.whenStable();
     return fixture;

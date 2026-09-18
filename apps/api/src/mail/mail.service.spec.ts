@@ -6,7 +6,8 @@ import { createMailbox } from '../testing/mailbox.js';
 import { testConfig } from '../testing/test-app.js';
 import { createSmtpTransport, MailService } from './mail.service.js';
 import { renderInvite } from './templates/invite.js';
-import { renderPasswordReset } from './templates/password-reset.js';
+import { renderRegistration } from './templates/registration.js';
+import { renderSignInLink } from './templates/sign-in-link.js';
 import { renderTest } from './templates/test.js';
 
 const ENV_SMTP = {
@@ -94,9 +95,9 @@ describe('MailService', () => {
     await settings.setSmtp(stored);
     expect(await mail.resolveSmtp()).toEqual({ source: 'settings', smtp: stored });
 
-    await mail.sendPasswordReset({ email: 'x@example.com', language: 'it', firstName: null }, 'https://x/r');
+    await mail.sendSignInLink({ email: 'x@example.com', language: 'it', firstName: null }, 'https://x/r');
     expect(mailbox.messages[0].smtp.host).toBe('db.example.com');
-    expect(mailbox.messages[0].subject).toBe('Reset your password for Customer Portal');
+    expect(mailbox.messages[0].subject).toBe('Your sign-in link for Customer Portal');
     expect(mailbox.messages[0].text).toContain('Hello,');
 
     // The test mail has no recipient on record, so it follows the portal default.
@@ -135,7 +136,8 @@ describe('mail templates', () => {
     for (const language of LANGUAGES) {
       for (const mail of [
         renderInvite(language, ctx),
-        renderPasswordReset(language, ctx),
+        renderSignInLink(language, ctx),
+        renderRegistration(language, ctx),
         renderTest(language, 'Acme Portal'),
       ]) {
         for (const part of [mail.subject, mail.text, mail.html]) {

@@ -41,7 +41,7 @@ describe('AdminCustomersController', () => {
       email: 'taken@example.com',
       role: 'user',
       echocallCustomerId: 501,
-      passwordHash: '$argon2id$placeholder',
+      acceptedAt: new Date(),
     });
     asAdmin = { Cookie: admin.cookie, ...XHR };
   });

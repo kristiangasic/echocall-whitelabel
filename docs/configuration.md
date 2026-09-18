@@ -30,14 +30,22 @@ Docker Compose setup reads `../.env` as well.
 
 ## Mail (optional)
 
-Without SMTP the portal still works: invite and password reset links are shown to the
-admin as one-time links to pass on. With SMTP they are mailed automatically. SMTP can also
-be configured at runtime in the admin panel; environment variables take precedence and are
-shown there as locked.
+Without SMTP an admin can still invite people and send them a sign-in link: the portal
+shows the link instead of mailing it, and the admin passes it on. With SMTP it is mailed
+automatically. SMTP can also be configured at runtime in the admin panel; environment
+variables take precedence and are shown there as locked.
 
-Self-service sign-up and sign-in links are the two things that do need a mail server: both
-send a link to an address nobody at the portal can read out, so the portal refuses to
-switch either on while no SMTP server is configured.
+Self-service sign-up is the one thing that does need a mail server: it sends a link to an
+address nobody at the portal can read out, so the portal refuses to switch it on while no
+SMTP server is configured.
+
+Because there are no passwords, a portal whose mail server has stopped working has no way
+in through the browser. The command below, run on the machine itself, prints the link the
+mail would have carried and does not need SMTP at all:
+
+```bash
+docker compose exec app node dist/cli/sign-in-link.js you@example.com
+```
 
 | Variable      | Default | Description                                                                       |
 | ------------- | ------- | --------------------------------------------------------------------------------- |

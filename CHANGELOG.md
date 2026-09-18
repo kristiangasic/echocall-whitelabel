@@ -13,13 +13,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   page and each sign-up opens a customer account at the service and a portal login in one
   step. The form answers the same way whether the address was free, already had an account
   or was refused by the service, so it cannot be used to look accounts up.
-- Sign-in links, off by default. With them on, people ask for a one-time link by e-mail
-  instead of typing a password; the link is valid for 15 minutes and works once. An
-  invitation accepted while links are on may leave the password empty, and such an account
-  signs in by link only. A second factor still applies, and passwords keep working for the
-  accounts that have one.
-- **Settings, Sign-up** in the admin panel carries both switches. Neither can be switched
-  on while no mail server is configured, because both depend on mail.
+- Sign-in links. Whoever wants in types their e-mail address and follows the link that
+  arrives: valid for 15 minutes, usable once, and a second factor still applies. The page
+  answers the same way whether or not the address has an account here.
+- A way in that does not need the mail server, for the operator on the machine itself:
+  `docker compose exec app node dist/cli/sign-in-link.js you@example.com` prints the link
+  the mail would have carried. The browser smoke run uses the same command, so it is
+  exercised on every run.
+- **Settings, Sign-up** in the admin panel carries the sign-up switch. It cannot be
+  switched on while no mail server is configured, because a sign-up depends on mail.
 
 ### Changed
 
@@ -28,6 +30,19 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   does not carry is answered in English rather than German. German and French are unchanged
   and still complete; an operator can still make either the default under Settings. New
   strings are written in English first.
+- Mail carries the whole way in now, so a portal for more than a handful of people needs an
+  SMTP server. Without one the admin panel still shows every invitation and every sign-in
+  link instead of mailing it, and the operator passes it on.
+
+### Removed
+
+- Passwords, everywhere: none on the sign-in page, none in the invitation, none in the
+  account page, no hash in the database, no forgot and reset routes, no password rules.
+  Nothing is left to guess, to reuse or to read out of a backup. Switching a second factor
+  off now asks for a current code from the app instead of a password, and an operator sends
+  a sign-in link where the user list used to offer a password reset.
+- `auth.password_reset` from the audit log. Sending someone a way in is recorded as
+  `users.sign_in_link_sent`.
 
 ### Fixed
 

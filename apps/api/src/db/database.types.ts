@@ -3,7 +3,8 @@ import type { Generated, Insertable, Selectable, Updateable } from 'kysely';
 export interface UsersTable {
   id: Generated<number>;
   email: string;
-  passwordHash: string | null;
+  /** When the invitation was accepted; null while it is still open. */
+  acceptedAt: Date | null;
   role: 'admin' | 'user';
   /** Customer id in the hub for role user; null for admins. */
   echocallCustomerId: number | null;
@@ -44,7 +45,7 @@ export interface SessionsTable {
 export interface OneTimeTokensTable {
   id: Generated<number>;
   userId: number;
-  purpose: 'invite' | 'password_reset' | 'sign_in' | 'two_factor_challenge';
+  purpose: 'invite' | 'sign_in' | 'two_factor_challenge';
   tokenHash: string;
   expiresAt: Date;
   usedAt: Date | null;

@@ -10,7 +10,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../../core/api/api.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { BrandingService } from '../../../core/branding/branding.service';
-import type { AdminUser, InviteResult, PasswordResetResult, UserStatus } from '../../../core/models';
+import type { AdminUser, InviteResult, SignInLinkResult, UserStatus } from '../../../core/models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/confirm-dialog.component';
 import { LinkDialogComponent, type LinkDialogData } from '../../../shared/link-dialog.component';
@@ -119,9 +119,9 @@ import { UserDialogComponent, type UserDialogData, type UserDialogResult } from 
             </button>
           }
           @if (user.status === 'active') {
-            <button mat-menu-item type="button" (click)="passwordReset(user)">
-              <mat-icon>lock_reset</mat-icon>
-              <span>{{ t('admin.users.passwordReset') }}</span>
+            <button mat-menu-item type="button" (click)="sendSignInLink(user)">
+              <mat-icon>link</mat-icon>
+              <span>{{ t('admin.users.sendSignInLink') }}</span>
             </button>
           }
           @if (user.twoFactorEnabled && user.id !== myId()) {
@@ -246,18 +246,19 @@ export class AdminUsersPage implements OnInit {
     }
   }
 
-  async passwordReset(user: AdminUser): Promise<void> {
+  /** For someone whose link never arrived: another one, valid for 15 minutes. */
+  async sendSignInLink(user: AdminUser): Promise<void> {
     try {
       const result = await firstValueFrom(
-        this.api.post<PasswordResetResult>(`/admin/users/${user.id}/password-reset`),
+        this.api.post<SignInLinkResult>(`/admin/users/${user.id}/sign-in-link`),
       );
       if (result.mailSent) {
-        this.notify.success('admin.users.resetSent', { email: user.email });
+        this.notify.success('admin.users.signInLinkSent', { email: user.email });
       } else {
         this.openLink({
-          titleKey: 'admin.users.resetLinkTitle',
+          titleKey: 'admin.users.signInLinkTitle',
           messageKey: 'admin.users.linkMessage',
-          link: result.resetLink,
+          link: result.signInLink,
         });
       }
     } catch (err) {

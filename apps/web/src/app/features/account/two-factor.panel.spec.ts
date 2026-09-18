@@ -115,18 +115,18 @@ describe('TwoFactorPanel', () => {
     expect(byTestId(fixture, 'two-factor-status').textContent?.trim()).toBe(TEXTS.account.twoFactor.statusOn);
   });
 
-  it('asks for the password before it removes the second factor', async () => {
+  it('asks for a current code before it removes the second factor', async () => {
     const fixture = await render({ ...USER, twoFactorEnabled: true });
     submit(fixture);
     await fixture.whenStable();
 
     http.expectNone('/api/auth/2fa');
 
-    type(fixture, 'disable-password', 'correct horse battery');
+    type(fixture, 'disable-code', '123456');
     submit(fixture);
     const request = http.expectOne('/api/auth/2fa');
     expect(request.request.method).toBe('DELETE');
-    expect(request.request.body).toEqual({ password: 'correct horse battery' });
+    expect(request.request.body).toEqual({ code: '123456' });
     request.flush(null, { status: 204, statusText: 'No Content' });
     await fixture.whenStable();
 
@@ -136,19 +136,19 @@ describe('TwoFactorPanel', () => {
     );
   });
 
-  it('names a wrong password on the field instead of removing anything', async () => {
+  it('names a wrong code on the field instead of removing anything', async () => {
     const fixture = await render({ ...USER, twoFactorEnabled: true });
-    type(fixture, 'disable-password', 'wrong');
+    type(fixture, 'disable-code', '000000');
     submit(fixture);
     http
       .expectOne('/api/auth/2fa')
       .flush(
-        { error: { code: 'invalid_password', message: 'The password is incorrect' } },
+        { error: { code: 'invalid_code', message: 'That code does not match' } },
         { status: 403, statusText: 'Forbidden' },
       );
     await fixture.whenStable();
 
-    expect(fixture.nativeElement.textContent).toContain('The password is incorrect');
+    expect(fixture.nativeElement.textContent).toContain('That code does not match');
     expect(TestBed.inject(AuthStore).user()?.twoFactorEnabled).toBe(true);
   });
 });

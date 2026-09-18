@@ -57,10 +57,6 @@
   "fields": {
     "name": "Name",
     "email": "E-mail address",
-    "password": "Password",
-    "newPassword": "New password",
-    "confirmPassword": "Repeat password",
-    "currentPassword": "Current password",
     "firstName": "First name",
     "lastName": "Last name",
     "company": "Company",
@@ -83,8 +79,6 @@
     "email": "Please enter a valid e-mail address",
     "minLength": "At least {{count}} characters",
     "maxLength": "At most {{count}} characters",
-    "passwordMismatch": "The passwords do not match",
-    "weakPassword": "This password is too easy to guess",
     "hexColor": "Please enter a colour as #RRGGBB",
     "url": "Please enter a full address starting with https://",
     "integer": "Please enter a whole number",
@@ -104,26 +98,15 @@
   },
   "auth": {
     "login": {
-      "title": "Sign in",
-      "submit": "Sign in",
-      "forgot": "Forgot your password?",
-      "linkTab": "E-mail me a link",
-      "passwordTab": "Use my password",
       "noAccount": "No account yet?",
       "register": "Create one"
     },
-    "forgot": {
-      "title": "Reset your password",
-      "intro": "Enter your e-mail address. If an account exists, you will receive a reset link.",
-      "submit": "Request link",
-      "done": "If an account exists for this address, a link is on its way.",
-      "toLogin": "Back to sign-in"
-    },
     "link": {
-      "title": "Sign in without a password",
-      "intro": "Enter your e-mail address. If an account exists, a sign-in link is on its way.",
+      "title": "Sign in",
+      "intro": "Enter your e-mail address and we send you a link that signs you in. There is no password to remember.",
       "submit": "Send the link",
-      "done": "Check your inbox. The link works once and is valid for 15 minutes."
+      "done": "Check your inbox. The link works once and is valid for 15 minutes.",
+      "again": "Send another link"
     },
     "signIn": {
       "title": "Signing you in",
@@ -131,20 +114,11 @@
       "invalid": "This link is invalid, spent or expired. Ask for a new one.",
       "toLogin": "Back to sign-in"
     },
-    "reset": {
-      "title": "Choose a new password",
-      "submit": "Save password",
-      "done": "Your password has been changed. You can sign in now.",
-      "invalid": "This link is invalid or has expired. Request a new one."
-    },
     "invite": {
       "title": "Accept your invitation",
-      "intro": "Choose a password to activate your account.",
+      "intro": "Tell us your name to activate your account. You sign in with a link we e-mail you, so there is no password to remember.",
       "submit": "Activate account",
-      "invalid": "This invitation is invalid or has expired. Ask for a new invitation.",
-      "introNoPassword": "Tell us your name to activate your account. You sign in with a link we e-mail you, so there is no password to remember.",
-      "passwordOptional": "Password (optional)",
-      "passwordOptionalHint": "At least 10 characters. Leave both fields empty to sign in with a link instead."
+      "invalid": "This invitation is invalid or has expired. Ask for a new invitation."
     },
     "register": {
       "title": "Create your account",
@@ -154,7 +128,6 @@
       "closed": "This portal does not take sign-ups at the moment.",
       "toLogin": "Already have an account? Sign in"
     },
-    "passwordHint": "At least 10 characters",
     "twoFactor": {
       "title": "Two-factor authentication",
       "intro": "Enter the code from your authenticator app. A recovery code works here as well.",
@@ -192,15 +165,9 @@
       "title": "Profile",
       "saved": "Profile saved."
     },
-    "password": {
-      "title": "Change password",
-      "intro": "Your current password is required to confirm the change.",
-      "submit": "Change password",
-      "saved": "Password changed."
-    },
     "twoFactor": {
       "title": "Two-factor authentication",
-      "intro": "A second factor protects your account even when your password becomes known.",
+      "intro": "A second factor protects your account even if someone else reaches your mailbox.",
       "statusOn": "Active. Every sign-in asks for a code as well.",
       "statusOff": "Not set up.",
       "start": "Set up",
@@ -213,7 +180,7 @@
       "recoveryIntro": "Keep these codes somewhere safe. Each one replaces the code from the app once. They are shown now and never again.",
       "recoveryDone": "I have saved the codes",
       "disableTitle": "Remove the second factor",
-      "disableIntro": "Your current password is required to confirm this.",
+      "disableIntro": "Enter a current code from the app to confirm this.",
       "disable": "Remove",
       "disabled": "Two-factor authentication removed."
     }
@@ -235,7 +202,6 @@
     "forbidden": "You do not have permission to do that.",
     "not_found": "Not found.",
     "too_many_requests": "Too many attempts. Please wait a moment.",
-    "invalid_credentials": "E-mail address or password is incorrect.",
     "account_disabled": "This account is disabled.",
     "invalid_token": "This link is invalid or has expired.",
     "setup_completed": "Setup has already been completed.",
@@ -246,10 +212,9 @@
     "cannot_change_self": "You cannot disable or demote your own account.",
     "cannot_delete_self": "You cannot delete your own account.",
     "invite_pending": "The invitation has not been accepted yet. Send it again instead.",
-    "already_active": "This account already has a password.",
-    "user_not_active": "Only active accounts can reset their password.",
+    "already_active": "This account has already accepted its invitation.",
+    "user_not_active": "Only active accounts can be sent a sign-in link.",
     "user_not_found": "This user does not exist.",
-    "invalid_current_password": "The current password is incorrect.",
     "mail_not_configured": "No mail server is configured.",
     "smtp_failed": "The mail server refused the message.",
     "upstream_unavailable": "The service is not reachable right now. Please try again in a moment.",
@@ -278,10 +243,7 @@
     "invalid_code": "That code is not correct. Please try again.",
     "invalid_challenge": "The sign-in has expired. Please sign in again.",
     "two_factor_already_enabled": "This account already has a second factor.",
-    "invalid_password": "That password is not correct.",
     "registration_closed": "This portal does not take sign-ups.",
-    "sign_in_links_disabled": "This portal signs in with a password.",
-    "password_required": "This invitation needs a password.",
     "smtp_required": "Set up a mail server first. Without one the portal cannot send the links."
   }
 }

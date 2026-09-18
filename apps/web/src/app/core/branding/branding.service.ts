@@ -14,11 +14,8 @@ export const DEFAULT_BRANDING: Branding = {
   defaultLanguage: 'en',
 };
 
-/** Both ways in stay closed until the portal says otherwise. */
-export const DEFAULT_REGISTRATION: Registration = {
-  selfServiceEnabled: false,
-  signInLinksEnabled: false,
-};
+/** The door stays closed until the portal says otherwise. */
+export const DEFAULT_REGISTRATION: Registration = { selfServiceEnabled: false };
 
 /** Loads the operator's branding once and applies it to the document: title, theme colours and favicon. */
 @Injectable({ providedIn: 'root' })

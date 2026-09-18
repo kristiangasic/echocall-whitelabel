@@ -1,5 +1,5 @@
-import { Component, computed, inject, signal, viewChild } from '@angular/core';
-import { FormGroupDirective, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, computed, inject, signal } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,17 +13,11 @@ import { AuthStore } from '../../core/auth/auth.store';
 import { readApiError } from '../../core/errors/api-error';
 import { LANGUAGES, type SessionUser } from '../../core/models';
 import { NotifyService } from '../../core/notify/notify.service';
-import { FieldErrorPipe } from '../../shared/forms/field-error.pipe';
 import { applyServerErrors } from '../../shared/forms/server-errors';
-import {
-  matchValidator,
-  PASSWORD_MIN_LENGTH,
-  passwordStrengthValidator,
-} from '../../shared/forms/validators';
 import { BillingPanel } from './billing.panel';
 import { TwoFactorPanel } from './two-factor.panel';
 
-/** Profile and password of the signed-in person; available to both roles. */
+/** Profile and security of the signed-in person; available to both roles. */
 @Component({
   selector: 'app-account-page',
   imports: [
@@ -35,7 +29,6 @@ import { TwoFactorPanel } from './two-factor.panel';
     MatButtonModule,
     MatTabsModule,
     TranslocoDirective,
-    FieldErrorPipe,
     BillingPanel,
     TwoFactorPanel,
   ],
@@ -72,52 +65,6 @@ import { TwoFactorPanel } from './two-factor.panel';
                   </mat-form-field>
                   <button mat-flat-button type="submit" [disabled]="savingProfile()">
                     {{ t('actions.save') }}
-                  </button>
-                </form>
-              </mat-card-content>
-            </mat-card>
-
-            <mat-card appearance="outlined">
-              <mat-card-header>
-                <mat-card-title>{{ t('account.password.title') }}</mat-card-title>
-                <mat-card-subtitle>{{ t('account.password.intro') }}</mat-card-subtitle>
-              </mat-card-header>
-              <mat-card-content>
-                <form [formGroup]="password" (ngSubmit)="changePassword()" novalidate #passwordForm="ngForm">
-                  <mat-form-field appearance="outline" class="full">
-                    <mat-label>{{ t('fields.currentPassword') }}</mat-label>
-                    <input
-                      matInput
-                      type="password"
-                      formControlName="currentPassword"
-                      autocomplete="current-password"
-                    />
-                    @if (password.controls.currentPassword | fieldError; as e) {
-                      <mat-error>{{ t(e.key, e.params) }}</mat-error>
-                    }
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="full">
-                    <mat-label>{{ t('fields.newPassword') }}</mat-label>
-                    <input
-                      matInput
-                      type="password"
-                      formControlName="newPassword"
-                      autocomplete="new-password"
-                    />
-                    <mat-hint>{{ t('auth.passwordHint') }}</mat-hint>
-                    @if (password.controls.newPassword | fieldError; as e) {
-                      <mat-error>{{ t(e.key, e.params) }}</mat-error>
-                    }
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="full">
-                    <mat-label>{{ t('fields.confirmPassword') }}</mat-label>
-                    <input matInput type="password" formControlName="confirm" autocomplete="new-password" />
-                    @if (password.controls.confirm | fieldError; as e) {
-                      <mat-error>{{ t(e.key, e.params) }}</mat-error>
-                    }
-                  </mat-form-field>
-                  <button mat-flat-button type="submit" [disabled]="savingPassword()">
-                    {{ t('account.password.submit') }}
                   </button>
                 </form>
               </mat-card-content>
@@ -173,19 +120,7 @@ export class AccountPage {
     lastName: [this.user()?.lastName ?? '', Validators.maxLength(100)],
     language: [this.user()?.language ?? 'en'],
   });
-  readonly password = this.fb.group(
-    {
-      currentPassword: ['', Validators.required],
-      newPassword: [
-        '',
-        [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH), passwordStrengthValidator],
-      ],
-      confirm: ['', Validators.required],
-    },
-    { validators: matchValidator('newPassword', 'confirm') },
-  );
   readonly savingProfile = signal(false);
-  readonly savingPassword = signal(false);
 
   async saveProfile(): Promise<void> {
     if (this.profile.invalid) return;
@@ -205,35 +140,6 @@ export class AccountPage {
       if (!applyServerErrors(this.profile, readApiError(err))) this.notify.apiError(err);
     } finally {
       this.savingProfile.set(false);
-    }
-  }
-
-  private readonly passwordForm = viewChild.required<FormGroupDirective>('passwordForm');
-
-  async changePassword(): Promise<void> {
-    if (this.password.invalid) {
-      this.password.markAllAsTouched();
-      return;
-    }
-    this.savingPassword.set(true);
-    try {
-      const { currentPassword, newPassword } = this.password.getRawValue();
-      await firstValueFrom(this.api.post<void>('/account/password', { currentPassword, newPassword }));
-      // Resetting through the directive, not the group: the group alone keeps
-      // the form marked as submitted, and the emptied fields would come back
-      // decorated with "required" the moment the password was accepted.
-      this.passwordForm().resetForm();
-      this.notify.success('account.password.saved');
-    } catch (err) {
-      const error = readApiError(err);
-      if (error.code === 'invalid_current_password') {
-        this.password.controls.currentPassword.setErrors({ server: error.message });
-        this.password.controls.currentPassword.markAsTouched();
-      } else if (!applyServerErrors(this.password, error)) {
-        this.notify.apiError(err);
-      }
-    } finally {
-      this.savingPassword.set(false);
     }
   }
 }

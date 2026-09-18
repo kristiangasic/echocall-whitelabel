@@ -33,20 +33,15 @@ describe('SetupController', () => {
     const res = await request(t.app.getHttpServer())
       .post('/api/setup/admin')
       .set(XHR)
-      .send({ email: 'not-an-email', password: 'short', language: 'xx' });
+      .send({ email: 'not-an-email', language: 'xx' });
     expect(res.status).toBe(400);
     expect(res.body.error.code).toBe('validation_error');
-    expect(res.body.error.details.map((d: { path: string }) => d.path).sort()).toEqual([
-      'email',
-      'language',
-      'password',
-    ]);
+    expect(res.body.error.details.map((d: { path: string }) => d.path).sort()).toEqual(['email', 'language']);
   });
 
   it('creates the administrator, records it and signs them in', async () => {
     const res = await request(t.app.getHttpServer()).post('/api/setup/admin').set(XHR).send({
       email: 'Owner@Example.com',
-      password: 'correct horse battery',
       firstName: 'Olivia',
       language: 'en',
     });
@@ -77,7 +72,7 @@ describe('SetupController', () => {
       targetType: 'user',
       targetId: String(res.body.id),
     });
-    expect(audit[0].details).not.toContain('correct horse');
+    expect(audit[0].details).toContain('owner@example.com');
 
     const status = await request(t.app.getHttpServer()).get('/api/setup/status');
     expect(status.body.needsAdmin).toBe(false);
@@ -90,7 +85,7 @@ describe('SetupController', () => {
     const res = await request(t.app.getHttpServer())
       .post('/api/setup/admin')
       .set(XHR)
-      .send({ email: 'second@example.com', password: 'correct horse battery' });
+      .send({ email: 'second@example.com' });
     expect(res.status).toBe(409);
     expect(res.body.error.code).toBe('setup_completed');
     const users = await t.db.db.selectFrom('users').select('email').execute();

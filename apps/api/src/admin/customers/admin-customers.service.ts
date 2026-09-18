@@ -128,11 +128,11 @@ export class AdminCustomersService {
     return { user };
   }
 
-  /** Lets the customer back in. A login that never set a password goes back to invited, not active. */
+  /** Lets the customer back in. A login that never accepted its invitation goes back to invited, not active. */
   async unsuspend(customerId: number, ctx: ActionContext): Promise<CustomerLoginResult> {
     const login = await this.findLogin(customerId);
     await this.hub.raw('PATCH', `/resellers/customers/${customerId}/unsuspend`, {});
-    const status = login?.passwordHash === null ? 'invited' : 'active';
+    const status = login?.acceptedAt === null ? 'invited' : 'active';
     const user = await this.afterHub(customerId, () =>
       this.applyToLogin(login, { status, updatedAt: new Date() }),
     );

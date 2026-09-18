@@ -1,14 +1,12 @@
 import type { components } from '@echocall/light-api-client';
 import { Inject, Injectable } from '@nestjs/common';
-import { AuditService } from '../audit/audit.service.js';
-import { PasswordService } from '../auth/password.service.js';
-import { SessionService, type SessionUser, toSessionUser } from '../auth/session.service.js';
+import { type SessionUser, toSessionUser } from '../auth/session.service.js';
 import { apiError } from '../common/http-error.js';
 import type { UserUpdate } from '../db/database.types.js';
 import { DB } from '../db/db.service.js';
 import type { Db } from '../db/dialect.js';
 import { HubClientFactory } from '../echocall/hub-client.factory.js';
-import type { PasswordChangeDto, ProfileUpdateDto } from './dto.js';
+import type { ProfileUpdateDto } from './dto.js';
 
 export type HubProfile = components['schemas']['UserProfile'];
 export type HubUsage = components['schemas']['UsageSummary'];
@@ -35,9 +33,6 @@ export class AccountService {
   constructor(
     @Inject(DB) private readonly db: Db,
     private readonly hub: HubClientFactory,
-    private readonly passwords: PasswordService,
-    private readonly sessions: SessionService,
-    private readonly audit: AuditService,
   ) {}
 
   /** Every hub request runs in the customer's context; hub refusals keep their status and code. */
@@ -88,42 +83,12 @@ export class AccountService {
       .executeTakeFirstOrThrow();
     return toSessionUser(row);
   }
-
-  /** Changes the password and signs out every other session of the user. */
-  async changePassword(
-    user: SessionUser,
-    input: PasswordChangeDto,
-    currentSessionToken: string | undefined,
-    ip: string | undefined,
-  ): Promise<void> {
-    assertOwnAccount(user);
-    const row = await this.db
-      .selectFrom('users')
-      .select('passwordHash')
-      .where('id', '=', user.id)
-      .executeTakeFirstOrThrow();
-    if (!(await this.passwords.verify(row.passwordHash, input.currentPassword)))
-      throw apiError(400, 'invalid_current_password', 'The current password is incorrect');
-    await this.db
-      .updateTable('users')
-      .set({ passwordHash: await this.passwords.hash(input.newPassword), updatedAt: new Date() })
-      .where('id', '=', user.id)
-      .execute();
-    await this.sessions.revokeAllForUser(user.id, currentSessionToken);
-    await this.audit.record({
-      actorUserId: user.id,
-      action: 'account.password_changed',
-      targetType: 'user',
-      targetId: user.id,
-      ip,
-    });
-  }
 }
 
 /**
  * An operator viewing the portal as a customer may look at everything, but the
- * account itself stays the customer's own: no password, name or language of
- * theirs is ever changed by someone else.
+ * account itself stays the customer's own: no name or language of theirs is
+ * ever changed by someone else.
  */
 function assertOwnAccount(user: SessionUser): void {
   if (user.impersonator)

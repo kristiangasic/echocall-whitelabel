@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { PasswordService } from '../auth/password.service.js';
 import { apiError } from '../common/http-error.js';
 import type { UserRow } from '../db/database.types.js';
 import { DB, DB_DIALECT } from '../db/db.service.js';
@@ -12,7 +11,6 @@ export class SetupService {
   constructor(
     @Inject(DB) private readonly db: Db,
     @Inject(DB_DIALECT) private readonly dialect: DbDialect,
-    private readonly passwords: PasswordService,
   ) {}
 
   /** True until the first administrator account exists. */
@@ -26,16 +24,20 @@ export class SetupService {
     return admin === undefined;
   }
 
-  /** Creates the first administrator; refused once one exists. */
+  /**
+   * Creates the first administrator and signs them in on the spot; refused once
+   * one exists. The session is what makes the first run work at all: a portal
+   * without a mail server yet has no way to send its operator a link.
+   */
   async createFirstAdmin(input: SetupAdminDto): Promise<UserRow> {
     if (!(await this.needsAdmin())) {
       throw apiError(409, 'setup_completed', 'The administrator account already exists');
     }
     const id = await insertReturningId(this.db, this.dialect, 'users', {
       email: input.email,
-      passwordHash: await this.passwords.hash(input.password),
       role: 'admin',
       status: 'active',
+      acceptedAt: new Date(),
       language: input.language,
       firstName: input.firstName || null,
       lastName: input.lastName || null,

@@ -6,7 +6,6 @@ import { SettingsService, type SmtpSettings } from '../settings/settings.service
 import type { MailRecipient, MailSender } from './mail-sender.js';
 import { renderInvite } from './templates/invite.js';
 import { pickLanguage, type RenderedMail } from './templates/layout.js';
-import { renderPasswordReset } from './templates/password-reset.js';
 import { renderRegistration } from './templates/registration.js';
 import { renderSignInLink } from './templates/sign-in-link.js';
 import { renderTest } from './templates/test.js';
@@ -82,16 +81,6 @@ export class MailService implements MailSender {
     const productName = (await this.settings.getBranding()).productName;
     const mail = renderInvite(pickLanguage(to.language), { productName, firstName: to.firstName, link });
     return this.deliver(to.email, mail, 'invitation');
-  }
-
-  async sendPasswordReset(to: MailRecipient, link: string): Promise<boolean> {
-    const productName = (await this.settings.getBranding()).productName;
-    const mail = renderPasswordReset(pickLanguage(to.language), {
-      productName,
-      firstName: to.firstName,
-      link,
-    });
-    return this.deliver(to.email, mail, 'password reset');
   }
 
   async sendSignInLink(to: MailRecipient, link: string): Promise<boolean> {

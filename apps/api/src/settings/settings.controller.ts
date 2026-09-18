@@ -97,15 +97,11 @@ export class SettingsController {
     @CurrentUser() user: SessionUser,
     @Req() req: Request,
   ): Promise<RegistrationView> {
-    // Both ways in are a mail the portal sends. Without a mail server they would
-    // only produce sign-ups nobody can finish, so they cannot be switched on.
+    // A sign-up is finished by a mail the portal sends. Without a mail server it
+    // would only produce accounts nobody can open, so it cannot be switched on.
     const mailReady = (await this.mail.resolveSmtp()) !== null;
-    if (!mailReady && (body.selfServiceEnabled || body.signInLinksEnabled))
-      throw apiError(
-        400,
-        'smtp_required',
-        'Set up a mail server first; both of these send the visitor a link',
-      );
+    if (!mailReady && body.selfServiceEnabled)
+      throw apiError(400, 'smtp_required', 'Set up a mail server first; a sign-up is finished by mail');
     const before = await this.settings.getRegistration();
     await this.settings.setRegistration(body);
     const changed = (Object.keys(body) as Array<keyof RegistrationSettings>).filter(

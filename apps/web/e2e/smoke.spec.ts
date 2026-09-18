@@ -1,5 +1,9 @@
+import { execFile } from 'node:child_process';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 import { expect, test, type Page } from '@playwright/test';
-import { CUSTOMER, OPERATOR } from './accounts.mjs';
+import { CUSTOMER, OPERATOR, PORTAL_ENV } from './accounts.mjs';
 
 /**
  * The two paths that have to work for the portal to be worth installing: an
@@ -8,11 +12,23 @@ import { CUSTOMER, OPERATOR } from './accounts.mjs';
  * place of the service.
  */
 
-async function signIn(page: Page, account: { email: string; password: string }): Promise<void> {
-  await page.goto('/login');
-  await page.getByTestId('email').fill(account.email);
-  await page.getByTestId('password').fill(account.password);
-  await page.getByTestId('submit').click();
+const run = promisify(execFile);
+const here = dirname(fileURLToPath(import.meta.url));
+const signInLinkCommand = resolve(here, '../../api/dist/cli/sign-in-link.js');
+
+/**
+ * Signs in the way the portal allows: with a one-time link. The run has no mail
+ * server, so the link comes from the command an operator uses on the machine
+ * itself, which mints exactly the link the mail would have carried.
+ */
+async function signIn(page: Page, account: { email: string }): Promise<void> {
+  const { stdout } = await run(process.execPath, [signInLinkCommand, account.email], {
+    cwd: here,
+    env: { ...process.env, ...PORTAL_ENV },
+  });
+  const link = stdout.trim().split('\n').pop()?.trim();
+  if (!link?.includes('/sign-in?token=')) throw new Error(`No sign-in link printed: ${stdout}`);
+  await page.goto(link);
 }
 
 test('an operator signs in, creates a customer and finds it in the list', async ({ page }) => {

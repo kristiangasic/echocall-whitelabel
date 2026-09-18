@@ -27,20 +27,6 @@ export class AuthStore {
   }
 
   /**
-   * The password step. An account with a second factor is not signed in yet
-   * when this resolves: it answers with a challenge, and the session starts in
-   * verifyTwoFactor.
-   */
-  async login(email: string, password: string): Promise<LoginResult> {
-    const body = await firstValueFrom(
-      this.api.post<SessionUser | TwoFactorChallenge>('/auth/login', { email, password }),
-    );
-    if ('challenge' in body) return { kind: 'challenge', challenge: body };
-    this.user.set(body);
-    return { kind: 'session', user: body };
-  }
-
-  /**
    * Asks the portal to mail a one-time sign-in link. It answers the same way
    * for an address it knows and one it does not, so nothing here says whether
    * an account exists.
@@ -49,7 +35,11 @@ export class AuthStore {
     await firstValueFrom(this.api.post<void>('/auth/sign-in-link', { email }));
   }
 
-  /** Spends the token from a mailed link. A second factor still applies. */
+  /**
+   * Spends the token from a mailed link. An account with a second factor is not
+   * signed in yet when this resolves: it answers with a challenge, and the
+   * session starts in verifyTwoFactor.
+   */
   async consumeSignInLink(token: string): Promise<LoginResult> {
     const body = await firstValueFrom(
       this.api.post<SessionUser | TwoFactorChallenge>('/auth/sign-in-link/consume', { token }),

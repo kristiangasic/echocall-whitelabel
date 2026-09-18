@@ -18,6 +18,8 @@ export interface SignedInUser {
 export function createUser(t: TestApp, user: TestUserInput): Promise<number> {
   return insertReturningId(t.db.db, t.db.dialect, 'users', {
     status: 'active',
+    // An account a spec asks for is one whose invitation was accepted long ago.
+    acceptedAt: new Date(),
     language: 'en',
     echocallCustomerId: user.role === 'user' ? 501 : null,
     ...user,

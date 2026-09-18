@@ -38,7 +38,7 @@ describe('ImpersonationController', () => {
       email: 'customer@example.com',
       role: 'user',
       echocallCustomerId: LINKED_CUSTOMER,
-      passwordHash: '$argon2id$placeholder',
+      acceptedAt: new Date(),
     });
     await createUser(t, {
       email: 'invited@example.com',
@@ -130,17 +130,11 @@ describe('ImpersonationController', () => {
   it('never lets the operator change the customer account', async () => {
     const cookie = await impersonate();
 
-    const password = await api()
-      .post('/api/account/password')
-      .set({ Cookie: cookie, ...XHR })
-      .send({ currentPassword: 'whatever-it-is', newPassword: 'a-new-password' });
     const profile = await api()
       .patch('/api/account/profile')
       .set({ Cookie: cookie, ...XHR })
       .send({ firstName: 'Renamed' });
 
-    expect(password.status).toBe(403);
-    expect(password.body.error.code).toBe('impersonation_read_only');
     expect(profile.status).toBe(403);
     expect(profile.body.error.code).toBe('impersonation_read_only');
   });

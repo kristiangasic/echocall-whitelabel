@@ -3,16 +3,22 @@ import { randomToken, sha256Hex } from '../common/crypto.js';
 import { DB } from '../db/db.service.js';
 import type { Db } from '../db/dialect.js';
 
-export type TokenPurpose = 'invite' | 'password_reset' | 'sign_in' | 'two_factor_challenge';
+export type TokenPurpose = 'invite' | 'sign_in' | 'two_factor_challenge';
 
 /**
- * Wrong guesses a challenge survives. Someone who already has the password is
+ * How long a sign-in link lives. It is the whole credential, so it expires
+ * while the reader is still at their inbox rather than days later.
+ */
+export const SIGN_IN_LINK_TTL_MS = 15 * 60 * 1000;
+
+/**
+ * Wrong guesses a challenge survives. Someone who already holds a spent link is
  * one six digit code away from a session, so the token has to run out long
  * before guessing does.
  */
 export const MAX_TOKEN_ATTEMPTS = 3;
 
-/** One-time tokens for invitations and password resets. The raw token is returned once; only its sha256 is stored. */
+/** One-time tokens for invitations and sign-in links. The raw token is returned once; only its sha256 is stored. */
 @Injectable()
 export class TokenService {
   constructor(@Inject(DB) private readonly db: Db) {}

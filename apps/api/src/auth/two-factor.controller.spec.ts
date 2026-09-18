@@ -3,13 +3,12 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { insertReturningId } from '../db/helpers.js';
 import { SettingsModule } from '../settings/settings.module.js';
 import { createTestApp, type TestApp } from '../testing/test-app.js';
+import { signInAs } from '../testing/users.js';
 import { AuthModule } from './auth.module.js';
 import { TwoFactorModule } from './two-factor.module.js';
-import { PasswordService } from './password.service.js';
 import { totpCode } from './totp.js';
 
 const XHR = { 'x-requested-with': 'XMLHttpRequest' };
-const PASSWORD = 'correct horse battery';
 
 describe('TwoFactorController', () => {
   let t: TestApp;
@@ -43,21 +42,14 @@ describe('TwoFactorController', () => {
 
   beforeEach(async () => {
     await t.db.reset();
-    userId = await insertReturningId(t.db.db, t.db.dialect, 'users', {
+    const signedIn = await signInAs(t, {
       email: 'lena@example.com',
       role: 'admin',
-      status: 'active',
-      passwordHash: await new PasswordService().hash(PASSWORD),
       echocallCustomerId: null,
-      firstName: null,
-      lastName: null,
       language: 'de',
     });
-    const login = await client()
-      .post('/api/auth/login')
-      .send({ email: 'lena@example.com', password: PASSWORD })
-      .expect(200);
-    cookie = login.headers['set-cookie'][0];
+    userId = signedIn.id;
+    cookie = signedIn.cookie;
   });
 
   it('refuses enrolment without a session', async () => {
@@ -150,11 +142,11 @@ describe('TwoFactorController', () => {
       email: 'operator@example.com',
       role: 'admin',
       status: 'active',
-      passwordHash: null,
       echocallCustomerId: null,
       firstName: null,
       lastName: null,
       language: 'de',
+      acceptedAt: new Date(),
     });
     await t.db.db
       .updateTable('sessions')
@@ -173,12 +165,14 @@ describe('TwoFactorController', () => {
     const remove = await client()
       .delete('/api/auth/2fa')
       .set('Cookie', cookie)
-      .send({ password: PASSWORD })
+      .send({ code: '123456' })
       .expect(403);
     expect(remove.body.error.code).toBe('impersonation_read_only');
   });
 
-  it('switches the second factor off only against the current password', async () => {
+  // There is no password to ask for, so the factor itself is what proves the
+  // person switching it off is the one who set it up.
+  it('switches the second factor off only against a current code', async () => {
     const secret = await enrol();
     await client()
       .post('/api/auth/2fa/activate')
@@ -189,11 +183,15 @@ describe('TwoFactorController', () => {
     const wrong = await client()
       .delete('/api/auth/2fa')
       .set('Cookie', cookie)
-      .send({ password: 'not the password' })
+      .send({ code: '000000' })
       .expect(403);
-    expect(wrong.body.error.code).toBe('invalid_password');
+    expect(wrong.body.error.code).toBe('invalid_code');
 
-    await client().delete('/api/auth/2fa').set('Cookie', cookie).send({ password: PASSWORD }).expect(204);
+    await client()
+      .delete('/api/auth/2fa')
+      .set('Cookie', cookie)
+      .send({ code: totpCode(secret, Date.now()) })
+      .expect(204);
 
     const me = await client().get('/api/auth/me').set('Cookie', cookie).expect(200);
     expect(me.body.twoFactorEnabled).toBe(false);

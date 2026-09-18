@@ -1,16 +1,11 @@
-import { Body, Controller, Get, HttpCode, Param, Patch, Post, Req, Res } from '@nestjs/common';
-import type { Request, Response } from 'express';
+import { Body, Controller, Get, Param, Patch, Res } from '@nestjs/common';
+import type { Response } from 'express';
 import { CurrentUser } from '../auth/decorators.js';
-import { SESSION_COOKIE, type SessionUser } from '../auth/session.service.js';
+import { type SessionUser } from '../auth/session.service.js';
 import { apiError } from '../common/http-error.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { type AccountOverview, AccountService } from './account.service.js';
-import {
-  type PasswordChangeDto,
-  passwordChangeSchema,
-  type ProfileUpdateDto,
-  profileUpdateSchema,
-} from './dto.js';
+import { type ProfileUpdateDto, profileUpdateSchema } from './dto.js';
 
 /** The signed-in user's own account; open to every role. */
 @Controller('account')
@@ -43,16 +38,5 @@ export class AccountController {
     @Body(new ZodValidationPipe(profileUpdateSchema)) body: ProfileUpdateDto,
   ): Promise<SessionUser> {
     return this.account.updateProfile(user, body);
-  }
-
-  @Post('password')
-  @HttpCode(204)
-  password(
-    @CurrentUser() user: SessionUser,
-    @Body(new ZodValidationPipe(passwordChangeSchema)) body: PasswordChangeDto,
-    @Req() req: Request,
-  ): Promise<void> {
-    const token: unknown = req.cookies?.[SESSION_COOKIE];
-    return this.account.changePassword(user, body, typeof token === 'string' ? token : undefined, req.ip);
   }
 }

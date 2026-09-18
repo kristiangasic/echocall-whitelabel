@@ -3,12 +3,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuditModule } from '../audit/audit.module.js';
 import { CommonModule } from '../common/common.module.js';
-import { SettingsCoreModule } from '../settings/settings-core.module.js';
 import { AuthController } from './auth.controller.js';
 import { SessionGuard } from './auth.guard.js';
 import { CsrfGuard } from './csrf.guard.js';
 import { LoginService } from './login.service.js';
-import { PasswordService } from './password.service.js';
 import { RolesGuard } from './roles.guard.js';
 import { SessionService } from './session.service.js';
 import { TokenService } from './token.service.js';
@@ -18,9 +16,8 @@ import { TwoFactorService } from './two-factor.service.js';
   imports: [
     AuditModule,
     CommonModule,
-    // Sign-in asks the settings whether the portal hands out sign-in links.
-    SettingsCoreModule,
-    // Applied only where a route opts in with @UseGuards(ThrottlerGuard): login, forgot, reset.
+    // Applied only where a route opts in with @UseGuards(ThrottlerGuard): the
+    // routes anyone may call, which is to say everything about a sign-in link.
     ThrottlerModule.forRoot({
       throttlers: [{ ttl: 60_000, limit: 5 }],
       errorMessage: 'Too many attempts, try again in a minute',
@@ -28,7 +25,6 @@ import { TwoFactorService } from './two-factor.service.js';
   ],
   controllers: [AuthController],
   providers: [
-    PasswordService,
     SessionService,
     TokenService,
     LoginService,
@@ -39,6 +35,6 @@ import { TwoFactorService } from './two-factor.service.js';
     { provide: APP_GUARD, useClass: RolesGuard },
   ],
   // ThrottlerModule is re-exported so other modules can opt routes into @UseGuards(ThrottlerGuard).
-  exports: [PasswordService, SessionService, TokenService, LoginService, TwoFactorService, ThrottlerModule],
+  exports: [SessionService, TokenService, LoginService, TwoFactorService, ThrottlerModule],
 })
 export class AuthModule {}

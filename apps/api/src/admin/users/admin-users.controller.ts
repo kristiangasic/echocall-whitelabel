@@ -7,7 +7,7 @@ import {
   type AdminUserRow,
   AdminUsersService,
   type InviteResult,
-  type PasswordResetResult,
+  type SignInLinkResult,
 } from './admin-users.service.js';
 import {
   type InviteUserDto,
@@ -59,14 +59,14 @@ export class AdminUsersController {
     return this.users.update(id, body, { actor, ip: req.ip });
   }
 
-  @Post(':id/password-reset')
+  @Post(':id/sign-in-link')
   @HttpCode(200)
-  passwordReset(
+  sendSignInLink(
     @Param('id', idPipe()) id: number,
     @CurrentUser() actor: SessionUser,
     @Req() req: Request,
-  ): Promise<PasswordResetResult> {
-    return this.users.sendPasswordReset(id, { actor, ip: req.ip });
+  ): Promise<SignInLinkResult> {
+    return this.users.sendSignInLink(id, { actor, ip: req.ip });
   }
 
   @Delete(':id/two-factor')

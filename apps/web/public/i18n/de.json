@@ -57,10 +57,6 @@
   "fields": {
     "name": "Name",
     "email": "E-Mail-Adresse",
-    "password": "Passwort",
-    "newPassword": "Neues Passwort",
-    "confirmPassword": "Passwort wiederholen",
-    "currentPassword": "Aktuelles Passwort",
     "firstName": "Vorname",
     "lastName": "Nachname",
     "company": "Firma",
@@ -83,8 +79,6 @@
     "email": "Bitte eine gültige E-Mail-Adresse eingeben",
     "minLength": "Mindestens {{count}} Zeichen",
     "maxLength": "Höchstens {{count}} Zeichen",
-    "passwordMismatch": "Die Passwörter stimmen nicht überein",
-    "weakPassword": "Dieses Passwort ist zu leicht zu erraten",
     "hexColor": "Bitte eine Farbe im Format #RRGGBB eingeben",
     "url": "Bitte eine vollständige Adresse mit https:// eingeben",
     "integer": "Bitte eine ganze Zahl eingeben",
@@ -104,26 +98,15 @@
   },
   "auth": {
     "login": {
-      "title": "Anmelden",
-      "submit": "Anmelden",
-      "forgot": "Passwort vergessen?",
-      "linkTab": "Link zuschicken",
-      "passwordTab": "Mit Passwort anmelden",
       "noAccount": "Noch kein Konto?",
       "register": "Jetzt anlegen"
     },
-    "forgot": {
-      "title": "Passwort zurücksetzen",
-      "intro": "Geben Sie Ihre E-Mail-Adresse ein. Wenn ein Konto existiert, erhalten Sie einen Link zum Zurücksetzen.",
-      "submit": "Link anfordern",
-      "done": "Wenn ein Konto zu dieser Adresse existiert, ist ein Link unterwegs.",
-      "toLogin": "Zur Anmeldung"
-    },
     "link": {
-      "title": "Ohne Passwort anmelden",
-      "intro": "Geben Sie Ihre E-Mail-Adresse ein. Wenn ein Konto besteht, ist ein Anmeldelink unterwegs.",
+      "title": "Anmelden",
+      "intro": "Geben Sie Ihre E-Mail-Adresse ein. Wir schicken Ihnen einen Link, mit dem Sie sich anmelden. Ein Passwort brauchen Sie nicht.",
       "submit": "Link senden",
-      "done": "Sehen Sie in Ihr Postfach. Der Link funktioniert einmal und gilt 15 Minuten."
+      "done": "Schauen Sie in Ihr Postfach. Der Link funktioniert einmal und gilt 15 Minuten.",
+      "again": "Neuen Link senden"
     },
     "signIn": {
       "title": "Anmeldung läuft",
@@ -131,20 +114,11 @@
       "invalid": "Dieser Link ist ungültig, verbraucht oder abgelaufen. Fordern Sie einen neuen an.",
       "toLogin": "Zurück zur Anmeldung"
     },
-    "reset": {
-      "title": "Neues Passwort festlegen",
-      "submit": "Passwort speichern",
-      "done": "Ihr Passwort wurde geändert. Sie können sich jetzt anmelden.",
-      "invalid": "Dieser Link ist ungültig oder abgelaufen. Fordern Sie einen neuen an."
-    },
     "invite": {
       "title": "Einladung annehmen",
-      "intro": "Legen Sie ein Passwort fest, um Ihr Konto zu aktivieren.",
+      "intro": "Nennen Sie uns Ihren Namen, um Ihr Konto zu aktivieren. Sie melden sich mit einem Link an, den wir Ihnen per E-Mail schicken, und brauchen sich kein Passwort zu merken.",
       "submit": "Konto aktivieren",
-      "invalid": "Diese Einladung ist ungültig oder abgelaufen. Bitten Sie um eine neue Einladung.",
-      "introNoPassword": "Nennen Sie uns Ihren Namen, um Ihr Konto zu aktivieren. Sie melden sich mit einem Link an, den wir Ihnen per E-Mail schicken, und brauchen sich kein Passwort zu merken.",
-      "passwordOptional": "Passwort (optional)",
-      "passwordOptionalHint": "Mindestens 10 Zeichen. Lassen Sie beide Felder leer, um sich stattdessen per Link anzumelden."
+      "invalid": "Diese Einladung ist ungültig oder abgelaufen. Bitten Sie um eine neue Einladung."
     },
     "register": {
       "title": "Konto anlegen",
@@ -154,7 +128,6 @@
       "closed": "Dieses Portal nimmt derzeit keine Registrierungen an.",
       "toLogin": "Sie haben schon ein Konto? Anmelden"
     },
-    "passwordHint": "Mindestens 10 Zeichen",
     "twoFactor": {
       "title": "Zwei-Faktor-Authentifizierung",
       "intro": "Geben Sie den Code aus Ihrer Authenticator-App ein. Ein Wiederherstellungscode funktioniert hier ebenso.",
@@ -192,15 +165,9 @@
       "title": "Profil",
       "saved": "Profil gespeichert."
     },
-    "password": {
-      "title": "Passwort ändern",
-      "intro": "Zur Bestätigung ist das aktuelle Passwort nötig.",
-      "submit": "Passwort ändern",
-      "saved": "Passwort geändert."
-    },
     "twoFactor": {
       "title": "Zwei-Faktor-Authentifizierung",
-      "intro": "Ein zweiter Faktor schützt Ihr Konto auch dann, wenn Ihr Passwort bekannt wird.",
+      "intro": "Ein zweiter Faktor schützt Ihr Konto auch dann, wenn jemand anderes an Ihr Postfach kommt.",
       "statusOn": "Aktiv. Bei jeder Anmeldung wird zusätzlich ein Code abgefragt.",
       "statusOff": "Nicht eingerichtet.",
       "start": "Einrichten",
@@ -213,7 +180,7 @@
       "recoveryIntro": "Bewahren Sie diese Codes sicher auf. Jeder Code ersetzt einmal den Code aus der App. Sie werden nur jetzt angezeigt.",
       "recoveryDone": "Ich habe die Codes gespeichert",
       "disableTitle": "Zweiten Faktor entfernen",
-      "disableIntro": "Zur Bestätigung ist Ihr aktuelles Passwort nötig.",
+      "disableIntro": "Bestätigen Sie mit einem aktuellen Code aus der App.",
       "disable": "Entfernen",
       "disabled": "Zwei-Faktor-Authentifizierung entfernt."
     }
@@ -235,7 +202,6 @@
     "forbidden": "Dafür fehlt Ihnen die Berechtigung.",
     "not_found": "Nicht gefunden.",
     "too_many_requests": "Zu viele Versuche. Bitte warten Sie einen Moment.",
-    "invalid_credentials": "E-Mail-Adresse oder Passwort ist falsch.",
     "account_disabled": "Dieses Konto ist deaktiviert.",
     "invalid_token": "Dieser Link ist ungültig oder abgelaufen.",
     "setup_completed": "Die Einrichtung wurde bereits abgeschlossen.",
@@ -246,10 +212,9 @@
     "cannot_change_self": "Sie können Ihr eigenes Konto nicht deaktivieren oder herabstufen.",
     "cannot_delete_self": "Sie können Ihr eigenes Konto nicht löschen.",
     "invite_pending": "Die Einladung wurde noch nicht angenommen. Senden Sie sie stattdessen erneut.",
-    "already_active": "Dieses Konto hat bereits ein Passwort.",
-    "user_not_active": "Nur aktive Konten können ihr Passwort zurücksetzen.",
+    "already_active": "Diese Einladung wurde bereits angenommen.",
+    "user_not_active": "Nur aktive Konten können einen Anmeldelink bekommen.",
     "user_not_found": "Dieser Benutzer existiert nicht.",
-    "invalid_current_password": "Das aktuelle Passwort ist falsch.",
     "mail_not_configured": "Es ist kein E-Mail-Server konfiguriert.",
     "smtp_failed": "Der E-Mail-Server hat die Nachricht abgelehnt.",
     "upstream_unavailable": "Der Dienst ist gerade nicht erreichbar. Bitte versuchen Sie es gleich noch einmal.",
@@ -278,10 +243,7 @@
     "invalid_code": "Dieser Code stimmt nicht. Bitte versuchen Sie es erneut.",
     "invalid_challenge": "Die Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an.",
     "two_factor_already_enabled": "Für dieses Konto ist bereits ein zweiter Faktor eingerichtet.",
-    "invalid_password": "Das Passwort stimmt nicht.",
     "registration_closed": "Dieses Portal nimmt keine Registrierungen an.",
-    "sign_in_links_disabled": "Dieses Portal meldet mit Passwort an.",
-    "password_required": "Diese Einladung braucht ein Passwort.",
     "smtp_required": "Richten Sie zuerst einen Mailserver ein. Ohne ihn kann das Portal die Links nicht verschicken."
   }
 }

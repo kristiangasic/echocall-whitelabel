@@ -9,38 +9,25 @@ import type { UserRow } from '../db/database.types.js';
 import { DB } from '../db/db.service.js';
 import type { Db } from '../db/dialect.js';
 import { MAIL_SENDER, type MailSender } from '../mail/mail-sender.js';
-import { SettingsService } from '../settings/settings.service.js';
 import { CurrentUser, Public } from './decorators.js';
 import {
   type AcceptInviteDto,
   acceptInviteSchema,
-  type ForgotDto,
-  forgotSchema,
-  type LoginDto,
-  loginSchema,
-  type ResetDto,
-  resetSchema,
   type SignInLinkConsumeDto,
   signInLinkConsumeSchema,
   type SignInLinkDto,
   signInLinkSchema,
 } from './dto.js';
-import { PasswordService } from './password.service.js';
+import { signInLink } from './links.js';
 import { LoginService } from './login.service.js';
-import { SessionService, type SessionUser } from './session.service.js';
-import { TokenService } from './token.service.js';
+import { type SessionUser } from './session.service.js';
+import { SIGN_IN_LINK_TTL_MS, TokenService } from './token.service.js';
 import { TwoFactorService } from './two-factor.service.js';
 
-const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
-/**
- * A sign-in link is a password that happens to arrive by mail, so it expires
- * while the reader is still at their inbox rather than days later.
- */
-const SIGN_IN_LINK_TTL_MS = 15 * 60 * 1000;
 /** Long enough to reach for a phone, short enough that an unattended browser does not stay one step from a session. */
 const TWO_FACTOR_CHALLENGE_TTL_MS = 5 * 60 * 1000;
 
-/** What the password step answers with when the account has a second factor. */
+/** What a link answers with when the account has a second factor. */
 export interface TwoFactorChallenge {
   challenge: string;
   expiresAt: string;
@@ -52,43 +39,11 @@ export class AuthController {
     @Inject(DB) private readonly db: Db,
     @Inject(APP_CONFIG) private readonly config: AppConfig,
     @Inject(MAIL_SENDER) private readonly mail: MailSender,
-    private readonly passwords: PasswordService,
-    private readonly sessions: SessionService,
     private readonly tokens: TokenService,
     private readonly logins: LoginService,
     private readonly twoFactor: TwoFactorService,
     private readonly audit: AuditService,
-    private readonly settings: SettingsService,
   ) {}
-
-  @Public()
-  @UseGuards(ThrottlerGuard)
-  @Post('login')
-  @HttpCode(200)
-  async login(
-    @Body(new ZodValidationPipe(loginSchema)) body: LoginDto,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<SessionUser | TwoFactorChallenge> {
-    const user = await this.db
-      .selectFrom('users')
-      .selectAll()
-      .where('email', '=', body.email)
-      .executeTakeFirst();
-    const ok = await this.passwords.verify(user?.passwordHash ?? null, body.password);
-    // A refused attempt is written down with the address that was typed, so an
-    // operator can see a series of them. The answer stays the same either way.
-    if (!user || !ok) {
-      const reason = user ? 'wrong_password' : 'unknown_account';
-      await this.recordRefusal(body.email, user?.id ?? null, reason, req);
-      throw apiError(401, 'invalid_credentials', 'E-mail or password is incorrect');
-    }
-    if (user.status !== 'active') {
-      await this.recordRefusal(body.email, user.id, `account_${user.status}`, req);
-      throw apiError(403, 'account_disabled', 'This account is disabled');
-    }
-    return this.admit(user, req, res);
-  }
 
   /**
    * Asks for a link by mail. The answer is 204 whatever happened, so it never
@@ -99,7 +54,6 @@ export class AuthController {
   @Post('sign-in-link')
   @HttpCode(204)
   async requestSignInLink(@Body(new ZodValidationPipe(signInLinkSchema)) body: SignInLinkDto): Promise<void> {
-    await this.assertSignInLinksOn();
     const user = await this.db
       .selectFrom('users')
       .select(['id', 'email', 'language', 'firstName'])
@@ -108,10 +62,9 @@ export class AuthController {
       .executeTakeFirst();
     if (!user) return;
     const token = await this.tokens.issue(user.id, 'sign_in', SIGN_IN_LINK_TTL_MS);
-    const link = `${this.config.appUrl}/sign-in?token=${encodeURIComponent(token)}`;
     await this.mail.sendSignInLink(
       { email: user.email, language: user.language, firstName: user.firstName },
-      link,
+      signInLink(this.config.appUrl, token),
     );
   }
 
@@ -125,7 +78,6 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<SessionUser | TwoFactorChallenge> {
-    await this.assertSignInLinksOn();
     const userId = await this.tokens.consume(body.token, 'sign_in');
     const user = userId === null ? undefined : await this.findById(userId);
     if (!user) throw apiError(400, 'invalid_token', 'This link is invalid or has expired');
@@ -148,50 +100,6 @@ export class AuthController {
     return user;
   }
 
-  /** Always answers 204 so the response does not reveal whether an account exists. */
-  @Public()
-  @UseGuards(ThrottlerGuard)
-  @Post('forgot')
-  @HttpCode(204)
-  async forgot(@Body(new ZodValidationPipe(forgotSchema)) body: ForgotDto): Promise<void> {
-    const user = await this.db
-      .selectFrom('users')
-      .select(['id', 'email', 'language', 'firstName'])
-      .where('email', '=', body.email)
-      .where('status', '=', 'active')
-      .executeTakeFirst();
-    if (!user) return;
-    const token = await this.tokens.issue(user.id, 'password_reset', PASSWORD_RESET_TTL_MS);
-    const link = `${this.config.appUrl}/reset-password?token=${encodeURIComponent(token)}`;
-    await this.mail.sendPasswordReset(
-      { email: user.email, language: user.language, firstName: user.firstName },
-      link,
-    );
-  }
-
-  @Public()
-  @UseGuards(ThrottlerGuard)
-  @Post('reset')
-  @HttpCode(204)
-  async reset(@Body(new ZodValidationPipe(resetSchema)) body: ResetDto): Promise<void> {
-    const userId = await this.tokens.consume(body.token, 'password_reset');
-    const user = userId === null ? undefined : await this.findById(userId);
-    if (!user || user.status !== 'active')
-      throw apiError(400, 'invalid_token', 'This link is invalid or has expired');
-    await this.db
-      .updateTable('users')
-      .set({ passwordHash: await this.passwords.hash(body.password), updatedAt: new Date() })
-      .where('id', '=', user.id)
-      .execute();
-    await this.sessions.revokeAllForUser(user.id);
-    await this.audit.record({
-      actorUserId: user.id,
-      action: 'auth.password_reset',
-      targetType: 'user',
-      targetId: user.id,
-    });
-  }
-
   @Public()
   @UseGuards(ThrottlerGuard)
   @Post('accept-invite')
@@ -201,32 +109,29 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<SessionUser> {
-    // An account may be opened without a password, but only where a link can
-    // take its place. With links off, no password means no way back in.
-    const { signInLinksEnabled } = await this.settings.getRegistration();
-    if (body.password === undefined && !signInLinksEnabled)
-      throw apiError(400, 'password_required', 'Choose a password to open your account');
     const userId = await this.tokens.consume(body.token, 'invite');
     const user = userId === null ? undefined : await this.findById(userId);
     if (!user || user.status !== 'invited')
       throw apiError(400, 'invalid_token', 'This link is invalid or has expired');
-    const changes = {
-      ...(body.password === undefined ? {} : { passwordHash: await this.passwords.hash(body.password) }),
-      status: 'active' as const,
-      updatedAt: new Date(),
-      ...(body.firstName === undefined ? {} : { firstName: body.firstName || null }),
-      ...(body.lastName === undefined ? {} : { lastName: body.lastName || null }),
-    };
-    await this.db.updateTable('users').set(changes).where('id', '=', user.id).execute();
+    await this.db
+      .updateTable('users')
+      .set({
+        status: 'active' as const,
+        acceptedAt: new Date(),
+        updatedAt: new Date(),
+        ...(body.firstName === undefined ? {} : { firstName: body.firstName || null }),
+        ...(body.lastName === undefined ? {} : { lastName: body.lastName || null }),
+      })
+      .where('id', '=', user.id)
+      .execute();
     const updated = await this.findById(user.id);
     if (!updated) throw apiError(400, 'invalid_token', 'This link is invalid or has expired');
     return this.logins.startSession(updated, req, res);
   }
 
   /**
-   * The last step of every way in: an account with a second factor gets a short
-   * lived challenge instead of a session, whether the first step was a password
-   * or a link.
+   * The last step of the way in: an account with a second factor gets a short
+   * lived challenge instead of a session.
    */
   private async admit(user: UserRow, req: Request, res: Response): Promise<SessionUser | TwoFactorChallenge> {
     if (this.twoFactor.isEnabled(user)) {
@@ -237,13 +142,7 @@ export class AuthController {
     return this.logins.startSession(user, req, res);
   }
 
-  private async assertSignInLinksOn(): Promise<void> {
-    const { signInLinksEnabled } = await this.settings.getRegistration();
-    if (!signInLinksEnabled)
-      throw apiError(404, 'sign_in_links_disabled', 'This portal signs in with a password');
-  }
-
-  /** One refused sign-in. The password itself never reaches the log. */
+  /** One refused sign-in, for an operator watching a series of them. */
   private recordRefusal(email: string, userId: number | null, reason: string, req: Request): Promise<void> {
     return this.audit.record({
       actorUserId: userId,

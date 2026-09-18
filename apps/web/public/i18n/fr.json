@@ -57,10 +57,6 @@
   "fields": {
     "name": "Nom",
     "email": "Adresse e-mail",
-    "password": "Mot de passe",
-    "newPassword": "Nouveau mot de passe",
-    "confirmPassword": "Confirmer le mot de passe",
-    "currentPassword": "Mot de passe actuel",
     "firstName": "Prénom",
     "lastName": "Nom",
     "company": "Société",
@@ -83,8 +79,6 @@
     "email": "Veuillez saisir une adresse e-mail valide",
     "minLength": "Au moins {{count}} caractères",
     "maxLength": "Au plus {{count}} caractères",
-    "passwordMismatch": "Les mots de passe ne correspondent pas",
-    "weakPassword": "Ce mot de passe est trop facile à deviner",
     "hexColor": "Veuillez saisir une couleur au format #RRGGBB",
     "url": "Veuillez saisir une adresse complète commençant par https://",
     "integer": "Veuillez saisir un nombre entier",
@@ -104,26 +98,15 @@
   },
   "auth": {
     "login": {
-      "title": "Connexion",
-      "submit": "Se connecter",
-      "forgot": "Mot de passe oublié ?",
-      "linkTab": "Recevoir un lien",
-      "passwordTab": "Utiliser mon mot de passe",
       "noAccount": "Pas encore de compte ?",
       "register": "Créer un compte"
     },
-    "forgot": {
-      "title": "Réinitialiser le mot de passe",
-      "intro": "Saisissez votre adresse e-mail. Si un compte existe, vous recevrez un lien de réinitialisation.",
-      "submit": "Demander un lien",
-      "done": "Si un compte existe pour cette adresse, un lien est en route.",
-      "toLogin": "Retour à la connexion"
-    },
     "link": {
-      "title": "Se connecter sans mot de passe",
-      "intro": "Saisissez votre adresse e-mail. Si un compte existe, un lien de connexion est en route.",
+      "title": "Se connecter",
+      "intro": "Saisissez votre adresse e-mail. Nous vous envoyons un lien qui vous connecte, sans mot de passe à retenir.",
       "submit": "Envoyer le lien",
-      "done": "Consultez votre boîte de réception. Le lien fonctionne une seule fois et reste valable 15 minutes."
+      "done": "Consultez votre boîte de réception. Le lien fonctionne une fois et reste valable 15 minutes.",
+      "again": "Envoyer un autre lien"
     },
     "signIn": {
       "title": "Connexion en cours",
@@ -131,20 +114,11 @@
       "invalid": "Ce lien est invalide, déjà utilisé ou expiré. Demandez-en un nouveau.",
       "toLogin": "Retour à la connexion"
     },
-    "reset": {
-      "title": "Définir un nouveau mot de passe",
-      "submit": "Enregistrer le mot de passe",
-      "done": "Votre mot de passe a été modifié. Vous pouvez maintenant vous connecter.",
-      "invalid": "Ce lien est invalide ou a expiré. Demandez-en un nouveau."
-    },
     "invite": {
       "title": "Accepter l'invitation",
-      "intro": "Définissez un mot de passe pour activer votre compte.",
+      "intro": "Indiquez votre nom pour activer votre compte. Vous vous connectez avec un lien que nous vous envoyons par e-mail, sans mot de passe à retenir.",
       "submit": "Activer le compte",
-      "invalid": "Cette invitation est invalide ou a expiré. Demandez une nouvelle invitation.",
-      "introNoPassword": "Indiquez votre nom pour activer votre compte. Vous vous connectez avec un lien que nous vous envoyons par e-mail, sans mot de passe à retenir.",
-      "passwordOptional": "Mot de passe (facultatif)",
-      "passwordOptionalHint": "Au moins 10 caractères. Laissez les deux champs vides pour vous connecter par lien."
+      "invalid": "Cette invitation est invalide ou a expiré. Demandez une nouvelle invitation."
     },
     "register": {
       "title": "Créer votre compte",
@@ -154,7 +128,6 @@
       "closed": "Ce portail n’accepte pas d’inscriptions pour le moment.",
       "toLogin": "Vous avez déjà un compte ? Se connecter"
     },
-    "passwordHint": "Au moins 10 caractères",
     "twoFactor": {
       "title": "Authentification à deux facteurs",
       "intro": "Saisissez le code de votre application d'authentification. Un code de récupération fonctionne également ici.",
@@ -192,15 +165,9 @@
       "title": "Profil",
       "saved": "Profil enregistré."
     },
-    "password": {
-      "title": "Changer le mot de passe",
-      "intro": "Le mot de passe actuel est requis pour confirmer la modification.",
-      "submit": "Changer le mot de passe",
-      "saved": "Mot de passe modifié."
-    },
     "twoFactor": {
       "title": "Authentification à deux facteurs",
-      "intro": "Un deuxième facteur protège votre compte même si votre mot de passe est connu.",
+      "intro": "Un deuxième facteur protège votre compte même si quelqu'un d'autre accède à votre boîte mail.",
       "statusOn": "Active. Chaque connexion demande également un code.",
       "statusOff": "Non configurée.",
       "start": "Configurer",
@@ -213,7 +180,7 @@
       "recoveryIntro": "Conservez ces codes en lieu sûr. Chacun remplace une fois le code de l'application. Ils ne sont affichés que maintenant.",
       "recoveryDone": "J'ai enregistré les codes",
       "disableTitle": "Supprimer le deuxième facteur",
-      "disableIntro": "Votre mot de passe actuel est requis pour confirmer.",
+      "disableIntro": "Confirmez avec un code actuel de l'application.",
       "disable": "Supprimer",
       "disabled": "Authentification à deux facteurs supprimée."
     }
@@ -235,7 +202,6 @@
     "forbidden": "Vous n'avez pas l'autorisation nécessaire.",
     "not_found": "Introuvable.",
     "too_many_requests": "Trop de tentatives. Veuillez patienter un instant.",
-    "invalid_credentials": "Adresse e-mail ou mot de passe incorrect.",
     "account_disabled": "Ce compte est désactivé.",
     "invalid_token": "Ce lien est invalide ou a expiré.",
     "setup_completed": "La configuration a déjà été effectuée.",
@@ -246,10 +212,9 @@
     "cannot_change_self": "Vous ne pouvez pas désactiver ni rétrograder votre propre compte.",
     "cannot_delete_self": "Vous ne pouvez pas supprimer votre propre compte.",
     "invite_pending": "L'invitation n'a pas encore été acceptée. Renvoyez-la plutôt.",
-    "already_active": "Ce compte possède déjà un mot de passe.",
-    "user_not_active": "Seuls les comptes actifs peuvent réinitialiser leur mot de passe.",
+    "already_active": "Cette invitation a déjà été acceptée.",
+    "user_not_active": "Seuls les comptes actifs peuvent recevoir un lien de connexion.",
     "user_not_found": "Cet utilisateur n'existe pas.",
-    "invalid_current_password": "Le mot de passe actuel est incorrect.",
     "mail_not_configured": "Aucun serveur de messagerie n'est configuré.",
     "smtp_failed": "Le serveur de messagerie a refusé le message.",
     "upstream_unavailable": "Le service est momentanément injoignable. Veuillez réessayer dans un instant.",
@@ -278,10 +243,7 @@
     "invalid_code": "Ce code n'est pas correct. Veuillez réessayer.",
     "invalid_challenge": "La connexion a expiré. Veuillez vous reconnecter.",
     "two_factor_already_enabled": "Ce compte possède déjà un deuxième facteur.",
-    "invalid_password": "Ce mot de passe n'est pas correct.",
     "registration_closed": "Ce portail n’accepte pas d’inscriptions.",
-    "sign_in_links_disabled": "Ce portail se connecte avec un mot de passe.",
-    "password_required": "Cette invitation demande un mot de passe.",
     "smtp_required": "Configurez d’abord un serveur de messagerie. Sans lui, le portail ne peut pas envoyer les liens."
   }
 }

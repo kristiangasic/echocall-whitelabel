@@ -513,15 +513,15 @@
     "lastLogin": "Dernière connexion",
     "empty": "Aucun utilisateur pour le moment. Invitez la première personne.",
     "resendInvite": "Renvoyer l'invitation",
-    "passwordReset": "Réinitialiser le mot de passe",
+    "sendSignInLink": "Envoyer un lien de connexion",
     "enable": "Activer",
     "disable": "Désactiver",
     "saved": "Modifications enregistrées.",
     "deleted": "Utilisateur supprimé.",
     "inviteSent": "Invitation envoyée à {{email}}.",
-    "resetSent": "Lien de réinitialisation envoyé à {{email}}.",
+    "signInLinkSent": "Lien de connexion envoyé à {{email}}.",
     "inviteLinkTitle": "Lien d'invitation",
-    "resetLinkTitle": "Lien de réinitialisation",
+    "signInLinkTitle": "Lien de connexion",
     "linkMessage": "Aucun serveur de messagerie n'est configuré. Transmettez ce lien en personne. Sa validité est limitée dans le temps.",
     "deleteTitle": "Supprimer l'utilisateur",
     "deleteMessage": "Supprimer définitivement le compte {{email}} ?",
@@ -529,12 +529,12 @@
     "twoFactorOn": "Deuxième facteur actif",
     "clearTwoFactor": "Réinitialiser le deuxième facteur",
     "clearTwoFactorTitle": "Réinitialiser le deuxième facteur",
-    "clearTwoFactorMessage": "Supprimer le deuxième facteur de {{email}} ? La personne se connectera uniquement avec son mot de passe jusqu'à ce qu'elle en configure un nouveau.",
+    "clearTwoFactorMessage": "Supprimer le deuxième facteur de {{email}} ? Jusqu'à ce qu'un nouveau soit configuré, le lien reçu par e-mail suffit.",
     "twoFactorCleared": "Deuxième facteur supprimé.",
     "dialog": {
       "inviteTitle": "Inviter un utilisateur",
       "editTitle": "Modifier l'utilisateur",
-      "inviteIntro": "La personne reçoit un lien pour définir son mot de passe.",
+      "inviteIntro": "La personne reçoit un lien qui active son compte.",
       "inviteSubmit": "Envoyer l'invitation",
       "customerHint": "Numéro de client issu de votre compte partenaire auprès du service. Sans lui, la personne ne voit aucune donnée de consommation."
     }
@@ -593,7 +593,7 @@
     },
     "mail": {
       "tab": "E-mail",
-      "intro": "Le portail envoie les invitations et les liens de réinitialisation de mot de passe via ce serveur.",
+      "intro": "Le portail envoie les invitations et les liens de connexion par ce serveur.",
       "envSource": "Configuré via l'environnement du serveur. Les paramètres de cette page sont prioritaires.",
       "settingsSource": "Configuré via ces paramètres.",
       "notConfigured": "Aucun serveur de messagerie n'est encore configuré. Les liens d'invitation doivent alors être transmis manuellement.",
@@ -615,12 +615,10 @@
     },
     "registration": {
       "tab": "Inscription",
-      "intro": "Qui peut ouvrir un compte ici et comment les personnes se connectent. Les deux sont désactivés tant que vous ne les activez pas.",
+      "intro": "Qui peut ouvrir un compte ici. Désactivé jusqu'à ce que vous l'activiez.",
       "selfService": "Tout le monde peut créer un compte",
       "selfServiceHint": "Un formulaire d’inscription apparaît sur la page de connexion. Chaque nouveau compte devient aussi votre client chez le service.",
-      "signInLinks": "Connexion par lien envoyé par e-mail",
-      "signInLinksHint": "Au lieu de saisir un mot de passe, les personnes demandent un lien à usage unique. Les mots de passe continuent de fonctionner pour les comptes qui en ont un.",
-      "mailRequired": "Les deux exigent un serveur de messagerie. Configurez-en un sous E-mail.",
+      "mailRequired": "Cela demande un serveur de messagerie. Configurez-en un sous E-mail d'abord.",
       "saved": "Paramètres d’inscription enregistrés."
     },
     "hub": {

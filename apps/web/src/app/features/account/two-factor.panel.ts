@@ -24,8 +24,9 @@ const CODE_LENGTH = 6;
 
 /**
  * The second factor of one's own login: enrolling it, confirming it with a
- * code from the app, reading the recovery codes once, and removing it again
- * with the account password.
+ * code from the app, reading the recovery codes once, and removing it again.
+ * There is no password in this portal, so the factor itself is what proves
+ * that whoever switches it off is the one who set it up.
  */
 @Component({
   selector: 'app-two-factor-panel',
@@ -92,15 +93,17 @@ const CODE_LENGTH = 6;
           <p class="hint">{{ t('account.twoFactor.disableIntro') }}</p>
           <form [formGroup]="removal" (ngSubmit)="disable()" novalidate>
             <mat-form-field appearance="outline" class="full">
-              <mat-label>{{ t('fields.currentPassword') }}</mat-label>
+              <mat-label>{{ t('account.twoFactor.code') }}</mat-label>
               <input
                 matInput
-                type="password"
-                formControlName="password"
-                autocomplete="current-password"
-                data-testid="disable-password"
+                formControlName="code"
+                autocomplete="one-time-code"
+                inputmode="numeric"
+                autocapitalize="off"
+                spellcheck="false"
+                data-testid="disable-code"
               />
-              @if (removal.controls.password | fieldError; as e) {
+              @if (removal.controls.code | fieldError; as e) {
                 <mat-error>{{ t(e.key, e.params) }}</mat-error>
               }
             </mat-form-field>
@@ -186,7 +189,9 @@ export class TwoFactorPanel {
   readonly activation = this.fb.group({
     code: ['', [Validators.required, Validators.minLength(CODE_LENGTH)]],
   });
-  readonly removal = this.fb.group({ password: ['', Validators.required] });
+  readonly removal = this.fb.group({
+    code: ['', [Validators.required, Validators.minLength(CODE_LENGTH)]],
+  });
 
   /**
    * The drawing comes from the portal's own API, which renders it from the
@@ -260,9 +265,9 @@ export class TwoFactorPanel {
       this.notify.success('account.twoFactor.disabled');
     } catch (err) {
       const error = readApiError(err);
-      if (error.code === 'invalid_password') {
-        this.removal.controls.password.setErrors({ server: error.message });
-        this.removal.controls.password.markAsTouched();
+      if (error.code === 'invalid_code') {
+        this.removal.controls.code.setErrors({ server: error.message });
+        this.removal.controls.code.markAsTouched();
       } else {
         this.notify.apiError(err);
       }

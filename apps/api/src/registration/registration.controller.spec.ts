@@ -55,11 +55,11 @@ describe('RegistrationController', () => {
   beforeEach(async () => {
     await t.db.reset();
     t.mail.sent.length = 0;
-    await settings.setRegistration({ selfServiceEnabled: true, signInLinksEnabled: false });
+    await settings.setRegistration({ selfServiceEnabled: true });
   });
 
   it('refuses sign-ups while the operator has them switched off', async () => {
-    await settings.setRegistration({ selfServiceEnabled: false, signInLinksEnabled: false });
+    await settings.setRegistration({ selfServiceEnabled: false });
 
     const res = await client().post('/api/auth/register').send({ email: 'a@example.com' }).expect(404);
 
@@ -93,10 +93,10 @@ describe('RegistrationController', () => {
 
     const row = await t.db.db
       .selectFrom('users')
-      .select(['role', 'status', 'passwordHash', 'language'])
+      .select(['role', 'status', 'acceptedAt', 'language'])
       .where('email', '=', 'new@example.com')
       .executeTakeFirstOrThrow();
-    expect(row).toEqual({ role: 'user', status: 'invited', passwordHash: null, language: 'fr' });
+    expect(row).toEqual({ role: 'user', status: 'invited', acceptedAt: null, language: 'fr' });
   });
 
   it('answers the same for an address that already has an account, and creates nothing', async () => {

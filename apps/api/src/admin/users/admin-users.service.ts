@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AuditService } from '../../audit/audit.service.js';
 import { SessionService, type SessionUser } from '../../auth/session.service.js';
-import { TokenService } from '../../auth/token.service.js';
+import { inviteLink, signInLink } from '../../auth/links.js';
+import { SIGN_IN_LINK_TTL_MS, TokenService } from '../../auth/token.service.js';
 import { TwoFactorService } from '../../auth/two-factor.service.js';
 import { apiError } from '../../common/http-error.js';
 import { APP_CONFIG, type AppConfig } from '../../config/env.js';
@@ -13,7 +14,6 @@ import { MAIL_SENDER, type MailRecipient, type MailSender } from '../../mail/mai
 import type { InviteUserDto, UpdateUserDto } from './dto.js';
 
 export const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
-export const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
 
 export interface AdminUserRow {
   id: number;
@@ -48,8 +48,9 @@ export interface InviteResult {
   mailSent: boolean;
 }
 
-export interface PasswordResetResult {
-  resetLink: string;
+export interface SignInLinkResult {
+  /** Shown to the administrator, so a link can be passed on when no mail server is configured. */
+  signInLink: string;
   mailSent: boolean;
 }
 
@@ -113,7 +114,7 @@ export class AdminUsersService {
       email: input.email,
       role: input.role,
       status: 'invited',
-      passwordHash: null,
+      acceptedAt: null,
       firstName: input.firstName || null,
       lastName: input.lastName || null,
       language: input.language,
@@ -132,11 +133,11 @@ export class AdminUsersService {
     return { user: toAdminRow(user), inviteLink: link, mailSent };
   }
 
-  /** Issues a new invitation link; earlier links stop working. A disabled account without a password becomes invited again. */
+  /** Issues a new invitation link; earlier links stop working. A disabled account that never accepted becomes invited again. */
   async resendInvite(id: number, ctx: ActionContext): Promise<InviteResult> {
     let user = await this.require(id);
-    if (user.passwordHash !== null)
-      throw apiError(409, 'already_active', 'This account has already set a password');
+    if (user.status === 'active')
+      throw apiError(409, 'already_active', 'This account has already accepted its invitation');
     if (user.status !== 'invited') {
       await this.db
         .updateTable('users')
@@ -169,7 +170,7 @@ export class AdminUsersService {
       throw apiError(400, 'customer_required', 'Users need a customer id');
     if (echocallCustomerId !== null && echocallCustomerId !== user.echocallCustomerId)
       await this.assertCustomerFree(echocallCustomerId, id);
-    if (patch.status === 'active' && user.passwordHash === null)
+    if (patch.status === 'active' && user.status === 'invited')
       throw apiError(
         409,
         'invite_pending',
@@ -198,22 +199,27 @@ export class AdminUsersService {
     return toAdminRow(await this.require(id));
   }
 
-  async sendPasswordReset(id: number, ctx: ActionContext): Promise<PasswordResetResult> {
+  /**
+   * Hands an active account a fresh way in. It is what an operator reaches for
+   * when someone cannot receive their own link, so the link comes back either
+   * way and can be passed on by hand.
+   */
+  async sendSignInLink(id: number, ctx: ActionContext): Promise<SignInLinkResult> {
     const user = await this.require(id);
-    if (user.status !== 'active' || user.passwordHash === null)
-      throw apiError(409, 'user_not_active', 'Only active accounts can reset their password');
-    const token = await this.tokens.issue(user.id, 'password_reset', PASSWORD_RESET_TTL_MS);
-    const link = `${this.config.appUrl}/reset-password?token=${encodeURIComponent(token)}`;
-    const mailSent = await this.mail.sendPasswordReset(recipient(user), link);
+    if (user.status !== 'active')
+      throw apiError(409, 'user_not_active', 'Only active accounts can be sent a sign-in link');
+    const token = await this.tokens.issue(user.id, 'sign_in', SIGN_IN_LINK_TTL_MS);
+    const link = signInLink(this.config.appUrl, token);
+    const mailSent = await this.mail.sendSignInLink(recipient(user), link);
     await this.audit.record({
       actorUserId: ctx.actor?.id ?? null,
-      action: 'users.password_reset_sent',
+      action: 'users.sign_in_link_sent',
       targetType: 'user',
       targetId: id,
       details: { email: user.email, mailSent },
       ip: ctx.ip,
     });
-    return { resetLink: link, mailSent };
+    return { signInLink: link, mailSent };
   }
 
   /**
@@ -255,7 +261,7 @@ export class AdminUsersService {
 
   private async sendInvite(user: UserRow, sendMail = true): Promise<{ link: string; mailSent: boolean }> {
     const token = await this.tokens.issue(user.id, 'invite', INVITE_TTL_MS);
-    const link = `${this.config.appUrl}/accept-invite?token=${encodeURIComponent(token)}`;
+    const link = inviteLink(this.config.appUrl, token);
     const mailSent = sendMail ? await this.mail.sendInvite(recipient(user), link) : false;
     return { link, mailSent };
   }

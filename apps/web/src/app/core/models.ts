@@ -32,7 +32,7 @@ export interface SessionUser {
   impersonator?: Impersonator | null;
 }
 
-/** What the password step answers with when the account asks for a second factor. */
+/** What a spent sign-in link answers with when the account asks for a second factor. */
 export interface TwoFactorChallenge {
   challenge: string;
   expiresAt: string;
@@ -52,12 +52,10 @@ export interface Branding {
   defaultLanguage: Language;
 }
 
-/** The two ways in, as the operator has set them. Both are off until they switch one on. */
+/** Who may open an account, as the operator has set it. Off until they switch it on. */
 export interface Registration {
   /** Anyone may open an account from the sign-in page. */
   selfServiceEnabled: boolean;
-  /** A mailed link signs people in, so an account needs no password at all. */
-  signInLinksEnabled: boolean;
 }
 
 /** What the sign-in page needs before anyone has signed in. */
@@ -65,7 +63,7 @@ export interface PublicSettings extends Branding {
   registration: Registration;
 }
 
-/** The same two switches for the operator, plus whether mail can carry the links. */
+/** The same switch for the operator, plus whether mail can carry the links. */
 export interface RegistrationView extends Registration {
   mailReady: boolean;
 }
@@ -149,8 +147,9 @@ export interface InviteResult {
   mailSent: boolean;
 }
 
-export interface PasswordResetResult {
-  resetLink: string;
+/** What an admin gets back after sending someone a way into the portal. */
+export interface SignInLinkResult {
+  signInLink: string;
   mailSent: boolean;
 }
 

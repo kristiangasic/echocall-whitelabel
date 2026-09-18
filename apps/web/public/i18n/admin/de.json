@@ -513,15 +513,15 @@
     "lastLogin": "Letzte Anmeldung",
     "empty": "Noch keine Benutzer. Laden Sie die erste Person ein.",
     "resendInvite": "Einladung erneut senden",
-    "passwordReset": "Passwort zurücksetzen",
+    "sendSignInLink": "Anmeldelink senden",
     "enable": "Aktivieren",
     "disable": "Deaktivieren",
     "saved": "Änderungen gespeichert.",
     "deleted": "Benutzer gelöscht.",
     "inviteSent": "Einladung an {{email}} gesendet.",
-    "resetSent": "Link zum Zurücksetzen an {{email}} gesendet.",
+    "signInLinkSent": "Anmeldelink an {{email}} gesendet.",
     "inviteLinkTitle": "Einladungslink",
-    "resetLinkTitle": "Link zum Zurücksetzen",
+    "signInLinkTitle": "Anmeldelink",
     "linkMessage": "Es ist kein E-Mail-Server konfiguriert. Geben Sie diesen Link persönlich weiter. Er ist nur begrenzt gültig.",
     "deleteTitle": "Benutzer löschen",
     "deleteMessage": "Soll das Konto {{email}} endgültig gelöscht werden?",
@@ -529,12 +529,12 @@
     "twoFactorOn": "Zweiter Faktor aktiv",
     "clearTwoFactor": "Zweiten Faktor zurücksetzen",
     "clearTwoFactorTitle": "Zweiten Faktor zurücksetzen",
-    "clearTwoFactorMessage": "Soll der zweite Faktor von {{email}} entfernt werden? Die Person meldet sich danach nur mit Passwort an, bis sie einen neuen Faktor einrichtet.",
+    "clearTwoFactorMessage": "Den zweiten Faktor von {{email}} entfernen? Bis ein neuer eingerichtet ist, genügt der Link aus dem Postfach.",
     "twoFactorCleared": "Zweiter Faktor entfernt.",
     "dialog": {
       "inviteTitle": "Benutzer einladen",
       "editTitle": "Benutzer bearbeiten",
-      "inviteIntro": "Die Person erhält einen Link, mit dem sie ihr Passwort festlegt.",
+      "inviteIntro": "Die Person erhält einen Link, der ihr Konto aktiviert.",
       "inviteSubmit": "Einladung senden",
       "customerHint": "Kundennummer aus Ihrem Partnerkonto beim Dienst. Ohne Zuordnung sieht die Person keine Verbrauchsdaten."
     }
@@ -593,7 +593,7 @@
     },
     "mail": {
       "tab": "E-Mail",
-      "intro": "Über diesen Server verschickt das Portal Einladungen und Links zum Zurücksetzen von Passwörtern.",
+      "intro": "Über diesen Server verschickt das Portal Einladungen und Anmeldelinks.",
       "envSource": "Konfiguriert über die Serverumgebung. Einstellungen auf dieser Seite haben Vorrang.",
       "settingsSource": "Konfiguriert über diese Einstellungen.",
       "notConfigured": "Noch kein E-Mail-Server konfiguriert. Einladungslinks müssen dann von Hand weitergegeben werden.",
@@ -615,12 +615,10 @@
     },
     "registration": {
       "tab": "Registrierung",
-      "intro": "Wer hier ein Konto anlegen darf und wie sich Menschen anmelden. Beides ist aus, bis Sie es einschalten.",
+      "intro": "Wer hier ein Konto eröffnen darf. Das ist aus, bis Sie es einschalten.",
       "selfService": "Jeder darf ein Konto anlegen",
       "selfServiceHint": "Auf der Anmeldeseite erscheint ein Registrierungsformular. Jedes neue Konto wird beim Dienst zugleich Ihr Kunde.",
-      "signInLinks": "Anmeldung per zugeschicktem Link",
-      "signInLinksHint": "Statt ein Passwort einzugeben, fordern Menschen einen einmaligen Link an. Passwörter funktionieren für bestehende Konten weiter.",
-      "mailRequired": "Beides braucht einen Mailserver. Richten Sie zuerst unter E-Mail einen ein.",
+      "mailRequired": "Dafür wird ein E-Mail-Server gebraucht. Richten Sie zuerst einen unter E-Mail ein.",
       "saved": "Registrierungseinstellungen gespeichert."
     },
     "hub": {

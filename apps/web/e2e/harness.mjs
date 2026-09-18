@@ -15,7 +15,15 @@ import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { CUSTOMER, DATABASE_URL, HUB_PORT, HUB_URL, OPERATOR, PORTAL_PORT, PORTAL_URL } from './accounts.mjs';
+import {
+  CUSTOMER,
+  DATABASE_URL,
+  HUB_PORT,
+  OPERATOR,
+  PORTAL_ENV,
+  PORTAL_PORT,
+  PORTAL_URL,
+} from './accounts.mjs';
 import { startHubStub } from './hub-stub.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -23,10 +31,6 @@ const webRoot = resolve(here, '..');
 const apiRoot = resolve(webRoot, '../api');
 const apiEntry = resolve(apiRoot, 'dist/main.js');
 const webDist = resolve(webRoot, 'dist/web/browser');
-
-/** Only used against a throwaway database, never against an installation. */
-const APP_SECRET = 'smoke-secret-for-the-end-to-end-run-only';
-const API_KEY = `eck_test_${'a1b2c3d4'.repeat(8)}`;
 
 /** The header the portal requires on every mutating call instead of a token. */
 const CSRF = { 'x-requested-with': 'XMLHttpRequest' };
@@ -83,12 +87,7 @@ function startPortal() {
       ...process.env,
       NODE_ENV: 'production',
       PORT: String(PORTAL_PORT),
-      APP_URL: PORTAL_URL,
-      APP_SECRET,
-      DATABASE_URL,
-      DATABASE_SSL: 'disable',
-      ECHOCALL_API_URL: HUB_URL,
-      ECHOCALL_API_KEY: API_KEY,
+      ...PORTAL_ENV,
       WEB_DIST_DIR: webDist,
       // No mail server: invitations are handed back as a link instead.
       SMTP_HOST: '',
@@ -146,12 +145,7 @@ async function call(path, { method = 'GET', body, cookie } = {}) {
 async function seed() {
   const admin = await call('/setup/admin', {
     method: 'POST',
-    body: {
-      email: OPERATOR.email,
-      password: OPERATOR.password,
-      firstName: OPERATOR.firstName,
-      language: 'de',
-    },
+    body: { email: OPERATOR.email, firstName: OPERATOR.firstName, language: 'de' },
   });
 
   const created = await call('/admin/customers', {
@@ -171,7 +165,7 @@ async function seed() {
   if (!token) fail('the invitation link carried no token');
   await call('/auth/accept-invite', {
     method: 'POST',
-    body: { token, password: CUSTOMER.password },
+    body: { token, firstName: CUSTOMER.firstName, lastName: CUSTOMER.lastName },
   });
 
   await call('/auth/logout', { method: 'POST', cookie: admin.cookie });

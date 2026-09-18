@@ -25,6 +25,7 @@ describe('TokenService', () => {
       status: 'invited',
       echocallCustomerId: 7,
       language: 'de',
+      acceptedAt: null,
     });
   });
 
@@ -33,22 +34,22 @@ describe('TokenService', () => {
     expect(token.length).toBeGreaterThanOrEqual(40);
     const stored = await t.db.selectFrom('oneTimeTokens').selectAll().executeTakeFirstOrThrow();
     expect(stored.tokenHash).not.toBe(token);
-    expect(await tokens.consume(token, 'password_reset')).toBeNull();
+    expect(await tokens.consume(token, 'sign_in')).toBeNull();
     expect(await tokens.consume(token, 'invite')).toBe(userId);
     expect(await tokens.consume(token, 'invite')).toBeNull();
   });
 
   it('rejects expired and unknown tokens', async () => {
-    const expired = await tokens.issue(userId, 'password_reset', -1000);
-    expect(await tokens.consume(expired, 'password_reset')).toBeNull();
-    expect(await tokens.consume('x'.repeat(43), 'password_reset')).toBeNull();
+    const expired = await tokens.issue(userId, 'sign_in', -1000);
+    expect(await tokens.consume(expired, 'sign_in')).toBeNull();
+    expect(await tokens.consume('x'.repeat(43), 'sign_in')).toBeNull();
   });
   it('invalidates earlier tokens of the same purpose when a new one is issued', async () => {
     const first = await tokens.issue(userId, 'invite', 60_000);
-    const reset = await tokens.issue(userId, 'password_reset', 60_000);
+    const other = await tokens.issue(userId, 'sign_in', 60_000);
     const second = await tokens.issue(userId, 'invite', 60_000);
     expect(await tokens.consume(first, 'invite')).toBeNull();
     expect(await tokens.consume(second, 'invite')).toBe(userId);
-    expect(await tokens.consume(reset, 'password_reset')).toBe(userId);
+    expect(await tokens.consume(other, 'sign_in')).toBe(userId);
   });
 });

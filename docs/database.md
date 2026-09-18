@@ -57,8 +57,8 @@ Restore with the portal stopped, then start it: migrations run at startup and br
 from an older release up to the current schema.
 
 Take a backup before every upgrade; the audit log and your branding (including the uploaded
-logo) live in this database. Two things are worth knowing about a dump. It holds password
-hashes, session hashes and the encrypted SMTP password and second-factor secrets, so it
+logo) live in this database. Two things are worth knowing about a dump. It holds session
+hashes, one-time token hashes and the encrypted SMTP password and second-factor secrets, so it
 belongs in encrypted storage, apart from the `.env` it was taken with. And it is only fully
 readable together with that `APP_SECRET`: restore the database under a different secret and
 the SMTP password and every second factor are lost - the accounts still work, the second

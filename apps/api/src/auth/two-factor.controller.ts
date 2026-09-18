@@ -19,7 +19,6 @@ import {
   type TwoFactorVerifyDto,
   twoFactorVerifySchema,
 } from './dto.js';
-import { PasswordService } from './password.service.js';
 import type { SessionUser } from './session.service.js';
 import { type Enrolment, TwoFactorService } from './two-factor.service.js';
 
@@ -29,7 +28,6 @@ export class TwoFactorController {
   constructor(
     @Inject(DB) private readonly db: Db,
     private readonly twoFactor: TwoFactorService,
-    private readonly passwords: PasswordService,
     private readonly settings: SettingsService,
     private readonly audit: AuditService,
     private readonly tokens: TokenService,
@@ -37,8 +35,8 @@ export class TwoFactorController {
   ) {}
 
   /**
-   * The second step of a sign-in. The challenge stands in for the password
-   * that was already accepted, so this route is public; what guards it is the
+   * The second step of a sign-in. The challenge stands in for the link that
+   * was already spent, so this route is public; what guards it is the
    * challenge itself, which expires, burns after a few wrong guesses, and is
    * spent the moment it works.
    */
@@ -107,8 +105,10 @@ export class TwoFactorController {
     @Req() req: Request,
   ): Promise<void> {
     const row = await this.load(user);
-    if (!(await this.passwords.verify(row.passwordHash, body.password))) {
-      throw apiError(403, 'invalid_password', 'The password is incorrect');
+    // The portal has no password to ask for here, so the factor itself is the
+    // proof: whoever turns it off can still produce a code or a recovery code.
+    if (!(await this.twoFactor.check(row, body.code))) {
+      throw apiError(403, 'invalid_code', 'That code does not match');
     }
     await this.twoFactor.disable(user.id);
     await this.audit.record({

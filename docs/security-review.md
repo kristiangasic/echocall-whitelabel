@@ -1,6 +1,7 @@
 # Security review
 
-Reviewed on 2026-09-17 against the state of `main` before the 0.1.0 release.
+Reviewed on 2026-09-17 against the state of `main` before the 0.1.0 release, and
+updated on 2026-09-18, when passwords were taken out of the product altogether.
 
 How it was reviewed: every route, guard and service of the back end was read, the test
 suites of both applications were run, the browser smoke run was executed against a built
@@ -22,7 +23,6 @@ because of it, and which limits the portal knowingly has.
 - Every request resolves the session together with the account row and refuses it when the
   account is no longer `active`. Disabling an account therefore ends its sessions at the
   next request, and suspending a customer or disabling a portal user revokes them outright.
-- Changing or resetting a password revokes every session of that account.
 - Signing in always creates a new session row, so a token that existed before the sign-in
   cannot become an authenticated one.
 - Expired rows are deleted whenever a session is created and whenever one is resolved
@@ -34,67 +34,70 @@ because of it, and which limits the portal knowingly has.
   `DELETE` without the header `x-requested-with: XMLHttpRequest`. A browser adds a custom
   header only from same-origin script, so a cross-site form post cannot pass.
 - The guard sits in front of the session guard, so it also covers the routes that are open
-  without a session (sign-in, invitation, password reset, first-run setup).
+  without a session (the sign-in link, the invitation, the second factor step, the
+  first-run setup).
 - There is no exception anywhere in the code base: every mutating route of the portal is
   behind it. The only unprotected surfaces are `GET` routes.
 
 ## Rate limits
 
 Five attempts per minute and client address, applied to the routes where guessing pays:
-sign-in, forgot password, reset password, accept invitation, the second factor step, the
-first-run key check and the first-run administrator form. Everything else is behind a
-session.
+asking for a sign-in link, spending one, accepting an invitation, the second factor step,
+the sign-up form, the first-run key check and the first-run administrator form. Everything
+else is behind a session.
 
 The client address comes from the reverse proxy through `TRUST_PROXY` (one hop by
 default). A wrong value makes every request look like it comes from the proxy.
 
-## Passwords
+## No passwords
 
-- Argon2id with the OWASP minimum: 19 MiB memory, two iterations, one lane.
-- A sign-in against an account without a password hash still costs one verification, so
-  the answer time does not say whether an account exists. The answer itself is the same
-  for an unknown address and a wrong password.
-- At least 10 characters, at most 200. Length carries the strength, which is why there is
-  no rule about upper case or digits.
-- Added in this review: a password that passes the length rule is refused when it is one
-  of the common choices (`apps/api/src/auth/weak-password.ts`, the list covers German,
-  English and French) or when the whole password is one piece of at most four characters
-  repeated. The web front end mirrors both rules so the hint appears while typing.
+The portal has none: no password field, no hash column, no reset route. Whoever wants in
+types their address and follows the link that arrives, so the credential lives for 15
+minutes instead of for years and there is nothing to guess, to reuse or to phish out of a
+person. What carries the weight instead is the mailbox and, where it is set up, the second
+factor.
 
-## Invitation, reset and challenge tokens
+- A request for a link answers `204 No Content` whether or not the address has an account,
+  and does the same work either way, so neither the answer nor the time it takes says who
+  has an account here.
+- A link that reaches an account which is not active is refused, and the refusal goes to
+  the audit log.
+- The mail server is part of the way in, which is why the portal ships with a way past it:
+  `node dist/cli/sign-in-link.js <address>`, run on the machine, prints the link the mail
+  would have carried. It needs the database and `APP_SECRET`, which is to say it needs the
+  machine, and whoever has that can read everything anyway. `docs/operating.md` describes
+  it.
+
+## Invitation, sign-in and challenge tokens
 
 - 32 bytes of randomness, handed out once, stored as SHA-256 only.
-- Lifetimes: invitation 7 days, password reset 60 minutes, second factor challenge 5
+- Lifetimes: invitation 7 days, sign-in link 15 minutes, second factor challenge 5
   minutes.
+- Issuing a token spends the unused ones of the same purpose for that account, so asking
+  for a second link makes the first one useless.
 - Every token counts its failed attempts and dies after three, so a challenge cannot be
   worn down by trying codes.
-- A token is consumed only on success. A form the portal refuses (a weak password, for
-  example) leaves the token usable, which is what a person expects after a typo.
+- A token is consumed only on success. A form the portal refuses leaves the token usable,
+  which is what a person expects after a typo.
 
-## Sign-up and sign-in links
+## Sign-up
 
-- Both are off in a fresh portal, and the portal refuses to switch either on while no mail
-  server is configured: the links would go nowhere.
-- Neither route says whether an address has an account. A sign-up answers `202 Accepted`
-  whether the account was opened, already existed or was refused by the service, and a
-  request for a sign-in link answers `204 No Content` either way. Both are rate limited
-  per address like the other unauthenticated routes.
-- A sign-in link is one of the one-time tokens above: 32 random bytes, stored as SHA-256,
-  valid 15 minutes, spent on use, and a second request replaces the first.
-- An account without a password hash cannot be signed in with a password. The verification
-  still runs against a dummy hash, so the answer time says nothing.
-- A second factor applies to a link exactly as it does to a password: the link produces a
-  challenge, not a session.
-- Consuming a link while the operator has switched links off is refused, so turning the
-  switch off also invalidates the links already in the post.
+- Off in a fresh portal, and the portal refuses to switch it on while no mail server is
+  configured: the link would go nowhere.
+- The route says nothing about an address either: `202 Accepted` whether the account was
+  opened, already existed or was refused by the service. It is rate limited per client
+  address like the other routes that are open without a session.
+- Switching it off takes effect at once. The form disappears from the sign-in page and a
+  sign-up that was started but never finished cannot be completed; accounts opened while
+  it was on keep working.
 
 ## Two factor
 
 - TOTP with a secret that is stored encrypted (see below) and only becomes active once a
   code proves the authenticator app works.
 - Ten recovery codes, shown once, stored as SHA-256, each usable once.
-- The password step of an account with a second factor produces no session and no cookie,
-  only a short lived challenge.
+- A spent sign-in link produces no session and no cookie for an account with a second
+  factor, only a short lived challenge.
 - An operator can clear the second factor of another account. That is written to the audit
   log, and it is the only way back for a customer who lost both the app and the codes.
 
@@ -114,32 +117,30 @@ Both proxies forward an explicit list of calls and answer 404 for everything els
 
 ## Secrets
 
-| Secret                              | Where it lives                    | How                                                  |
-| ----------------------------------- | --------------------------------- | ---------------------------------------------------- |
-| Service API key                     | Environment only                  | Never stored, never logged, never sent to a browser  |
-| `APP_SECRET`                        | Environment only                  | Key material for everything below                    |
-| SMTP password                       | `settings` table                  | AES-256-GCM, key derived from `APP_SECRET` with HKDF |
-| TOTP secret                         | `users` table                     | AES-256-GCM, same derivation                         |
-| Passwords                           | `users` table                     | Argon2id hash                                        |
-| Session tokens                      | `sessions` table                  | SHA-256 of the token                                 |
-| Invitation, reset, challenge tokens | `one_time_tokens` table           | SHA-256 of the token                                 |
-| Recovery codes                      | `two_factor_recovery_codes` table | SHA-256 of the code                                  |
+| Secret                                | Where it lives                    | How                                                  |
+| ------------------------------------- | --------------------------------- | ---------------------------------------------------- |
+| Service API key                       | Environment only                  | Never stored, never logged, never sent to a browser  |
+| `APP_SECRET`                          | Environment only                  | Key material for everything below                    |
+| SMTP password                         | `settings` table                  | AES-256-GCM, key derived from `APP_SECRET` with HKDF |
+| TOTP secret                           | `users` table                     | AES-256-GCM, same derivation                         |
+| Session tokens                        | `sessions` table                  | SHA-256 of the token                                 |
+| Invitation, sign-in, challenge tokens | `one_time_tokens` table           | SHA-256 of the token                                 |
+| Recovery codes                        | `two_factor_recovery_codes` table | SHA-256 of the code                                  |
 
 Nothing in this list is ever written to the audit log: the log holds addresses,
 identifiers and the fields that changed, never a value from this table.
 
 ## Audit log
 
-23 actions are recorded: the first-run setup, every customer change (created, updated,
+25 actions are recorded: the first-run setup, every customer change (created, updated,
 suspended, unsuspended, deleted), every portal user change (invited, invitation resent,
-updated, deleted, password reset sent, second factor cleared), the account's own changes
-(password changed, second factor enabled or disabled), both branding and SMTP settings,
-both ends of an impersonation, and, added in this review, `auth.signed_in`,
-`auth.sign_in_failed` and `auth.password_reset`.
+updated, deleted, sign-in link sent, second factor cleared), the account's own second
+factor (enabled or disabled), branding, SMTP and the sign-up switch, both ends of an
+impersonation, a self-service sign-up, and `auth.signed_in` and `auth.sign_in_failed`.
 
-A refused sign-in records the address that was typed and the reason (`unknown_account`,
-`wrong_password`, `account_disabled`), never the password. That is what makes a series of
-attempts visible to an operator at all.
+A refused sign-in records the address and the reason (`account_disabled`, or
+`account_invited` for an invitation that was never accepted), never the token from the
+link. That is what makes a series of attempts visible to an operator at all.
 
 Each entry keeps the actor, the target, the client address and the time. The list is
 readable for operators only.
@@ -212,10 +213,11 @@ pipeline runs the production audit on every push, so a new advisory fails the bu
    connection works and when it was last checked; the full report stayed where it is
    useful, in the admin overview behind a sign-in.
 2. Sign-ins were not written to the audit log at all, so a series of refused attempts left
-   no trace an operator could see. Successful sign-ins, refused sign-ins and completed
-   password resets are recorded now.
-3. A password of ten characters could be `passwort123`. Common choices and repeated
-   fragments are refused now, on the server and in the form.
+   no trace an operator could see. Successful sign-ins and refused ones are recorded now.
+3. Passwords were behind more of this review than anything else, so the day after it they
+   were taken out of the product: no password field, no hash, no reset route, and the
+   mailed link as the only way in. The command above replaced the recipe for writing a
+   hash into the database by hand that used to stand in `docs/operating.md`.
 4. Accepting an invitation is rate limited like the other routes that are open without a
    session.
 
@@ -232,10 +234,11 @@ pipeline runs the production audit on every push, so a new advisory fails the bu
 - **A logo may be an SVG.** It is only ever placed in an `img` element, where no browser
   runs script, and `script-src 'self'` would refuse it anyway. Accepted as a convenience
   for operators whose logo is a vector file.
-- **No breach list for passwords.** A self-hosted portal does not call out to a third
-  party to check a password, so the check is the built-in list of common choices.
-- **No idle timeout and no "sign out everywhere" button** for a person's own account. A
-  password change revokes every session, and an operator can disable an account.
+- **The mailbox is the credential.** With no password anywhere, whoever reads a person's
+  mail can sign in as them. A second factor is what puts something else in the way, which
+  is why it belongs on every operator account.
+- **No idle timeout and no "sign out everywhere" button** for a person's own account.
+  Disabling the account is what ends its sessions, at the next request.
 - **Second factor cannot be made mandatory** for every operator account. Turn it on per
   account.
 - **`/healthz` and `/readyz` are open** so an orchestrator can use them without a
@@ -256,8 +259,8 @@ The portal cannot do these for you:
    and every second factor has to be set up again.
 3. **Keep the API key in the environment**, out of the repository and out of backups you
    share. If it leaks, rotate it at the provider and put the new one in the environment.
-4. **Protect the database.** It holds password hashes, session hashes and the encrypted
-   secrets. Encrypt the backups, and do not keep them next to the environment file.
+4. **Protect the database.** It holds session hashes, one-time token hashes and the
+   encrypted secrets. Encrypt the backups, and do not keep them next to the environment file.
 5. **Decide who can reach `/healthz` and `/readyz`** and block them at the proxy if they
    should not be public.
 6. **Set `TRUST_PROXY`** to the number of proxies in front of the portal.

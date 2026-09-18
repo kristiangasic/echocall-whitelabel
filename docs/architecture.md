@@ -32,11 +32,11 @@ NestJS 12, ESM, Express. Modules:
 | `admin/*`   | Overview, user management (invite, edit, disable, delete), customers, impersonation              |
 | `admin/hub` | Forwards allow-listed operator calls to the EchoCall API under `/api/admin/hub`                  |
 | `settings`  | Branding (name, logo, color, legal links, default language) and SMTP                             |
-| `account`   | Own profile, password change, the customer usage overview and invoice downloads                  |
+| `account`   | Own profile, the customer usage overview and invoice downloads                                   |
 | `hub-proxy` | Forwards allow-listed customer calls to the EchoCall API under `/api/hub`                        |
 | `embed`     | Re-serves the chat widget from the portal's own domain under `/embed`                            |
 | `audit`     | Append-only log of admin actions with actor, IP and outcome                                      |
-| `mail`      | Invite and password reset mails via SMTP; falls back to one-time links                           |
+| `mail`      | Invitation and sign-in link mails via SMTP; falls back to one-time links                         |
 | `health`    | `/healthz` (liveness) and `/readyz` (database + hub) for orchestration                           |
 
 Cross-cutting rules:
@@ -113,7 +113,7 @@ It refuses more than it allows:
 - an administrator account (`cannot_impersonate_admin`) - this is not a way to become
   another operator;
 - a login that has not been used yet or is disabled (`login_not_active`);
-- a password change while impersonating, and every `/admin` route, both by role;
+- a profile change while impersonating, and every `/admin` route, both by role;
 - a session whose operator account is gone by the time it is handed back - the session ends
   and the browser has to sign in again (`session_ended`).
 

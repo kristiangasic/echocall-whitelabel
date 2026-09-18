@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { nameSchema, passwordSchema } from '../auth/dto.js';
+import { nameSchema } from '../auth/dto.js';
 import { LANGUAGES } from '../settings/branding.js';
 
 export const profileUpdateSchema = z
@@ -12,9 +12,3 @@ export const profileUpdateSchema = z
     message: 'Nothing to update',
   });
 export type ProfileUpdateDto = z.infer<typeof profileUpdateSchema>;
-
-export const passwordChangeSchema = z.object({
-  currentPassword: z.string().min(1).max(200),
-  newPassword: passwordSchema,
-});
-export type PasswordChangeDto = z.infer<typeof passwordChangeSchema>;

@@ -1,8 +1,8 @@
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AuthModule } from '../auth/auth.module.js';
-import { PasswordService } from '../auth/password.service.js';
 import { SessionService } from '../auth/session.service.js';
+import { sha256Hex } from '../common/crypto.js';
 import {
   createResellerHubFake,
   type HubFakeCall,
@@ -14,7 +14,6 @@ import { type SignedInUser, signInAs } from '../testing/users.js';
 import { AccountModule } from './account.module.js';
 
 const XHR = { 'x-requested-with': 'XMLHttpRequest' };
-const PASSWORD = 'first password 123';
 
 const CUSTOMER_PROFILE = {
   id: 501,
@@ -69,13 +68,7 @@ describe('AccountController', () => {
     });
     t = await createTestApp([AuthModule, AccountModule], { hub });
     await t.db.reset();
-    const passwords = t.moduleRef.get(PasswordService, { strict: false });
-    user = await signInAs(t, {
-      email: 'user@example.com',
-      role: 'user',
-      echocallCustomerId: 501,
-      passwordHash: await passwords.hash(PASSWORD),
-    });
+    user = await signInAs(t, { email: 'user@example.com', role: 'user', echocallCustomerId: 501 });
     admin = await signInAs(t, { email: 'admin@example.com', role: 'admin' });
   });
 
@@ -169,47 +162,24 @@ describe('AccountController', () => {
     expect(me.body).toMatchObject({ firstName: 'Kai', language: 'fr' });
   });
 
-  it('changes the password and signs out every other session', async () => {
+  // An operator looking at a customer's portal may read everything there and
+  // change nothing, the account itself least of all.
+  it('refuses a profile change made while viewing the portal as this customer', async () => {
     const sessions = t.moduleRef.get(SessionService, { strict: false });
-    const other = `ecl_session=${(await sessions.create(user.id)).token}`;
-    expect((await api().get('/api/auth/me').set('Cookie', other)).status).toBe(200);
+    const { token } = await sessions.create(user.id);
+    await t.db.db
+      .updateTable('sessions')
+      .set({ impersonatorId: admin.id })
+      .where('id', '=', sha256Hex(token))
+      .execute();
 
-    const weak = await api()
-      .post('/api/account/password')
-      .set('Cookie', user.cookie)
+    const res = await api()
+      .patch('/api/account/profile')
+      .set('Cookie', `ecl_session=${token}`)
       .set(XHR)
-      .send({ currentPassword: PASSWORD, newPassword: 'short' });
-    expect(weak.status).toBe(400);
-    expect(weak.body.error.details[0].path).toBe('newPassword');
-    const wrong = await api()
-      .post('/api/account/password')
-      .set('Cookie', user.cookie)
-      .set(XHR)
-      .send({ currentPassword: 'not it', newPassword: 'second password 456' });
-    expect(wrong.status).toBe(400);
-    expect(wrong.body.error.code).toBe('invalid_current_password');
-    expect((await api().get('/api/auth/me').set('Cookie', other)).status).toBe(200);
+      .send({ firstName: 'Nope' });
 
-    const ok = await api()
-      .post('/api/account/password')
-      .set('Cookie', user.cookie)
-      .set(XHR)
-      .send({ currentPassword: PASSWORD, newPassword: 'second password 456' });
-    expect(ok.status).toBe(204);
-    expect((await api().get('/api/auth/me').set('Cookie', other)).status).toBe(401);
-    expect((await api().get('/api/auth/me').set('Cookie', user.cookie)).status).toBe(200);
-
-    const login = await api()
-      .post('/api/auth/login')
-      .set(XHR)
-      .send({ email: 'user@example.com', password: 'second password 456' });
-    expect(login.status).toBe(200);
-    const audit = await api().get('/api/admin/audit').set('Cookie', admin.cookie);
-    expect(audit.body.data[0]).toMatchObject({ action: 'auth.signed_in', actorEmail: 'user@example.com' });
-    expect(audit.body.data[1]).toMatchObject({
-      action: 'account.password_changed',
-      actorEmail: 'user@example.com',
-      targetId: String(user.id),
-    });
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('impersonation_read_only');
   });
 });

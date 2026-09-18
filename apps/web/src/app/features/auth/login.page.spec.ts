@@ -1,114 +1,38 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
-import { AuthStore } from '../../core/auth/auth.store';
+import { provideRouter } from '@angular/router';
 import { BrandingService } from '../../core/branding/branding.service';
 import { byTestId, submit, type } from '../../testing/dom';
 import { provideTestI18n, TEXTS } from '../../testing/i18n';
 import { LoginPage } from './login.page';
 
-@Component({ template: '' })
-class BlankPage {}
-
 describe('LoginPage', () => {
   let http: HttpTestingController;
-  let router: Router;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [LoginPage, provideTestI18n()],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        provideRouter([
-          { path: 'admin', component: BlankPage },
-          { path: 'app', component: BlankPage },
-          { path: 'login', component: LoginPage },
-        ]),
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
-    router = TestBed.inject(Router);
   });
 
   afterEach(() => http.verify());
 
   /**
-   * The page reads the two switches as it is created, so they are set first.
-   * Both off is what a portal looks like until an operator opens it up.
+   * The page reads the sign-up switch as it is created, so it is set first.
+   * Off is what a portal looks like until an operator opens it up.
    */
-  async function render(registration = { selfServiceEnabled: false, signInLinksEnabled: false }) {
-    TestBed.inject(BrandingService).setRegistration(registration);
+  async function render(selfServiceEnabled = false) {
+    TestBed.inject(BrandingService).setRegistration({ selfServiceEnabled });
     const fixture = TestBed.createComponent(LoginPage);
     await fixture.whenStable();
     return fixture;
   }
 
-  it('signs an administrator in and opens the admin area', async () => {
+  it('asks for an address and mails a link to it', async () => {
     const fixture = await render();
-    type(fixture, 'email', 'admin@example.com');
-    type(fixture, 'password', 'correct horse battery');
-    submit(fixture);
-
-    const request = http.expectOne('/api/auth/login');
-    expect(request.request.body).toEqual({ email: 'admin@example.com', password: 'correct horse battery' });
-    request.flush({
-      id: 1,
-      email: 'admin@example.com',
-      role: 'admin',
-      firstName: 'Ada',
-      lastName: null,
-      language: 'en',
-      echocallCustomerId: null,
-    });
-    await fixture.whenStable();
-
-    expect(TestBed.inject(AuthStore).user()?.email).toBe('admin@example.com');
-    expect(router.url).toBe('/admin');
-  });
-
-  it('shows the reason the server gives when the sign-in fails', async () => {
-    const fixture = await render();
-    type(fixture, 'email', 'admin@example.com');
-    type(fixture, 'password', 'wrong');
-    submit(fixture);
-
-    http
-      .expectOne('/api/auth/login')
-      .flush(
-        { error: { code: 'invalid_credentials', message: 'Invalid credentials' } },
-        { status: 401, statusText: 'Unauthorized' },
-      );
-    await fixture.whenStable();
-
-    expect(byTestId(fixture, 'login-error').textContent?.trim()).toBe(TEXTS.errors.invalid_credentials);
-    expect(TestBed.inject(AuthStore).user()).toBeNull();
-    expect(router.url).not.toBe('/admin');
-  });
-
-  it('does not call the server while the form is incomplete', async () => {
-    const fixture = await render();
-    type(fixture, 'email', 'not-an-address');
-    submit(fixture);
-    await fixture.whenStable();
-
-    http.expectNone('/api/auth/login');
-    expect(fixture.nativeElement.textContent).toContain(TEXTS.validation.email);
-    expect(fixture.nativeElement.textContent).toContain(TEXTS.validation.required);
-  });
-
-  it('offers neither a link nor a sign-up while the operator has both switched off', async () => {
-    const fixture = await render();
-
-    expect(byTestId(fixture, 'password')).toBeTruthy();
-    expect((fixture.nativeElement as HTMLElement).querySelector('[data-testid="use-link"]')).toBeNull();
-    expect((fixture.nativeElement as HTMLElement).querySelector('[data-testid="to-register"]')).toBeNull();
-  });
-
-  it('leads with the mailed link where the operator offers one', async () => {
-    const fixture = await render({ selfServiceEnabled: false, signInLinksEnabled: true });
     expect(fixture.nativeElement.textContent).toContain(TEXTS.auth.link.title);
 
     type(fixture, 'link-email', 'lena@example.com');
@@ -123,121 +47,55 @@ describe('LoginPage', () => {
     expect(byTestId(fixture, 'link-sent').textContent?.trim()).toBe(TEXTS.auth.link.done);
   });
 
-  it('keeps the password within reach where links are offered', async () => {
-    const fixture = await render({ selfServiceEnabled: false, signInLinksEnabled: true });
-    byTestId(fixture, 'use-password').click();
+  it('offers another link to whoever mistyped their address', async () => {
+    const fixture = await render();
+    type(fixture, 'link-email', 'lena@exmaple.com');
+    submit(fixture);
+    http.expectOne('/api/auth/sign-in-link').flush(null, { status: 204, statusText: 'No Content' });
     await fixture.whenStable();
 
-    expect(byTestId(fixture, 'password')).toBeTruthy();
-    expect(byTestId(fixture, 'use-link')).toBeTruthy();
+    byTestId(fixture, 'send-again').click();
+    await fixture.whenStable();
+
+    expect(byTestId(fixture, 'link-email')).toBeTruthy();
+  });
+
+  it('does not call the server with something that is not an address', async () => {
+    const fixture = await render();
+    type(fixture, 'link-email', 'not-an-address');
+    submit(fixture);
+    await fixture.whenStable();
+
+    http.expectNone('/api/auth/sign-in-link');
+    expect(fixture.nativeElement.textContent).toContain(TEXTS.validation.email);
+  });
+
+  it('names the reason when the portal refuses to send one', async () => {
+    const fixture = await render();
+    type(fixture, 'link-email', 'lena@example.com');
+    submit(fixture);
+
+    http
+      .expectOne('/api/auth/sign-in-link')
+      .flush(
+        { error: { code: 'too_many_requests', message: 'Too many requests' } },
+        { status: 429, statusText: 'Too Many Requests' },
+      );
+    await fixture.whenStable();
+
+    expect(byTestId(fixture, 'login-error').textContent?.trim()).toBe(TEXTS.errors.too_many_requests);
+  });
+
+  it('keeps the sign-up form out of sight while the portal takes no sign-ups', async () => {
+    const fixture = await render();
+
+    expect((fixture.nativeElement as HTMLElement).querySelector('[data-testid="to-register"]')).toBeNull();
   });
 
   it('points at the sign-up form where the operator takes sign-ups', async () => {
-    const fixture = await render({ selfServiceEnabled: true, signInLinksEnabled: false });
+    const fixture = await render(true);
 
     expect(byTestId(fixture, 'to-register').getAttribute('href')).toBe('/register');
     expect(fixture.nativeElement.textContent).toContain(TEXTS.auth.login.noAccount);
-  });
-
-  const SESSION = {
-    id: 7,
-    email: 'lena@example.com',
-    role: 'user',
-    firstName: 'Lena',
-    lastName: null,
-    language: 'en',
-    echocallCustomerId: 141467,
-  };
-
-  /** Signs in with a password and answers with the challenge the server sends. */
-  async function reachSecondStep() {
-    const fixture = await render();
-    type(fixture, 'email', 'lena@example.com');
-    type(fixture, 'password', 'correct horse battery');
-    submit(fixture);
-    http
-      .expectOne('/api/auth/login')
-      .flush(
-        { challenge: 'c-1', expiresAt: '2026-09-17T10:05:00.000Z' },
-        { status: 202, statusText: 'Accepted' },
-      );
-    await fixture.whenStable();
-    return fixture;
-  }
-
-  it('asks for the code instead of signing in when the account has a second factor', async () => {
-    const fixture = await reachSecondStep();
-
-    expect(fixture.nativeElement.textContent).toContain(TEXTS.auth.twoFactor.title);
-    expect(fixture.nativeElement.textContent).toContain(TEXTS.auth.twoFactor.recoveryHint);
-    expect(byTestId(fixture, 'code')).toBeTruthy();
-    expect(TestBed.inject(AuthStore).user()).toBeNull();
-    expect(router.url).not.toBe('/app');
-  });
-
-  it('offers the code field the phone keyboard and the one-time-code fill', async () => {
-    const fixture = await reachSecondStep();
-    const input = byTestId<HTMLInputElement>(fixture, 'code');
-
-    expect(input.getAttribute('inputmode')).toBe('numeric');
-    expect(input.getAttribute('autocomplete')).toBe('one-time-code');
-  });
-
-  it('starts the session once the code is accepted', async () => {
-    const fixture = await reachSecondStep();
-    type(fixture, 'code', '123456');
-    submit(fixture);
-
-    const request = http.expectOne('/api/auth/2fa/verify');
-    expect(request.request.body).toEqual({ challenge: 'c-1', code: '123456' });
-    request.flush(SESSION);
-    await fixture.whenStable();
-
-    expect(TestBed.inject(AuthStore).user()?.email).toBe('lena@example.com');
-    expect(router.url).toBe('/app');
-  });
-
-  it('keeps the code step open and names the reason when the code is wrong', async () => {
-    const fixture = await reachSecondStep();
-    type(fixture, 'code', '000000');
-    submit(fixture);
-    http
-      .expectOne('/api/auth/2fa/verify')
-      .flush(
-        { error: { code: 'invalid_code', message: 'Invalid code' } },
-        { status: 401, statusText: 'Unauthorized' },
-      );
-    await fixture.whenStable();
-
-    expect(byTestId(fixture, 'login-error').textContent?.trim()).toBe(TEXTS.errors.invalid_code);
-    expect(byTestId(fixture, 'code')).toBeTruthy();
-    expect(TestBed.inject(AuthStore).user()).toBeNull();
-  });
-
-  // A challenge that has expired or burned its attempts can never work again,
-  // so the field that would take a code disappears with it.
-  it('returns to the password step when the challenge is gone', async () => {
-    const fixture = await reachSecondStep();
-    type(fixture, 'code', '123456');
-    submit(fixture);
-    http
-      .expectOne('/api/auth/2fa/verify')
-      .flush(
-        { error: { code: 'invalid_challenge', message: 'Invalid challenge' } },
-        { status: 401, statusText: 'Unauthorized' },
-      );
-    await fixture.whenStable();
-
-    expect(byTestId(fixture, 'password')).toBeTruthy();
-    expect(byTestId(fixture, 'login-error').textContent?.trim()).toBe(TEXTS.errors.invalid_challenge);
-  });
-
-  it('does not call the server with a code that is too short to be one', async () => {
-    const fixture = await reachSecondStep();
-    type(fixture, 'code', '123');
-    submit(fixture);
-    await fixture.whenStable();
-
-    http.expectNone('/api/auth/2fa/verify');
   });
 });

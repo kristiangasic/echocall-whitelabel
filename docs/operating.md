@@ -10,8 +10,10 @@ and the security review in [security-review.md](security-review.md).
    your administrator account.
 2. Set your branding (name, logo, colour, legal links, default language) under
    **Settings**. Everything a customer sees comes from there.
-3. Enter an SMTP server, or decide to work with one-time links. Without SMTP the portal
-   shows every invitation and reset link to you instead of mailing it.
+3. Enter an SMTP server. Nobody here has a password: everyone signs in with a link that
+   is mailed to them, so a portal with more than a handful of people needs one. Without
+   SMTP the portal shows every invitation and every sign-in link to you instead, and you
+   pass it on by hand.
 4. Turn on the second factor for your own account.
 5. **Create a second administrator** and turn the second factor on there too. One
    administrator is a single point of failure: the paths back into a portal without a
@@ -79,26 +81,25 @@ shows errors on every page that needs live data.
   DELETE FROM two_factor_recovery_codes WHERE user_id = (SELECT id FROM users WHERE email = 'you@example.com');
   ```
 
-  Start the portal, sign in with the password alone, and set the second factor up again.
+  Start the portal, sign in with a link, and set the second factor up again.
 
-## When an administrator password is lost
+## When nobody can sign in
 
-With SMTP configured, the forgot-password form mails a link that is valid for one hour.
-Without SMTP, another administrator opens the user and hands over a one-time link.
-
-If neither is possible because the only administrator is locked out, set a new hash
-directly. Generate it with the portal's own parameters:
+Every way into this portal goes through a mailbox, so a mail server that has stopped
+working locks everyone out at once. Whoever can reach the machine can let themselves back
+in, because the same link can be printed there instead of mailed:
 
 ```bash
-node -e "import('argon2').then(async (m) => console.log(await m.default.hash(process.argv[1], { type: m.default.argon2id, memoryCost: 19456, timeCost: 2, parallelism: 1 })))" 'the new password'
+docker compose exec app node dist/cli/sign-in-link.js you@example.com
 ```
 
-Then, with the portal stopped:
+It prints one link, valid for 15 minutes and usable once, and it prints an invitation
+instead for an account that has not accepted one yet. A disabled account is refused; an
+address nobody here has is refused too. Nothing about the account changes, so the command
+is safe to run twice.
 
-```sql
-UPDATE users SET password_hash = '<the hash>' WHERE email = 'you@example.com';
-DELETE FROM sessions WHERE user_id = (SELECT id FROM users WHERE email = 'you@example.com');
-```
+Treat access to the machine accordingly: it is the way past the mail server, which makes
+it the way past the sign-in.
 
 ## Backup and restore
 
@@ -121,8 +122,8 @@ pg_restore --dbname="$DATABASE_URL" --clean --if-exists portal-2026-09-17.dump
 
 MariaDB and MySQL commands are in [database.md](database.md).
 
-Two rules. The dump holds password hashes, session hashes and the encrypted SMTP password
-and TOTP secrets, so it belongs in encrypted storage. And it is only readable together
+Two rules. The dump holds session hashes, one-time token hashes and the encrypted SMTP
+password and TOTP secrets, so it belongs in encrypted storage. And it is only readable together
 with the `APP_SECRET` that was in use when it was written: restore the database and keep a
 different secret, and the SMTP password and every second factor are lost.
 
@@ -176,8 +177,12 @@ number of proxies in front of the portal. With a wrong value every entry shows t
 
 Environment variables win over the settings page, and the page shows them as locked when
 they are set. Without any SMTP server the portal keeps working and hands you a one-time
-link for every invitation and every password reset, which is a fine way to run a small
-portal.
+link for every invitation and every sign-in link you send, which is a fine way to run a
+portal for a handful of people who all know each other.
+
+Keep in mind what mail now carries: with no passwords anywhere, whoever reads a person's
+mailbox can sign in as them. A second factor is what puts something else in the way, which
+is why the first hour above asks for one on every administrator account.
 
 The test button in the settings sends one mail to an address you type and passes the
 answer of the server on, which is usually enough to find a wrong port or a refused
@@ -185,18 +190,15 @@ authentication.
 
 ## Opening the portal to sign-ups
 
-**Settings, Sign-up** carries two switches. Both are off until you turn them on, and
-neither can be turned on before a mail server works.
+**Settings, Sign-up** carries one switch. It is off until you turn it on, and it cannot
+be turned on before a mail server works.
 
-- **Anyone may create an account** puts a sign-up form on the sign-in page. Each sign-up
-  creates a customer under your reseller account at the service and a user here, exactly
-  as if you had invited them, and lands in the audit log as `auth.registered` with no
-  actor. Watch the customer list after you switch it on: every sign-up is a customer you
-  are responsible for at the service.
-- **Sign in with a mailed link** lets people ask for a one-time link instead of a
-  password. The link is valid for 15 minutes and works once. An invitation accepted while
-  this is on may leave the password empty, and that account then has no password to lose.
+**Anyone may create an account** puts a sign-up form on the sign-in page. Each sign-up
+creates a customer under your reseller account at the service and a user here, exactly as
+if you had invited them, and lands in the audit log as `auth.registered` with no actor.
+Watch the customer list after you switch it on: every sign-up is a customer you are
+responsible for at the service.
 
-Switching either off again takes effect at once: a link that was already mailed is refused
-after the switch, and the sign-up form disappears from the sign-in page. Accounts created
-while the switches were on keep working.
+Switching it off again takes effect at once: the sign-up form disappears from the sign-in
+page, and a sign-up that was started but never finished cannot be completed. Accounts
+created while it was on keep working.

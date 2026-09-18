@@ -237,16 +237,16 @@ describe('SettingsController', () => {
       .put('/api/admin/settings/registration')
       .set('Cookie', admin.cookie)
       .set(XHR)
-      .send({ selfServiceEnabled: true, signInLinksEnabled: false });
+      .send({ selfServiceEnabled: true });
     expect(refused.status).toBe(400);
     expect(refused.body.error.code).toBe('smtp_required');
 
-    // Switching both off is always allowed; it sends nothing.
+    // Switching it off is always allowed; it sends nothing.
     const off = await api()
       .put('/api/admin/settings/registration')
       .set('Cookie', admin.cookie)
       .set(XHR)
-      .send({ selfServiceEnabled: false, signInLinksEnabled: false });
+      .send({ selfServiceEnabled: false });
     expect(off.status).toBe(200);
   });
 
@@ -264,16 +264,12 @@ describe('SettingsController', () => {
       .put('/api/admin/settings/registration')
       .set('Cookie', admin.cookie)
       .set(XHR)
-      .send({ selfServiceEnabled: true, signInLinksEnabled: true });
+      .send({ selfServiceEnabled: true });
     expect(saved.status).toBe(200);
-    expect(saved.body).toEqual({
-      selfServiceEnabled: true,
-      signInLinksEnabled: true,
-      mailReady: true,
-    });
+    expect(saved.body).toEqual({ selfServiceEnabled: true, mailReady: true });
 
     const pub = await api().get('/api/settings/public');
-    expect(pub.body.registration).toEqual({ selfServiceEnabled: true, signInLinksEnabled: true });
+    expect(pub.body.registration).toEqual({ selfServiceEnabled: true });
 
     const entry = await t.db.db
       .selectFrom('auditLog')
@@ -286,7 +282,7 @@ describe('SettingsController', () => {
       .put('/api/admin/settings/registration')
       .set('Cookie', user.cookie)
       .set(XHR)
-      .send({ selfServiceEnabled: false, signInLinksEnabled: false });
+      .send({ selfServiceEnabled: false });
     expect(user403.status).toBe(403);
   });
 });

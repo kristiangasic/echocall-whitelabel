@@ -50,8 +50,8 @@ Open the app (port 3000, put a TLS-terminating reverse proxy in front for produc
 follow the first-run setup: it checks the connection to EchoCall and creates your admin
 account. See [docs/self-hosting.md](docs/self-hosting.md) for reverse proxy examples,
 updates and backups, and [docs/operating.md](docs/operating.md) for everything after that:
-the first hour, what to watch, a rotated API key, a lost second factor, a lost
-administrator password, backup and restore, upgrades.
+the first hour, what to watch, a rotated API key, a lost second factor, a mail server
+that has stopped working, backup and restore, upgrades.
 
 ## Using an external database
 
@@ -82,19 +82,29 @@ Admins invite users by email (or hand over a one-time link when no SMTP server i
 configured) and link each user to one of the EchoCall customer accounts under your
 reseller account.
 
-Two switches under **Settings, Sign-up** change who else gets in. Both are off in a fresh
-portal and both need a mail server:
+One switch under **Settings, Sign-up** changes who else gets in. It is off in a fresh
+portal and it needs a mail server: with **Anyone may create an account** on, a sign-up
+form appears on the sign-in page, and whoever fills it in becomes a customer of yours at
+the service and a user here, in one step.
 
-- **Anyone may create an account.** A sign-up form appears on the sign-in page. Whoever
-  fills it in becomes a customer of yours at the service and a user here, in one step.
-- **Sign in with a mailed link.** People ask for a one-time link instead of typing a
-  password. An account opened this way never has a password at all, and a second factor
-  still applies. Passwords keep working for the accounts that have one.
+## Signing in
+
+There are no passwords in this portal, anywhere. Whoever wants in types their e-mail
+address and gets a link that is valid for 15 minutes and works once; a second factor, if
+the account has one, is still asked for afterwards. Nothing about an address is revealed:
+the answer reads the same whether or not an account exists.
+
+That makes the mail server part of the way in, so the portal ships with a way past it. On
+the machine itself, this prints the same link the mail would have carried:
+
+```bash
+docker compose exec app node dist/cli/sign-in-link.js you@example.com
+```
 
 ## Security
 
 - Sessions are server-side, in httpOnly cookies; mutating requests require a
-  CSRF header. Passwords are hashed with Argon2id.
+  CSRF header. No password is stored, because none exists.
 - The reseller API key stays in the server environment; the browser never receives it.
 - Login and token endpoints are rate limited; a strict Content-Security-Policy is set.
 - Every sign-in, refused or not, and every administrative change is written to an audit log.

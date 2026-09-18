@@ -18,11 +18,6 @@ import { NotifyService } from '../../core/notify/notify.service';
 import { AuthCardComponent } from '../../shared/auth-card.component';
 import { FieldErrorPipe } from '../../shared/forms/field-error.pipe';
 import { applyServerErrors } from '../../shared/forms/server-errors';
-import {
-  matchValidator,
-  PASSWORD_MIN_LENGTH,
-  passwordStrengthValidator,
-} from '../../shared/forms/validators';
 import { LocalDatePipe } from '../../shared/local-date.pipe';
 
 @Component({
@@ -112,27 +107,6 @@ import { LocalDatePipe } from '../../shared/local-date.pipe';
             }
           </mat-form-field>
           <mat-form-field appearance="outline" class="full">
-            <mat-label>{{ t('fields.password') }}</mat-label>
-            <input
-              matInput
-              type="password"
-              formControlName="password"
-              autocomplete="new-password"
-              data-testid="password"
-            />
-            <mat-hint>{{ t('auth.passwordHint') }}</mat-hint>
-            @if (form.controls.password | fieldError; as e) {
-              <mat-error>{{ t(e.key, e.params) }}</mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="full">
-            <mat-label>{{ t('fields.confirmPassword') }}</mat-label>
-            <input matInput type="password" formControlName="confirm" autocomplete="new-password" />
-            @if (form.controls.confirm | fieldError; as e) {
-              <mat-error>{{ t(e.key, e.params) }}</mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="full">
             <mat-label>{{ t('fields.language') }}</mat-label>
             <mat-select formControlName="language">
               @for (lang of languages; track lang) {
@@ -187,20 +161,12 @@ export class SetupPage implements OnInit {
   readonly checking = signal(false);
   readonly busy = signal(false);
 
-  readonly form = inject(NonNullableFormBuilder).group(
-    {
-      firstName: ['', Validators.maxLength(100)],
-      lastName: ['', Validators.maxLength(100)],
-      email: ['', [Validators.required, Validators.email]],
-      password: [
-        '',
-        [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH), passwordStrengthValidator],
-      ],
-      confirm: ['', Validators.required],
-      language: [this.branding.branding().defaultLanguage],
-    },
-    { validators: matchValidator('password', 'confirm') },
-  );
+  readonly form = inject(NonNullableFormBuilder).group({
+    firstName: ['', Validators.maxLength(100)],
+    lastName: ['', Validators.maxLength(100)],
+    email: ['', [Validators.required, Validators.email]],
+    language: [this.branding.branding().defaultLanguage],
+  });
 
   ngOnInit(): void {
     void this.load();
@@ -236,9 +202,9 @@ export class SetupPage implements OnInit {
     }
     this.busy.set(true);
     try {
-      const { firstName, lastName, email, password, language } = this.form.getRawValue();
+      const { firstName, lastName, email, language } = this.form.getRawValue();
       const user = await firstValueFrom(
-        this.api.post<SessionUser>('/setup/admin', { firstName, lastName, email, password, language }),
+        this.api.post<SessionUser>('/setup/admin', { firstName, lastName, email, language }),
       );
       this.auth.setUser(user);
       this.notify.success('setup.completed');

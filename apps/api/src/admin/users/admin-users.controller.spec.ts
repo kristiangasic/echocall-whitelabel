@@ -6,7 +6,6 @@ import { type SignedInUser, signInAs } from '../../testing/users.js';
 import { AdminUsersModule } from './admin-users.module.js';
 
 const XHR = { 'x-requested-with': 'XMLHttpRequest' };
-const PASSWORD = 'correct horse battery';
 
 describe('AdminUsersController', () => {
   let t: TestApp;
@@ -18,12 +17,7 @@ describe('AdminUsersController', () => {
     t = await createTestApp([AuthModule, AdminUsersModule]);
     await t.db.reset();
     admin = await signInAs(t, { email: 'admin@example.com', role: 'admin' });
-    user = await signInAs(t, {
-      email: 'user@example.com',
-      role: 'user',
-      echocallCustomerId: 501,
-      passwordHash: '$argon2id$placeholder',
-    });
+    user = await signInAs(t, { email: 'user@example.com', role: 'user', echocallCustomerId: 501 });
     asAdmin = { Cookie: admin.cookie, ...XHR };
   });
 
@@ -35,8 +29,7 @@ describe('AdminUsersController', () => {
   const tokenOf = (link: string) => new URL(link).searchParams.get('token') ?? '';
   const lastAudit = async () =>
     (await api().get('/api/admin/audit').set('Cookie', admin.cookie)).body.data[0] as Record<string, unknown>;
-  const acceptInvite = (token: string) =>
-    api().post('/api/auth/accept-invite').set(XHR).send({ token, password: PASSWORD });
+  const acceptInvite = (token: string) => api().post('/api/auth/accept-invite').set(XHR).send({ token });
 
   it('is reserved for administrators and lists every account without secrets', async () => {
     expect((await api().get('/api/admin/users')).status).toBe(401);
@@ -231,28 +224,30 @@ describe('AdminUsersController', () => {
     expect(early.body.error.code).toBe('invite_pending');
   });
 
-  it('sends a password reset for active accounts only', async () => {
-    const res = await api().post(`/api/admin/users/${user.id}/password-reset`).set(asAdmin);
+  it('sends a sign-in link for active accounts only', async () => {
+    const res = await api().post(`/api/admin/users/${user.id}/sign-in-link`).set(asAdmin);
     expect(res.status).toBe(200);
     expect(res.body.mailSent).toBe(true);
     expect(t.mail.sent.at(-1)).toMatchObject({
-      kind: 'password_reset',
+      kind: 'sign_in_link',
       to: { email: 'user@example.com' },
-      link: res.body.resetLink,
+      link: res.body.signInLink,
     });
-    const link = new URL(res.body.resetLink);
-    expect(link.origin + link.pathname).toBe('http://localhost:3000/reset-password');
+    const link = new URL(res.body.signInLink);
+    expect(link.origin + link.pathname).toBe('http://localhost:3000/sign-in');
     expect(await lastAudit()).toMatchObject({
-      action: 'users.password_reset_sent',
+      action: 'users.sign_in_link_sent',
       targetId: String(user.id),
       details: { email: 'user@example.com', mailSent: true },
     });
 
+    // An account that has not accepted its invitation is sent that invitation
+    // again, not a sign-in link, so this route turns it away.
     const invited = await api()
       .post('/api/admin/users/invite')
       .set(asAdmin)
-      .send({ email: 'reset-pending@example.com', role: 'admin' });
-    const pending = await api().post(`/api/admin/users/${invited.body.user.id}/password-reset`).set(asAdmin);
+      .send({ email: 'link-pending@example.com', role: 'admin' });
+    const pending = await api().post(`/api/admin/users/${invited.body.user.id}/sign-in-link`).set(asAdmin);
     expect(pending.status).toBe(409);
     expect(pending.body.error.code).toBe('user_not_active');
   });

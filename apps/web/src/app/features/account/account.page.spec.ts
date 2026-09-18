@@ -61,32 +61,6 @@ describe('AccountPage', () => {
     expect(tabLabels(fixture)).toEqual([TEXTS.account.tabs.profile, TEXTS.account.tabs.security]);
   });
 
-  it('leaves the password form clean after a successful change', async () => {
-    const fixture = await render(CUSTOMER);
-    const component = fixture.componentInstance;
-    component.password.setValue({
-      currentPassword: 'old-password-2026',
-      newPassword: 'new-password-2026',
-      confirm: 'new-password-2026',
-    });
-
-    // Submitting the form, not calling the method: a submitted form is what
-    // makes Material show the errors this test is about.
-    const form = fixture.nativeElement.querySelectorAll('form')[1] as HTMLFormElement;
-    form.dispatchEvent(new Event('submit'));
-    await fixture.whenStable();
-    http.expectOne('/api/account/password').flush(null);
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    await fixture.whenStable();
-
-    expect(component.password.getRawValue()).toEqual({
-      currentPassword: '',
-      newPassword: '',
-      confirm: '',
-    });
-    expect(fixture.nativeElement.querySelectorAll('mat-error')).toHaveLength(0);
-  });
-
   it('prefills the profile form from the session', async () => {
     const fixture = await render(CUSTOMER);
 

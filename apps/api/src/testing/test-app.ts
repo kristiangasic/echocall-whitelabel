@@ -25,7 +25,7 @@ export function testConfig(overrides: Record<string, string> = {}): AppConfig {
 }
 
 export type CapturedMail = {
-  kind: 'invite' | 'password_reset' | 'sign_in_link' | 'registration';
+  kind: 'invite' | 'sign_in_link' | 'registration';
   to: MailRecipient;
   link: string;
 };
@@ -36,11 +36,6 @@ export class CapturingMailSender implements MailSender {
 
   async sendInvite(to: MailRecipient, link: string): Promise<boolean> {
     this.sent.push({ kind: 'invite', to, link });
-    return true;
-  }
-
-  async sendPasswordReset(to: MailRecipient, link: string): Promise<boolean> {
-    this.sent.push({ kind: 'password_reset', to, link });
     return true;
   }
 

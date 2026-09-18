@@ -18,7 +18,7 @@ const SMTP = {
   from: 'portal@example.com',
 };
 
-const REGISTRATION = { selfServiceEnabled: false, signInLinksEnabled: false, mailReady: true };
+const REGISTRATION = { selfServiceEnabled: false, mailReady: true };
 
 const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -100,30 +100,26 @@ describe('AdminSettingsPage', () => {
     expect((fixture.nativeElement as HTMLElement).textContent).toContain(TEXTS.validation.email);
   });
 
-  it('opens the two ways in, and the sign-in page follows at once', async () => {
+  it('opens the portal to sign-ups, and the sign-in page follows at once', async () => {
     const fixture = await render();
     await openTab(fixture, 2);
 
     byTestId(fixture, 'self-service').querySelector('button')?.click();
-    byTestId(fixture, 'sign-in-links').querySelector('button')?.click();
     await settle();
     byTestId(fixture, 'save-registration').click();
     await settle();
 
     const put = http.expectOne('/api/admin/settings/registration');
     expect(put.request.method).toBe('PUT');
-    expect(put.request.body).toEqual({ selfServiceEnabled: true, signInLinksEnabled: true });
-    put.flush({ selfServiceEnabled: true, signInLinksEnabled: true, mailReady: true });
+    expect(put.request.body).toEqual({ selfServiceEnabled: true });
+    put.flush({ selfServiceEnabled: true, mailReady: true });
     await settle();
 
-    // The sign-in page reads these from the branding service, not from a reload.
-    expect(TestBed.inject(BrandingService).registration()).toEqual({
-      selfServiceEnabled: true,
-      signInLinksEnabled: true,
-    });
+    // The sign-in page reads this from the branding service, not from a reload.
+    expect(TestBed.inject(BrandingService).registration()).toEqual({ selfServiceEnabled: true });
   });
 
-  it('says a mail server is needed before either switch can be used', async () => {
+  it('says a mail server is needed before the switch can be used', async () => {
     const fixture = await render({ ...REGISTRATION, mailReady: false });
     await openTab(fixture, 2);
 

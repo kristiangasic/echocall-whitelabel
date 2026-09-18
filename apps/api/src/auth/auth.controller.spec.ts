@@ -7,19 +7,23 @@ import { encryptSecret } from '../settings/crypto.js';
 import { SettingsModule } from '../settings/settings.module.js';
 import { AuthModule } from './auth.module.js';
 import { TwoFactorModule } from './two-factor.module.js';
-import { PasswordService } from './password.service.js';
 import { TokenService } from './token.service.js';
 import { generateSecret, totpCode } from './totp.js';
 
 const XHR = { 'x-requested-with': 'XMLHttpRequest' };
-const PASSWORD = 'correct horse battery';
 const APP_SECRET = 's'.repeat(32);
 const TOTP_SECRET = generateSecret();
+
+/** Pulls the one-time token out of the link the portal mailed. */
+function tokenFrom(link: string): string {
+  return new URL(link).searchParams.get('token') ?? '';
+}
 
 describe('AuthController', () => {
   let t: TestApp;
   let nextIp = 1;
   let twoFactorUserId: number;
+  let disabledUserId: number;
 
   /** Each test gets its own client address so the per-IP throttle does not leak between tests. */
   function client() {
@@ -31,31 +35,38 @@ describe('AuthController', () => {
     };
   }
 
+  /** Asks for a link the way the sign-in page does and hands back the token it carried. */
+  async function linkFor(email: string): Promise<string> {
+    t.mail.sent.length = 0;
+    await client().post('/api/auth/sign-in-link').send({ email }).expect(204);
+    return tokenFrom(t.mail.sent[0].link);
+  }
+
   beforeAll(async () => {
     t = await createTestApp([AuthModule, SettingsModule, TwoFactorModule]);
-    const hash = await new PasswordService().hash(PASSWORD);
-    for (const user of [
-      {
-        email: 'admin@example.com',
-        role: 'admin' as const,
-        status: 'active' as const,
-        echocallCustomerId: null,
-      },
-      { email: 'off@example.com', role: 'user' as const, status: 'disabled' as const, echocallCustomerId: 9 },
-    ]) {
-      await insertReturningId(t.db.db, t.db.dialect, 'users', {
-        ...user,
-        passwordHash: hash,
-        language: 'de',
-      });
-    }
+    await insertReturningId(t.db.db, t.db.dialect, 'users', {
+      email: 'admin@example.com',
+      role: 'admin',
+      status: 'active',
+      echocallCustomerId: null,
+      language: 'de',
+      acceptedAt: new Date(),
+    });
+    disabledUserId = await insertReturningId(t.db.db, t.db.dialect, 'users', {
+      email: 'off@example.com',
+      role: 'user',
+      status: 'disabled',
+      echocallCustomerId: 9,
+      language: 'de',
+      acceptedAt: new Date(),
+    });
     twoFactorUserId = await insertReturningId(t.db.db, t.db.dialect, 'users', {
       email: 'guarded@example.com',
       role: 'user',
       status: 'active',
       echocallCustomerId: 12,
-      passwordHash: hash,
       language: 'de',
+      acceptedAt: new Date(),
       totpSecret: encryptSecret(TOTP_SECRET, APP_SECRET),
       totpConfirmedAt: new Date(),
     });
@@ -67,19 +78,19 @@ describe('AuthController', () => {
 
   it('refuses mutating requests without the XHR header, even on public routes', async () => {
     const res = await request(t.app.getHttpServer())
-      .post('/api/auth/login')
-      .send({ email: 'admin@example.com', password: PASSWORD })
+      .post('/api/auth/sign-in-link')
+      .send({ email: 'admin@example.com' })
       .expect(403);
     expect(res.body.error.code).toBe('csrf_header_missing');
   });
 
-  it('logs in, serves /me from the cookie and logs out', async () => {
+  it('signs in through a mailed link, serves /me from the cookie and logs out', async () => {
     const c = client();
-    const login = await c
-      .post('/api/auth/login')
-      .send({ email: '  Admin@Example.com ', password: PASSWORD })
-      .expect(200);
-    expect(login.body).toEqual({
+    const token = await linkFor('  Admin@Example.com ');
+    expect(t.mail.sent[0].to).toEqual({ email: 'admin@example.com', language: 'de', firstName: null });
+
+    const signIn = await c.post('/api/auth/sign-in-link/consume').send({ token }).expect(200);
+    expect(signIn.body).toEqual({
       id: expect.any(Number),
       email: 'admin@example.com',
       role: 'admin',
@@ -90,7 +101,7 @@ describe('AuthController', () => {
       twoFactorEnabled: false,
       impersonator: null,
     });
-    const cookie = login.headers['set-cookie'][0];
+    const cookie = signIn.headers['set-cookie'][0];
     expect(cookie).toMatch(/^ecl_session=[A-Za-z0-9_-]{40,}; Path=\/; Expires=.*; HttpOnly; SameSite=Lax$/);
 
     const me = await c.get('/api/auth/me').set('Cookie', cookie).expect(200);
@@ -109,19 +120,17 @@ describe('AuthController', () => {
   });
 
   describe('with a second factor', () => {
-    /** The password step, which for this account ends in a challenge rather than a session. */
+    /** The link step, which for this account ends in a challenge rather than a session. */
     async function firstStep(c = client()) {
-      const res = await c
-        .post('/api/auth/login')
-        .send({ email: 'guarded@example.com', password: PASSWORD })
-        .expect(202);
+      const token = await linkFor('guarded@example.com');
+      const res = await c.post('/api/auth/sign-in-link/consume').send({ token }).expect(202);
       expect(res.headers['set-cookie']).toBeUndefined();
       expect(res.body.challenge).toEqual(expect.any(String));
       expect(new Date(res.body.expiresAt).getTime()).toBeGreaterThan(Date.now());
       return { c, challenge: res.body.challenge as string };
     }
 
-    it('answers the password with a challenge and no session', async () => {
+    it('answers the link with a challenge and no session', async () => {
       const { c, challenge } = await firstStep();
       const me = await c.get('/api/auth/me').expect(401);
       expect(me.body.error.code).toBe('unauthenticated');
@@ -218,50 +227,37 @@ describe('AuthController', () => {
     });
   });
 
-  it('distinguishes wrong passwords from disabled accounts but never reveals unknown e-mails', async () => {
-    const c = client();
-    const wrong = await c
-      .post('/api/auth/login')
-      .send({ email: 'admin@example.com', password: 'wrong' })
-      .expect(401);
-    expect(wrong.body.error.code).toBe('invalid_credentials');
-    const unknown = await c
-      .post('/api/auth/login')
-      .send({ email: 'nobody@example.com', password: 'wrong' })
-      .expect(401);
-    expect(unknown.body.error.code).toBe('invalid_credentials');
-    const disabled = await c
-      .post('/api/auth/login')
-      .send({ email: 'off@example.com', password: PASSWORD })
-      .expect(403);
-    expect(disabled.body.error.code).toBe('account_disabled');
-    const disabledWrong = await c
-      .post('/api/auth/login')
-      .send({ email: 'off@example.com', password: 'wrong' })
-      .expect(401);
-    expect(disabledWrong.body.error.code).toBe('invalid_credentials');
+  it('says nothing about addresses it has no account for, and mails them nothing', async () => {
+    t.mail.sent.length = 0;
+    await client().post('/api/auth/sign-in-link').send({ email: 'nobody@example.com' }).expect(204);
+    await client().post('/api/auth/sign-in-link').send({ email: 'off@example.com' }).expect(204);
+
+    expect(t.mail.sent).toHaveLength(0);
+  });
+
+  it('turns a disabled account away even when it still holds a link', async () => {
+    const token = await t.moduleRef.get(TokenService).issue(disabledUserId, 'sign_in', 60_000);
+
+    const res = await client().post('/api/auth/sign-in-link/consume').send({ token }).expect(403);
+
+    expect(res.body.error.code).toBe('account_disabled');
+    expect(res.headers['set-cookie']).toBeUndefined();
   });
 
   it('validates the body with field details', async () => {
-    const res = await client().post('/api/auth/login').send({ email: 'x' }).expect(400);
+    const res = await client().post('/api/auth/sign-in-link').send({ email: 'x' }).expect(400);
     expect(res.body.error.code).toBe('validation_error');
     expect(res.body.error.details).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ path: 'email' }),
-        expect.objectContaining({ path: 'password' }),
-      ]),
+      expect.arrayContaining([expect.objectContaining({ path: 'email' })]),
     );
   });
 
-  it('rate limits login attempts per client address', async () => {
+  it('rate limits link requests per client address', async () => {
     const c = client();
     for (let i = 0; i < 5; i++) {
-      await c.post('/api/auth/login').send({ email: 'admin@example.com', password: 'wrong' }).expect(401);
+      await c.post('/api/auth/sign-in-link').send({ email: 'nobody@example.com' }).expect(204);
     }
-    const blocked = await c
-      .post('/api/auth/login')
-      .send({ email: 'admin@example.com', password: 'wrong' })
-      .expect(429);
+    const blocked = await c.post('/api/auth/sign-in-link').send({ email: 'nobody@example.com' }).expect(429);
     expect(blocked.body.error.code).toBe('too_many_requests');
     expect(blocked.headers['retry-after']).toBeDefined();
   });
@@ -269,42 +265,6 @@ describe('AuthController', () => {
   it('answers unknown API routes with the error envelope', async () => {
     const res = await client().get('/api/does-not-exist').expect(404);
     expect(res.body.error.code).toBe('not_found');
-  });
-
-  it('runs the forgot and reset flow and revokes existing sessions', async () => {
-    const c = client();
-    const login = await c
-      .post('/api/auth/login')
-      .send({ email: 'admin@example.com', password: PASSWORD })
-      .expect(200);
-    const oldCookie = login.headers['set-cookie'][0];
-
-    await c.post('/api/auth/forgot').send({ email: 'nobody@example.com' }).expect(204);
-    expect(t.mail.sent).toHaveLength(0);
-    await c.post('/api/auth/forgot').send({ email: 'ADMIN@example.com' }).expect(204);
-    expect(t.mail.sent).toHaveLength(1);
-    expect(t.mail.sent[0].to).toEqual({ email: 'admin@example.com', language: 'de', firstName: null });
-    const link = new URL(t.mail.sent[0].link);
-    expect(link.origin + link.pathname).toBe('http://localhost:3000/reset-password');
-    const token = link.searchParams.get('token') ?? '';
-
-    const bogus = await c
-      .post('/api/auth/reset')
-      .send({ token: 'x'.repeat(43), password: 'new password 123' })
-      .expect(400);
-    expect(bogus.body.error.code).toBe('invalid_token');
-    await c.post('/api/auth/reset').send({ token, password: 'new password 123' }).expect(204);
-    await c.post('/api/auth/reset').send({ token, password: 'another password' }).expect(400);
-
-    await c.get('/api/auth/me').set('Cookie', oldCookie).expect(401);
-    await client()
-      .post('/api/auth/login')
-      .send({ email: 'admin@example.com', password: PASSWORD })
-      .expect(401);
-    await client()
-      .post('/api/auth/login')
-      .send({ email: 'admin@example.com', password: 'new password 123' })
-      .expect(200);
   });
 
   it('activates an invited account through the invitation token and signs the user in', async () => {
@@ -315,15 +275,13 @@ describe('AuthController', () => {
       status: 'invited',
       echocallCustomerId: 42,
       language: 'fr',
+      acceptedAt: null,
     });
     const token = await t.moduleRef.get(TokenService).issue(userId, 'invite', 60_000);
 
-    const short = await c.post('/api/auth/accept-invite').send({ token, password: 'short' }).expect(400);
-    expect(short.body.error.code).toBe('validation_error');
-
     const accepted = await c
       .post('/api/auth/accept-invite')
-      .send({ token, password: 'welcome aboard 1', firstName: ' Ada ', lastName: 'Lovelace' })
+      .send({ token, firstName: ' Ada ', lastName: 'Lovelace' })
       .expect(200);
     expect(accepted.body).toMatchObject({
       id: userId,
@@ -339,57 +297,48 @@ describe('AuthController', () => {
     // Accepting the invitation is the user's first sign-in, and the user list says so.
     const row = await t.db.db
       .selectFrom('users')
-      .select('lastLoginAt')
+      .select(['status', 'lastLoginAt', 'acceptedAt'])
       .where('id', '=', userId)
       .executeTakeFirstOrThrow();
+    expect(row.status).toBe('active');
     expect(row.lastLoginAt).not.toBeNull();
+    expect(row.acceptedAt).toBeInstanceOf(Date);
 
-    const reuse = await c
-      .post('/api/auth/accept-invite')
-      .send({ token, password: 'welcome aboard 1' })
-      .expect(400);
+    const reuse = await c.post('/api/auth/accept-invite').send({ token }).expect(400);
     expect(reuse.body.error.code).toBe('invalid_token');
-    await client()
-      .post('/api/auth/login')
-      .send({ email: 'new@example.com', password: 'welcome aboard 1' })
-      .expect(200);
   });
 
-  it('refuses a password that is long enough but an obvious guess', async () => {
+  it('refuses an invitation token at the sign-in route, and spends nothing doing so', async () => {
     const c = client();
     const userId = await insertReturningId(t.db.db, t.db.dialect, 'users', {
-      email: 'weak@example.com',
+      email: 'mixed@example.com',
       role: 'user',
       status: 'invited',
       echocallCustomerId: 43,
       language: 'de',
+      acceptedAt: null,
     });
-    const token = await t.moduleRef.get(TokenService).issue(userId, 'invite', 60_000);
+    const invite = await t.moduleRef.get(TokenService).issue(userId, 'invite', 60_000);
 
-    const refused = await c.post('/api/auth/accept-invite').send({ token, password: 'passwort123' });
-    expect(refused.status).toBe(400);
-    expect(refused.body.error.details[0]).toMatchObject({ path: 'password' });
+    const wrongRoute = await c.post('/api/auth/sign-in-link/consume').send({ token: invite }).expect(400);
+    expect(wrongRoute.body.error.code).toBe('invalid_token');
 
-    const repeated = await c.post('/api/auth/accept-invite').send({ token, password: 'abcabcabcabc' });
-    expect(repeated.status).toBe(400);
-
-    // The token survives both refusals: nothing was consumed by a rejected form.
-    await c.post('/api/auth/accept-invite').send({ token, password: 'ada counts sheep' }).expect(200);
+    await c.post('/api/auth/accept-invite').send({ token: invite }).expect(200);
   });
 
   describe('the audit log', () => {
-    /** Its own account, because other tests in this file change the password of theirs. */
-    const LEDGER = { email: 'ledger@example.com', password: 'ledger keeps counting' };
+    /** Its own account, because the entries are counted against what this one did. */
+    const LEDGER = 'ledger@example.com';
     let ledgerId: number;
 
     beforeAll(async () => {
       ledgerId = await insertReturningId(t.db.db, t.db.dialect, 'users', {
-        email: LEDGER.email,
+        email: LEDGER,
         role: 'user',
         status: 'active',
         echocallCustomerId: 77,
         language: 'de',
-        passwordHash: await new PasswordService().hash(LEDGER.password),
+        acceptedAt: new Date(),
       });
     });
 
@@ -399,7 +348,8 @@ describe('AuthController', () => {
 
     it('records a sign-in with the account that was let in', async () => {
       const before = (await entries('auth.signed_in')).length;
-      await client().post('/api/auth/login').send(LEDGER).expect(200);
+      const token = await linkFor(LEDGER);
+      await client().post('/api/auth/sign-in-link/consume').send({ token }).expect(200);
       const rows = await entries('auth.signed_in');
       expect(rows).toHaveLength(before + 1);
       expect(rows.at(-1)).toMatchObject({
@@ -409,25 +359,16 @@ describe('AuthController', () => {
       });
     });
 
-    it('records a refused sign-in with the address and the reason, never the password', async () => {
-      await client()
-        .post('/api/auth/login')
-        .send({ email: LEDGER.email, password: 'not the password' })
-        .expect(401);
-      await client()
-        .post('/api/auth/login')
-        .send({ email: 'nobody@example.com', password: 'not the password' })
-        .expect(401);
+    it('records a refused sign-in with the address and the reason, never the token', async () => {
+      const token = await t.moduleRef.get(TokenService).issue(disabledUserId, 'sign_in', 60_000);
+      await client().post('/api/auth/sign-in-link/consume').send({ token }).expect(403);
 
       const rows = await entries('auth.sign_in_failed');
       const details = rows.map((row) => String(row.details));
-      expect(details.some((row) => row.includes('wrong_password') && row.includes(LEDGER.email))).toBe(true);
-      expect(
-        details.some((row) => row.includes('unknown_account') && row.includes('nobody@example.com')),
-      ).toBe(true);
-      expect(details.join(' ')).not.toContain('not the password');
-      // An address nobody has an account for leaves an entry without an actor.
-      expect(rows.some((row) => row.actorUserId === null)).toBe(true);
+      expect(details.some((row) => row.includes('account_disabled') && row.includes('off@example.com'))).toBe(
+        true,
+      );
+      expect(details.join(' ')).not.toContain(token);
     });
   });
 });
