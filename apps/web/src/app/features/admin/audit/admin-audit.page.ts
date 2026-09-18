@@ -12,7 +12,7 @@ import { NotifyService } from '../../../core/notify/notify.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
 import { NO_VALUE } from '../../../shared/no-value';
 import { providePaginatorIntl } from '../../../shared/paginator-intl';
-import { auditAction, auditDetails } from './audit-entry';
+import { auditAction, auditDetails, auditTarget } from './audit-entry';
 import { HubActivityComponent } from './hub-activity.component';
 
 @Component({
@@ -67,7 +67,7 @@ import { HubActivityComponent } from './hub-activity.component';
                   <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.target') }}</th>
                   <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.target')">
                     @if (row.targetType) {
-                      {{ row.targetType }}{{ row.targetId ? ' #' + row.targetId : '' }}
+                      {{ targetLabel(row) }}
                     } @else {
                       <span class="empty">{{ noValue }}</span>
                     }
@@ -144,12 +144,6 @@ import { HubActivityComponent } from './hub-activity.component';
         white-space: normal;
       }
     }
-    /* The word stands for two things: a table with nothing to list, which
-       takes the room a row would have taken, and a single value a row does
-       not have, which is only a dash and takes none. */
-    td.empty {
-      padding: 24px 16px;
-    }
     .empty {
       color: var(--mat-sys-on-surface-variant);
     }
@@ -187,6 +181,10 @@ export class AdminAuditPage implements OnInit {
   }
 
   /** What the entry recorded, as labelled values rather than as stored JSON. */
+  targetLabel(row: AuditEntry): string {
+    return auditTarget(row.targetType, row.targetId, (key) => this.transloco.translate(key));
+  }
+
   details(row: AuditEntry): string {
     return auditDetails(row.details, (key) => this.transloco.translate(key));
   }

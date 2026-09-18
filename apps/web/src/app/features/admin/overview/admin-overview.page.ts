@@ -282,6 +282,9 @@ interface OpenTickets {
       display: flex;
       justify-content: space-between;
       gap: 24px;
+      /* Wide enough for the longest of these words, near enough that the
+         figure still reads as the count of the word beside it. */
+      max-width: 240px;
       font: var(--mat-sys-body-medium);
     }
     .users-line dt {

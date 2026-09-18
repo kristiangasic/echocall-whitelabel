@@ -549,9 +549,18 @@ a.stat:focus-visible {
 
 // A table with nothing in it is a sentence, not a table. Its column headings
 // name columns that are not there, so they stand aside until there is
-// something to head, and what is left is the frame around the sentence.
+// something to head, and what is left is the frame around the sentence, which
+// reads better in the middle of it than in its top left corner.
 .table-wrap table:has(td.empty) thead {
   display: none;
+}
+
+// The word stands for two things: a table with nothing to list, which takes the
+// room a row would have taken, and a single value a row does not have, which is
+// only a dash and takes none. Only the first of the two is this rule's business.
+td.empty {
+  padding: 24px 16px;
+  text-align: center;
 }
 
 // The same sentence where it stands for a whole section rather than sitting

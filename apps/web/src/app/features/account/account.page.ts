@@ -104,6 +104,11 @@ import { TwoFactorPanel } from './two-factor.panel';
     mat-card-content {
       padding-top: 16px;
     }
+    /* The header carries a single line and no subtitle under it, so the room
+       a subtitle would have taken has to come from somewhere. */
+    mat-card-header {
+      padding-bottom: 8px;
+    }
   `,
 })
 export class AccountPage {

@@ -218,12 +218,6 @@ const DEFAULT_PER_PAGE = 25;
     .status-none {
       color: var(--mat-sys-on-surface-variant);
     }
-    /* The word stands for two things: a table with nothing to list, which
-       takes the room a row would have taken, and a single value a row does
-       not have, which is only a dash and takes none. */
-    td.empty {
-      padding: 24px 16px;
-    }
     .empty {
       color: var(--mat-sys-on-surface-variant);
     }

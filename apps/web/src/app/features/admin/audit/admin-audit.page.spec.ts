@@ -69,6 +69,7 @@ describe('AdminAuditPage', () => {
     expect(text).toContain('E-mail: someone@example.com');
     expect(text).toContain('Mail sent: Yes');
     expect(text).not.toContain('mailSent');
+    expect(text).toContain(`${ADMIN_TEXTS.audit.targets.customer} #12`);
   });
 
   it('loads the service trail when its tab is opened, and only once', async () => {

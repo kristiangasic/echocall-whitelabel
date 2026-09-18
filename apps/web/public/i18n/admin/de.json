@@ -761,6 +761,11 @@
       "userId": "Zugang"
     },
     "yes": "Ja",
-    "no": "Nein"
+    "no": "Nein",
+    "targets": {
+      "customer": "Kunde",
+      "settings": "Einstellungen",
+      "user": "Zugang"
+    }
   }
 }

@@ -761,6 +761,11 @@
       "userId": "Login"
     },
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "targets": {
+      "customer": "Customer",
+      "settings": "Settings",
+      "user": "Login"
+    }
   }
 }

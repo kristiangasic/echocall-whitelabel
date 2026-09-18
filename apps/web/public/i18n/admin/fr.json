@@ -761,6 +761,11 @@
       "userId": "Accès"
     },
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "targets": {
+      "customer": "Client",
+      "settings": "Paramètres",
+      "user": "Accès"
+    }
   }
 }

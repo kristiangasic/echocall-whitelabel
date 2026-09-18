@@ -1,5 +1,5 @@
 import { ADMIN_TEXTS } from '../../../testing/i18n';
-import { auditAction, auditDetails } from './audit-entry';
+import { auditAction, auditDetails, auditTarget } from './audit-entry';
 
 /** The portal's own English texts, reached the way Transloco reaches them. */
 function t(key: string): string {
@@ -18,6 +18,24 @@ describe('auditAction', () => {
 
   it('keeps an action the portal has no wording for', () => {
     expect(auditAction('something.odd', t)).toBe('something.odd');
+  });
+});
+
+describe('auditTarget', () => {
+  it('names what an entry concerned and which one of them', () => {
+    expect(auditTarget('customer', 141478, t)).toBe(`${ADMIN_TEXTS.audit.targets.customer} #141478`);
+  });
+
+  it('leaves out a number for a thing there is only one of', () => {
+    expect(auditTarget('settings', null, t)).toBe(ADMIN_TEXTS.audit.targets.settings);
+  });
+
+  it('spells out a kind the portal has no wording for', () => {
+    expect(auditTarget('planGroup', 2, t)).toBe('Plan group #2');
+  });
+
+  it('has nothing to say about an entry that concerned nothing', () => {
+    expect(auditTarget(null, null, t)).toBe('');
   });
 });
 

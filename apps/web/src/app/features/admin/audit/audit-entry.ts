@@ -29,6 +29,17 @@ export function auditDetails(details: Record<string, unknown> | null | undefined
     .join(SEPARATOR);
 }
 
+/** What one entry concerned: the kind of thing, and which one of them. */
+export function auditTarget(
+  targetType: string | null | undefined,
+  targetId: number | string | null | undefined,
+  t: Translate,
+): string {
+  if (!targetType) return '';
+  const kind = text(`admin.audit.targets.${asKey(targetType)}`, spellOut(targetType), t);
+  return targetId === null || targetId === undefined || targetId === '' ? kind : `${kind} #${targetId}`;
+}
+
 /** The name of a recorded field, or the key written the way a reader would. */
 function fieldLabel(key: string, t: Translate): string {
   return text(`admin.audit.fields.${asKey(key)}`, spellOut(key), t);
