@@ -20,7 +20,7 @@
     },
     "balance": {
       "title": "Balance",
-      "hint": "What is left to spend."
+      "hint": "left to spend"
     },
     "plan": {
       "title": "Plan",

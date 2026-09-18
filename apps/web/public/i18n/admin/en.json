@@ -31,13 +31,13 @@
       "chatMessages": "Chat messages"
     },
     "subscriptions": {
-      "hint": "Every record, cancelled ones included.",
+      "hint": "cancelled ones included",
       "title": "Subscriptions"
     },
     "tickets": {
       "title": "Tickets",
       "open": "Open tickets",
-      "hint": "Waiting for an answer."
+      "hint": "waiting for an answer"
     },
     "unavailable": "The service did not return these figures just now."
   },

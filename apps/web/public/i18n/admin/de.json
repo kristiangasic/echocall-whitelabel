@@ -31,13 +31,13 @@
       "chatMessages": "Chat-Nachrichten"
     },
     "subscriptions": {
-      "hint": "Alle Buchungen, auch gekündigte.",
+      "hint": "auch gekündigte",
       "title": "Abonnements"
     },
     "tickets": {
       "title": "Tickets",
       "open": "Offene Tickets",
-      "hint": "Warten auf eine Antwort."
+      "hint": "warten auf eine Antwort"
     },
     "unavailable": "Der Dienst hat diese Zahlen gerade nicht geliefert."
   },

@@ -31,13 +31,13 @@
       "chatMessages": "Messages de chat"
     },
     "subscriptions": {
-      "hint": "Toutes les écritures, y compris résiliées.",
+      "hint": "y compris les résiliés",
       "title": "Abonnements"
     },
     "tickets": {
       "title": "Tickets",
       "open": "Tickets ouverts",
-      "hint": "En attente d'une réponse."
+      "hint": "en attente d'une réponse"
     },
     "unavailable": "Le service n'a pas fourni ces chiffres pour le moment."
   },

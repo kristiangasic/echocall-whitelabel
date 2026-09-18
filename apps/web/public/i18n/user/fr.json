@@ -20,7 +20,7 @@
     },
     "balance": {
       "title": "Solde",
-      "hint": "Ce qu'il reste à dépenser."
+      "hint": "restant à dépenser"
     },
     "plan": {
       "title": "Forfait",

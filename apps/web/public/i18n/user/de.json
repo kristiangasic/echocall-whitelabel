@@ -20,7 +20,7 @@
     },
     "balance": {
       "title": "Guthaben",
-      "hint": "Was noch zur Verfügung steht."
+      "hint": "noch verfügbar"
     },
     "plan": {
       "title": "Tarif",

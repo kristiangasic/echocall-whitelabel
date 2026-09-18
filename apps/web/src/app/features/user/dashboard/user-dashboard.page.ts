@@ -120,7 +120,11 @@ import { conversationTitle } from '../conversations/conversation.model';
           </div>
         </div>
 
-        <mat-card appearance="outlined" class="recent">
+        <!--
+          An account with no conversations yet gets the card it will have once
+          it does, rather than one the height of a single line of apology.
+        -->
+        <mat-card appearance="outlined" class="recent" [class.nothing]="!recent().length">
           <mat-card-header>
             <mat-card-title>{{ t('user.dashboard.recent.title') }}</mat-card-title>
           </mat-card-header>
@@ -135,7 +139,8 @@ import { conversationTitle } from '../conversations/conversation.model';
                 }
               </mat-nav-list>
             } @else {
-              <p class="empty" data-testid="recent-empty">{{ t('user.dashboard.recent.empty') }}</p>
+              <mat-icon>forum</mat-icon>
+              <p data-testid="recent-empty">{{ t('user.dashboard.recent.empty') }}</p>
             }
           </mat-card-content>
           <mat-card-actions>
@@ -147,9 +152,6 @@ import { conversationTitle } from '../conversations/conversation.model';
     </ng-container>
   `,
   styles: `
-    .hint {
-      margin: 4px 0 0;
-    }
     /* A plan name is words, not a figure, so it does not take the digit face. */
     .stat-value.plan {
       font: var(--mat-sys-title-large);
@@ -165,10 +167,6 @@ import { conversationTitle } from '../conversations/conversation.model';
     }
     .recent {
       margin-top: 24px;
-    }
-    /* The empty line stands where the list would, not under the list's indent. */
-    .recent .empty {
-      margin: 0;
     }
   `,
 })
