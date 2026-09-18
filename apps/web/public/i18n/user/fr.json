@@ -365,6 +365,132 @@
       "other": "Autres",
       "scheduling": "Rendez-vous",
       "ticketing": "Assistance"
+    },
+    "types": {
+      "amazon": {
+        "description": "Lit commandes, expéditions et factures d'un compte vendeur Amazon via la SP-API.",
+        "fields": {
+          "accessKeyId": "ID client (application)",
+          "marketplaceId": "ID de la place de marché (facultatif)",
+          "refreshToken": "Jeton de rafraîchissement",
+          "secretAccessKey": "Secret client",
+          "sellerId": "ID vendeur"
+        }
+      },
+      "calcom": {
+        "description": "Prise de rendez-vous open source. L'assistant réserve dans Cal.com pendant l'appel.",
+        "fields": {
+          "apiKey": "Clé API",
+          "defaultDuration": "Durée par défaut (minutes)",
+          "eventTypeId": "ID du type d'événement (facultatif)"
+        }
+      },
+      "calendly": {
+        "description": "Planification pour une équipe ou pour une seule personne. L'assistant réserve pendant l'appel.",
+        "fields": {
+          "apiKey": "Jeton d'accès personnel",
+          "eventTypeUri": "URI du type d'événement (facultatif)"
+        }
+      },
+      "discord": {
+        "description": "Publie les mêmes notifications dans un canal Discord, pour une équipe qui y travaille.",
+        "fields": {
+          "webhookUrl": "URL du webhook Discord"
+        }
+      },
+      "ebay": {
+        "description": "Lit commandes, expéditions et détails de transaction d'un compte vendeur eBay.",
+        "fields": {
+          "environment": "Environnement (sandbox ou production)",
+          "oauthToken": "Jeton OAuth"
+        }
+      },
+      "freshdesk": {
+        "description": "Reconnaît les contacts et traite les tickets dans Freshdesk: chercher, créer, mettre à jour, laisser une note. Vous décidez de ce que l'assistant peut faire.",
+        "fields": {
+          "apiKey": "Clé API",
+          "subdomain": "Sous-domaine Freshdesk"
+        }
+      },
+      "google_calendar": {
+        "description": "Les rendez-vous arrivent dans Google Calendar, et ce qui s'y trouve déjà décide des créneaux que l'assistant propose.",
+        "fields": {
+          "accessToken": "Jeton d'accès",
+          "calendarId": "ID de l'agenda (facultatif)",
+          "refreshToken": "Jeton de rafraîchissement"
+        }
+      },
+      "make": {
+        "description": "Construit des scénarios plus longs dans Make, pour tout ce qui demande plus d'une étape.",
+        "fields": {
+          "scenarioId": "ID du scénario (facultatif)",
+          "webhookUrl": "URL du webhook Make"
+        }
+      },
+      "shopify": {
+        "description": "Retrouve commandes, clients, expéditions et factures dans Shopify, pour répondre à l'appelant sur-le-champ.",
+        "fields": {
+          "accessToken": "Jeton d'accès",
+          "storeUrl": "URL de la boutique"
+        }
+      },
+      "shopware": {
+        "description": "Statut de commande, appelant reconnu à son numéro, disponibilité, adresse modifiée, annulation: Shopware 6 via son API d'administration.",
+        "fields": {
+          "clientId": "ID de la clé d'accès",
+          "clientSecret": "Clé d'accès secrète",
+          "shopUrl": "URL de la boutique"
+        }
+      },
+      "slack": {
+        "description": "Publie les nouveaux appels, les rendez-vous pris et tout ce qui mérite d'être su dans un canal Slack.",
+        "fields": {
+          "botToken": "Jeton du bot (facultatif)",
+          "channel": "Canal",
+          "webhookUrl": "URL du webhook Slack"
+        }
+      },
+      "webhook": {
+        "description": "Envoie les appels et les actions d'un assistant vers votre propre point de terminaison, pour un CRM ou tout autre système concerné.",
+        "fields": {
+          "authentication-type": "Authentification",
+          "customFields": "Champs à transmettre (JSON)",
+          "method": "Méthode HTTP",
+          "toolDescription": "Quand l'assistant doit l'appeler",
+          "url": "URL du point de terminaison"
+        },
+        "hints": {
+          "customFields": "[{\"name\":\"order_id\",\"description\":\"Numéro de commande\",\"required\":true},{\"name\":\"customer_name\",\"description\":\"Nom du client\"},{\"name\":\"email\",\"description\":\"Adresse e-mail\"}]",
+          "toolDescription": "Par exemple: lorsque l'appelant veut passer une commande, appelle ce point de terminaison avec le numéro de commande, le nom et l'adresse e-mail."
+        },
+        "options": {
+          "authentication-type": {
+            "none": "Aucune"
+          }
+        }
+      },
+      "whatsapp": {
+        "description": "Envoie des messages et des modèles WhatsApp via l'API Meta Cloud, directement depuis une conversation.",
+        "fields": {
+          "accessToken": "Jeton d'accès",
+          "appSecret": "Secret de l'application",
+          "businessAccountId": "ID du compte professionnel (facultatif)",
+          "phoneNumber": "Numéro de téléphone, tel qu'il s'affiche",
+          "phoneNumberId": "ID du numéro de téléphone",
+          "webhookVerifyToken": "Jeton de vérification du webhook"
+        },
+        "hints": {
+          "appSecret": "Depuis le tableau de bord de l'application Meta",
+          "businessAccountId": "Facultatif",
+          "webhookVerifyToken": "wa-verify-2f4c9a"
+        }
+      },
+      "zapier": {
+        "description": "Atteint plus de 5000 applications via Zapier: un CRM, une boîte mail, un tableur, quel que soit le reste de votre outillage.",
+        "fields": {
+          "webhookUrl": "URL du webhook Zapier"
+        }
+      }
     }
   },
   "webhooks": {

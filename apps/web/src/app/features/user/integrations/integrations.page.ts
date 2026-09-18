@@ -13,6 +13,7 @@ import { HubService } from '../../../core/hub/hub.service';
 import type { IntegrationSummary, IntegrationType } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/confirm-dialog.component';
+import { IntegrationCatalogService } from './integration-catalog.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
 import { IntegrationDialogComponent, type IntegrationDialogData } from './integration-dialog.component';
 import {
@@ -147,7 +148,7 @@ interface TestResult {
               @if (entry.category) {
                 <span class="sub">{{ categoryLabel(entry.category) }}</span>
               }
-              <p class="description">{{ entry.description }}</p>
+              <p class="description">{{ explain(entry) }}</p>
             </mat-card-content>
             <mat-card-actions>
               <button
@@ -226,6 +227,7 @@ export class IntegrationsPage implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotifyService);
   private readonly transloco = inject(TranslocoService);
+  private readonly texts = inject(IntegrationCatalogService);
 
   readonly integrations = signal<IntegrationSummary[]>([]);
   readonly catalog = signal<IntegrationType[]>([]);
@@ -248,6 +250,11 @@ export class IntegrationsPage implements OnInit {
     const key = `user.integrations.categories.${category}`;
     const label = this.transloco.translate(key);
     return label === key ? category : label;
+  }
+
+  /** What a service in the catalog does, in the reader's language. */
+  explain(entry: IntegrationType): string {
+    return this.texts.description(entry);
   }
 
   /** The catalog name of a type, or the raw value when the catalog does not list it. */

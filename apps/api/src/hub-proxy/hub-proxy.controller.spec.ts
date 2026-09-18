@@ -25,7 +25,13 @@ describe('HubProxyController', () => {
           {
             name: 'Zapier',
             description: 'Connect EchoCall to 5000+ apps through Zapier.',
-            docsUrl: 'https://hub.echocall.de/docs/zapier',
+            documentation: 'https://zapier.com/apps',
+          },
+          {
+            name: 'Custom Webhook',
+            description: 'Send events anywhere.',
+            documentation: 'https://docs.echocall.de/webhooks',
+            docsUrl: 'https://hub.echocall.de/docs/webhooks',
           },
         ],
       },
@@ -67,7 +73,15 @@ describe('HubProxyController', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.data[0].description).toBe('Connect Customer Portal to 5000+ apps through Zapier.');
-    expect(res.body.data[0].docsUrl).toBe('https://hub.echocall.de/docs/zapier');
+  });
+
+  it('keeps the manual of a connected service and drops the one of the platform', async () => {
+    const res = await api().get('/api/hub/integrations/types').set('Cookie', user.cookie);
+
+    expect(res.status).toBe(200);
+    expect(res.body.data[0].documentation).toBe('https://zapier.com/apps');
+    expect(res.body.data[1].documentation).toBeNull();
+    expect(res.body.data[1].docsUrl).toBeNull();
   });
 
   it('forwards a POST body and returns the hub status verbatim', async () => {

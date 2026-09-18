@@ -365,6 +365,132 @@
       "other": "Sonstiges",
       "scheduling": "Termine",
       "ticketing": "Support"
+    },
+    "types": {
+      "amazon": {
+        "description": "Liest Bestellungen, Sendungen und Rechnungen aus einem Amazon-Verkäuferkonto über die SP-API.",
+        "fields": {
+          "accessKeyId": "Client-ID (App)",
+          "marketplaceId": "Marketplace-ID (optional)",
+          "refreshToken": "Refresh-Token",
+          "secretAccessKey": "Client-Secret",
+          "sellerId": "Verkäufer-ID"
+        }
+      },
+      "calcom": {
+        "description": "Open-Source-Terminbuchung. Der Assistent bucht einen Termin in Cal.com, noch während das Gespräch läuft.",
+        "fields": {
+          "apiKey": "API-Key",
+          "defaultDuration": "Standarddauer (Minuten)",
+          "eventTypeId": "Event-Type-ID (optional)"
+        }
+      },
+      "calendly": {
+        "description": "Terminplanung für ein Team oder für eine einzelne Person. Der Assistent bucht einen Termin, noch während das Gespräch läuft.",
+        "fields": {
+          "apiKey": "Persönliches Zugriffstoken",
+          "eventTypeUri": "Event-Type-URI (optional)"
+        }
+      },
+      "discord": {
+        "description": "Meldet dieselben Ereignisse in einem Discord-Kanal, für Teams, die dort arbeiten.",
+        "fields": {
+          "webhookUrl": "Discord-Webhook-URL"
+        }
+      },
+      "ebay": {
+        "description": "Liest Bestellungen, Sendungen und Transaktionsdetails aus einem eBay-Verkäuferkonto.",
+        "fields": {
+          "environment": "Umgebung (Sandbox oder Produktion)",
+          "oauthToken": "OAuth-Token"
+        }
+      },
+      "freshdesk": {
+        "description": "Erkennt Kontakte und bearbeitet Tickets in Freshdesk: suchen, anlegen, aktualisieren, Notiz hinterlassen. Sie entscheiden, was der Assistent davon darf.",
+        "fields": {
+          "apiKey": "API-Key",
+          "subdomain": "Freshdesk-Subdomain"
+        }
+      },
+      "google_calendar": {
+        "description": "Termine landen im Google Calendar, und was dort schon steht, entscheidet, welche Zeiten der Assistent anbietet.",
+        "fields": {
+          "accessToken": "Zugriffstoken",
+          "calendarId": "Kalender-ID (optional)",
+          "refreshToken": "Refresh-Token"
+        }
+      },
+      "make": {
+        "description": "Baut längere Abläufe in Make, für alles, was mehr als einen Schritt braucht.",
+        "fields": {
+          "scenarioId": "Szenario-ID (optional)",
+          "webhookUrl": "Make-Webhook-URL"
+        }
+      },
+      "shopify": {
+        "description": "Findet Bestellungen, Kunden, Sendungen und Rechnungen in Shopify, damit der Anrufer die Antwort sofort bekommt.",
+        "fields": {
+          "accessToken": "Zugriffstoken",
+          "storeUrl": "Shop-URL"
+        }
+      },
+      "shopware": {
+        "description": "Bestellstatus, Anrufer an der Nummer erkannt, Verfügbarkeit, geänderte Adresse, Stornierung: Shopware 6 über die Admin-API.",
+        "fields": {
+          "clientId": "Zugriffsschlüssel-ID",
+          "clientSecret": "Geheimer Zugriffsschlüssel",
+          "shopUrl": "Shop-URL"
+        }
+      },
+      "slack": {
+        "description": "Meldet neue Gespräche, gebuchte Termine und alles andere Wissenswerte in einem Slack-Kanal.",
+        "fields": {
+          "botToken": "Bot-Token (optional)",
+          "channel": "Kanal",
+          "webhookUrl": "Slack-Webhook-URL"
+        }
+      },
+      "webhook": {
+        "description": "Sendet Gespräche und Aktionen eines Assistenten an einen eigenen Endpunkt, für ein CRM oder jedes andere System, das davon erfahren soll.",
+        "fields": {
+          "authentication-type": "Authentifizierung",
+          "customFields": "Felder, die mitgehen (JSON)",
+          "method": "HTTP-Methode",
+          "toolDescription": "Wann der Assistent ihn aufrufen soll",
+          "url": "Endpunkt-URL"
+        },
+        "hints": {
+          "customFields": "[{\"name\":\"order_id\",\"description\":\"Bestellnummer\",\"required\":true},{\"name\":\"customer_name\",\"description\":\"Name des Kunden\"},{\"name\":\"email\",\"description\":\"E-Mail-Adresse\"}]",
+          "toolDescription": "Zum Beispiel: Wenn der Anrufer eine Bestellung aufgeben möchte, rufe diesen Endpunkt mit Bestellnummer, Name und E-Mail-Adresse auf."
+        },
+        "options": {
+          "authentication-type": {
+            "none": "Keine"
+          }
+        }
+      },
+      "whatsapp": {
+        "description": "Sendet WhatsApp-Nachrichten und Vorlagen über die Meta Cloud API, direkt aus einem Gespräch heraus.",
+        "fields": {
+          "accessToken": "Zugriffstoken",
+          "appSecret": "App-Secret",
+          "businessAccountId": "Business-Konto-ID (optional)",
+          "phoneNumber": "Telefonnummer, wie sie angezeigt wird",
+          "phoneNumberId": "Telefonnummern-ID",
+          "webhookVerifyToken": "Webhook-Verify-Token"
+        },
+        "hints": {
+          "appSecret": "Aus dem Meta-App-Dashboard",
+          "businessAccountId": "Optional",
+          "webhookVerifyToken": "wa-verify-2f4c9a"
+        }
+      },
+      "zapier": {
+        "description": "Erreicht über 5000 Apps über Zapier: ein CRM, ein Postfach, eine Tabelle, worauf die übrige Arbeit auch läuft.",
+        "fields": {
+          "webhookUrl": "Zapier-Webhook-URL"
+        }
+      }
     }
   },
   "webhooks": {

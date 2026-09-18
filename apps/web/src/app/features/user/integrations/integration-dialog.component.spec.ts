@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import type { IntegrationType } from '../../../core/hub/hub.models';
-import { provideTestI18n } from '../../../testing/i18n';
+import { provideTestI18n, USER_TEXTS } from '../../../testing/i18n';
 import { IntegrationDialogComponent, type IntegrationDialogData } from './integration-dialog.component';
 
 const TYPE: IntegrationType = {
@@ -15,6 +15,15 @@ const TYPE: IntegrationType = {
     { name: 'apiKey', label: 'API key', type: 'password', required: true },
     { name: 'eventTypeId', label: 'Event type', type: 'text', required: false },
   ],
+};
+
+/** A type the portal has no wording for, to show what happens then. */
+const UNKNOWN: IntegrationType = {
+  type: 'somesuch',
+  name: 'Somesuch',
+  description: 'Etwas ganz anderes.',
+  requiresApiKey: true,
+  configFields: [{ name: 'apiKey', label: 'Zugangswort', type: 'password', required: true }],
 };
 
 describe('IntegrationDialogComponent', () => {
@@ -92,6 +101,27 @@ describe('IntegrationDialogComponent', () => {
     await pending;
 
     expect(closed).toBe(true);
+    http.verify();
+  });
+  it('labels a known field the way the portal does', async () => {
+    const fixture = await render({ types: [TYPE], type: 'calcom' });
+
+    const labels = [...fixture.nativeElement.querySelectorAll('mat-label')].map((label: Element) =>
+      (label.textContent ?? '').trim(),
+    );
+    expect(labels).toContain(USER_TEXTS.integrations.types.calcom.fields.eventTypeId);
+    expect(labels).not.toContain('Event type');
+    http.verify();
+  });
+
+  it('keeps the words of the service for a field the portal has no wording for', async () => {
+    const fixture = await render({ types: [UNKNOWN], type: 'somesuch' });
+
+    const labels = [...fixture.nativeElement.querySelectorAll('mat-label')].map((label: Element) =>
+      (label.textContent ?? '').trim(),
+    );
+    expect(labels).toContain('Zugangswort');
+    expect(fixture.nativeElement.textContent).toContain('Etwas ganz anderes.');
     http.verify();
   });
 });

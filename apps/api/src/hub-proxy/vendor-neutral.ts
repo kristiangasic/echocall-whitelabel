@@ -36,3 +36,58 @@ function map(value: unknown, productName: string): unknown {
   }
   return value;
 }
+
+/** Keys whose value is a link the portal offers the customer to open and read. */
+const DOCUMENTATION_KEYS = new Set(['documentation', 'documentationUrl', 'docsUrl', 'helpUrl']);
+
+/**
+ * Drops a documentation link that points back at the platform this portal runs
+ * on. The catalogue of connectors names the manual of each service, and for the
+ * connectors the platform provides itself that manual is the platform's own: a
+ * link the customer would follow to find out whose portal this really is. Links
+ * to the connected services are left alone, because those are the ones the
+ * customer came for.
+ */
+export function hideOwnDocumentation<T>(body: T, apiUrl: string): T {
+  const domain = registrableDomain(apiUrl);
+  if (domain === null) return body;
+  return strip(body, domain) as T;
+}
+
+function strip(value: unknown, domain: string): unknown {
+  if (Array.isArray(value)) return value.map((entry) => strip(entry, domain));
+  if (value === null || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).map(([key, entry]) =>
+      DOCUMENTATION_KEYS.has(key) && typeof entry === 'string' && pointsAt(entry, domain)
+        ? [key, null]
+        : [key, strip(entry, domain)],
+    ),
+  );
+}
+
+/** Whether a link leads to the given domain or to anything under it. */
+function pointsAt(link: string, domain: string): boolean {
+  let host: string;
+  try {
+    host = new URL(link).hostname.toLowerCase();
+  } catch {
+    return false;
+  }
+  return host === domain || host.endsWith(`.${domain}`);
+}
+
+/**
+ * The domain a host is registered under, so that a manual on one machine of the
+ * platform is recognised from the address of another.
+ */
+function registrableDomain(apiUrl: string): string | null {
+  let host: string;
+  try {
+    host = new URL(apiUrl).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+  const labels = host.split('.');
+  return labels.length < 3 ? host : labels.slice(-2).join('.');
+}

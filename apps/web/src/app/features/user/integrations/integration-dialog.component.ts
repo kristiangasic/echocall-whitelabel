@@ -13,6 +13,7 @@ import { firstValueFrom } from 'rxjs';
 import { HubService } from '../../../core/hub/hub.service';
 import type { Integration, IntegrationType } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
+import { IntegrationCatalogService } from './integration-catalog.service';
 import { MASKED, parseConfig } from './integration-config';
 
 /** One configuration field of the chosen type, with the parts the form needs filled in. */
@@ -98,10 +99,10 @@ export interface IntegrationDialogData {
             <input matInput name="description" [(ngModel)]="description" />
           </mat-form-field>
 
-          @if (selected(); as catalog) {
-            <p class="hint">{{ catalog.description }}</p>
-            @if (catalog.documentation) {
-              <a class="hint" [href]="catalog.documentation" target="_blank" rel="noopener">
+          @if (selected(); as entry) {
+            <p class="hint">{{ explain(entry) }}</p>
+            @if (entry.documentation) {
+              <a class="hint" [href]="entry.documentation" target="_blank" rel="noopener">
                 {{ t('user.integrations.documentation') }}
               </a>
             }
@@ -189,6 +190,7 @@ export class IntegrationDialogComponent implements OnInit {
   private readonly dialogRef = inject(MatDialogRef<IntegrationDialogComponent, boolean>);
   private readonly hub = inject(HubService);
   private readonly notify = inject(NotifyService);
+  private readonly texts = inject(IntegrationCatalogService);
 
   readonly type = signal<string | null>(null);
   readonly config = signal<Record<string, string>>({});
@@ -204,21 +206,37 @@ export class IntegrationDialogComponent implements OnInit {
     () => this.data.types.find((entry) => entry.type === this.type()) ?? null,
   );
   /** Fields without a name cannot be stored, so they are not offered. */
-  readonly fields = computed<ConfigField[]>(() =>
-    (this.selected()?.configFields ?? [])
+  readonly fields = computed<ConfigField[]>(() => {
+    const entry = this.selected();
+    if (entry === null) return [];
+    return (entry.configFields ?? [])
       .filter((field) => !!field.name)
-      .map((field) => ({
-        name: field.name as string,
-        label: field.label ?? (field.name as string),
-        type: field.type ?? 'text',
-        placeholder: field.placeholder ?? '',
-        required: !!field.required,
-        options: (field.options ?? [])
-          .filter((option) => option.value !== undefined)
-          .map((option) => ({ label: option.label ?? String(option.value), value: option.value as string })),
-      })),
-  );
+      .map((field) => {
+        const name = field.name as string;
+        return {
+          name,
+          label: this.texts.fieldLabel(entry.type, name, field.label ?? name),
+          type: field.type ?? 'text',
+          placeholder: this.texts.fieldHint(entry.type, name, field.placeholder ?? ''),
+          required: !!field.required,
+          options: (field.options ?? [])
+            .filter((option) => option.value !== undefined)
+            .map((option) => {
+              const value = option.value as string;
+              return {
+                label: this.texts.optionLabel(entry.type, name, value, option.label ?? String(value)),
+                value,
+              };
+            }),
+        };
+      });
+  });
   readonly canSave = computed(() => !!this.type() && this.name().trim().length > 0 && !this.saving());
+
+  /** What the chosen service does, in the reader's language. */
+  explain(entry: IntegrationType): string {
+    return this.texts.description(entry);
+  }
 
   ngOnInit(): void {
     if (this.isNew()) {

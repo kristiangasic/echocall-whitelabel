@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { renameProduct } from './vendor-neutral.js';
+import { hideOwnDocumentation, renameProduct } from './vendor-neutral.js';
 
 describe('renameProduct', () => {
   it('renames the service in the text a customer reads', () => {
@@ -45,5 +45,46 @@ describe('renameProduct', () => {
     const result = renameProduct({ note: 'EchoCallable is a different word.' }, 'Acme Voice');
 
     expect(result.note).toBe('EchoCallable is a different word.');
+  });
+});
+
+describe('hideOwnDocumentation', () => {
+  const API = 'https://hub.echocall.de/api/v1';
+
+  it('drops a manual that leads back to the platform behind the portal', () => {
+    const result = hideOwnDocumentation({ documentation: 'https://docs.echocall.de/webhooks' }, API);
+
+    expect(result.documentation).toBeNull();
+  });
+
+  it('keeps the manual of the service the customer is connecting to', () => {
+    const result = hideOwnDocumentation({ documentation: 'https://cal.com/docs/api-reference' }, API);
+
+    expect(result.documentation).toBe('https://cal.com/docs/api-reference');
+  });
+
+  it('works through the list the catalogue comes in', () => {
+    const result = hideOwnDocumentation(
+      { data: [{ type: 'webhook', docsUrl: 'https://hub.echocall.de/docs' }] },
+      API,
+    );
+
+    expect(result.data[0]).toEqual({ type: 'webhook', docsUrl: null });
+  });
+
+  it('leaves every other link alone, including one to the platform', () => {
+    const result = hideOwnDocumentation(
+      { authorizeUrl: 'https://hub.echocall.de/oauth/authorize', note: 'See https://docs.echocall.de' },
+      API,
+    );
+
+    expect(result.authorizeUrl).toBe('https://hub.echocall.de/oauth/authorize');
+    expect(result.note).toBe('See https://docs.echocall.de');
+  });
+
+  it('passes a value through that is not a link at all', () => {
+    const result = hideOwnDocumentation({ documentation: 'Ask support' }, API);
+
+    expect(result.documentation).toBe('Ask support');
   });
 });

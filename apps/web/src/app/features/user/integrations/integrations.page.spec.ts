@@ -82,7 +82,14 @@ describe('IntegrationsPage', () => {
 
     const card = fixture.nativeElement.querySelector('[data-testid="integrations-catalog"]');
     expect(card.textContent).toContain('Cal.com');
-    expect(card.textContent).toContain('Termine buchen und absagen.');
+  });
+
+  it('describes a known service in the reader language, not in the one the service sent', async () => {
+    const fixture = await render();
+
+    const card = fixture.nativeElement.querySelector('[data-testid="integrations-catalog"]');
+    expect(card.textContent).toContain(USER_TEXTS.integrations.types.calcom.description);
+    expect(card.textContent).not.toContain('Termine buchen und absagen.');
   });
 
   it('names the catalog category in the reader language', async () => {
@@ -105,6 +112,18 @@ describe('IntegrationsPage', () => {
 
     const card = fixture.nativeElement.querySelector('[data-testid="integrations-catalog"]');
     expect(card.textContent).toContain('telepathy');
+  });
+
+  it('keeps the words of the service for an entry the portal does not know', async () => {
+    const fixture = TestBed.createComponent(IntegrationsPage);
+    await fixture.whenStable();
+    http.expectOne('/api/hub/integrations').flush([]);
+    http.expectOne('/api/hub/integrations/types').flush([{ ...TYPE, type: 'somesuch' }]);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await fixture.whenStable();
+
+    const card = fixture.nativeElement.querySelector('[data-testid="integrations-catalog"]');
+    expect(card.textContent).toContain('Termine buchen und absagen.');
   });
 
   it('preselects the service when it is connected from the catalog', async () => {
