@@ -11,15 +11,13 @@ import { RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../../core/api/api.service';
-import { BrandingService } from '../../../core/branding/branding.service';
 import { formatMoney } from '../../../core/format/money';
 import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type { ResellerCustomer } from '../../../core/hub/hub.models';
 import { LanguageService } from '../../../core/i18n/language.service';
-import type { AdminUser, InviteInput, InviteResult } from '../../../core/models';
+import type { AdminUser } from '../../../core/models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/confirm-dialog.component';
-import { LinkDialogComponent, type LinkDialogData } from '../../../shared/link-dialog.component';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
 import { providePaginatorIntl } from '../../../shared/paginator-intl';
 import {
@@ -28,6 +26,7 @@ import {
   type CustomerDialogResult,
 } from './customer-dialog.component';
 import { type CustomerRow, mergeCustomers } from './customer-row';
+import { PortalLoginService } from './portal-login.service';
 
 const DEFAULT_PER_PAGE = 25;
 
@@ -160,6 +159,12 @@ const DEFAULT_PER_PAGE = 25;
 
       <mat-menu #menu="matMenu">
         <ng-template matMenuContent let-row="row">
+          @if (row.login?.status === 'active') {
+            <button mat-menu-item type="button" (click)="openAs(row)" data-testid="open-as">
+              <mat-icon>visibility</mat-icon>
+              <span>{{ t('admin.customer.openAs') }}</span>
+            </button>
+          }
           <button mat-menu-item type="button" (click)="edit(row)">
             <mat-icon>edit</mat-icon>
             <span>{{ t('actions.edit') }}</span>
@@ -219,7 +224,7 @@ export class AdminCustomersPage implements OnInit {
   private readonly hub = inject(AdminHubService);
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotifyService);
-  private readonly branding = inject(BrandingService);
+  private readonly logins = inject(PortalLoginService);
   private readonly language = inject(LanguageService);
 
   readonly columns = ['customer', 'account', 'login', 'balance', 'createdAt', 'actions'];
@@ -273,11 +278,11 @@ export class AdminCustomersPage implements OnInit {
   create(): void {
     const data: CustomerDialogData = {
       mode: 'create',
-      defaultLanguage: this.branding.branding().defaultLanguage,
+      defaultLanguage: this.logins.defaultLanguage(),
     };
     this.open(data, (result) => {
       if (result.mode !== 'create') return;
-      this.showInvite(result.result);
+      this.logins.announce(result.result);
     });
   }
 
@@ -285,23 +290,15 @@ export class AdminCustomersPage implements OnInit {
     this.open({ mode: 'edit', customer: row }, () => this.notify.success('admin.customers.saved'));
   }
 
+  /** Opens the portal as this customer, for support work in their account. */
+  async openAs(row: CustomerRow): Promise<void> {
+    await this.logins.open(row.customerId);
+  }
+
   /** Invites a portal login for a customer that only exists in the service. */
   async inviteLogin(row: CustomerRow): Promise<void> {
-    const body: InviteInput = {
-      email: row.email,
-      role: 'user',
-      language: this.branding.branding().defaultLanguage,
-      echocallCustomerId: row.customerId,
-      ...(row.firstName ? { firstName: row.firstName } : {}),
-      ...(row.lastName ? { lastName: row.lastName } : {}),
-    };
-    try {
-      const result = await firstValueFrom(this.api.post<InviteResult>('/admin/users/invite', body));
-      await this.load();
-      this.showInvite(result);
-    } catch (err) {
-      this.notify.apiError(err);
-    }
+    const login = await this.logins.invite(row);
+    if (login) await this.load();
   }
 
   setSuspended(row: CustomerRow, suspend: boolean): void {
@@ -360,18 +357,5 @@ export class AdminCustomersPage implements OnInit {
         }
         void this.load();
       });
-  }
-
-  private showInvite(result: { user: { email: string }; inviteLink: string; mailSent: boolean }): void {
-    if (result.mailSent) {
-      this.notify.success('admin.customers.inviteSent', { email: result.user.email });
-      return;
-    }
-    const data: LinkDialogData = {
-      titleKey: 'admin.users.inviteLinkTitle',
-      messageKey: 'admin.users.linkMessage',
-      link: result.inviteLink,
-    };
-    this.dialog.open<LinkDialogComponent, LinkDialogData>(LinkDialogComponent, { data });
   }
 }

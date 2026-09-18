@@ -6,10 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
-import { AuthStore } from '../../../core/auth/auth.store';
 import { formatMoney } from '../../../core/format/money';
 import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type {
@@ -21,6 +21,7 @@ import type {
 } from '../../../core/hub/hub.models';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { readApiError } from '../../../core/errors/api-error';
+import type { AdminUser, UserStatus } from '../../../core/models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
 import { providePaginatorIntl } from '../../../shared/paginator-intl';
@@ -29,6 +30,7 @@ import {
   type BalanceDialogData,
   type BalanceDialogResult,
 } from './balance-dialog.component';
+import { PortalLoginService } from './portal-login.service';
 
 const DEFAULT_PER_PAGE = 25;
 
@@ -53,6 +55,7 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
     MatPaginatorModule,
     MatProgressBarModule,
     MatTableModule,
+    MatTooltipModule,
     RouterLink,
     TranslocoDirective,
     LocalDatePipe,
@@ -82,10 +85,33 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
                 {{ t('admin.customers.accountStatuses.' + status) }}
               </span>
             }
-            <button mat-stroked-button type="button" (click)="openAsCustomer()" data-testid="open-as">
-              <mat-icon>visibility</mat-icon>
-              {{ t('admin.customer.openAs') }}
-            </button>
+            @if (loginKnown()) {
+              @if (login(); as l) {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  disabledInteractive
+                  [disabled]="l.status !== 'active'"
+                  [matTooltip]="l.status === 'active' ? '' : t(blockedHint(l.status))"
+                  (click)="openAsCustomer()"
+                  data-testid="open-as"
+                >
+                  <mat-icon>visibility</mat-icon>
+                  {{ t('admin.customer.openAs') }}
+                </button>
+              } @else {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [matTooltip]="t('admin.customers.noLoginHint')"
+                  (click)="inviteLogin()"
+                  data-testid="invite-login"
+                >
+                  <mat-icon>mail</mat-icon>
+                  {{ t('admin.customers.inviteLogin') }}
+                </button>
+              }
+            }
           </div>
         </div>
 
@@ -350,12 +376,11 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
 export class AdminCustomerDetailPage implements OnInit {
   private readonly hub = inject(AdminHubService);
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-  private readonly auth = inject(AuthStore);
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotifyService);
   private readonly transloco = inject(TranslocoService);
   private readonly language = inject(LanguageService);
+  private readonly logins = inject(PortalLoginService);
 
   /** The customer id of the service, taken from the route. */
   readonly id = signal(0);
@@ -364,6 +389,9 @@ export class AdminCustomerDetailPage implements OnInit {
   readonly transactionColumns = ['createdAt', 'type', 'description', 'amount', 'balanceAfter'];
 
   readonly customer = signal<ResellerCustomerDetail | null>(null);
+  /** The portal login of this customer, and whether the portal has been asked yet. */
+  readonly login = signal<AdminUser | null>(null);
+  readonly loginKnown = signal(false);
   readonly balance = signal<number | null>(null);
   readonly usage = signal<ResellerCustomerUsage | null>(null);
   readonly subscriptions = signal<ResellerCustomerSubscription[]>([]);
@@ -445,9 +473,11 @@ export class AdminCustomerDetailPage implements OnInit {
     }
     this.customer.set(customer);
 
-    // The wallet, the consumption and the subscriptions are three separate
-    // questions: one the service cannot answer leaves the rest standing.
-    const [balance, usage, subscriptions] = await Promise.allSettled([
+    // The wallet, the consumption, the subscriptions and the portal login are
+    // four separate questions: one that cannot be answered leaves the rest
+    // standing. Only the login comes from this portal; the other three are the
+    // service's to answer.
+    const [balance, usage, subscriptions, login] = await Promise.allSettled([
       firstValueFrom(this.hub.get<ResellerCustomerBalance>(`/resellers/customers/${customerId}/balance`)),
       firstValueFrom(this.hub.get<ResellerCustomerUsage>(`/resellers/customers/${customerId}/usage`)),
       firstValueFrom(
@@ -455,10 +485,15 @@ export class AdminCustomerDetailPage implements OnInit {
           `/resellers/customers/${customerId}/subscriptions`,
         ),
       ),
+      this.logins.find(customerId),
     ]);
     if (balance.status === 'fulfilled') this.balance.set(balance.value.balance);
     if (usage.status === 'fulfilled') this.usage.set(usage.value);
     if (subscriptions.status === 'fulfilled') this.subscriptions.set(subscriptions.value.data ?? []);
+    if (login.status === 'fulfilled') {
+      this.login.set(login.value);
+      this.loginKnown.set(true);
+    }
 
     this.loading.set(false);
     await this.loadTransactions();
@@ -509,12 +544,28 @@ export class AdminCustomerDetailPage implements OnInit {
    * the banner the shell then shows.
    */
   async openAsCustomer(): Promise<void> {
-    try {
-      await this.auth.impersonate(this.id());
-      await this.router.navigateByUrl('/app');
-    } catch (err) {
-      this.notify.apiError(err);
-    }
+    // The button stays readable while it is shut, so it can still be clicked;
+    // the tooltip on it has already said why nothing happens.
+    if (this.login()?.status !== 'active') return;
+    await this.logins.open(this.id());
+  }
+
+  /** Why the portal cannot be opened as this customer while the login stands as it does. */
+  blockedHint(status: UserStatus): string {
+    return status === 'disabled' ? 'errors.account_disabled' : 'errors.login_not_active';
+  }
+
+  /** Sends a customer of the service their way into this portal. */
+  async inviteLogin(): Promise<void> {
+    const user = this.customer()?.user;
+    if (!user?.email) return;
+    const login = await this.logins.invite({
+      customerId: this.id(),
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    });
+    if (login) this.login.set(login);
   }
 
   /** Books money onto the wallet or off it, once an amount and a reason are given. */

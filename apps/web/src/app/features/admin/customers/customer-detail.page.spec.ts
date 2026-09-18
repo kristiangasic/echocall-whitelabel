@@ -40,6 +40,21 @@ const CUSTOMER = {
   },
 };
 
+/** The portal login that belongs to this customer of the service. */
+const LOGIN = {
+  id: 7,
+  email: 'linked@example.com',
+  role: 'user',
+  status: 'active',
+  firstName: 'Lina',
+  lastName: 'Mayer',
+  language: 'en',
+  echocallCustomerId: 501,
+  twoFactorEnabled: false,
+  lastLoginAt: null,
+  createdAt: '2026-08-01T09:00:00.000Z',
+};
+
 const USAGE = {
   customerId: 501,
   period: { from: '2026-09-01T00:00:00.000Z', to: '2026-09-17T10:00:00.000Z' },
@@ -77,6 +92,8 @@ interface Parts {
   subscriptions?: unknown[];
   transactions?: unknown[];
   transactionTotal?: number;
+  /** The portal logins this portal holds; none of them has to be this customer's. */
+  logins?: unknown[];
 }
 
 describe('AdminCustomerDetailPage', () => {
@@ -100,8 +117,8 @@ describe('AdminCustomerDetailPage', () => {
 
   afterEach(() => http.verify());
 
-  /** Answers the customer itself, then the three calls that follow it, then
-   *  the paged transactions. The three only leave once the customer is here. */
+  /** Answers the customer itself, then the four calls that follow it, then
+   *  the paged transactions. The four only leave once the customer is here. */
   async function answerLoad(parts: Parts = {}) {
     http.expectOne('/api/admin/hub/resellers/customers/501').flush(CUSTOMER);
     await settle();
@@ -116,6 +133,7 @@ describe('AdminCustomerDetailPage', () => {
     http
       .expectOne('/api/admin/hub/resellers/customers/501/subscriptions')
       .flush({ data: parts.subscriptions ?? [SUBSCRIPTION] });
+    http.expectOne('/api/admin/users').flush({ data: parts.logins ?? [LOGIN] });
     await settle();
     return answerTransactions(parts);
   }
@@ -229,6 +247,26 @@ describe('AdminCustomerDetailPage', () => {
     expect(TestBed.inject(Router).url).toBe('/app');
   });
 
+  it('offers an invitation instead of the way in when the customer has no login', async () => {
+    const fixture = await render({ logins: [] });
+
+    expect(fixture.nativeElement.querySelector('[data-testid="open-as"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="invite-login"]')).not.toBeNull();
+  });
+
+  it('keeps the way in shut while the customer has not accepted the invitation', async () => {
+    const fixture = await render({ logins: [{ ...LOGIN, status: 'invited' }] });
+
+    const button = fixture.nativeElement.querySelector('[data-testid="open-as"]');
+    // The button stays readable and keeps its reason; it just leads nowhere.
+    expect(button.getAttribute('aria-disabled')).toBe('true');
+    expect(fixture.nativeElement.querySelector('[data-testid="invite-login"]')).toBeNull();
+
+    button.click();
+    await settle();
+    http.expectNone('/api/admin/customers/501/impersonate');
+  });
+
   it('says so when the customer is not one of ours', async () => {
     const fixture = TestBed.createComponent(AdminCustomerDetailPage);
     await fixture.whenStable();
@@ -268,9 +306,7 @@ describe('AdminCustomerDetailPage', () => {
   }
 
   function answerList(rows: unknown[]) {
-    const request = http.expectOne(
-      (req) => req.url === '/api/admin/hub/resellers/customers',
-    );
+    const request = http.expectOne((req) => req.url === '/api/admin/hub/resellers/customers');
     request.flush({
       data: rows,
       pagination: { page: 1, perPage: 100, total: rows.length },

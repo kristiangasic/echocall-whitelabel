@@ -1,12 +1,16 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { ADMIN_TEXTS, TEXTS, provideTestI18n } from '../../../testing/i18n';
 import { AdminCustomersPage } from './customers.page';
+
+@Component({ template: '' })
+class BlankPage {}
 
 const CUSTOMERS = [
   {
@@ -84,7 +88,7 @@ describe('AdminCustomersPage', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([]),
+        provideRouter([{ path: 'app', component: BlankPage }]),
         { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(dialogResult) }) } },
         { provide: MatSnackBar, useValue: { open: (message: string) => snacks.push(message) } },
       ],
@@ -186,6 +190,19 @@ describe('AdminCustomersPage', () => {
     await settle();
 
     expect(snacks).toEqual([TEXTS.errors.subscription_active]);
+  });
+
+  it('opens the portal as a customer whose login is in use', async () => {
+    const fixture = await render();
+
+    void fixture.componentInstance.openAs(fixture.componentInstance.rows()[0]);
+    await settle();
+    const started = http.expectOne('/api/admin/customers/501/impersonate');
+    expect(started.request.method).toBe('POST');
+    started.flush({ ...LOGINS[1], impersonator: { id: 3, email: 'admin@example.com' } });
+    await settle();
+
+    expect(TestBed.inject(Router).url).toBe('/app');
   });
 
   it('invites a portal login for a customer that has none', async () => {
