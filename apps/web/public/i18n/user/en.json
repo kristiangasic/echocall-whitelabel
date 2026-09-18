@@ -402,7 +402,7 @@
   "inbox": {
     "title": "Inbox",
     "empty": "No open chats.",
-    "selectHint": "Pick a chat on the left.",
+    "selectHint": "Pick a chat to read it.",
     "noMessages": "No messages yet.",
     "reply": "Reply"
   },

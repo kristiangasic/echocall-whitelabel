@@ -402,7 +402,7 @@
   "inbox": {
     "title": "Boîte de réception",
     "empty": "Aucun chat ouvert.",
-    "selectHint": "Choisissez un chat à gauche.",
+    "selectHint": "Choisissez un chat pour le lire.",
     "noMessages": "Aucun message pour l’instant.",
     "reply": "Réponse"
   },

@@ -91,41 +91,38 @@ interface DailyResponse {
         </mat-card-header>
         <mat-card-content>
           <app-bar-list [items]="dailyBars()" [emptyText]="t('user.analytics.noCalls')" />
-          <div class="table-wrap">
-            <table mat-table [dataSource]="daily()" class="daily" data-testid="analytics-daily">
-              <ng-container matColumnDef="date">
-                <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.day') }}</th>
-                <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.day')">
-                  {{ row.date }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="calls">
-                <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.calls') }}</th>
-                <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.calls')">
-                  {{ row.callCount ?? 0 }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="successRate">
-                <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.successRate') }}</th>
-                <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.successRate')">
-                  {{ percent(row.successRate) }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="duration">
-                <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.averageDuration') }}</th>
-                <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.averageDuration')">
-                  {{ seconds(row.averageDuration) }}
-                </td>
-              </ng-container>
-              <tr mat-header-row *matHeaderRowDef="dailyColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: dailyColumns"></tr>
-              <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell empty" [attr.colspan]="dailyColumns.length">
-                  {{ t('user.analytics.noCalls') }}
-                </td>
-              </tr>
-            </table>
-          </div>
+          @if (daily().length) {
+            <div class="table-wrap">
+              <table mat-table [dataSource]="daily()" class="daily" data-testid="analytics-daily">
+                <ng-container matColumnDef="date">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.day') }}</th>
+                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.day')">
+                    {{ row.date }}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="calls">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.calls') }}</th>
+                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.calls')">
+                    {{ row.callCount ?? 0 }}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="successRate">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.successRate') }}</th>
+                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.successRate')">
+                    {{ percent(row.successRate) }}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="duration">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('user.analytics.averageDuration') }}</th>
+                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.analytics.averageDuration')">
+                    {{ seconds(row.averageDuration) }}
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="dailyColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: dailyColumns"></tr>
+              </table>
+            </div>
+          }
         </mat-card-content>
       </mat-card>
 
@@ -202,9 +199,10 @@ interface DailyResponse {
       flex-wrap: wrap;
       margin-bottom: 16px;
     }
+    /* Two pickers, not two banners: a select this wide reads as a headline. */
     .pickers mat-form-field {
-      flex: 1;
-      min-width: 200px;
+      flex: 1 1 240px;
+      max-width: 320px;
     }
     /* Grid and labels are shared; the figures line up on their digits here. */
     .facts dd {

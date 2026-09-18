@@ -100,7 +100,8 @@ describe('UserDashboardPage', () => {
   it('shows the empty hint without conversations', async () => {
     const fixture = await render([]);
 
-    expect(fixture.nativeElement.querySelector('[data-testid="recent-conversations"]').textContent).toContain(
+    expect(fixture.nativeElement.querySelector('[data-testid="recent-conversations"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="recent-empty"]').textContent).toContain(
       USER_TEXTS.dashboard.recent.empty,
     );
   });

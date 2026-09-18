@@ -29,11 +29,7 @@ import { HubActivityComponent } from './hub-activity.component';
   template: `
     <ng-container *transloco="let t">
       <h1 class="page-title">{{ t('admin.audit.title') }}</h1>
-      <mat-tab-group
-        [mat-stretch-tabs]="false"
-        [selectedIndex]="tab()"
-        (selectedIndexChange)="onTab($event)"
-      >
+      <mat-tab-group [mat-stretch-tabs]="false" [selectedIndex]="tab()" (selectedIndexChange)="onTab($event)">
         <mat-tab [label]="t('admin.audit.localTab')">
           <div class="tab-body">
             <p class="intro">{{ t('admin.audit.intro') }}</p>

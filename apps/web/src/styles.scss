@@ -382,7 +382,9 @@ $status-bad: disabled suspended failed past_due no-answer busy;
 a.stat {
   color: inherit;
   text-decoration: none;
-  transition: border-color 120ms ease, background-color 120ms ease;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
 }
 
 a.stat:hover,

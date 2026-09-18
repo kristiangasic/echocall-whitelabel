@@ -38,8 +38,7 @@ function walk(dir) {
 walk(root);
 if (findings.length) {
   console.error(
-    'Dialog submit check failed, these dialogs cannot be saved from the keyboard:\n' +
-      findings.join('\n'),
+    'Dialog submit check failed, these dialogs cannot be saved from the keyboard:\n' + findings.join('\n'),
   );
   process.exit(1);
 }

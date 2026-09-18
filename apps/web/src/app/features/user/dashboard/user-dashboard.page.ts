@@ -111,8 +111,8 @@ import { conversationTitle } from '../conversations/conversation.model';
               <p class="stat-foot">
                 {{
                   t('user.dashboard.period', {
-                    from: o.usage.period.from | localDate: 'short',
-                    to: o.usage.period.to | localDate: 'short',
+                    from: o.usage.period.from | localDate: 'date',
+                    to: o.usage.period.to | localDate: 'date',
                   })
                 }}
               </p>
@@ -126,16 +126,18 @@ import { conversationTitle } from '../conversations/conversation.model';
             <mat-card-subtitle>{{ t('user.dashboard.recent.hint') }}</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
-            <mat-nav-list data-testid="recent-conversations">
-              @for (conversation of recent(); track conversation.id) {
-                <a mat-list-item [routerLink]="['/app/conversations', conversation.id]">
-                  <span matListItemTitle>{{ title(conversation) }}</span>
-                  <span matListItemLine>{{ conversation.createdAt | localDate: 'short' }}</span>
-                </a>
-              } @empty {
-                <p class="hint">{{ t('user.dashboard.recent.empty') }}</p>
-              }
-            </mat-nav-list>
+            @if (recent().length) {
+              <mat-nav-list data-testid="recent-conversations">
+                @for (conversation of recent(); track conversation.id) {
+                  <a mat-list-item [routerLink]="['/app/conversations', conversation.id]">
+                    <span matListItemTitle>{{ title(conversation) }}</span>
+                    <span matListItemLine>{{ conversation.createdAt | localDate: 'short' }}</span>
+                  </a>
+                }
+              </mat-nav-list>
+            } @else {
+              <p class="empty" data-testid="recent-empty">{{ t('user.dashboard.recent.empty') }}</p>
+            }
           </mat-card-content>
           <mat-card-actions>
             <a mat-button routerLink="/app/conversations">{{ t('user.dashboard.recent.all') }}</a>
@@ -147,11 +149,9 @@ import { conversationTitle } from '../conversations/conversation.model';
   `,
   styles: `
     .hint {
-      color: var(--mat-sys-on-surface-variant);
-    }
-    .hint {
-      font: var(--mat-sys-body-small);
       margin: 4px 0 0;
+      font: var(--mat-sys-body-small);
+      color: var(--mat-sys-on-surface-variant);
     }
     /* A plan name is words, not a figure, so it does not take the digit face. */
     .stat-value.plan {
@@ -169,8 +169,9 @@ import { conversationTitle } from '../conversations/conversation.model';
     .recent {
       margin-top: 24px;
     }
-    .recent .hint {
-      padding: 8px 16px;
+    /* The empty line stands where the list would, not under the list's indent. */
+    .recent .empty {
+      margin: 0;
     }
   `,
 })

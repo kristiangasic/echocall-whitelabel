@@ -402,7 +402,7 @@
   "inbox": {
     "title": "Posteingang",
     "empty": "Keine offenen Chats.",
-    "selectHint": "Wählen Sie links einen Chat aus.",
+    "selectHint": "Wählen Sie einen Chat aus, um ihn zu lesen.",
     "noMessages": "Noch keine Nachrichten.",
     "reply": "Antwort"
   },

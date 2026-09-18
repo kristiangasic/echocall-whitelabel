@@ -52,9 +52,7 @@ interface OpenTickets {
           the operator reads before looking any further.
         -->
         <section class="hub" [class.hub-bad]="!o.hub.ok" data-testid="hub-card">
-          <mat-icon class="hub-icon" aria-hidden="true">{{
-            o.hub.ok ? 'check_circle' : 'error'
-          }}</mat-icon>
+          <mat-icon class="hub-icon" aria-hidden="true">{{ o.hub.ok ? 'check_circle' : 'error' }}</mat-icon>
           <div class="hub-text">
             <p class="hub-title">{{ t('admin.overview.hub.title') }}</p>
             <p class="hub-status">
@@ -102,8 +100,8 @@ interface OpenTickets {
             @if (stats(); as s) {
               <span class="stat-value">{{ number(s.totalCustomers) }}</span>
               <p class="stat-foot">
-                {{ number(s.totalVoiceAgents) }} {{ t('admin.overview.customers.voiceAgents') }}
-                &middot; {{ number(s.totalChatbots) }} {{ t('admin.overview.customers.chatbots') }}
+                {{ number(s.totalVoiceAgents) }} {{ t('admin.overview.customers.voiceAgents') }} &middot;
+                {{ number(s.totalChatbots) }} {{ t('admin.overview.customers.chatbots') }}
               </p>
               <p class="stat-foot">{{ t('admin.overview.customers.usage') }}: {{ usageCost() }}</p>
             } @else {
@@ -133,8 +131,8 @@ interface OpenTickets {
             }
             @if (credits(); as c) {
               <p class="stat-foot">
-                {{ number(c.voiceMinutesAvailable) }} {{ t('admin.overview.balance.voiceMinutes') }}
-                &middot; {{ number(c.chatMessagesAvailable) }}
+                {{ number(c.voiceMinutesAvailable) }} {{ t('admin.overview.balance.voiceMinutes') }} &middot;
+                {{ number(c.chatMessagesAvailable) }}
                 {{ t('admin.overview.balance.chatMessages') }}
               </p>
             } @else {
@@ -157,9 +155,7 @@ interface OpenTickets {
         <section class="section">
           <div class="page-head">
             <h2 class="section-title">{{ t('admin.overview.users.title') }}</h2>
-            <a mat-stroked-button routerLink="/admin/users">{{
-              t('admin.overview.users.manage')
-            }}</a>
+            <a mat-stroked-button routerLink="/admin/users">{{ t('admin.overview.users.manage') }}</a>
           </div>
           <div class="stat-grid compact cols-6" data-testid="user-counts">
             <div class="stat">

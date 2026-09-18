@@ -104,7 +104,7 @@ const POLL_INTERVAL_MS = 5000;
               </form>
             </mat-card-content>
           } @else {
-            <mat-card-content>
+            <mat-card-content class="blank">
               <p class="hint">{{ t('user.inbox.selectHint') }}</p>
             </mat-card-content>
           }
@@ -113,15 +113,33 @@ const POLL_INTERVAL_MS = 5000;
     </ng-container>
   `,
   styles: `
+    /* A workplace, not a pair of notes: both halves stand the same height, and
+       that height belongs to the workplace rather than to today's traffic. */
     .inbox {
       display: grid;
       grid-template-columns: minmax(240px, 320px) 1fr;
       gap: 16px;
-      align-items: start;
+      align-items: stretch;
+      min-height: clamp(360px, 60vh, 640px);
+    }
+    .inbox > mat-card {
+      display: flex;
+      flex-direction: column;
+    }
+    .inbox > mat-card > mat-card-content {
+      flex: 1;
+    }
+    /* Nothing to read yet, so the sentence sits in the middle of the space it
+       is waiting to fill. */
+    .blank {
+      display: grid;
+      place-items: center;
+      text-align: center;
     }
     @media (max-width: 900px) {
       .inbox {
         grid-template-columns: 1fr;
+        min-height: 0;
       }
     }
     .selected {

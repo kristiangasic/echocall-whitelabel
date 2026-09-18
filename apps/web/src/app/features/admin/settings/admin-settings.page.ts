@@ -59,11 +59,7 @@ const ROUTE = '/admin/settings/registration';
   template: `
     <ng-container *transloco="let t">
       <h1 class="page-title">{{ t('admin.settings.title') }}</h1>
-      <mat-tab-group
-        [mat-stretch-tabs]="false"
-        [selectedIndex]="tab()"
-        (selectedIndexChange)="onTab($event)"
-      >
+      <mat-tab-group [mat-stretch-tabs]="false" [selectedIndex]="tab()" (selectedIndexChange)="onTab($event)">
         <mat-tab [label]="t('admin.settings.branding.tab')">
           <form [formGroup]="brandingForm" (ngSubmit)="saveBranding()" novalidate class="tab-body">
             <p class="intro">{{ t('admin.settings.branding.intro') }}</p>

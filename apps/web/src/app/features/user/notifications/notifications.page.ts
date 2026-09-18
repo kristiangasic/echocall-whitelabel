@@ -48,41 +48,53 @@ import { providePaginatorIntl } from '../../../shared/paginator-intl';
         <mat-progress-bar mode="indeterminate" />
       }
 
-      <mat-list data-testid="notifications-list">
-        @for (item of notifications(); track item.id) {
-          <mat-list-item [class.unread]="!item.isRead">
-            <mat-icon matListItemIcon>{{ item.isRead ? 'mark_email_read' : 'mail' }}</mat-icon>
-            <span matListItemTitle>{{ item.title }}</span>
-            <span matListItemLine>{{ item.message }}</span>
-            <span matListItemLine class="time">{{ item.createdAt | localDate: 'short' }}</span>
-            @if (!item.isRead) {
-              <button
-                matListItemMeta
-                mat-icon-button
-                type="button"
-                (click)="markRead(item)"
-                [attr.aria-label]="t('user.notifications.markRead')"
-                [attr.data-testid]="'notification-read-' + item.id"
-              >
-                <mat-icon>done</mat-icon>
-              </button>
-            }
-          </mat-list-item>
-        } @empty {
-          <p class="empty">{{ t('user.notifications.empty') }}</p>
-        }
-      </mat-list>
+      <div class="list-panel">
+        <mat-list data-testid="notifications-list">
+          @for (item of notifications(); track item.id) {
+            <mat-list-item [class.unread]="!item.isRead">
+              <mat-icon matListItemIcon>{{ item.isRead ? 'mark_email_read' : 'mail' }}</mat-icon>
+              <span matListItemTitle>{{ item.title }}</span>
+              <span matListItemLine>{{ item.message }}</span>
+              <span matListItemLine class="time">{{ item.createdAt | localDate: 'short' }}</span>
+              @if (!item.isRead) {
+                <button
+                  matListItemMeta
+                  mat-icon-button
+                  type="button"
+                  (click)="markRead(item)"
+                  [attr.aria-label]="t('user.notifications.markRead')"
+                  [attr.data-testid]="'notification-read-' + item.id"
+                >
+                  <mat-icon>done</mat-icon>
+                </button>
+              }
+            </mat-list-item>
+          } @empty {
+            <p class="empty">{{ t('user.notifications.empty') }}</p>
+          }
+        </mat-list>
+      </div>
 
-      <mat-paginator
-        [length]="total()"
-        [pageSize]="perPage()"
-        [pageIndex]="page() - 1"
-        [pageSizeOptions]="[25, 50]"
-        (page)="changePage($event)"
-      />
+      @if (total() > perPage()) {
+        <mat-paginator
+          [length]="total()"
+          [pageSize]="perPage()"
+          [pageIndex]="page() - 1"
+          [pageSizeOptions]="[25, 50]"
+          (page)="changePage($event)"
+        />
+      }
     </ng-container>
   `,
   styles: `
+    /* The list is a body of content like a table is, so it carries the same
+       frame instead of floating on the page background. */
+    .list-panel {
+      border: 1px solid var(--mat-sys-outline-variant);
+      border-radius: 16px;
+      background: var(--mat-sys-surface);
+      overflow: hidden;
+    }
     .unread {
       background: var(--mat-sys-surface-container-low);
     }
@@ -90,8 +102,9 @@ import { providePaginatorIntl } from '../../../shared/paginator-intl';
       color: var(--mat-sys-on-surface-variant);
     }
     .empty {
+      margin: 0;
+      padding: 24px;
       color: var(--mat-sys-on-surface-variant);
-      padding: 16px;
     }
   `,
 })

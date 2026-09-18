@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, type OnInit, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
@@ -19,6 +20,7 @@ import { providePaginatorIntl } from '../../../shared/paginator-intl';
   imports: [
     DatePipe,
     MatTableModule,
+    MatButtonModule,
     MatButtonToggleModule,
     MatIconModule,
     MatPaginatorModule,
