@@ -748,8 +748,8 @@ td a.row-link {
   background:
     linear-gradient(var(--mat-sys-surface) 30%, rgb(0 0 0 / 0)) top / 100% 20px no-repeat local,
     linear-gradient(rgb(0 0 0 / 0), var(--mat-sys-surface) 70%) bottom / 100% 20px no-repeat local,
-    radial-gradient(farthest-side at 50% 0, rgb(0 0 0 / 12%), rgb(0 0 0 / 0)) top / 100% 8px no-repeat,
-    radial-gradient(farthest-side at 50% 100%, rgb(0 0 0 / 12%), rgb(0 0 0 / 0)) bottom / 100% 8px no-repeat;
+    radial-gradient(farthest-side at 50% 0, rgb(0 0 0 / 18%), rgb(0 0 0 / 0)) top / 100% 12px no-repeat,
+    radial-gradient(farthest-side at 50% 100%, rgb(0 0 0 / 18%), rgb(0 0 0 / 0)) bottom / 100% 12px no-repeat;
 }
 
 // A question is not a form. The box that only asks one stops where the
