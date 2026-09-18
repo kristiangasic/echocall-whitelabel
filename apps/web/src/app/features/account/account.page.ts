@@ -54,15 +54,17 @@ import { TwoFactorPanel } from './two-factor.panel';
                       <mat-label>{{ t('fields.lastName') }}</mat-label>
                       <input matInput formControlName="lastName" autocomplete="family-name" />
                     </mat-form-field>
+                    <!-- A choice of three words, which needs no more room than
+                         the name above it. -->
+                    <mat-form-field appearance="outline">
+                      <mat-label>{{ t('fields.language') }}</mat-label>
+                      <mat-select formControlName="language">
+                        @for (lang of languages; track lang) {
+                          <mat-option [value]="lang">{{ t('languages.' + lang) }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
                   </div>
-                  <mat-form-field appearance="outline" class="full">
-                    <mat-label>{{ t('fields.language') }}</mat-label>
-                    <mat-select formControlName="language">
-                      @for (lang of languages; track lang) {
-                        <mat-option [value]="lang">{{ t('languages.' + lang) }}</mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
                   <div class="form-actions">
                     <button mat-flat-button type="submit" [disabled]="savingProfile()">
                       {{ t('actions.save') }}

@@ -576,7 +576,9 @@ a.stat:focus-visible {
 // room a row would have taken, and a single value a row does not have, which is
 // only a dash and takes none. Only the first of the two is this rule's business.
 td.empty {
-  padding: 24px 16px;
+  // A sentence standing in for a whole list gets the room the list would have
+  // taken, the way the card that says the same thing does.
+  padding: 40px 16px;
   text-align: center;
 }
 
@@ -588,7 +590,7 @@ td.empty {
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 12px;
   background: var(--mat-sys-surface);
-  padding: 16px;
+  padding: 40px 16px;
   margin: 0;
   text-align: center;
 }

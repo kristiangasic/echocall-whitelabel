@@ -188,8 +188,10 @@ type CompanyField = (typeof COMPANY_FIELDS)[number];
       align-items: flex-start;
       flex-wrap: wrap;
     }
+    /* One column wide, like every other field on this tab, rather than the
+       whole width of the panel because it happens to stand on its own. */
     .logo-row .full {
-      flex: 1;
+      flex: 0 1 calc(50% - 8px);
       min-width: 240px;
     }
     .logo-row button {

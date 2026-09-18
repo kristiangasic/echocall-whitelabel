@@ -123,35 +123,41 @@ const ROUTE = '/admin/settings/registration';
                   </mat-form-field>
                 </div>
 
-                <mat-form-field appearance="outline" class="full">
-                  <mat-label>{{ t('admin.settings.branding.supportEmail') }}</mat-label>
-                  <input matInput type="email" formControlName="supportEmail" />
-                  @if (brandingForm.controls.supportEmail | fieldError; as e) {
-                    <mat-error>{{ t(e.key, e.params) }}</mat-error>
-                  }
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="full">
-                  <mat-label>{{ t('admin.settings.branding.imprintUrl') }}</mat-label>
-                  <input matInput type="url" formControlName="imprintUrl" placeholder="https://" />
-                  @if (brandingForm.controls.imprintUrl | fieldError; as e) {
-                    <mat-error>{{ t(e.key, e.params) }}</mat-error>
-                  }
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="full">
-                  <mat-label>{{ t('admin.settings.branding.privacyUrl') }}</mat-label>
-                  <input matInput type="url" formControlName="privacyUrl" placeholder="https://" />
-                  @if (brandingForm.controls.privacyUrl | fieldError; as e) {
-                    <mat-error>{{ t(e.key, e.params) }}</mat-error>
-                  }
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="full">
-                  <mat-label>{{ t('admin.settings.branding.defaultLanguage') }}</mat-label>
-                  <mat-select formControlName="defaultLanguage">
-                    @for (lang of languages; track lang) {
-                      <mat-option [value]="lang">{{ t('languages.' + lang) }}</mat-option>
+                <!-- Who to write to, and which language the portal opens in. -->
+                <div class="row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ t('admin.settings.branding.supportEmail') }}</mat-label>
+                    <input matInput type="email" formControlName="supportEmail" />
+                    @if (brandingForm.controls.supportEmail | fieldError; as e) {
+                      <mat-error>{{ t(e.key, e.params) }}</mat-error>
                     }
-                  </mat-select>
-                </mat-form-field>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ t('admin.settings.branding.defaultLanguage') }}</mat-label>
+                    <mat-select formControlName="defaultLanguage">
+                      @for (lang of languages; track lang) {
+                        <mat-option [value]="lang">{{ t('languages.' + lang) }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <!-- The two pages the footer has to link to, side by side. -->
+                <div class="row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ t('admin.settings.branding.imprintUrl') }}</mat-label>
+                    <input matInput type="url" formControlName="imprintUrl" placeholder="https://" />
+                    @if (brandingForm.controls.imprintUrl | fieldError; as e) {
+                      <mat-error>{{ t(e.key, e.params) }}</mat-error>
+                    }
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ t('admin.settings.branding.privacyUrl') }}</mat-label>
+                    <input matInput type="url" formControlName="privacyUrl" placeholder="https://" />
+                    @if (brandingForm.controls.privacyUrl | fieldError; as e) {
+                      <mat-error>{{ t(e.key, e.params) }}</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
                 <div class="form-actions">
                   <button
                     mat-flat-button
