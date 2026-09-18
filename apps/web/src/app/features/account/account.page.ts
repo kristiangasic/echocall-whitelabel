@@ -45,7 +45,7 @@ import { TwoFactorPanel } from './two-factor.panel';
               </mat-card-header>
               <mat-card-content>
                 <form [formGroup]="profile" (ngSubmit)="saveProfile()" novalidate>
-                  <div class="row">
+                  <div class="row cols-3">
                     <mat-form-field appearance="outline">
                       <mat-label>{{ t('fields.firstName') }}</mat-label>
                       <input matInput formControlName="firstName" autocomplete="given-name" />
@@ -55,7 +55,8 @@ import { TwoFactorPanel } from './two-factor.panel';
                       <input matInput formControlName="lastName" autocomplete="family-name" />
                     </mat-form-field>
                     <!-- A choice of three words, which needs no more room than
-                         the name above it. -->
+                         a name, so it takes the third column of the row rather
+                         than a row of its own. -->
                     <mat-form-field appearance="outline">
                       <mat-label>{{ t('fields.language') }}</mat-label>
                       <mat-select formControlName="language">

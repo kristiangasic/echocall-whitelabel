@@ -51,8 +51,15 @@ body {
   gap: 0 16px;
 }
 
+// Three short fields that belong to one another: two columns would leave the
+// third alone on a row of its own, which reads as an afterthought.
+.row.cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 @media (max-width: 600px) {
-  .row {
+  .row,
+  .row.cols-3 {
     grid-template-columns: 1fr;
   }
 }
@@ -532,19 +539,16 @@ a.stat:focus-visible {
   width: 100%;
 }
 
-// A row of switches. Each one is a sentence, so on a phone they stand one per
-// line rather than wrapping into a ragged two-and-one.
+// A column of switches. Each one is a sentence of its own length, so letting
+// them wrap put three on one line and the fourth alone under them at some
+// widths and four in a row at others, with the break moving as the language
+// changed. One per line reads as the list it is and holds at every width.
 .toggles {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
   padding: 8px 0;
-}
-
-@media (max-width: 599px) {
-  .toggles {
-    flex-direction: column;
-  }
 }
 
 // A field that sizes its own subscript is one whose hint is too long for the
