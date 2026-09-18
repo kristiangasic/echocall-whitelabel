@@ -204,7 +204,10 @@ const SYSTEM_TOOLS = [
               <input matInput formControlName="asrKeywords" />
               <mat-hint>{{ t('user.agents.asrKeywordsHint') }}</mat-hint>
             </mat-form-field>
-            <div class="slider-field span-all">
+            <!-- A dial from 0 to 100 keeps the width of the two dials in the
+                 voice card above; run across both columns it reads as a
+                 progress bar rather than something to set. -->
+            <div class="slider-field">
               <span class="slider-label"
                 >{{ t('user.agents.temperature') }}: {{ form.controls.temperature.value }}</span
               >

@@ -739,6 +739,19 @@ td a.row-link {
   max-width: min(94vw, 880px);
 }
 
+// A form taller than the dialog scrolls inside it, and a field cut in half at
+// the lower edge reads as the end of the form rather than the middle of it.
+// Two covers in the dialog's own colour ride with the content while two
+// shadows stay put behind them, so a shadow appears exactly where there is
+// more to see and nowhere else, without the page having to measure anything.
+.mat-mdc-dialog-content {
+  background:
+    linear-gradient(var(--mat-sys-surface) 30%, rgb(0 0 0 / 0)) top / 100% 20px no-repeat local,
+    linear-gradient(rgb(0 0 0 / 0), var(--mat-sys-surface) 70%) bottom / 100% 20px no-repeat local,
+    radial-gradient(farthest-side at 50% 0, rgb(0 0 0 / 12%), rgb(0 0 0 / 0)) top / 100% 8px no-repeat,
+    radial-gradient(farthest-side at 50% 100%, rgb(0 0 0 / 12%), rgb(0 0 0 / 0)) bottom / 100% 8px no-repeat;
+}
+
 // A question is not a form. The box that only asks one stops where the
 // sentence does, so that "delete this customer" does not arrive looking like
 // the dialog that creates one.
