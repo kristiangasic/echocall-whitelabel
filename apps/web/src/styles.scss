@@ -375,9 +375,11 @@ $status-bad: disabled suspended failed past_due no-answer busy;
   }
 }
 
-// One figure. Label, value, and an optional line underneath that explains it;
-// the explanation is pushed to the bottom edge so the figures of a row keep
-// one baseline whether or not their neighbour carries one.
+// One figure. Label, value, and an optional line underneath that explains it.
+// The explanation stays with the figure it explains: pushing it to the bottom
+// edge lines the feet of a row up with one another, but a tile whose neighbour
+// carries three such lines then opens a hand's width of nothing between its own
+// figure and the word for it, which is the pair a reader needs to see together.
 .stat {
   display: flex;
   flex-direction: column;
@@ -403,13 +405,12 @@ $status-bad: disabled suspended failed past_due no-answer busy;
 
 .stat-foot {
   margin: 8px 0 0;
-  margin-top: auto;
   font: var(--mat-sys-body-small);
   color: var(--mat-sys-on-surface-variant);
 }
 
-// Only the first note is pushed to the bottom; the rest stack under it,
-// otherwise the free space is shared out and the notes drift apart.
+// Further notes belong to the first one, not to the figure, so they follow it
+// closely rather than repeating the gap that set the first one off.
 .stat-foot ~ .stat-foot {
   margin-top: 2px;
 }
