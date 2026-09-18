@@ -74,6 +74,12 @@ body {
   .section-title {
     margin: 0;
   }
+
+  // Inside the head the title carries no bottom margin, so the sentence under
+  // it sets its own distance instead of being pulled up onto the title.
+  .page-hint {
+    margin: 4px 0 0;
+  }
 }
 
 .auth-title {
@@ -473,6 +479,18 @@ a.stat:focus-visible {
 // What a page says when it has nothing to show yet.
 .empty {
   color: var(--mat-sys-on-surface-variant);
+}
+
+// A link in a table is a row that opens, so it takes the accent colour and
+// underlines only when it is the target of the pointer or the keyboard.
+td a {
+  color: var(--mat-sys-primary);
+  text-decoration: none;
+}
+
+td a:hover,
+td a:focus-visible {
+  text-decoration: underline;
 }
 
 // ---------------------------------------------------------------------------
