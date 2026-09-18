@@ -50,7 +50,7 @@ const CUSTOMER_PAGE = 500;
           @if (loading()) {
             <mat-progress-bar mode="indeterminate" />
           }
-          <mat-form-field appearance="outline" class="full">
+          <mat-form-field appearance="outline" class="full" subscriptSizing="dynamic">
             <mat-label>{{ t('admin.subscriptions.customer') }}</mat-label>
             <mat-select formControlName="customerId" data-testid="customer">
               @for (customer of customers(); track customer.id) {

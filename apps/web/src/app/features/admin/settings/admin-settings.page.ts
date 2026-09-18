@@ -229,7 +229,7 @@ const ROUTE = '/admin/settings/registration';
                   <mat-label>{{ t('admin.settings.mail.user') }}</mat-label>
                   <input matInput formControlName="user" autocomplete="off" />
                 </mat-form-field>
-                <mat-form-field appearance="outline">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
                   <mat-label>{{ t('admin.settings.mail.pass') }}</mat-label>
                   <input matInput type="password" formControlName="pass" autocomplete="new-password" />
                   @if (smtp()?.hasPassword) {

@@ -85,7 +85,7 @@ export type UserDialogResult = { mode: 'invite'; result: InviteResult } | { mode
             </mat-form-field>
           </div>
           @if (form.controls.role.value === 'user') {
-            <mat-form-field appearance="outline" class="full">
+            <mat-form-field appearance="outline" class="full" subscriptSizing="dynamic">
               <mat-label>{{ t('fields.customerId') }}</mat-label>
               <input
                 matInput

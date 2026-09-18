@@ -136,7 +136,7 @@ export interface IntegrationDialogData {
                 ></textarea>
               </mat-form-field>
             } @else {
-              <mat-form-field appearance="outline">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
                 <mat-label>{{ field.label }}</mat-label>
                 <input
                   matInput

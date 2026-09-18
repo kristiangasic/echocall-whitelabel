@@ -59,7 +59,7 @@ export interface ImportNumberResult {
         <mat-dialog-content>
           <p class="hint">{{ t('admin.numbers.importDialog.intro') }}</p>
           <div class="row">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
               <mat-label>{{ t('admin.numbers.importDialog.number') }}</mat-label>
               <input matInput formControlName="phoneNumber" data-testid="number" />
               @if (form.controls.phoneNumber | fieldError; as e) {
@@ -98,7 +98,7 @@ export interface ImportNumberResult {
 
           @if (form.controls.provider.value === 'sip_trunk') {
             <h3 class="section">{{ t('admin.numbers.importDialog.sip.title') }}</h3>
-            <mat-form-field appearance="outline" class="full">
+            <mat-form-field appearance="outline" class="full" subscriptSizing="dynamic">
               <mat-label>{{ t('admin.numbers.importDialog.sip.address') }}</mat-label>
               <input matInput formControlName="address" data-testid="address" />
               <mat-hint>{{ t('admin.numbers.importDialog.sip.addressHint') }}</mat-hint>
@@ -143,7 +143,7 @@ export interface ImportNumberResult {
                 <input matInput type="password" formControlName="inboundPassword" autocomplete="off" />
               </mat-form-field>
             </div>
-            <mat-form-field appearance="outline" class="full">
+            <mat-form-field appearance="outline" class="full" subscriptSizing="dynamic">
               <mat-label>{{ t('admin.numbers.importDialog.sip.allowedAddresses') }}</mat-label>
               <input matInput formControlName="allowedAddresses" />
               <mat-hint>{{ t('admin.numbers.importDialog.sip.allowedAddressesHint') }}</mat-hint>

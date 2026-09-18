@@ -51,7 +51,7 @@ export interface CampaignDialogResult {
             />
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>{{ t('user.campaigns.agent') }}</mat-label>
             <mat-select
               name="agent"
@@ -69,7 +69,7 @@ export interface CampaignDialogResult {
             }
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>{{ t('user.campaigns.recipients') }}</mat-label>
             <textarea
               matInput

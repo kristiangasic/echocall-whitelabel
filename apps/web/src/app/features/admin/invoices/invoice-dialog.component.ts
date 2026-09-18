@@ -183,8 +183,10 @@ function cents(value: number): number {
       flex-wrap: wrap;
       gap: 12px;
     }
+    /* A date field has to hold dd.mm.yyyy: below this it clips its own
+       placeholder, so the row breaks rather than squeezing. */
     .row mat-form-field {
-      flex: 1 1 160px;
+      flex: 1 1 200px;
     }
     .section {
       font: var(--mat-sys-title-small);

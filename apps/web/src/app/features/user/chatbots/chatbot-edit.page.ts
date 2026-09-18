@@ -103,7 +103,7 @@ const STYLES = ['standard', 'rounded', 'compact'];
               <mat-label>{{ t('user.chatbots.greeting') }}</mat-label>
               <textarea matInput formControlName="greeting" rows="2"></textarea>
             </mat-form-field>
-            <mat-form-field appearance="outline" class="span-all">
+            <mat-form-field appearance="outline" class="span-all" subscriptSizing="dynamic">
               <mat-label>{{ t('user.chatbots.systemPrompt') }}</mat-label>
               <textarea
                 matInput
@@ -167,7 +167,7 @@ const STYLES = ['standard', 'rounded', 'compact'];
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field appearance="outline" class="span-all">
+            <mat-form-field appearance="outline" class="span-all" subscriptSizing="dynamic">
               <mat-label>{{ t('user.chatbots.teaserMessage') }}</mat-label>
               <input matInput formControlName="teaserMessage" />
               <mat-hint>{{ t('user.chatbots.teaserHint') }}</mat-hint>
@@ -201,7 +201,7 @@ const STYLES = ['standard', 'rounded', 'compact'];
             <mat-card-title>{{ t('user.chatbots.sections.domains') }}</mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <mat-form-field appearance="outline" class="full">
+            <mat-form-field appearance="outline" class="full" subscriptSizing="dynamic">
               <mat-label>{{ t('user.chatbots.allowedDomains') }}</mat-label>
               <input matInput formControlName="allowedDomains" data-testid="chatbot-domains" />
               <mat-hint>{{ t('user.chatbots.allowedDomainsHint') }}</mat-hint>
@@ -214,7 +214,7 @@ const STYLES = ['standard', 'rounded', 'compact'];
             <mat-card-title>{{ t('user.chatbots.sections.privacy') }}</mat-card-title>
           </mat-card-header>
           <mat-card-content class="grid">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
               <mat-label>{{ t('user.chatbots.retentionDays') }}</mat-label>
               <input matInput type="number" formControlName="retentionDays" min="-1" />
               <mat-hint>{{ t('user.chatbots.retentionDaysHint') }}</mat-hint>

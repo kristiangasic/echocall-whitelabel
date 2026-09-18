@@ -88,7 +88,7 @@ const SYSTEM_TOOLS = [
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
               <mat-label>{{ t('user.agents.supportedLanguages') }}</mat-label>
               <mat-select formControlName="supportedLanguages" multiple>
                 @for (lang of languages(); track lang.code) {
@@ -139,7 +139,7 @@ const SYSTEM_TOOLS = [
               <mat-label>{{ t('user.agents.firstMessage') }}</mat-label>
               <textarea matInput formControlName="firstMessage" rows="2"></textarea>
             </mat-form-field>
-            <mat-form-field appearance="outline" class="span-all">
+            <mat-form-field appearance="outline" class="span-all" subscriptSizing="dynamic">
               <mat-label>{{ t('user.agents.systemPrompt') }}</mat-label>
               <textarea
                 matInput
@@ -207,7 +207,7 @@ const SYSTEM_TOOLS = [
                 <input matSliderThumb formControlName="temperature" />
               </mat-slider>
             </div>
-            <mat-form-field appearance="outline" class="span-all">
+            <mat-form-field appearance="outline" class="span-all" subscriptSizing="dynamic">
               <mat-label>{{ t('user.agents.asrKeywords') }}</mat-label>
               <input matInput formControlName="asrKeywords" />
               <mat-hint>{{ t('user.agents.asrKeywordsHint') }}</mat-hint>
@@ -234,7 +234,7 @@ const SYSTEM_TOOLS = [
             <mat-card-title>{{ t('user.agents.sections.privacy') }}</mat-card-title>
           </mat-card-header>
           <mat-card-content class="grid">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
               <mat-label>{{ t('user.agents.retentionDays') }}</mat-label>
               <input matInput type="number" formControlName="retentionDays" min="-1" />
               <mat-hint>{{ t('user.agents.retentionDaysHint') }}</mat-hint>

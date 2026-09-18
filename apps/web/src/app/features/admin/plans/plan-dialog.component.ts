@@ -94,7 +94,7 @@ const CYCLES = ['monthly', 'yearly', 'one-time'] as const;
               <mat-error>{{ t(e.key, e.params) }}</mat-error>
             }
           </mat-form-field>
-          <div class="row">
+          <div class="row limits">
             <mat-form-field appearance="outline">
               <mat-label>{{ t('admin.plans.dialog.voiceMinutes') }}</mat-label>
               <input matInput inputmode="numeric" formControlName="voiceMinutes" data-testid="plan-voice" />
@@ -121,7 +121,7 @@ const CYCLES = ['monthly', 'yearly', 'one-time'] as const;
               {{ t('admin.plans.dialog.addonHint') }}
             }
           </p>
-          <mat-form-field appearance="outline" class="full">
+          <mat-form-field appearance="outline" class="full" subscriptSizing="dynamic">
             <mat-label>{{ t('admin.plans.dialog.features') }}</mat-label>
             <textarea matInput rows="4" formControlName="features" data-testid="plan-features"></textarea>
             <mat-hint>{{ t('admin.plans.dialog.featuresHint') }}</mat-hint>
@@ -154,6 +154,11 @@ const CYCLES = ['monthly', 'yearly', 'one-time'] as const;
     .hint {
       margin: 0 0 16px;
       color: var(--mat-sys-on-surface-variant);
+    }
+    /* These two carry the longest labels in the dialog, and half a row cuts
+       them off in every language. They take the whole width instead. */
+    .limits {
+      grid-template-columns: 1fr;
     }
     .toggles {
       display: flex;
