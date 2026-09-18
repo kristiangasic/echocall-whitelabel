@@ -465,6 +465,15 @@ a.stat:focus-visible {
   max-width: 220px;
 }
 
+// A field that sizes its own subscript is one whose hint is too long for the
+// single line Material reserves. Letting the hint grow also hands that line
+// back, so a two-line hint ends flush against the next field. The gap the
+// reserved line used to provide is restored here instead.
+.mat-mdc-form-field-subscript-dynamic-size .mat-mdc-form-field-hint-wrapper,
+.mat-mdc-form-field-subscript-dynamic-size .mat-mdc-form-field-error-wrapper {
+  padding-bottom: 8px;
+}
+
 .form-actions {
   display: flex;
   flex-wrap: wrap;
