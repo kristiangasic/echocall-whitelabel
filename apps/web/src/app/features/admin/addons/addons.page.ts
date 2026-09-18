@@ -94,7 +94,7 @@ const PURCHASE_LIMIT = 50;
       </div>
 
       <h2 class="section-title">{{ t('admin.addons.packages.title') }}</h2>
-      <p class="page-hint">{{ t('admin.addons.packages.intro') }}</p>
+      <p class="section-hint">{{ t('admin.addons.packages.intro') }}</p>
       <div class="table-wrap">
         <table mat-table [dataSource]="packages()" data-testid="packages-table">
           <ng-container matColumnDef="name">
@@ -143,7 +143,7 @@ const PURCHASE_LIMIT = 50;
       </div>
 
       <h2 class="section-title">{{ t('admin.addons.purchases.title') }}</h2>
-      <p class="page-hint">{{ t('admin.addons.purchases.intro', { count: limit }) }}</p>
+      <p class="section-hint">{{ t('admin.addons.purchases.intro', { count: limit }) }}</p>
       <div class="table-wrap">
         <table mat-table [dataSource]="purchases()" data-testid="purchases-table">
           <ng-container matColumnDef="customer">
