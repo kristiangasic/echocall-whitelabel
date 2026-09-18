@@ -106,13 +106,29 @@
     "login": {
       "title": "Sign in",
       "submit": "Sign in",
-      "forgot": "Forgot your password?"
+      "forgot": "Forgot your password?",
+      "linkTab": "E-mail me a link",
+      "passwordTab": "Use my password",
+      "noAccount": "No account yet?",
+      "register": "Create one"
     },
     "forgot": {
       "title": "Reset your password",
       "intro": "Enter your e-mail address. If an account exists, you will receive a reset link.",
       "submit": "Request link",
       "done": "If an account exists for this address, a link is on its way.",
+      "toLogin": "Back to sign-in"
+    },
+    "link": {
+      "title": "Sign in without a password",
+      "intro": "Enter your e-mail address. If an account exists, a sign-in link is on its way.",
+      "submit": "Send the link",
+      "done": "Check your inbox. The link works once and is valid for 15 minutes."
+    },
+    "signIn": {
+      "title": "Signing you in",
+      "working": "One moment, your link is being checked.",
+      "invalid": "This link is invalid, spent or expired. Ask for a new one.",
       "toLogin": "Back to sign-in"
     },
     "reset": {
@@ -125,7 +141,18 @@
       "title": "Accept your invitation",
       "intro": "Choose a password to activate your account.",
       "submit": "Activate account",
-      "invalid": "This invitation is invalid or has expired. Ask for a new invitation."
+      "invalid": "This invitation is invalid or has expired. Ask for a new invitation.",
+      "introNoPassword": "Tell us your name to activate your account. You sign in with a link we e-mail you, so there is no password to remember.",
+      "passwordOptional": "Password (optional)",
+      "passwordOptionalHint": "At least 10 characters. Leave both fields empty to sign in with a link instead."
+    },
+    "register": {
+      "title": "Create your account",
+      "intro": "Tell us where to reach you. Everything else you can add later.",
+      "submit": "Create account",
+      "done": "Almost there. Open the e-mail we sent you to finish your account.",
+      "closed": "This portal does not take sign-ups at the moment.",
+      "toLogin": "Already have an account? Sign in"
     },
     "passwordHint": "At least 10 characters",
     "twoFactor": {
@@ -251,6 +278,10 @@
     "invalid_code": "That code is not correct. Please try again.",
     "invalid_challenge": "The sign-in has expired. Please sign in again.",
     "two_factor_already_enabled": "This account already has a second factor.",
-    "invalid_password": "That password is not correct."
+    "invalid_password": "That password is not correct.",
+    "registration_closed": "This portal does not take sign-ups.",
+    "sign_in_links_disabled": "This portal signs in with a password.",
+    "password_required": "This invitation needs a password.",
+    "smtp_required": "Set up a mail server first. Without one the portal cannot send the links."
   }
 }

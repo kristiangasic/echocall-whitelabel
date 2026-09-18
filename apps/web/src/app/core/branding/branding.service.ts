@@ -1,7 +1,7 @@
 import { DOCUMENT, inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../api/api.service';
-import type { Branding } from '../models';
+import type { Branding, PublicSettings, Registration } from '../models';
 import { brandTheme } from './color';
 
 export const DEFAULT_BRANDING: Branding = {
@@ -14,6 +14,12 @@ export const DEFAULT_BRANDING: Branding = {
   defaultLanguage: 'en',
 };
 
+/** Both ways in stay closed until the portal says otherwise. */
+export const DEFAULT_REGISTRATION: Registration = {
+  selfServiceEnabled: false,
+  signInLinksEnabled: false,
+};
+
 /** Loads the operator's branding once and applies it to the document: title, theme colours and favicon. */
 @Injectable({ providedIn: 'root' })
 export class BrandingService {
@@ -21,11 +27,17 @@ export class BrandingService {
   private readonly document = inject(DOCUMENT);
 
   readonly branding = signal<Branding>(DEFAULT_BRANDING);
+  /** Read by the sign-in page to decide which ways in it offers. */
+  readonly registration = signal<Registration>(DEFAULT_REGISTRATION);
   readonly loaded = signal(false);
 
   async load(): Promise<Branding> {
     try {
-      this.branding.set(await firstValueFrom(this.api.get<Branding>('/settings/public')));
+      const { registration, ...branding } = await firstValueFrom(
+        this.api.get<PublicSettings>('/settings/public'),
+      );
+      this.branding.set(branding);
+      this.registration.set(registration);
     } catch {
       // The defaults stay until the server answers; the page still renders.
     } finally {
@@ -33,6 +45,11 @@ export class BrandingService {
     }
     this.apply();
     return this.branding();
+  }
+
+  /** Used after an administrator changed the switches, so the sign-in page follows at once. */
+  setRegistration(registration: Registration): void {
+    this.registration.set(registration);
   }
 
   /** Used after an administrator saved new branding, so the change shows without a reload. */

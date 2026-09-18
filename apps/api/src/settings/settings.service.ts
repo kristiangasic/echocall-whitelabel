@@ -3,6 +3,7 @@ import { APP_CONFIG, type AppConfig } from '../config/env.js';
 import { DB, DB_DIALECT } from '../db/db.service.js';
 import type { Db, DbDialect } from '../db/dialect.js';
 import { type Branding, DEFAULT_BRANDING } from './branding.js';
+import { DEFAULT_REGISTRATION, type RegistrationSettings } from './registration.js';
 import { decryptSecret, encryptSecret } from './crypto.js';
 
 export interface SmtpSettings {
@@ -24,7 +25,7 @@ interface StoredSmtp {
   from: string;
 }
 
-const KEYS = { branding: 'branding', smtp: 'smtp' } as const;
+const KEYS = { branding: 'branding', smtp: 'smtp', registration: 'registration' } as const;
 
 /** Key-value settings in the database; secrets are encrypted with APP_SECRET before they are stored. */
 @Injectable()
@@ -45,6 +46,16 @@ export class SettingsService {
 
   setBranding(branding: Branding): Promise<void> {
     return this.write(KEYS.branding, branding);
+  }
+
+  /** Stored flags on top of the defaults, so a portal that predates them stays closed. */
+  async getRegistration(): Promise<RegistrationSettings> {
+    const stored = await this.read<Partial<RegistrationSettings>>(KEYS.registration);
+    return { ...DEFAULT_REGISTRATION, ...stored };
+  }
+
+  setRegistration(registration: RegistrationSettings): Promise<void> {
+    return this.write(KEYS.registration, registration);
   }
 
   async getSmtp(): Promise<SmtpSettings | null> {

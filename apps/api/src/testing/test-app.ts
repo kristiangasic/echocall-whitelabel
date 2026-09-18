@@ -24,7 +24,11 @@ export function testConfig(overrides: Record<string, string> = {}): AppConfig {
   });
 }
 
-export type CapturedMail = { kind: 'invite' | 'password_reset'; to: MailRecipient; link: string };
+export type CapturedMail = {
+  kind: 'invite' | 'password_reset' | 'sign_in_link' | 'registration';
+  to: MailRecipient;
+  link: string;
+};
 
 /** Stands in for MAIL_SENDER in specs that only need to know what would have been sent. */
 export class CapturingMailSender implements MailSender {
@@ -37,6 +41,16 @@ export class CapturingMailSender implements MailSender {
 
   async sendPasswordReset(to: MailRecipient, link: string): Promise<boolean> {
     this.sent.push({ kind: 'password_reset', to, link });
+    return true;
+  }
+
+  async sendSignInLink(to: MailRecipient, link: string): Promise<boolean> {
+    this.sent.push({ kind: 'sign_in_link', to, link });
+    return true;
+  }
+
+  async sendRegistration(to: MailRecipient, link: string): Promise<boolean> {
+    this.sent.push({ kind: 'registration', to, link });
     return true;
   }
 }

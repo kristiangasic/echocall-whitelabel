@@ -40,6 +40,25 @@ export class AuthStore {
     return { kind: 'session', user: body };
   }
 
+  /**
+   * Asks the portal to mail a one-time sign-in link. It answers the same way
+   * for an address it knows and one it does not, so nothing here says whether
+   * an account exists.
+   */
+  async requestSignInLink(email: string): Promise<void> {
+    await firstValueFrom(this.api.post<void>('/auth/sign-in-link', { email }));
+  }
+
+  /** Spends the token from a mailed link. A second factor still applies. */
+  async consumeSignInLink(token: string): Promise<LoginResult> {
+    const body = await firstValueFrom(
+      this.api.post<SessionUser | TwoFactorChallenge>('/auth/sign-in-link/consume', { token }),
+    );
+    if ('challenge' in body) return { kind: 'challenge', challenge: body };
+    this.user.set(body);
+    return { kind: 'session', user: body };
+  }
+
   /** The second step: the code from the app, or one of the recovery codes. */
   async verifyTwoFactor(challenge: string, code: string): Promise<SessionUser> {
     const user = await firstValueFrom(this.api.post<SessionUser>('/auth/2fa/verify', { challenge, code }));

@@ -4,6 +4,7 @@ import { AuthModule } from '../auth/auth.module.js';
 import { createTestApp, type TestApp } from '../testing/test-app.js';
 import { type SignedInUser, signInAs } from '../testing/users.js';
 import { DEFAULT_BRANDING } from './branding.js';
+import { DEFAULT_REGISTRATION } from './registration.js';
 import { SettingsModule } from './settings.module.js';
 import { SettingsService } from './settings.service.js';
 
@@ -30,7 +31,8 @@ describe('SettingsController', () => {
   it('serves the public branding to anyone and the admin routes to administrators only', async () => {
     const pub = await api().get('/api/settings/public');
     expect(pub.status).toBe(200);
-    expect(pub.body).toEqual(DEFAULT_BRANDING);
+    // The sign-in page draws itself from this one answer: the look and the ways in.
+    expect(pub.body).toEqual({ ...DEFAULT_BRANDING, registration: DEFAULT_REGISTRATION });
 
     expect((await api().get('/api/admin/settings/branding')).status).toBe(401);
     expect((await api().get('/api/admin/settings/branding').set('Cookie', user.cookie)).status).toBe(403);
@@ -223,5 +225,68 @@ describe('SettingsController', () => {
       .send({ to: 'me@acme.example' });
     expect(test.status).toBe(409);
     expect(test.body.error.code).toBe('mail_not_configured');
+  });
+
+  // Runs after the test above removed the SMTP settings, so mail is off here.
+  it('refuses to open sign-ups while no mail server can send the link', async () => {
+    const view = await api().get('/api/admin/settings/registration').set('Cookie', admin.cookie);
+    expect(view.status).toBe(200);
+    expect(view.body).toEqual({ ...DEFAULT_REGISTRATION, mailReady: false });
+
+    const refused = await api()
+      .put('/api/admin/settings/registration')
+      .set('Cookie', admin.cookie)
+      .set(XHR)
+      .send({ selfServiceEnabled: true, signInLinksEnabled: false });
+    expect(refused.status).toBe(400);
+    expect(refused.body.error.code).toBe('smtp_required');
+
+    // Switching both off is always allowed; it sends nothing.
+    const off = await api()
+      .put('/api/admin/settings/registration')
+      .set('Cookie', admin.cookie)
+      .set(XHR)
+      .send({ selfServiceEnabled: false, signInLinksEnabled: false });
+    expect(off.status).toBe(200);
+  });
+
+  it('opens sign-ups once mail works, and shows them on the public route', async () => {
+    await api().put('/api/admin/settings/smtp').set('Cookie', admin.cookie).set(XHR).send({
+      host: 'smtp.acme.example',
+      port: 465,
+      secure: true,
+      user: 'portal',
+      pass: 'secret',
+      from: 'portal@acme.example',
+    });
+
+    const saved = await api()
+      .put('/api/admin/settings/registration')
+      .set('Cookie', admin.cookie)
+      .set(XHR)
+      .send({ selfServiceEnabled: true, signInLinksEnabled: true });
+    expect(saved.status).toBe(200);
+    expect(saved.body).toEqual({
+      selfServiceEnabled: true,
+      signInLinksEnabled: true,
+      mailReady: true,
+    });
+
+    const pub = await api().get('/api/settings/public');
+    expect(pub.body.registration).toEqual({ selfServiceEnabled: true, signInLinksEnabled: true });
+
+    const entry = await t.db.db
+      .selectFrom('auditLog')
+      .select(['action', 'details'])
+      .where('action', '=', 'settings.registration_updated')
+      .executeTakeFirstOrThrow();
+    expect(entry.action).toBe('settings.registration_updated');
+
+    const user403 = await api()
+      .put('/api/admin/settings/registration')
+      .set('Cookie', user.cookie)
+      .set(XHR)
+      .send({ selfServiceEnabled: false, signInLinksEnabled: false });
+    expect(user403.status).toBe(403);
   });
 });

@@ -106,13 +106,29 @@
     "login": {
       "title": "Connexion",
       "submit": "Se connecter",
-      "forgot": "Mot de passe oublié ?"
+      "forgot": "Mot de passe oublié ?",
+      "linkTab": "Recevoir un lien",
+      "passwordTab": "Utiliser mon mot de passe",
+      "noAccount": "Pas encore de compte ?",
+      "register": "Créer un compte"
     },
     "forgot": {
       "title": "Réinitialiser le mot de passe",
       "intro": "Saisissez votre adresse e-mail. Si un compte existe, vous recevrez un lien de réinitialisation.",
       "submit": "Demander un lien",
       "done": "Si un compte existe pour cette adresse, un lien est en route.",
+      "toLogin": "Retour à la connexion"
+    },
+    "link": {
+      "title": "Se connecter sans mot de passe",
+      "intro": "Saisissez votre adresse e-mail. Si un compte existe, un lien de connexion est en route.",
+      "submit": "Envoyer le lien",
+      "done": "Consultez votre boîte de réception. Le lien fonctionne une seule fois et reste valable 15 minutes."
+    },
+    "signIn": {
+      "title": "Connexion en cours",
+      "working": "Un instant, votre lien est en cours de vérification.",
+      "invalid": "Ce lien est invalide, déjà utilisé ou expiré. Demandez-en un nouveau.",
       "toLogin": "Retour à la connexion"
     },
     "reset": {
@@ -125,7 +141,18 @@
       "title": "Accepter l'invitation",
       "intro": "Définissez un mot de passe pour activer votre compte.",
       "submit": "Activer le compte",
-      "invalid": "Cette invitation est invalide ou a expiré. Demandez une nouvelle invitation."
+      "invalid": "Cette invitation est invalide ou a expiré. Demandez une nouvelle invitation.",
+      "introNoPassword": "Indiquez votre nom pour activer votre compte. Vous vous connectez avec un lien que nous vous envoyons par e-mail, sans mot de passe à retenir.",
+      "passwordOptional": "Mot de passe (facultatif)",
+      "passwordOptionalHint": "Au moins 10 caractères. Laissez les deux champs vides pour vous connecter par lien."
+    },
+    "register": {
+      "title": "Créer votre compte",
+      "intro": "Dites-nous où vous joindre. Vous pourrez compléter le reste plus tard.",
+      "submit": "Créer le compte",
+      "done": "Presque terminé. Ouvrez l’e-mail que nous venons de vous envoyer pour finaliser votre compte.",
+      "closed": "Ce portail n’accepte pas d’inscriptions pour le moment.",
+      "toLogin": "Vous avez déjà un compte ? Se connecter"
     },
     "passwordHint": "Au moins 10 caractères",
     "twoFactor": {
@@ -251,6 +278,10 @@
     "invalid_code": "Ce code n'est pas correct. Veuillez réessayer.",
     "invalid_challenge": "La connexion a expiré. Veuillez vous reconnecter.",
     "two_factor_already_enabled": "Ce compte possède déjà un deuxième facteur.",
-    "invalid_password": "Ce mot de passe n'est pas correct."
+    "invalid_password": "Ce mot de passe n'est pas correct.",
+    "registration_closed": "Ce portail n’accepte pas d’inscriptions.",
+    "sign_in_links_disabled": "Ce portail se connecte avec un mot de passe.",
+    "password_required": "Cette invitation demande un mot de passe.",
+    "smtp_required": "Configurez d’abord un serveur de messagerie. Sans lui, le portail ne peut pas envoyer les liens."
   }
 }

@@ -17,7 +17,14 @@ import { AuthStore } from '../../../core/auth/auth.store';
 import { BrandingService } from '../../../core/branding/branding.service';
 import { brandTheme } from '../../../core/branding/color';
 import { readApiError } from '../../../core/errors/api-error';
-import { type Branding, LANGUAGES, type SmtpInput, type SmtpView } from '../../../core/models';
+import {
+  type Branding,
+  LANGUAGES,
+  type Registration,
+  type RegistrationView,
+  type SmtpInput,
+  type SmtpView,
+} from '../../../core/models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/confirm-dialog.component';
 import { FieldErrorPipe } from '../../../shared/forms/field-error.pipe';
@@ -29,6 +36,8 @@ const LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'];
 /** Keeps the base64 data URL under the 200 KB the API accepts. */
 const LOGO_MAX_BYTES = 140 * 1024;
 const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
+/** Read and written by the sign-up tab. */
+const ROUTE = '/admin/settings/registration';
 
 @Component({
   selector: 'app-admin-settings-page',
@@ -263,6 +272,48 @@ const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
           </div>
         </mat-tab>
 
+        <mat-tab [label]="t('admin.settings.registration.tab')">
+          <div class="tab-body">
+            <p class="intro">{{ t('admin.settings.registration.intro') }}</p>
+            @if (registration(); as view) {
+              @if (!view.mailReady) {
+                <p class="source" data-testid="registration-mail-required">
+                  <mat-icon>info</mat-icon>
+                  {{ t('admin.settings.registration.mailRequired') }}
+                </p>
+              }
+              <form [formGroup]="registrationForm" (ngSubmit)="saveRegistration()" novalidate>
+                <mat-slide-toggle
+                  formControlName="selfServiceEnabled"
+                  class="toggle"
+                  data-testid="self-service"
+                  >{{ t('admin.settings.registration.selfService') }}</mat-slide-toggle
+                >
+                <p class="hint">{{ t('admin.settings.registration.selfServiceHint') }}</p>
+                <mat-slide-toggle
+                  formControlName="signInLinksEnabled"
+                  class="toggle"
+                  data-testid="sign-in-links"
+                  >{{ t('admin.settings.registration.signInLinks') }}</mat-slide-toggle
+                >
+                <p class="hint">{{ t('admin.settings.registration.signInLinksHint') }}</p>
+                <div class="actions">
+                  <button
+                    mat-flat-button
+                    type="submit"
+                    [disabled]="savingRegistration()"
+                    data-testid="save-registration"
+                  >
+                    {{ t('actions.save') }}
+                  </button>
+                </div>
+              </form>
+            } @else {
+              <mat-progress-bar mode="indeterminate" />
+            }
+          </div>
+        </mat-tab>
+
         <mat-tab [label]="t('admin.settings.hub.tab')">
           <div class="tab-body">
             @if (hubOpened()) {
@@ -446,17 +497,24 @@ export class AdminSettingsPage implements OnInit {
     /** The display name comes from the product name, so this is the address alone. */
     from: ['', [Validators.required, Validators.email, Validators.maxLength(320)]],
   });
+  readonly registration = signal<RegistrationView | null>(null);
+  readonly savingRegistration = signal(false);
+  readonly registrationForm = this.fb.group({
+    selfServiceEnabled: [false],
+    signInLinksEnabled: [false],
+  });
   readonly testForm = this.fb.group({
     to: [this.auth.user()?.email ?? '', [Validators.required, Validators.email]],
   });
 
   ngOnInit(): void {
     void this.loadSmtp();
+    void this.loadRegistration();
   }
 
   onTab(index: number): void {
     this.tab.set(index);
-    if (index === 2) this.hubOpened.set(true);
+    if (index === 3) this.hubOpened.set(true);
   }
 
   /**
@@ -554,6 +612,7 @@ export class AdminSettingsPage implements OnInit {
       await firstValueFrom(this.api.put<SmtpView>('/admin/settings/smtp', body));
       this.notify.success('admin.settings.mail.saved');
       await this.loadSmtp();
+      await this.loadRegistration();
     } catch (err) {
       if (!applyServerErrors(this.smtpForm, readApiError(err))) this.notify.apiError(err);
     } finally {
@@ -577,10 +636,42 @@ export class AdminSettingsPage implements OnInit {
           await firstValueFrom(this.api.delete<void>('/admin/settings/smtp'));
           this.notify.success('admin.settings.mail.removed');
           await this.loadSmtp();
+          await this.loadRegistration();
         } catch (err) {
           this.notify.apiError(err);
         }
       });
+  }
+
+  async loadRegistration(): Promise<void> {
+    try {
+      this.registration.set(await firstValueFrom(this.api.get<RegistrationView>(ROUTE)));
+      this.registrationForm.reset(this.registration() ?? undefined);
+    } catch (err) {
+      this.notify.apiError(err);
+    }
+  }
+
+  async saveRegistration(): Promise<void> {
+    this.savingRegistration.set(true);
+    try {
+      const body: Registration = this.registrationForm.getRawValue();
+      const saved = await firstValueFrom(this.api.put<RegistrationView>(ROUTE, body));
+      this.registration.set(saved);
+      // The sign-in page reads these two from the public settings, and it is
+      // one route away, so the portal must not wait for a reload to follow.
+      this.branding.setRegistration({
+        selfServiceEnabled: saved.selfServiceEnabled,
+        signInLinksEnabled: saved.signInLinksEnabled,
+      });
+      this.notify.success('admin.settings.registration.saved');
+    } catch (err) {
+      this.notify.apiError(err);
+      // A refused switch stays off in the form as well as on the server.
+      await this.loadRegistration();
+    } finally {
+      this.savingRegistration.set(false);
+    }
   }
 
   async sendTest(): Promise<void> {

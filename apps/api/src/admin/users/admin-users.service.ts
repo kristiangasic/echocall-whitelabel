@@ -32,7 +32,12 @@ export interface AdminUserRow {
 
 /** Who performs an administrative action, for the audit log. */
 export interface ActionContext {
-  actor: SessionUser;
+  /**
+   * The administrator who acted, or null when the portal acted on its own for a
+   * visitor, as it does for a self-service sign-up. The log then records the
+   * action without an actor, which is what happened.
+   */
+  actor: SessionUser | null;
   ip?: string;
 }
 
@@ -117,7 +122,7 @@ export class AdminUsersService {
     const user = await this.require(id);
     const { link, mailSent } = await this.sendInvite(user, opts.sendMail ?? true);
     await this.audit.record({
-      actorUserId: ctx.actor.id,
+      actorUserId: ctx.actor?.id ?? null,
       action: 'users.invited',
       targetType: 'user',
       targetId: id,
@@ -142,7 +147,7 @@ export class AdminUsersService {
     }
     const { link, mailSent } = await this.sendInvite(user);
     await this.audit.record({
-      actorUserId: ctx.actor.id,
+      actorUserId: ctx.actor?.id ?? null,
       action: 'users.invite_resent',
       targetType: 'user',
       targetId: id,
@@ -154,7 +159,7 @@ export class AdminUsersService {
 
   async update(id: number, patch: UpdateUserDto, ctx: ActionContext): Promise<AdminUserRow> {
     const user = await this.require(id);
-    const self = user.id === ctx.actor.id;
+    const self = user.id === ctx.actor?.id;
     if (self && (patch.status === 'disabled' || (patch.role !== undefined && patch.role !== 'admin')))
       throw apiError(409, 'cannot_change_self', 'You cannot disable or demote your own account');
     const role = patch.role ?? user.role;
@@ -183,7 +188,7 @@ export class AdminUsersService {
 
     const changed = (Object.keys(patch) as (keyof UpdateUserDto)[]).filter((key) => patch[key] !== undefined);
     await this.audit.record({
-      actorUserId: ctx.actor.id,
+      actorUserId: ctx.actor?.id ?? null,
       action: 'users.updated',
       targetType: 'user',
       targetId: id,
@@ -201,7 +206,7 @@ export class AdminUsersService {
     const link = `${this.config.appUrl}/reset-password?token=${encodeURIComponent(token)}`;
     const mailSent = await this.mail.sendPasswordReset(recipient(user), link);
     await this.audit.record({
-      actorUserId: ctx.actor.id,
+      actorUserId: ctx.actor?.id ?? null,
       action: 'users.password_reset_sent',
       targetType: 'user',
       targetId: id,
@@ -219,12 +224,12 @@ export class AdminUsersService {
    * second factor.
    */
   async clearTwoFactor(id: number, ctx: ActionContext): Promise<void> {
-    if (id === ctx.actor.id)
+    if (id === ctx.actor?.id)
       throw apiError(409, 'cannot_change_self', 'Remove your own second factor in your account');
     const user = await this.require(id);
     await this.twoFactor.disable(id);
     await this.audit.record({
-      actorUserId: ctx.actor.id,
+      actorUserId: ctx.actor?.id ?? null,
       action: 'users.two_factor_cleared',
       targetType: 'user',
       targetId: id,
@@ -235,11 +240,11 @@ export class AdminUsersService {
 
   /** Sessions and one-time tokens go with the user; audit entries keep the id and lose the e-mail. */
   async remove(id: number, ctx: ActionContext): Promise<void> {
-    if (id === ctx.actor.id) throw apiError(409, 'cannot_delete_self', 'You cannot delete your own account');
+    if (id === ctx.actor?.id) throw apiError(409, 'cannot_delete_self', 'You cannot delete your own account');
     const user = await this.require(id);
     await this.db.deleteFrom('users').where('id', '=', id).execute();
     await this.audit.record({
-      actorUserId: ctx.actor.id,
+      actorUserId: ctx.actor?.id ?? null,
       action: 'users.deleted',
       targetType: 'user',
       targetId: id,

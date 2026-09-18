@@ -192,7 +192,7 @@ export class AdminCustomersService {
     details: Record<string, unknown>,
   ): Promise<void> {
     await this.audit.record({
-      actorUserId: ctx.actor.id,
+      actorUserId: ctx.actor?.id ?? null,
       action,
       targetType: 'customer',
       targetId: customerId,

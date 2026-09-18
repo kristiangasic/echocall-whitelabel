@@ -613,6 +613,16 @@
       "testTo": "Recipient",
       "testSent": "Test message sent to {{email}}."
     },
+    "registration": {
+      "tab": "Sign-up",
+      "intro": "Who may open an account here, and how people sign in. Both are off until you switch them on.",
+      "selfService": "Anyone may create an account",
+      "selfServiceHint": "A sign-up form appears on the sign-in page. Each new account also becomes a customer of yours at the service.",
+      "signInLinks": "Sign in with a mailed link",
+      "signInLinksHint": "People ask for a one-time link instead of typing a password. Passwords keep working for the accounts that have one.",
+      "mailRequired": "Both need a mail server. Set one up under E-mail first.",
+      "saved": "Sign-up settings saved."
+    },
     "hub": {
       "tab": "Service",
       "intro": "Company data, portal logo and payment keys of your provider account. These are kept by the service, not by the portal.",

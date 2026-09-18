@@ -35,6 +35,10 @@ admin as one-time links to pass on. With SMTP they are mailed automatically. SMT
 be configured at runtime in the admin panel; environment variables take precedence and are
 shown there as locked.
 
+Self-service sign-up and sign-in links are the two things that do need a mail server: both
+send a link to an address nobody at the portal can read out, so the portal refuses to
+switch either on while no SMTP server is configured.
+
 | Variable      | Default | Description                                                                       |
 | ------------- | ------- | --------------------------------------------------------------------------------- |
 | `SMTP_HOST`   | unset   | Hostname of your SMTP server. Enables mailing.                                    |

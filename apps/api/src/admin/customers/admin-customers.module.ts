@@ -10,5 +10,6 @@ import { AdminCustomersService } from './admin-customers.service.js';
   imports: [AuthModule, AuditModule, EchoCallModule, AdminUsersModule],
   controllers: [AdminCustomersController],
   providers: [AdminCustomersService],
+  exports: [AdminCustomersService],
 })
 export class AdminCustomersModule {}

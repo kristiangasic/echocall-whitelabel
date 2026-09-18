@@ -7,6 +7,20 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Self-service sign-up, off by default. With it on, a sign-up form appears on the sign-in
+  page and each sign-up opens a customer account at the service and a portal login in one
+  step. The form answers the same way whether the address was free, already had an account
+  or was refused by the service, so it cannot be used to look accounts up.
+- Sign-in links, off by default. With them on, people ask for a one-time link by e-mail
+  instead of typing a password; the link is valid for 15 minutes and works once. An
+  invitation accepted while links are on may leave the password empty, and such an account
+  signs in by link only. A second factor still applies, and passwords keep working for the
+  accounts that have one.
+- **Settings, Sign-up** in the admin panel carries both switches. Neither can be switched
+  on while no mail server is configured, because both depend on mail.
+
 ### Changed
 
 - English is the primary language. A fresh portal starts in English, the sign-in page and

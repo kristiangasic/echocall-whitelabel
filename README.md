@@ -82,6 +82,15 @@ Admins invite users by email (or hand over a one-time link when no SMTP server i
 configured) and link each user to one of the EchoCall customer accounts under your
 reseller account.
 
+Two switches under **Settings, Sign-up** change who else gets in. Both are off in a fresh
+portal and both need a mail server:
+
+- **Anyone may create an account.** A sign-up form appears on the sign-in page. Whoever
+  fills it in becomes a customer of yours at the service and a user here, in one step.
+- **Sign in with a mailed link.** People ask for a one-time link instead of typing a
+  password. An account opened this way never has a password at all, and a second factor
+  still applies. Passwords keep working for the accounts that have one.
+
 ## Security
 
 - Sessions are server-side, in httpOnly cookies; mutating requests require a

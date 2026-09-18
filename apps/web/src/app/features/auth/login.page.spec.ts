@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { AuthStore } from '../../core/auth/auth.store';
+import { BrandingService } from '../../core/branding/branding.service';
 import { byTestId, submit, type } from '../../testing/dom';
 import { provideTestI18n, TEXTS } from '../../testing/i18n';
 import { LoginPage } from './login.page';
@@ -34,7 +35,12 @@ describe('LoginPage', () => {
 
   afterEach(() => http.verify());
 
-  async function render() {
+  /**
+   * The page reads the two switches as it is created, so they are set first.
+   * Both off is what a portal looks like until an operator opens it up.
+   */
+  async function render(registration = { selfServiceEnabled: false, signInLinksEnabled: false }) {
+    TestBed.inject(BrandingService).setRegistration(registration);
     const fixture = TestBed.createComponent(LoginPage);
     await fixture.whenStable();
     return fixture;
@@ -91,6 +97,46 @@ describe('LoginPage', () => {
     http.expectNone('/api/auth/login');
     expect(fixture.nativeElement.textContent).toContain(TEXTS.validation.email);
     expect(fixture.nativeElement.textContent).toContain(TEXTS.validation.required);
+  });
+
+  it('offers neither a link nor a sign-up while the operator has both switched off', async () => {
+    const fixture = await render();
+
+    expect(byTestId(fixture, 'password')).toBeTruthy();
+    expect((fixture.nativeElement as HTMLElement).querySelector('[data-testid="use-link"]')).toBeNull();
+    expect((fixture.nativeElement as HTMLElement).querySelector('[data-testid="to-register"]')).toBeNull();
+  });
+
+  it('leads with the mailed link where the operator offers one', async () => {
+    const fixture = await render({ selfServiceEnabled: false, signInLinksEnabled: true });
+    expect(fixture.nativeElement.textContent).toContain(TEXTS.auth.link.title);
+
+    type(fixture, 'link-email', 'lena@example.com');
+    submit(fixture);
+
+    const request = http.expectOne('/api/auth/sign-in-link');
+    expect(request.request.body).toEqual({ email: 'lena@example.com' });
+    request.flush(null, { status: 204, statusText: 'No Content' });
+    await fixture.whenStable();
+
+    // The answer says a link is on its way, never whether the address is known.
+    expect(byTestId(fixture, 'link-sent').textContent?.trim()).toBe(TEXTS.auth.link.done);
+  });
+
+  it('keeps the password within reach where links are offered', async () => {
+    const fixture = await render({ selfServiceEnabled: false, signInLinksEnabled: true });
+    byTestId(fixture, 'use-password').click();
+    await fixture.whenStable();
+
+    expect(byTestId(fixture, 'password')).toBeTruthy();
+    expect(byTestId(fixture, 'use-link')).toBeTruthy();
+  });
+
+  it('points at the sign-up form where the operator takes sign-ups', async () => {
+    const fixture = await render({ selfServiceEnabled: true, signInLinksEnabled: false });
+
+    expect(byTestId(fixture, 'to-register').getAttribute('href')).toBe('/register');
+    expect(fixture.nativeElement.textContent).toContain(TEXTS.auth.login.noAccount);
   });
 
   const SESSION = {

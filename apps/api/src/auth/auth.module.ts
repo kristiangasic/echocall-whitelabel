@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuditModule } from '../audit/audit.module.js';
 import { CommonModule } from '../common/common.module.js';
+import { SettingsCoreModule } from '../settings/settings-core.module.js';
 import { AuthController } from './auth.controller.js';
 import { SessionGuard } from './auth.guard.js';
 import { CsrfGuard } from './csrf.guard.js';
@@ -17,6 +18,8 @@ import { TwoFactorService } from './two-factor.service.js';
   imports: [
     AuditModule,
     CommonModule,
+    // Sign-in asks the settings whether the portal hands out sign-in links.
+    SettingsCoreModule,
     // Applied only where a route opts in with @UseGuards(ThrottlerGuard): login, forgot, reset.
     ThrottlerModule.forRoot({
       throttlers: [{ ttl: 60_000, limit: 5 }],

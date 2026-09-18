@@ -71,6 +71,23 @@ default). A wrong value makes every request look like it comes from the proxy.
 - A token is consumed only on success. A form the portal refuses (a weak password, for
   example) leaves the token usable, which is what a person expects after a typo.
 
+## Sign-up and sign-in links
+
+- Both are off in a fresh portal, and the portal refuses to switch either on while no mail
+  server is configured: the links would go nowhere.
+- Neither route says whether an address has an account. A sign-up answers `202 Accepted`
+  whether the account was opened, already existed or was refused by the service, and a
+  request for a sign-in link answers `204 No Content` either way. Both are rate limited
+  per address like the other unauthenticated routes.
+- A sign-in link is one of the one-time tokens above: 32 random bytes, stored as SHA-256,
+  valid 15 minutes, spent on use, and a second request replaces the first.
+- An account without a password hash cannot be signed in with a password. The verification
+  still runs against a dummy hash, so the answer time says nothing.
+- A second factor applies to a link exactly as it does to a password: the link produces a
+  challenge, not a session.
+- Consuming a link while the operator has switched links off is refused, so turning the
+  switch off also invalidates the links already in the post.
+
 ## Two factor
 
 - TOTP with a secret that is stored encrypted (see below) and only becomes active once a

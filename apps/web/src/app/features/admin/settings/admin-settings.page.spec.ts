@@ -2,8 +2,9 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MATERIAL_ANIMATIONS } from '@angular/material/core';
+import { BrandingService } from '../../../core/branding/branding.service';
 import { byTestId } from '../../../testing/dom';
-import { provideTestI18n, TEXTS } from '../../../testing/i18n';
+import { ADMIN_TEXTS, provideTestI18n, TEXTS } from '../../../testing/i18n';
 import { AdminSettingsPage } from './admin-settings.page';
 
 const SMTP = {
@@ -16,6 +17,8 @@ const SMTP = {
   hasPassword: true,
   from: 'portal@example.com',
 };
+
+const REGISTRATION = { selfServiceEnabled: false, signInLinksEnabled: false, mailReady: true };
 
 const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -36,13 +39,22 @@ describe('AdminSettingsPage', () => {
 
   afterEach(() => http.verify());
 
-  async function render() {
+  async function render(registration = REGISTRATION) {
     const fixture = TestBed.createComponent(AdminSettingsPage);
     await fixture.whenStable();
     http.expectOne('/api/admin/settings/smtp').flush(SMTP);
+    http.expectOne('/api/admin/settings/registration').flush(registration);
     await settle();
     fixture.detectChanges();
     return fixture;
+  }
+
+  /** Opens one of the tabs by its position in the group. */
+  async function openTab(fixture: Awaited<ReturnType<typeof render>>, index: number) {
+    const tabs = (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('.mat-mdc-tab');
+    tabs[index].click();
+    await settle();
+    fixture.detectChanges();
   }
 
   it('keeps the colour picker and the hex field showing the same colour', async () => {
@@ -68,10 +80,7 @@ describe('AdminSettingsPage', () => {
 
   it('asks for a bare sender address, because the portal supplies the display name', async () => {
     const fixture = await render();
-    const tabs = (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('.mat-mdc-tab');
-    tabs[1].click();
-    await settle();
-    fixture.detectChanges();
+    await openTab(fixture, 1);
 
     const sender = byTestId<HTMLInputElement>(fixture, 'smtp-from');
     // The placeholder may only show what the form accepts.
@@ -89,5 +98,37 @@ describe('AdminSettingsPage', () => {
     // reading the server's English complaint.
     http.expectNone('/api/admin/settings/smtp');
     expect((fixture.nativeElement as HTMLElement).textContent).toContain(TEXTS.validation.email);
+  });
+
+  it('opens the two ways in, and the sign-in page follows at once', async () => {
+    const fixture = await render();
+    await openTab(fixture, 2);
+
+    byTestId(fixture, 'self-service').querySelector('button')?.click();
+    byTestId(fixture, 'sign-in-links').querySelector('button')?.click();
+    await settle();
+    byTestId(fixture, 'save-registration').click();
+    await settle();
+
+    const put = http.expectOne('/api/admin/settings/registration');
+    expect(put.request.method).toBe('PUT');
+    expect(put.request.body).toEqual({ selfServiceEnabled: true, signInLinksEnabled: true });
+    put.flush({ selfServiceEnabled: true, signInLinksEnabled: true, mailReady: true });
+    await settle();
+
+    // The sign-in page reads these from the branding service, not from a reload.
+    expect(TestBed.inject(BrandingService).registration()).toEqual({
+      selfServiceEnabled: true,
+      signInLinksEnabled: true,
+    });
+  });
+
+  it('says a mail server is needed before either switch can be used', async () => {
+    const fixture = await render({ ...REGISTRATION, mailReady: false });
+    await openTab(fixture, 2);
+
+    expect(byTestId(fixture, 'registration-mail-required').textContent).toContain(
+      ADMIN_TEXTS.settings.registration.mailRequired,
+    );
   });
 });

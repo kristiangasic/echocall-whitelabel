@@ -44,7 +44,7 @@ export interface SessionsTable {
 export interface OneTimeTokensTable {
   id: Generated<number>;
   userId: number;
-  purpose: 'invite' | 'password_reset' | 'two_factor_challenge';
+  purpose: 'invite' | 'password_reset' | 'sign_in' | 'two_factor_challenge';
   tokenHash: string;
   expiresAt: Date;
   usedAt: Date | null;

@@ -182,3 +182,21 @@ portal.
 The test button in the settings sends one mail to an address you type and passes the
 answer of the server on, which is usually enough to find a wrong port or a refused
 authentication.
+
+## Opening the portal to sign-ups
+
+**Settings, Sign-up** carries two switches. Both are off until you turn them on, and
+neither can be turned on before a mail server works.
+
+- **Anyone may create an account** puts a sign-up form on the sign-in page. Each sign-up
+  creates a customer under your reseller account at the service and a user here, exactly
+  as if you had invited them, and lands in the audit log as `auth.registered` with no
+  actor. Watch the customer list after you switch it on: every sign-up is a customer you
+  are responsible for at the service.
+- **Sign in with a mailed link** lets people ask for a one-time link instead of a
+  password. The link is valid for 15 minutes and works once. An invitation accepted while
+  this is on may leave the password empty, and that account then has no password to lose.
+
+Switching either off again takes effect at once: a link that was already mailed is refused
+after the switch, and the sign-up form disappears from the sign-in page. Accounts created
+while the switches were on keep working.

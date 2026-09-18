@@ -613,6 +613,16 @@
       "testTo": "Destinataire",
       "testSent": "Message de test envoyé à {{email}}."
     },
+    "registration": {
+      "tab": "Inscription",
+      "intro": "Qui peut ouvrir un compte ici et comment les personnes se connectent. Les deux sont désactivés tant que vous ne les activez pas.",
+      "selfService": "Tout le monde peut créer un compte",
+      "selfServiceHint": "Un formulaire d’inscription apparaît sur la page de connexion. Chaque nouveau compte devient aussi votre client chez le service.",
+      "signInLinks": "Connexion par lien envoyé par e-mail",
+      "signInLinksHint": "Au lieu de saisir un mot de passe, les personnes demandent un lien à usage unique. Les mots de passe continuent de fonctionner pour les comptes qui en ont un.",
+      "mailRequired": "Les deux exigent un serveur de messagerie. Configurez-en un sous E-mail.",
+      "saved": "Paramètres d’inscription enregistrés."
+    },
     "hub": {
       "tab": "Service",
       "intro": "Données de votre société, logo du portail et clés de paiement de votre compte fournisseur. Ces informations sont conservées par le service, pas par le portail.",

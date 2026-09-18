@@ -3,7 +3,7 @@ import { randomToken, sha256Hex } from '../common/crypto.js';
 import { DB } from '../db/db.service.js';
 import type { Db } from '../db/dialect.js';
 
-export type TokenPurpose = 'invite' | 'password_reset' | 'two_factor_challenge';
+export type TokenPurpose = 'invite' | 'password_reset' | 'sign_in' | 'two_factor_challenge';
 
 /**
  * Wrong guesses a challenge survives. Someone who already has the password is

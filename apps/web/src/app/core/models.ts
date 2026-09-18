@@ -52,6 +52,24 @@ export interface Branding {
   defaultLanguage: Language;
 }
 
+/** The two ways in, as the operator has set them. Both are off until they switch one on. */
+export interface Registration {
+  /** Anyone may open an account from the sign-in page. */
+  selfServiceEnabled: boolean;
+  /** A mailed link signs people in, so an account needs no password at all. */
+  signInLinksEnabled: boolean;
+}
+
+/** What the sign-in page needs before anyone has signed in. */
+export interface PublicSettings extends Branding {
+  registration: Registration;
+}
+
+/** The same two switches for the operator, plus whether mail can carry the links. */
+export interface RegistrationView extends Registration {
+  mailReady: boolean;
+}
+
 export interface HubStatus {
   ok: boolean;
   /** ISO timestamp of the last check, empty before the first one. */

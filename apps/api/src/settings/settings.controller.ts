@@ -3,11 +3,28 @@ import type { Request } from 'express';
 import { AuditService } from '../audit/audit.service.js';
 import { CurrentUser, Public, Roles } from '../auth/decorators.js';
 import type { SessionUser } from '../auth/session.service.js';
+import { apiError } from '../common/http-error.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { MailService } from '../mail/mail.service.js';
 import { type Branding, brandingSchema, type PublicBranding } from './branding.js';
 import { type SmtpTestDto, smtpTestSchema, type SmtpUpdateDto, smtpUpdateSchema } from './dto.js';
+import { type PublicRegistration, type RegistrationSettings, registrationSchema } from './registration.js';
 import { SettingsService, type SmtpSettings } from './settings.service.js';
+
+/**
+ * What the sign-in page needs before anyone has signed in: how the portal looks
+ * and which ways in it offers. Both in one answer, because every visitor needs
+ * both and a second round trip is a second wait.
+ */
+export interface PublicSettings extends PublicBranding {
+  registration: PublicRegistration;
+}
+
+/** The two flags, plus whether the portal could actually send the mail they depend on. */
+export interface RegistrationView extends RegistrationSettings {
+  /** False when no mail server is configured; neither flag can be on then. */
+  mailReady: boolean;
+}
 
 /** What the admin page sees about mail delivery; never the password itself. */
 export interface SmtpView {
@@ -32,8 +49,12 @@ export class SettingsController {
 
   @Public()
   @Get('settings/public')
-  publicBranding(): Promise<PublicBranding> {
-    return this.settings.getBranding();
+  async publicSettings(): Promise<PublicSettings> {
+    const [branding, registration] = await Promise.all([
+      this.settings.getBranding(),
+      this.settings.getRegistration(),
+    ]);
+    return { ...branding, registration };
   }
 
   @Roles('admin')
@@ -61,6 +82,44 @@ export class SettingsController {
       ip: req.ip,
     });
     return body;
+  }
+
+  @Roles('admin')
+  @Get('admin/settings/registration')
+  registration(): Promise<RegistrationView> {
+    return this.registrationView();
+  }
+
+  @Roles('admin')
+  @Put('admin/settings/registration')
+  async updateRegistration(
+    @Body(new ZodValidationPipe<RegistrationSettings>(registrationSchema)) body: RegistrationSettings,
+    @CurrentUser() user: SessionUser,
+    @Req() req: Request,
+  ): Promise<RegistrationView> {
+    // Both ways in are a mail the portal sends. Without a mail server they would
+    // only produce sign-ups nobody can finish, so they cannot be switched on.
+    const mailReady = (await this.mail.resolveSmtp()) !== null;
+    if (!mailReady && (body.selfServiceEnabled || body.signInLinksEnabled))
+      throw apiError(
+        400,
+        'smtp_required',
+        'Set up a mail server first; both of these send the visitor a link',
+      );
+    const before = await this.settings.getRegistration();
+    await this.settings.setRegistration(body);
+    const changed = (Object.keys(body) as Array<keyof RegistrationSettings>).filter(
+      (key) => before[key] !== body[key],
+    );
+    await this.audit.record({
+      actorUserId: user.id,
+      action: 'settings.registration_updated',
+      targetType: 'settings',
+      targetId: 'registration',
+      details: { changed, ...body },
+      ip: req.ip,
+    });
+    return { ...body, mailReady };
   }
 
   @Roles('admin')
@@ -118,6 +177,14 @@ export class SettingsController {
   async testSmtp(@Body(new ZodValidationPipe(smtpTestSchema)) body: SmtpTestDto): Promise<{ sent: true }> {
     await this.mail.sendTest(body.to);
     return { sent: true };
+  }
+
+  private async registrationView(): Promise<RegistrationView> {
+    const [registration, smtp] = await Promise.all([
+      this.settings.getRegistration(),
+      this.mail.resolveSmtp(),
+    ]);
+    return { ...registration, mailReady: smtp !== null };
   }
 
   private async smtpView(): Promise<SmtpView> {

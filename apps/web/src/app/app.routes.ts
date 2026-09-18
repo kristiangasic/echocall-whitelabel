@@ -26,6 +26,16 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/reset-password.page').then((m) => m.ResetPasswordPage),
   },
   {
+    path: 'register',
+    canActivate: [setupGuard],
+    loadComponent: () => import('./features/auth/register.page').then((m) => m.RegisterPage),
+  },
+  {
+    path: 'sign-in',
+    canActivate: [setupGuard],
+    loadComponent: () => import('./features/auth/sign-in.page').then((m) => m.SignInPage),
+  },
+  {
     path: 'accept-invite',
     loadComponent: () => import('./features/auth/accept-invite.page').then((m) => m.AcceptInvitePage),
   },

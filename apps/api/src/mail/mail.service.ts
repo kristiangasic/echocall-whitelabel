@@ -7,6 +7,8 @@ import type { MailRecipient, MailSender } from './mail-sender.js';
 import { renderInvite } from './templates/invite.js';
 import { pickLanguage, type RenderedMail } from './templates/layout.js';
 import { renderPasswordReset } from './templates/password-reset.js';
+import { renderRegistration } from './templates/registration.js';
+import { renderSignInLink } from './templates/sign-in-link.js';
 import { renderTest } from './templates/test.js';
 
 export interface MailMessage {
@@ -90,6 +92,26 @@ export class MailService implements MailSender {
       link,
     });
     return this.deliver(to.email, mail, 'password reset');
+  }
+
+  async sendSignInLink(to: MailRecipient, link: string): Promise<boolean> {
+    const productName = (await this.settings.getBranding()).productName;
+    const mail = renderSignInLink(pickLanguage(to.language), {
+      productName,
+      firstName: to.firstName,
+      link,
+    });
+    return this.deliver(to.email, mail, 'sign-in link');
+  }
+
+  async sendRegistration(to: MailRecipient, link: string): Promise<boolean> {
+    const productName = (await this.settings.getBranding()).productName;
+    const mail = renderRegistration(pickLanguage(to.language), {
+      productName,
+      firstName: to.firstName,
+      link,
+    });
+    return this.deliver(to.email, mail, 'registration');
   }
 
   /** Throws 409 mail_not_configured or 502 smtp_failed so the admin page can show why. */

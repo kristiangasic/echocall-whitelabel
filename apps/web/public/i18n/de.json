@@ -106,7 +106,11 @@
     "login": {
       "title": "Anmelden",
       "submit": "Anmelden",
-      "forgot": "Passwort vergessen?"
+      "forgot": "Passwort vergessen?",
+      "linkTab": "Link zuschicken",
+      "passwordTab": "Mit Passwort anmelden",
+      "noAccount": "Noch kein Konto?",
+      "register": "Jetzt anlegen"
     },
     "forgot": {
       "title": "Passwort zurücksetzen",
@@ -114,6 +118,18 @@
       "submit": "Link anfordern",
       "done": "Wenn ein Konto zu dieser Adresse existiert, ist ein Link unterwegs.",
       "toLogin": "Zur Anmeldung"
+    },
+    "link": {
+      "title": "Ohne Passwort anmelden",
+      "intro": "Geben Sie Ihre E-Mail-Adresse ein. Wenn ein Konto besteht, ist ein Anmeldelink unterwegs.",
+      "submit": "Link senden",
+      "done": "Sehen Sie in Ihr Postfach. Der Link funktioniert einmal und gilt 15 Minuten."
+    },
+    "signIn": {
+      "title": "Anmeldung läuft",
+      "working": "Einen Moment, Ihr Link wird geprüft.",
+      "invalid": "Dieser Link ist ungültig, verbraucht oder abgelaufen. Fordern Sie einen neuen an.",
+      "toLogin": "Zurück zur Anmeldung"
     },
     "reset": {
       "title": "Neues Passwort festlegen",
@@ -125,7 +141,18 @@
       "title": "Einladung annehmen",
       "intro": "Legen Sie ein Passwort fest, um Ihr Konto zu aktivieren.",
       "submit": "Konto aktivieren",
-      "invalid": "Diese Einladung ist ungültig oder abgelaufen. Bitten Sie um eine neue Einladung."
+      "invalid": "Diese Einladung ist ungültig oder abgelaufen. Bitten Sie um eine neue Einladung.",
+      "introNoPassword": "Nennen Sie uns Ihren Namen, um Ihr Konto zu aktivieren. Sie melden sich mit einem Link an, den wir Ihnen per E-Mail schicken, und brauchen sich kein Passwort zu merken.",
+      "passwordOptional": "Passwort (optional)",
+      "passwordOptionalHint": "Mindestens 10 Zeichen. Lassen Sie beide Felder leer, um sich stattdessen per Link anzumelden."
+    },
+    "register": {
+      "title": "Konto anlegen",
+      "intro": "Sagen Sie uns, wie wir Sie erreichen. Alles Weitere können Sie später ergänzen.",
+      "submit": "Konto anlegen",
+      "done": "Fast geschafft. Öffnen Sie die E-Mail, die wir Ihnen geschickt haben, um Ihr Konto abzuschließen.",
+      "closed": "Dieses Portal nimmt derzeit keine Registrierungen an.",
+      "toLogin": "Sie haben schon ein Konto? Anmelden"
     },
     "passwordHint": "Mindestens 10 Zeichen",
     "twoFactor": {
@@ -251,6 +278,10 @@
     "invalid_code": "Dieser Code stimmt nicht. Bitte versuchen Sie es erneut.",
     "invalid_challenge": "Die Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an.",
     "two_factor_already_enabled": "Für dieses Konto ist bereits ein zweiter Faktor eingerichtet.",
-    "invalid_password": "Das Passwort stimmt nicht."
+    "invalid_password": "Das Passwort stimmt nicht.",
+    "registration_closed": "Dieses Portal nimmt keine Registrierungen an.",
+    "sign_in_links_disabled": "Dieses Portal meldet mit Passwort an.",
+    "password_required": "Diese Einladung braucht ein Passwort.",
+    "smtp_required": "Richten Sie zuerst einen Mailserver ein. Ohne ihn kann das Portal die Links nicht verschicken."
   }
 }

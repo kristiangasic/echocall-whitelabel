@@ -613,6 +613,16 @@
       "testTo": "Empfänger",
       "testSent": "Testnachricht an {{email}} gesendet."
     },
+    "registration": {
+      "tab": "Registrierung",
+      "intro": "Wer hier ein Konto anlegen darf und wie sich Menschen anmelden. Beides ist aus, bis Sie es einschalten.",
+      "selfService": "Jeder darf ein Konto anlegen",
+      "selfServiceHint": "Auf der Anmeldeseite erscheint ein Registrierungsformular. Jedes neue Konto wird beim Dienst zugleich Ihr Kunde.",
+      "signInLinks": "Anmeldung per zugeschicktem Link",
+      "signInLinksHint": "Statt ein Passwort einzugeben, fordern Menschen einen einmaligen Link an. Passwörter funktionieren für bestehende Konten weiter.",
+      "mailRequired": "Beides braucht einen Mailserver. Richten Sie zuerst unter E-Mail einen ein.",
+      "saved": "Registrierungseinstellungen gespeichert."
+    },
     "hub": {
       "tab": "Dienst",
       "intro": "Firmendaten, Portal-Logo und Zahlungsschlüssel Ihres Anbieterkontos. Diese Angaben liegen beim Dienst, nicht im Portal.",
