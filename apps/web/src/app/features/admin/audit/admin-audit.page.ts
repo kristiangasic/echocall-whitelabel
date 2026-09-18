@@ -4,7 +4,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
+import { provideTranslocoScope, TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../../core/api/api.service';
 import type { AuditEntry, Page } from '../../../core/models';
@@ -12,6 +12,7 @@ import { NotifyService } from '../../../core/notify/notify.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
 import { NO_VALUE } from '../../../shared/no-value';
 import { providePaginatorIntl } from '../../../shared/paginator-intl';
+import { auditAction, auditDetails } from './audit-entry';
 import { HubActivityComponent } from './hub-activity.component';
 
 @Component({
@@ -53,8 +54,13 @@ import { HubActivityComponent } from './hub-activity.component';
                 </ng-container>
                 <ng-container matColumnDef="action">
                   <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.action') }}</th>
-                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.action')">
-                    <code>{{ row.action }}</code>
+                  <td
+                    mat-cell
+                    *matCellDef="let row"
+                    [attr.data-label]="t('admin.audit.action')"
+                    [title]="row.action"
+                  >
+                    {{ actionLabel(row.action) }}
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="target">
@@ -71,7 +77,7 @@ import { HubActivityComponent } from './hub-activity.component';
                   <th mat-header-cell *matHeaderCellDef>{{ t('admin.audit.details') }}</th>
                   <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.audit.details')">
                     @if (row.details) {
-                      <code class="details" [matTooltip]="details(row)">{{ details(row) }}</code>
+                      <span class="details" [matTooltip]="details(row)">{{ details(row) }}</span>
                     } @else {
                       <span class="empty">{{ noValue }}</span>
                     }
@@ -124,14 +130,27 @@ import { HubActivityComponent } from './hub-activity.component';
     }
     .details {
       display: inline-block;
-      max-width: 200px;
+      max-width: 280px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       vertical-align: middle;
     }
-    .empty {
+    /* In a card the cell has the width of the card and no column to keep to,
+       so what was cut short on a wide screen is simply read over two lines. */
+    @media (max-width: 700px) {
+      .details {
+        max-width: none;
+        white-space: normal;
+      }
+    }
+    /* The word stands for two things: a table with nothing to list, which
+       takes the room a row would have taken, and a single value a row does
+       not have, which is only a dash and takes none. */
+    td.empty {
       padding: 24px 16px;
+    }
+    .empty {
       color: var(--mat-sys-on-surface-variant);
     }
   `,
@@ -139,6 +158,7 @@ import { HubActivityComponent } from './hub-activity.component';
 export class AdminAuditPage implements OnInit {
   private readonly api = inject(ApiService);
   private readonly notify = inject(NotifyService);
+  private readonly transloco = inject(TranslocoService);
 
   /** What a cell shows where there is nothing to put in it. */
   readonly noValue = NO_VALUE;
@@ -161,8 +181,14 @@ export class AdminAuditPage implements OnInit {
     if (index === 1) this.hubOpened.set(true);
   }
 
+  /** The recorded action in the reader's language; the key stays as the title. */
+  actionLabel(action: string): string {
+    return auditAction(action, (key) => this.transloco.translate(key));
+  }
+
+  /** What the entry recorded, as labelled values rather than as stored JSON. */
   details(row: AuditEntry): string {
-    return JSON.stringify(row.details);
+    return auditDetails(row.details, (key) => this.transloco.translate(key));
   }
 
   onPage(event: PageEvent): void {

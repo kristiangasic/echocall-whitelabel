@@ -39,9 +39,9 @@ import { TwoFactorPanel } from './two-factor.panel';
         <mat-tab [label]="t('account.tabs.profile')">
           <div class="cards">
             <mat-card appearance="outlined">
+              <!-- The tab already says Profile; the card says whose. -->
               <mat-card-header>
-                <mat-card-title>{{ t('account.profile.title') }}</mat-card-title>
-                <mat-card-subtitle>{{ user()?.email }}</mat-card-subtitle>
+                <mat-card-title>{{ user()?.email }}</mat-card-title>
               </mat-card-header>
               <mat-card-content>
                 <form [formGroup]="profile" (ngSubmit)="saveProfile()" novalidate>

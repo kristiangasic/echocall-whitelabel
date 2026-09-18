@@ -245,10 +245,12 @@ interface OpenTickets {
     .hub-bad .hub-checked {
       color: inherit;
     }
+    /* Three blocks, three equal columns: the panel uses the width of the page
+       instead of crowding into its left third, and the rules between them show
+       that the same total is being split two different ways. */
     .users {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px 56px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       padding: 16px 20px;
       border: 1px solid var(--mat-sys-outline-variant);
       border-radius: 16px;
@@ -273,6 +275,8 @@ interface OpenTickets {
       gap: 4px;
       align-content: start;
       min-width: 180px;
+      padding-left: 32px;
+      border-left: 1px solid var(--mat-sys-outline-variant);
     }
     .users-line {
       display: flex;
@@ -297,12 +301,17 @@ interface OpenTickets {
       }
       // Two columns of figures do not fit beside the total, and a panel that
       // wraps into three ragged blocks reads worse than three stacked ones.
+      // Stacked, the rule between two blocks runs along the top, not the side.
       .users {
-        display: grid;
+        grid-template-columns: minmax(0, 1fr);
         gap: 16px;
       }
       .users-part {
         min-width: 0;
+        padding-left: 0;
+        padding-top: 16px;
+        border-left: 0;
+        border-top: 1px solid var(--mat-sys-outline-variant);
       }
     }
   `,

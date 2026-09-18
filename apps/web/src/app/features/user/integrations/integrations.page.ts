@@ -27,6 +27,30 @@ interface TestResult {
   message?: string;
 }
 
+/** One group of the catalog: the services that do the same kind of work. */
+interface CatalogGroup {
+  category: string;
+  label: string;
+  entries: IntegrationType[];
+}
+
+/**
+ * The order the groups read in: what an assistant is asked to do most often
+ * stands first. A category the service adds later follows them, and the
+ * catch-all stays at the end, because it names nothing in particular.
+ */
+const GROUP_ORDER = [
+  'scheduling',
+  'calendar',
+  'notifications',
+  'communication',
+  'ticketing',
+  'crm',
+  'automation',
+  'ecommerce',
+  'custom',
+];
+
 /**
  * The services this account has connected, and the catalog of what else can
  * be connected. Which tools an assistant may actually call is decided in the
@@ -61,106 +85,109 @@ interface TestResult {
         <mat-progress-bar mode="indeterminate" />
       }
 
-      <div class="table-wrap">
-        <table mat-table [dataSource]="integrations()" data-testid="integrations-table">
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>{{ t('user.integrations.name') }}</th>
-            <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.integrations.name')">
-              <strong>{{ row.name }}</strong>
-              <span class="sub">{{ typeName(row.type) }}</span>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
-            <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.status')">
-              <mat-chip-set>
-                <mat-chip [highlighted]="row.isActive">
-                  {{ t(row.isActive ? 'user.integrations.active' : 'user.integrations.inactive') }}
-                </mat-chip>
-              </mat-chip-set>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="lastUsed">
-            <th mat-header-cell *matHeaderCellDef>{{ t('user.integrations.lastUsed') }}</th>
-            <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.integrations.lastUsed')">
-              {{ row.lastUsedAt ? (row.lastUsedAt | localDate: 'short') : t('user.integrations.never') }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let row" class="row-actions">
-              <button
-                mat-icon-button
-                type="button"
-                (click)="test(row)"
-                [disabled]="busy()"
-                [matTooltip]="t('user.integrations.test')"
-                [attr.aria-label]="t('user.integrations.test')"
-                [attr.data-testid]="'integration-test-' + row.id"
-              >
-                <mat-icon>bolt</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                type="button"
-                (click)="showTools(row)"
-                [matTooltip]="t('user.integrations.tools')"
-                [attr.aria-label]="t('user.integrations.tools')"
-              >
-                <mat-icon>handyman</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                type="button"
-                (click)="edit(row)"
-                [matTooltip]="t('actions.edit')"
-                [attr.aria-label]="t('actions.edit')"
-              >
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                type="button"
-                (click)="remove(row)"
-                [matTooltip]="t('actions.delete')"
-                [attr.aria-label]="t('actions.delete')"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="columns"></tr>
-          <tr mat-row *matRowDef="let row; columns: columns"></tr>
-          <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell empty" [attr.colspan]="columns.length">
-              {{ t('user.integrations.empty') }}
-            </td>
-          </tr>
-        </table>
-      </div>
+      @if (integrations().length) {
+        <div class="table-wrap">
+          <table mat-table [dataSource]="integrations()" data-testid="integrations-table">
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>{{ t('user.integrations.name') }}</th>
+              <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.integrations.name')">
+                <strong>{{ row.name }}</strong>
+                <span class="sub">{{ typeName(row.type) }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
+              <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.status')">
+                <mat-chip-set>
+                  <mat-chip [highlighted]="row.isActive">
+                    {{ t(row.isActive ? 'user.integrations.active' : 'user.integrations.inactive') }}
+                  </mat-chip>
+                </mat-chip-set>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="lastUsed">
+              <th mat-header-cell *matHeaderCellDef>{{ t('user.integrations.lastUsed') }}</th>
+              <td mat-cell *matCellDef="let row" [attr.data-label]="t('user.integrations.lastUsed')">
+                {{ row.lastUsedAt ? (row.lastUsedAt | localDate: 'short') : t('user.integrations.never') }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let row" class="row-actions">
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="test(row)"
+                  [disabled]="busy()"
+                  [matTooltip]="t('user.integrations.test')"
+                  [attr.aria-label]="t('user.integrations.test')"
+                  [attr.data-testid]="'integration-test-' + row.id"
+                >
+                  <mat-icon>bolt</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="showTools(row)"
+                  [matTooltip]="t('user.integrations.tools')"
+                  [attr.aria-label]="t('user.integrations.tools')"
+                >
+                  <mat-icon>handyman</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="edit(row)"
+                  [matTooltip]="t('actions.edit')"
+                  [attr.aria-label]="t('actions.edit')"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="remove(row)"
+                  [matTooltip]="t('actions.delete')"
+                  [attr.aria-label]="t('actions.delete')"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="columns"></tr>
+            <tr mat-row *matRowDef="let row; columns: columns"></tr>
+          </table>
+        </div>
+      } @else if (!loading()) {
+        <p class="empty">{{ t('user.integrations.empty') }}</p>
+      }
 
       <h2 class="section-title catalog-title">{{ t('user.integrations.catalog') }}</h2>
       <div class="catalog" data-testid="integrations-catalog">
-        @for (entry of catalog(); track entry.type) {
-          <mat-card appearance="outlined">
-            <mat-card-content>
-              <strong>{{ entry.name }}</strong>
-              @if (entry.category) {
-                <span class="sub">{{ categoryLabel(entry.category) }}</span>
-              }
-              <p class="description">{{ explain(entry) }}</p>
-            </mat-card-content>
-            <mat-card-actions>
-              <button
-                mat-button
-                type="button"
-                (click)="connect(entry.type)"
-                [attr.data-testid]="'catalog-' + entry.type"
-              >
-                {{ t('user.integrations.connect') }}
-              </button>
-            </mat-card-actions>
-          </mat-card>
+        @for (group of groups(); track group.category) {
+          <section>
+            <h3 class="group-title">{{ group.label }}</h3>
+            <mat-card appearance="outlined">
+              <mat-card-content class="entries">
+                @for (entry of group.entries; track entry.type) {
+                  <div class="entry">
+                    <div class="entry-text">
+                      <strong>{{ entry.name }}</strong>
+                      <p class="description">{{ explain(entry) }}</p>
+                    </div>
+                    <button
+                      mat-stroked-button
+                      type="button"
+                      (click)="connect(entry.type)"
+                      [attr.data-testid]="'catalog-' + entry.type"
+                    >
+                      {{ t('user.integrations.connect') }}
+                    </button>
+                  </div>
+                }
+              </mat-card-content>
+            </mat-card>
+          </section>
         }
       </div>
     </ng-container>
@@ -185,40 +212,48 @@ interface TestResult {
     .catalog-title {
       margin: 32px 0 12px;
     }
-    /* A fixed column count per width: the cards keep their alignment down the
-       gallery instead of resizing with every entry the service adds. */
+    /* The catalog is a directory, not a gallery: the services stand in the
+       group they belong to, one under the other, so no row of cards ever ends
+       in a remainder and a long description stays readable. */
     .catalog {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-      align-items: stretch;
+      gap: 24px;
     }
-    .catalog mat-card {
+    .group-title {
+      margin: 0 0 8px;
+      font: var(--mat-sys-title-small);
+      color: var(--mat-sys-on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .entries {
+      display: grid;
+    }
+    .entry {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 12px 0;
     }
-    .catalog mat-card-actions {
-      margin-top: auto;
+    .entry + .entry {
+      border-top: 1px solid var(--mat-sys-outline-variant);
     }
-    @media (max-width: 1299px) {
-      .catalog {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-    @media (max-width: 899px) {
-      .catalog {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-    @media (max-width: 599px) {
-      .catalog {
-        grid-template-columns: minmax(0, 1fr);
-      }
+    .entry button {
+      flex: none;
     }
     .description {
-      margin: 8px 0 0;
+      margin: 4px 0 0;
       color: var(--mat-sys-on-surface-variant);
       font: var(--mat-sys-body-small);
+    }
+    /* On a phone the button under the text reads as one block per service. */
+    @media (max-width: 599px) {
+      .entry {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
     }
   `,
 })
@@ -236,6 +271,24 @@ export class IntegrationsPage implements OnInit {
   readonly columns = ['name', 'status', 'lastUsed', 'actions'];
 
   private readonly byType = computed(() => new Map(this.catalog().map((entry) => [entry.type, entry.name])));
+
+  /**
+   * The catalog by the work its services do. A gallery of equal cards leaves
+   * the eye to sort fourteen services by itself and its last row half empty;
+   * grouped, every service stands under the question it answers.
+   */
+  readonly groups = computed<CatalogGroup[]>(() => {
+    const groups = new Map<string, IntegrationType[]>();
+    for (const entry of this.catalog()) {
+      const category = entry.category ?? 'other';
+      const entries = groups.get(category);
+      if (entries) entries.push(entry);
+      else groups.set(category, [entry]);
+    }
+    return [...groups.entries()]
+      .map(([category, entries]) => ({ category, label: this.categoryLabel(category), entries }))
+      .sort((one, other) => rank(one.category) - rank(other.category));
+  });
 
   ngOnInit(): void {
     void this.load();
@@ -328,4 +381,14 @@ export class IntegrationsPage implements OnInit {
       this.busy.set(false);
     }
   }
+}
+
+/**
+ * Where a group stands. A category the portal does not know keeps the middle,
+ * behind the ones it does; the catch-all is last whatever the service calls it.
+ */
+function rank(category: string): number {
+  if (category === 'other') return GROUP_ORDER.length + 1;
+  const place = GROUP_ORDER.indexOf(category);
+  return place === -1 ? GROUP_ORDER.length : place;
 }

@@ -2,6 +2,7 @@ import { Component, computed, inject, type OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
@@ -27,6 +28,7 @@ const WINDOWS = [7, 30, 90] as const;
     FormsModule,
     MatCardModule,
     MatFormFieldModule,
+    MatIconModule,
     MatProgressBarModule,
     MatSelectModule,
     BarListComponent,
@@ -84,9 +86,13 @@ const WINDOWS = [7, 30, 90] as const;
       </div>
 
       @if (empty()) {
-        <div class="section">
-          <p class="hint empty-panel" data-testid="analytics-empty">{{ t('admin.analytics.noUsage') }}</p>
-        </div>
+        <mat-card appearance="outlined" class="nothing section" data-testid="analytics-empty">
+          <mat-card-content>
+            <mat-icon>insights</mat-icon>
+            <p>{{ t('admin.analytics.noUsage') }}</p>
+            <p class="hint">{{ t('admin.analytics.otherPeriod') }}</p>
+          </mat-card-content>
+        </mat-card>
       } @else {
         <div class="splits section">
           <mat-card appearance="outlined">
@@ -128,6 +134,9 @@ const WINDOWS = [7, 30, 90] as const;
     .hint {
       color: var(--mat-sys-on-surface-variant);
       margin: 16px 0 0;
+    }
+    .nothing .hint {
+      margin: 0;
     }
   `,
 })

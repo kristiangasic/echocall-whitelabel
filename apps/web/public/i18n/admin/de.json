@@ -561,7 +561,8 @@
     "chat": "Chat",
     "voice": "Sprache",
     "noUsage": "In diesem Zeitraum wurde nichts verbraucht.",
-    "billedNote": "Die Zahlen stammen aus der abgerechneten Nutzung, nicht aus offenen Rechnungen."
+    "billedNote": "Die Zahlen stammen aus der abgerechneten Nutzung, nicht aus offenen Rechnungen.",
+    "otherPeriod": "Wählen Sie einen längeren Zeitraum, um mehr zu sehen."
   },
   "agents": {
     "title": "Agenten Ihrer Kunden",
@@ -714,6 +715,52 @@
         "credits": "{{minutes}} Sprachminuten, {{chats}} Chats",
         "pricing": "Chat {{chat}}, Sprache {{voice}}"
       }
-    }
+    },
+    "actions": {
+      "account_two_factor_disabled": "Zwei-Faktor abgeschaltet",
+      "account_two_factor_enabled": "Zwei-Faktor eingeschaltet",
+      "auth_registered": "Konto registriert",
+      "auth_sign_in_failed": "Anmeldung fehlgeschlagen",
+      "auth_signed_in": "Angemeldet",
+      "customers_created": "Kunde angelegt",
+      "customers_deleted": "Kunde gelöscht",
+      "customers_suspended": "Kunde gesperrt",
+      "customers_unsuspended": "Kunde entsperrt",
+      "customers_updated": "Kundendaten geändert",
+      "impersonation_start": "Kundenkonto geöffnet",
+      "impersonation_stop": "Kundenkonto verlassen",
+      "settings_branding_updated": "Erscheinungsbild geändert",
+      "settings_registration_updated": "Registrierung geändert",
+      "settings_smtp_removed": "Mailserver entfernt",
+      "settings_smtp_updated": "Mailserver geändert",
+      "setup_admin_created": "Erster Administrator angelegt",
+      "users_deleted": "Zugang gelöscht",
+      "users_invite_resent": "Einladung erneut gesendet",
+      "users_invited": "Zugang eingeladen",
+      "users_sign_in_link_sent": "Anmeldelink gesendet",
+      "users_two_factor_cleared": "Zwei-Faktor zurückgesetzt",
+      "users_updated": "Zugang geändert"
+    },
+    "fields": {
+      "changed": "Geändert",
+      "company": "Firma",
+      "customerId": "Kunde",
+      "email": "E-Mail",
+      "enabled": "Für alle offen",
+      "firstName": "Vorname",
+      "from": "Absender",
+      "host": "Server",
+      "lastName": "Nachname",
+      "mailSent": "E-Mail gesendet",
+      "name": "Name",
+      "port": "Port",
+      "reason": "Grund",
+      "role": "Rolle",
+      "secure": "Verschlüsselt",
+      "user": "Postfachbenutzer",
+      "userId": "Zugang"
+    },
+    "yes": "Ja",
+    "no": "Nein"
   }
 }

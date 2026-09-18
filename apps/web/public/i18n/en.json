@@ -162,7 +162,6 @@
       "security": "Security"
     },
     "profile": {
-      "title": "Profile",
       "saved": "Profile saved."
     },
     "twoFactor": {

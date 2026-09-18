@@ -71,10 +71,62 @@ describe('IntegrationsPage', () => {
     expect(row.textContent).toContain(USER_TEXTS.integrations.active);
   });
 
-  it('shows the empty hint without connections', async () => {
+  it('shows the empty hint without connections, and no table around it', async () => {
     const fixture = await render([]);
 
     expect(fixture.nativeElement.textContent).toContain(USER_TEXTS.integrations.empty);
+    expect(fixture.nativeElement.querySelector('[data-testid="integrations-table"]')).toBeNull();
+  });
+
+  it('groups the catalog by the work the services do', async () => {
+    const fixture = TestBed.createComponent(IntegrationsPage);
+    await fixture.whenStable();
+    http.expectOne('/api/hub/integrations').flush([]);
+    http
+      .expectOne('/api/hub/integrations/types')
+      .flush([
+        { ...TYPE, type: 'zapier', name: 'Zapier', category: 'automation' },
+        TYPE,
+        { ...TYPE, type: 'calendly', name: 'Calendly', category: 'calendar' },
+      ]);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await fixture.whenStable();
+
+    const titles = [...fixture.nativeElement.querySelectorAll('.group-title')].map((node: HTMLElement) =>
+      node.textContent?.trim(),
+    );
+    expect(titles).toEqual([
+      USER_TEXTS.integrations.categories.calendar,
+      USER_TEXTS.integrations.categories.automation,
+    ]);
+    const calendar = fixture.nativeElement.querySelector('section');
+    expect(calendar.textContent).toContain('Cal.com');
+    expect(calendar.textContent).toContain('Calendly');
+    expect(calendar.textContent).not.toContain('Zapier');
+  });
+
+  it('puts a category the portal cannot place behind the ones it can', async () => {
+    const fixture = TestBed.createComponent(IntegrationsPage);
+    await fixture.whenStable();
+    http.expectOne('/api/hub/integrations').flush([]);
+    http
+      .expectOne('/api/hub/integrations/types')
+      .flush([
+        { ...TYPE, type: 'somesuch', name: 'Somesuch', category: 'other' },
+        { ...TYPE, type: 'telepathy', name: 'Telepathy', category: 'telepathy' },
+        TYPE,
+      ]);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await fixture.whenStable();
+
+    const titles = [...fixture.nativeElement.querySelectorAll('.group-title')].map((node: HTMLElement) =>
+      node.textContent?.trim(),
+    );
+    expect(titles).toEqual([
+      USER_TEXTS.integrations.categories.calendar,
+      'telepathy',
+      USER_TEXTS.integrations.categories.other,
+    ]);
   });
 
   it('offers every catalog entry for connecting', async () => {

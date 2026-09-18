@@ -561,7 +561,8 @@
     "chat": "Chat",
     "voice": "Voix",
     "noUsage": "Rien n'a été consommé sur cette période.",
-    "billedNote": "Les chiffres proviennent de la consommation facturée, pas des factures ouvertes."
+    "billedNote": "Les chiffres proviennent de la consommation facturée, pas des factures ouvertes.",
+    "otherPeriod": "Choisissez une période plus longue pour voir davantage."
   },
   "agents": {
     "title": "Agents de vos clients",
@@ -714,6 +715,52 @@
         "credits": "{{minutes}} minutes vocales, {{chats}} discussions",
         "pricing": "Chat {{chat}}, voix {{voice}}"
       }
-    }
+    },
+    "actions": {
+      "account_two_factor_disabled": "Double facteur désactivé",
+      "account_two_factor_enabled": "Double facteur activé",
+      "auth_registered": "Compte créé",
+      "auth_sign_in_failed": "Échec de la connexion",
+      "auth_signed_in": "Connexion",
+      "customers_created": "Client créé",
+      "customers_deleted": "Client supprimé",
+      "customers_suspended": "Client suspendu",
+      "customers_unsuspended": "Client réactivé",
+      "customers_updated": "Données du client modifiées",
+      "impersonation_start": "Compte client ouvert",
+      "impersonation_stop": "Compte client quitté",
+      "settings_branding_updated": "Apparence modifiée",
+      "settings_registration_updated": "Paramètres d’inscription modifiés",
+      "settings_smtp_removed": "Serveur de messagerie supprimé",
+      "settings_smtp_updated": "Serveur de messagerie modifié",
+      "setup_admin_created": "Premier administrateur créé",
+      "users_deleted": "Accès supprimé",
+      "users_invite_resent": "Invitation renvoyée",
+      "users_invited": "Accès invité",
+      "users_sign_in_link_sent": "Lien de connexion envoyé",
+      "users_two_factor_cleared": "Double facteur réinitialisé",
+      "users_updated": "Accès modifié"
+    },
+    "fields": {
+      "changed": "Modifié",
+      "company": "Société",
+      "customerId": "Client",
+      "email": "E-mail",
+      "enabled": "Ouvert à tous",
+      "firstName": "Prénom",
+      "from": "Expéditeur",
+      "host": "Serveur",
+      "lastName": "Nom",
+      "mailSent": "E-mail envoyé",
+      "name": "Nom",
+      "port": "Port",
+      "reason": "Motif",
+      "role": "Rôle",
+      "secure": "Chiffré",
+      "user": "Utilisateur de la boîte",
+      "userId": "Accès"
+    },
+    "yes": "Oui",
+    "no": "Non"
   }
 }

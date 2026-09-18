@@ -2,16 +2,16 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MATERIAL_ANIMATIONS } from '@angular/material/core';
-import { provideTestI18n } from '../../../testing/i18n';
+import { ADMIN_TEXTS, provideTestI18n } from '../../../testing/i18n';
 import { AdminAuditPage } from './admin-audit.page';
 
 const LOCAL_ENTRY = {
   id: 3,
   actorEmail: 'operator@example.com',
-  action: 'customer.created',
+  action: 'customers.created',
   targetType: 'customer',
   targetId: 12,
-  details: { plan: 'starter' },
+  details: { email: 'someone@example.com', mailSent: true },
   ip: '203.0.113.7',
   createdAt: '2026-09-16T09:00:00.000Z',
 };
@@ -58,8 +58,17 @@ describe('AdminAuditPage', () => {
   it('shows the portal trail and asks the service for nothing yet', async () => {
     const fixture = await render();
 
-    expect(fixture.nativeElement.textContent).toContain('customer.created');
+    expect(fixture.nativeElement.textContent).toContain(ADMIN_TEXTS.audit.actions.customers_created);
     http.expectNone((req) => req.url === '/api/admin/hub/resellers/activity-log');
+  });
+
+  it('reads an entry as words rather than as the shape it was stored in', async () => {
+    const fixture = await render();
+
+    const text = fixture.nativeElement.textContent;
+    expect(text).toContain('E-mail: someone@example.com');
+    expect(text).toContain('Mail sent: Yes');
+    expect(text).not.toContain('mailSent');
   });
 
   it('loads the service trail when its tab is opened, and only once', async () => {

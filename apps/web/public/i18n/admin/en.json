@@ -561,7 +561,8 @@
     "chat": "Chat",
     "voice": "Voice",
     "noUsage": "Nothing was used in this period.",
-    "billedNote": "The figures come from billed usage, not from open invoices."
+    "billedNote": "The figures come from billed usage, not from open invoices.",
+    "otherPeriod": "Pick a longer period to see more."
   },
   "agents": {
     "title": "Customer agents",
@@ -714,6 +715,52 @@
         "credits": "{{minutes}} voice minutes, {{chats}} chats",
         "pricing": "Chat {{chat}}, voice {{voice}}"
       }
-    }
+    },
+    "actions": {
+      "account_two_factor_disabled": "Two-factor turned off",
+      "account_two_factor_enabled": "Two-factor turned on",
+      "auth_registered": "Account registered",
+      "auth_sign_in_failed": "Sign-in failed",
+      "auth_signed_in": "Signed in",
+      "customers_created": "Customer created",
+      "customers_deleted": "Customer deleted",
+      "customers_suspended": "Customer suspended",
+      "customers_unsuspended": "Customer unlocked",
+      "customers_updated": "Customer data changed",
+      "impersonation_start": "Opened a customer account",
+      "impersonation_stop": "Left the customer account",
+      "settings_branding_updated": "Appearance changed",
+      "settings_registration_updated": "Registration settings changed",
+      "settings_smtp_removed": "Mail server removed",
+      "settings_smtp_updated": "Mail server changed",
+      "setup_admin_created": "First administrator created",
+      "users_deleted": "Login deleted",
+      "users_invite_resent": "Invitation sent again",
+      "users_invited": "Login invited",
+      "users_sign_in_link_sent": "Sign-in link sent",
+      "users_two_factor_cleared": "Two-factor reset",
+      "users_updated": "Login changed"
+    },
+    "fields": {
+      "changed": "Changed",
+      "company": "Company",
+      "customerId": "Customer",
+      "email": "E-mail",
+      "enabled": "Open to everyone",
+      "firstName": "First name",
+      "from": "Sender",
+      "host": "Server",
+      "lastName": "Last name",
+      "mailSent": "Mail sent",
+      "name": "Name",
+      "port": "Port",
+      "reason": "Reason",
+      "role": "Role",
+      "secure": "Encrypted",
+      "user": "Mailbox login",
+      "userId": "Login"
+    },
+    "yes": "Yes",
+    "no": "No"
   }
 }
