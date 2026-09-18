@@ -152,13 +152,15 @@ const CANCELLABLE = ['pending', 'scheduled', 'running'];
           </tr>
         </table>
       </div>
-      <mat-paginator
-        [length]="total()"
-        [pageSize]="perPage()"
-        [pageIndex]="page() - 1"
-        [pageSizeOptions]="[50, 100]"
-        (page)="changePage($event)"
-      />
+      @if (total() > perPage()) {
+        <mat-paginator
+          [length]="total()"
+          [pageSize]="perPage()"
+          [pageIndex]="page() - 1"
+          [pageSizeOptions]="[50, 100]"
+          (page)="changePage($event)"
+        />
+      }
     </ng-container>
   `,
   styles: `

@@ -76,13 +76,15 @@ const PER_PAGE = 25;
           </tr>
         </table>
       </div>
-      <mat-paginator
-        [length]="total()"
-        [pageIndex]="page() - 1"
-        [pageSize]="perPage()"
-        [pageSizeOptions]="[25, 50, 100]"
-        (page)="onPage($event)"
-      />
+      @if (total() > perPage()) {
+        <mat-paginator
+          [length]="total()"
+          [pageIndex]="page() - 1"
+          [pageSize]="perPage()"
+          [pageSizeOptions]="[25, 50, 100]"
+          (page)="onPage($event)"
+        />
+      }
     </ng-container>
   `,
   styles: `

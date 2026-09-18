@@ -171,13 +171,15 @@ const STATUSES = ['active', 'past_due', 'canceled', 'paused', 'expired'] as cons
           </tr>
         </table>
       </div>
-      <mat-paginator
-        [length]="total()"
-        [pageIndex]="page() - 1"
-        [pageSize]="perPage()"
-        [pageSizeOptions]="[25, 50, 100]"
-        (page)="onPage($event)"
-      />
+      @if (total() > perPage()) {
+        <mat-paginator
+          [length]="total()"
+          [pageIndex]="page() - 1"
+          [pageSize]="perPage()"
+          [pageSizeOptions]="[25, 50, 100]"
+          (page)="onPage($event)"
+        />
+      }
 
       <mat-menu #menu="matMenu">
         <ng-template matMenuContent let-row="row">

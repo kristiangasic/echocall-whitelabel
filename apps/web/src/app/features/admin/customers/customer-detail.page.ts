@@ -293,13 +293,15 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
             </tr>
           </table>
         </div>
-        <mat-paginator
-          [length]="transactionTotal()"
-          [pageIndex]="page() - 1"
-          [pageSize]="perPage()"
-          [pageSizeOptions]="[25, 50, 100]"
-          (page)="onPage($event)"
-        />
+        @if (transactionTotal() > perPage()) {
+          <mat-paginator
+            [length]="transactionTotal()"
+            [pageIndex]="page() - 1"
+            [pageSize]="perPage()"
+            [pageSizeOptions]="[25, 50, 100]"
+            (page)="onPage($event)"
+          />
+        }
       }
     </ng-container>
   `,

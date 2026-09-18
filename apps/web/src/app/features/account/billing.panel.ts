@@ -185,13 +185,15 @@ const INVOICE_COLUMNS = ['number', 'issued', 'total', 'status', 'download'];
       @if (transactions().length === 0 && !loading()) {
         <p class="empty">{{ t('user.billing.transactions.empty') }}</p>
       }
-      <mat-paginator
-        [length]="transactionTotal()"
-        [pageSize]="perPage()"
-        [pageIndex]="page() - 1"
-        [pageSizeOptions]="[20, 50]"
-        (page)="changePage($event)"
-      />
+      @if (transactionTotal() > perPage()) {
+        <mat-paginator
+          [length]="transactionTotal()"
+          [pageSize]="perPage()"
+          [pageIndex]="page() - 1"
+          [pageSizeOptions]="[20, 50]"
+          (page)="changePage($event)"
+        />
+      }
     </ng-container>
   `,
   styles: `

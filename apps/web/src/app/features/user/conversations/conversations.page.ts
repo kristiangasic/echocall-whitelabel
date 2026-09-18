@@ -87,13 +87,15 @@ import { providePaginatorIntl } from '../../../shared/paginator-intl';
           </tr>
         </table>
       </div>
-      <mat-paginator
-        [length]="total()"
-        [pageSize]="perPage()"
-        [pageIndex]="page() - 1"
-        [pageSizeOptions]="[25, 50, 100]"
-        (page)="changePage($event)"
-      />
+      @if (total() > perPage()) {
+        <mat-paginator
+          [length]="total()"
+          [pageSize]="perPage()"
+          [pageIndex]="page() - 1"
+          [pageSizeOptions]="[25, 50, 100]"
+          (page)="changePage($event)"
+        />
+      }
     </ng-container>
   `,
   styles: `

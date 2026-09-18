@@ -85,13 +85,15 @@ import { HubActivityComponent } from './hub-activity.component';
                 </tr>
               </table>
             </div>
-            <mat-paginator
-              [length]="page().meta.total"
-              [pageIndex]="page().meta.page - 1"
-              [pageSize]="page().meta.limit"
-              [pageSizeOptions]="[25, 50, 100]"
-              (page)="onPage($event)"
-            />
+            @if (page().meta.total > page().meta.limit) {
+              <mat-paginator
+                [length]="page().meta.total"
+                [pageIndex]="page().meta.page - 1"
+                [pageSize]="page().meta.limit"
+                [pageSizeOptions]="[25, 50, 100]"
+                (page)="onPage($event)"
+              />
+            }
           </div>
         </mat-tab>
 
