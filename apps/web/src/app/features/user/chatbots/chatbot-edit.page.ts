@@ -103,7 +103,7 @@ const STYLES = ['standard', 'rounded', 'compact'];
               <mat-label>{{ t('user.chatbots.greeting') }}</mat-label>
               <textarea matInput formControlName="greeting" rows="2"></textarea>
             </mat-form-field>
-            <mat-form-field appearance="outline" class="span-all" subscriptSizing="dynamic">
+            <mat-form-field appearance="outline" class="span-all">
               <mat-label>{{ t('user.chatbots.systemPrompt') }}</mat-label>
               <textarea
                 matInput
@@ -167,7 +167,7 @@ const STYLES = ['standard', 'rounded', 'compact'];
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field appearance="outline" class="span-all" subscriptSizing="dynamic">
+            <mat-form-field appearance="outline" class="span-all">
               <mat-label>{{ t('user.chatbots.teaserMessage') }}</mat-label>
               <input matInput formControlName="teaserMessage" />
               <mat-hint>{{ t('user.chatbots.teaserHint') }}</mat-hint>
@@ -193,19 +193,14 @@ const STYLES = ['standard', 'rounded', 'compact'];
                 {{ t('user.chatbots.textOnlyMode') }}
               </mat-slide-toggle>
             </div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card appearance="outlined">
-          <mat-card-header>
-            <mat-card-title>{{ t('user.chatbots.sections.domains') }}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <mat-form-field appearance="outline" class="full" subscriptSizing="dynamic">
-              <mat-label>{{ t('user.chatbots.allowedDomains') }}</mat-label>
-              <input matInput formControlName="allowedDomains" data-testid="chatbot-domains" />
-              <mat-hint>{{ t('user.chatbots.allowedDomainsHint') }}</mat-hint>
-            </mat-form-field>
+            <div class="span-all subgroup">
+              <h3 class="subgroup-title">{{ t('user.chatbots.sections.domains') }}</h3>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ t('user.chatbots.allowedDomains') }}</mat-label>
+                <input matInput formControlName="allowedDomains" data-testid="chatbot-domains" />
+                <mat-hint>{{ t('user.chatbots.allowedDomainsHint') }}</mat-hint>
+              </mat-form-field>
+            </div>
           </mat-card-content>
         </mat-card>
 
@@ -214,7 +209,7 @@ const STYLES = ['standard', 'rounded', 'compact'];
             <mat-card-title>{{ t('user.chatbots.sections.privacy') }}</mat-card-title>
           </mat-card-header>
           <mat-card-content class="grid">
-            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-form-field appearance="outline" class="field-sm">
               <mat-label>{{ t('user.chatbots.retentionDays') }}</mat-label>
               <input matInput type="number" formControlName="retentionDays" min="-1" />
               <mat-hint>{{ t('user.chatbots.retentionDaysHint') }}</mat-hint>
@@ -276,7 +271,7 @@ const STYLES = ['standard', 'rounded', 'compact'];
     .grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 4px 24px;
+      gap: 12px 24px;
       padding-top: 12px;
     }
     @media (max-width: 699px) {
@@ -286,10 +281,6 @@ const STYLES = ['standard', 'rounded', 'compact'];
     }
     .span-all {
       grid-column: 1 / -1;
-    }
-    .full {
-      width: 100%;
-      margin-top: 12px;
     }
     .toggles {
       display: flex;

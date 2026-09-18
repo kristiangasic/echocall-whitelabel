@@ -512,6 +512,25 @@ a.stat:focus-visible {
   max-width: 220px;
 }
 
+// A named group inside a card: quieter than the card's own title, and set off
+// by a rule so that what stands above it does not read as part of it. It saves
+// a card whose whole content is one field from being a card at all.
+.subgroup {
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  margin-top: 8px;
+  padding-top: 16px;
+}
+
+.subgroup-title {
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-title-small);
+  margin: 0 0 4px;
+}
+
+.subgroup > mat-form-field {
+  width: 100%;
+}
+
 // A field that sizes its own subscript is one whose hint is too long for the
 // single line Material reserves. Letting the hint grow also hands that line
 // back, so a two-line hint ends flush against the next field. The gap the

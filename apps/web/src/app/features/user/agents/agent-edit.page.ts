@@ -88,7 +88,7 @@ const SYSTEM_TOOLS = [
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" [class.span-all]="isNew()">
               <mat-label>{{ t('user.agents.supportedLanguages') }}</mat-label>
               <mat-select formControlName="supportedLanguages" multiple>
                 @for (lang of languages(); track lang.code) {
@@ -226,8 +226,8 @@ const SYSTEM_TOOLS = [
                 {{ t('user.agents.backgroundVoiceDetection') }}
               </mat-slide-toggle>
             </div>
-            <div class="span-all group" formGroupName="tools">
-              <h3 class="group-title">{{ t('user.agents.sections.systemTools') }}</h3>
+            <div class="span-all subgroup" formGroupName="tools">
+              <h3 class="subgroup-title">{{ t('user.agents.sections.systemTools') }}</h3>
               <div class="toggles">
                 @for (tool of systemTools; track tool) {
                   <mat-slide-toggle [formControlName]="tool">
@@ -346,7 +346,7 @@ const SYSTEM_TOOLS = [
     .grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 4px 24px;
+      gap: 12px 24px;
       padding-top: 12px;
     }
     @media (max-width: 699px) {
@@ -362,16 +362,6 @@ const SYSTEM_TOOLS = [
       flex-wrap: wrap;
       gap: 12px 24px;
       padding: 8px 0;
-    }
-    .group {
-      border-top: 1px solid var(--mat-sys-outline-variant);
-      margin-top: 8px;
-      padding-top: 16px;
-    }
-    .group-title {
-      color: var(--mat-sys-on-surface-variant);
-      font: var(--mat-sys-title-small);
-      margin: 0;
     }
     .slider-field {
       display: flex;
