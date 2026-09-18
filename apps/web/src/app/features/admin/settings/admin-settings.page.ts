@@ -243,19 +243,23 @@ const ROUTE = '/admin/settings/registration';
                   }
                 </mat-form-field>
               </div>
-              <mat-form-field appearance="outline" class="full">
-                <mat-label>{{ t('admin.settings.mail.from') }}</mat-label>
-                <input
-                  matInput
-                  formControlName="from"
-                  autocomplete="off"
-                  placeholder="portal@example.com"
-                  data-testid="smtp-from"
-                />
-                @if (smtpForm.controls.from | fieldError; as e) {
-                  <mat-error>{{ t(e.key, e.params) }}</mat-error>
-                }
-              </mat-form-field>
+              <!-- An address is no longer than the mailbox login above it, so it
+                   keeps the column rather than reaching across both of them. -->
+              <div class="row">
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ t('admin.settings.mail.from') }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="from"
+                    autocomplete="off"
+                    placeholder="portal@example.com"
+                    data-testid="smtp-from"
+                  />
+                  @if (smtpForm.controls.from | fieldError; as e) {
+                    <mat-error>{{ t(e.key, e.params) }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
               <div class="form-actions">
                 <button mat-flat-button type="submit" [disabled]="savingSmtp()" data-testid="save-smtp">
                   {{ t('actions.save') }}

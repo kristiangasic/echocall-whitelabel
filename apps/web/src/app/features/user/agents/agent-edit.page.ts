@@ -88,7 +88,7 @@ const SYSTEM_TOOLS = [
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-form-field appearance="outline">
               <mat-label>{{ t('user.agents.supportedLanguages') }}</mat-label>
               <mat-select formControlName="supportedLanguages" multiple>
                 @for (lang of languages(); track lang.code) {
@@ -97,6 +97,37 @@ const SYSTEM_TOOLS = [
               </mat-select>
               <mat-hint>{{ t('user.agents.supportedLanguagesHint') }}</mat-hint>
             </mat-form-field>
+            @if (!isNew()) {
+              <mat-form-field appearance="outline">
+                <mat-label>{{ t('fields.status') }}</mat-label>
+                <mat-select formControlName="status">
+                  <mat-option value="active">{{ t('user.agents.statuses.active') }}</mat-option>
+                  <mat-option value="inactive">{{ t('user.agents.statuses.inactive') }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            }
+            <mat-form-field appearance="outline" class="span-all">
+              <mat-label>{{ t('user.agents.firstMessage') }}</mat-label>
+              <textarea matInput formControlName="firstMessage" rows="2"></textarea>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="span-all">
+              <mat-label>{{ t('user.agents.systemPrompt') }}</mat-label>
+              <textarea
+                matInput
+                formControlName="systemPrompt"
+                rows="8"
+                data-testid="agent-prompt"
+              ></textarea>
+              <mat-hint>{{ t('user.agents.systemPromptHint') }}</mat-hint>
+            </mat-form-field>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card appearance="outlined">
+          <mat-card-header>
+            <mat-card-title>{{ t('user.agents.sections.voiceTuning') }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="grid">
             <mat-form-field appearance="outline">
               <mat-label>{{ t('user.agents.voice') }}</mat-label>
               <mat-select formControlName="voiceId" data-testid="agent-voice">
@@ -126,37 +157,6 @@ const SYSTEM_TOOLS = [
                 }
               </mat-select>
             </mat-form-field>
-            @if (!isNew()) {
-              <mat-form-field appearance="outline">
-                <mat-label>{{ t('fields.status') }}</mat-label>
-                <mat-select formControlName="status">
-                  <mat-option value="active">{{ t('user.agents.statuses.active') }}</mat-option>
-                  <mat-option value="inactive">{{ t('user.agents.statuses.inactive') }}</mat-option>
-                </mat-select>
-              </mat-form-field>
-            }
-            <mat-form-field appearance="outline" class="span-all">
-              <mat-label>{{ t('user.agents.firstMessage') }}</mat-label>
-              <textarea matInput formControlName="firstMessage" rows="2"></textarea>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="span-all" subscriptSizing="dynamic">
-              <mat-label>{{ t('user.agents.systemPrompt') }}</mat-label>
-              <textarea
-                matInput
-                formControlName="systemPrompt"
-                rows="8"
-                data-testid="agent-prompt"
-              ></textarea>
-              <mat-hint>{{ t('user.agents.systemPromptHint') }}</mat-hint>
-            </mat-form-field>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card appearance="outlined">
-          <mat-card-header>
-            <mat-card-title>{{ t('user.agents.sections.voiceTuning') }}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content class="grid">
             <div class="slider-field">
               <span class="slider-label">{{ t('user.agents.speed') }}: {{ form.controls.speed.value }}</span>
               <mat-slider [min]="0.7" [max]="1.2" [step]="0.05" discrete>
@@ -188,10 +188,6 @@ const SYSTEM_TOOLS = [
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>{{ t('user.agents.maxTokens') }}</mat-label>
-              <input matInput type="number" formControlName="maxTokens" min="1" />
-            </mat-form-field>
-            <mat-form-field appearance="outline">
               <mat-label>{{ t('user.agents.turnEagerness') }}</mat-label>
               <mat-select formControlName="turnEagerness">
                 @for (value of ['patient', 'normal', 'eager']; track value) {
@@ -199,7 +195,16 @@ const SYSTEM_TOOLS = [
                 }
               </mat-select>
             </mat-form-field>
-            <div class="slider-field">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ t('user.agents.maxTokens') }}</mat-label>
+              <input matInput type="number" formControlName="maxTokens" min="1" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ t('user.agents.asrKeywords') }}</mat-label>
+              <input matInput formControlName="asrKeywords" />
+              <mat-hint>{{ t('user.agents.asrKeywordsHint') }}</mat-hint>
+            </mat-form-field>
+            <div class="slider-field span-all">
               <span class="slider-label"
                 >{{ t('user.agents.temperature') }}: {{ form.controls.temperature.value }}</span
               >
@@ -207,11 +212,6 @@ const SYSTEM_TOOLS = [
                 <input matSliderThumb formControlName="temperature" />
               </mat-slider>
             </div>
-            <mat-form-field appearance="outline" class="span-all" subscriptSizing="dynamic">
-              <mat-label>{{ t('user.agents.asrKeywords') }}</mat-label>
-              <input matInput formControlName="asrKeywords" />
-              <mat-hint>{{ t('user.agents.asrKeywordsHint') }}</mat-hint>
-            </mat-form-field>
             <div class="toggles span-all">
               <mat-slide-toggle formControlName="enableInterruptions">
                 {{ t('user.agents.enableInterruptions') }}
@@ -226,6 +226,16 @@ const SYSTEM_TOOLS = [
                 {{ t('user.agents.backgroundVoiceDetection') }}
               </mat-slide-toggle>
             </div>
+            <div class="span-all group" formGroupName="tools">
+              <h3 class="group-title">{{ t('user.agents.sections.systemTools') }}</h3>
+              <div class="toggles">
+                @for (tool of systemTools; track tool) {
+                  <mat-slide-toggle [formControlName]="tool">
+                    {{ t('user.agents.tools.' + tool) }}
+                  </mat-slide-toggle>
+                }
+              </div>
+            </div>
           </mat-card-content>
         </mat-card>
 
@@ -234,7 +244,7 @@ const SYSTEM_TOOLS = [
             <mat-card-title>{{ t('user.agents.sections.privacy') }}</mat-card-title>
           </mat-card-header>
           <mat-card-content class="grid">
-            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-form-field appearance="outline" class="field-sm">
               <mat-label>{{ t('user.agents.retentionDays') }}</mat-label>
               <input matInput type="number" formControlName="retentionDays" min="-1" />
               <mat-hint>{{ t('user.agents.retentionDaysHint') }}</mat-hint>
@@ -246,21 +256,6 @@ const SYSTEM_TOOLS = [
               <mat-slide-toggle formControlName="zeroPiiRetention">
                 {{ t('user.agents.zeroPiiRetention') }}
               </mat-slide-toggle>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card appearance="outlined" formGroupName="tools">
-          <mat-card-header>
-            <mat-card-title>{{ t('user.agents.sections.systemTools') }}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="toggles">
-              @for (tool of systemTools; track tool) {
-                <mat-slide-toggle [formControlName]="tool">
-                  {{ t('user.agents.tools.' + tool) }}
-                </mat-slide-toggle>
-              }
             </div>
           </mat-card-content>
         </mat-card>
@@ -367,6 +362,16 @@ const SYSTEM_TOOLS = [
       flex-wrap: wrap;
       gap: 12px 24px;
       padding: 8px 0;
+    }
+    .group {
+      border-top: 1px solid var(--mat-sys-outline-variant);
+      margin-top: 8px;
+      padding-top: 16px;
+    }
+    .group-title {
+      color: var(--mat-sys-on-surface-variant);
+      font: var(--mat-sys-title-small);
+      margin: 0;
     }
     .slider-field {
       display: flex;
