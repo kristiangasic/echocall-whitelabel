@@ -24,7 +24,7 @@ export interface UsersTable {
 export interface TwoFactorRecoveryCodesTable {
   id: Generated<number>;
   userId: number;
-  /** Hashed like a password; the plain code is shown once and never stored. */
+  /** Hashed like every other token here; the plain code is shown once and never stored. */
   codeHash: string;
   usedAt: Date | null;
   createdAt: Generated<Date>;

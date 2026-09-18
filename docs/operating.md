@@ -90,7 +90,7 @@ working locks everyone out at once. Whoever can reach the machine can let themse
 in, because the same link can be printed there instead of mailed:
 
 ```bash
-docker compose exec app node dist/cli/sign-in-link.js you@example.com
+docker compose exec app node apps/api/dist/cli/sign-in-link.js you@example.com
 ```
 
 It prints one link, valid for 15 minutes and usable once, and it prints an invitation

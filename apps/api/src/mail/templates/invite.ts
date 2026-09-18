@@ -6,7 +6,7 @@ const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>
     subject: `Ihre Einladung zu ${ctx.productName}`,
     greeting: ctx.firstName ? `Hallo ${ctx.firstName},` : 'Hallo,',
     paragraphs: [
-      `Sie wurden zu ${ctx.productName} eingeladen. Über den folgenden Link legen Sie Ihr Passwort fest und melden sich an.`,
+      `Sie wurden zu ${ctx.productName} eingeladen. Über den folgenden Link aktivieren Sie Ihr Konto. Danach melden Sie sich immer mit einem Link an, den wir Ihnen per E-Mail schicken.`,
     ],
     button: { label: 'Einladung annehmen', url: ctx.link },
     closing: [
@@ -18,7 +18,7 @@ const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>
     subject: `Your invitation to ${ctx.productName}`,
     greeting: ctx.firstName ? `Hello ${ctx.firstName},` : 'Hello,',
     paragraphs: [
-      `You have been invited to ${ctx.productName}. Use the link below to choose your password and sign in.`,
+      `You have been invited to ${ctx.productName}. Use the link below to activate your account. From then on you sign in with a link we e-mail you, so there is no password to remember.`,
     ],
     button: { label: 'Accept invitation', url: ctx.link },
     closing: [
@@ -30,7 +30,7 @@ const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>
     subject: `Votre invitation à ${ctx.productName}`,
     greeting: ctx.firstName ? `Bonjour ${ctx.firstName},` : 'Bonjour,',
     paragraphs: [
-      `Vous avez été invité(e) à ${ctx.productName}. Utilisez le lien ci-dessous pour choisir votre mot de passe et vous connecter.`,
+      `Vous avez été invité(e) à ${ctx.productName}. Utilisez le lien ci-dessous pour activer votre compte. Ensuite, vous vous connectez avec un lien que nous vous envoyons par e-mail, sans mot de passe à retenir.`,
     ],
     button: { label: "Accepter l'invitation", url: ctx.link },
     closing: [

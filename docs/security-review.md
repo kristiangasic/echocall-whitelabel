@@ -63,10 +63,10 @@ factor.
 - A link that reaches an account which is not active is refused, and the refusal goes to
   the audit log.
 - The mail server is part of the way in, which is why the portal ships with a way past it:
-  `node dist/cli/sign-in-link.js <address>`, run on the machine, prints the link the mail
-  would have carried. It needs the database and `APP_SECRET`, which is to say it needs the
-  machine, and whoever has that can read everything anyway. `docs/operating.md` describes
-  it.
+  `node apps/api/dist/cli/sign-in-link.js <address>`, run on the machine, prints the link
+  the mail would have carried. It needs the database and `APP_SECRET`, which is to say it
+  needs the machine, and whoever has that can read everything anyway. `docs/operating.md`
+  describes it.
 
 ## Invitation, sign-in and challenge tokens
 

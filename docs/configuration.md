@@ -44,7 +44,7 @@ in through the browser. The command below, run on the machine itself, prints the
 mail would have carried and does not need SMTP at all:
 
 ```bash
-docker compose exec app node dist/cli/sign-in-link.js you@example.com
+docker compose exec app node apps/api/dist/cli/sign-in-link.js you@example.com
 ```
 
 | Variable      | Default | Description                                                                       |

@@ -17,9 +17,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   arrives: valid for 15 minutes, usable once, and a second factor still applies. The page
   answers the same way whether or not the address has an account here.
 - A way in that does not need the mail server, for the operator on the machine itself:
-  `docker compose exec app node dist/cli/sign-in-link.js you@example.com` prints the link
-  the mail would have carried. The browser smoke run uses the same command, so it is
-  exercised on every run.
+  `docker compose exec app node apps/api/dist/cli/sign-in-link.js you@example.com` prints
+  the link the mail would have carried. The browser smoke run uses the same command, so it
+  is exercised on every run.
 - **Settings, Sign-up** in the admin panel carries the sign-up switch. It cannot be
   switched on while no mail server is configured, because a sign-up depends on mail.
 

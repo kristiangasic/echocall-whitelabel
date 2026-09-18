@@ -98,7 +98,7 @@ That makes the mail server part of the way in, so the portal ships with a way pa
 the machine itself, this prints the same link the mail would have carried:
 
 ```bash
-docker compose exec app node dist/cli/sign-in-link.js you@example.com
+docker compose exec app node apps/api/dist/cli/sign-in-link.js you@example.com
 ```
 
 ## Security

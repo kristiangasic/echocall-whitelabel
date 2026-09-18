@@ -25,11 +25,11 @@ export interface Enrolment {
  * The second factor of a login: enrolment, activation, removal and the check
  * itself.
  *
- * Recovery codes are hashed with sha256 rather than the password hasher. They
- * are tokens, not passwords: fifty bits of randomness this service generated,
- * never something a person chose, so there is nothing for a slow hash to
- * defend. Ten of them also have to be checked one after another on every
- * attempt, and a slow hash would turn that into a way to tie up the server.
+ * Recovery codes are hashed with sha256 rather than a slow hash. They are
+ * tokens: fifty bits of randomness this service generated, never something a
+ * person chose, so there is nothing a slow hash could defend. Ten of them also
+ * have to be checked one after another on every attempt, and a slow hash would
+ * turn that into a way to tie up the server.
  */
 @Injectable()
 export class TwoFactorService {
