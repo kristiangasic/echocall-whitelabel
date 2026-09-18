@@ -195,7 +195,6 @@ const POLL_INTERVAL_MS = 5000;
       min-width: 200px;
     }
     .hint {
-      color: var(--mat-sys-on-surface-variant);
       margin: 0;
       padding: 8px 16px;
     }

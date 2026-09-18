@@ -217,7 +217,6 @@ const INVOICE_COLUMNS = ['number', 'issued', 'total', 'status', 'download'];
       margin: 4px 0 0;
     }
     .hint {
-      color: var(--mat-sys-on-surface-variant);
       margin: 4px 0 0;
     }
     .section-title {

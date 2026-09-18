@@ -74,7 +74,6 @@ import { FieldErrorPipe } from '../../shared/forms/field-error.pipe';
   styles: `
     .auth-intro,
     .hint {
-      color: var(--mat-sys-on-surface-variant);
       font: var(--mat-sys-body-medium);
     }
     .auth-intro {

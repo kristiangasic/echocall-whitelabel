@@ -156,8 +156,6 @@ export interface PurchaseResult {
       font: var(--mat-sys-body-small);
     }
     .hint {
-      color: var(--mat-sys-on-surface-variant);
-      font: var(--mat-sys-body-small);
       margin: 12px 0 0;
     }
   `,

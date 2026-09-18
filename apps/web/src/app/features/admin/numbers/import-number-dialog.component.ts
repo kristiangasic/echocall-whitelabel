@@ -186,7 +186,6 @@ export interface ImportNumberResult {
   styles: `
     .hint {
       margin: 0 0 16px;
-      color: var(--mat-sys-on-surface-variant);
     }
     .small {
       font: var(--mat-sys-body-small);

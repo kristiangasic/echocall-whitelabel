@@ -149,7 +149,6 @@ const CYCLES = ['monthly', 'yearly', 'one-time'] as const;
   styles: `
     .hint {
       margin: 0 0 16px;
-      color: var(--mat-sys-on-surface-variant);
     }
     /* These two carry the longest labels in the dialog, and half a row cuts
        them off in every language. They take the whole width instead. */

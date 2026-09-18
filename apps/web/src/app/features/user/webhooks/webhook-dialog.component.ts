@@ -122,7 +122,6 @@ export interface WebhookDialogResult {
       font: var(--mat-sys-body-small);
     }
     .hint {
-      color: var(--mat-sys-on-surface-variant);
       margin: 8px 0 0;
     }
   `,

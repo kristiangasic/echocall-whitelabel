@@ -140,7 +140,6 @@ type ConversationDetail = AnyConversation & { messages?: ConversationTranscriptM
       font: var(--mat-sys-body-medium);
     }
     .hint {
-      color: var(--mat-sys-on-surface-variant);
       margin: 0;
     }
   `,

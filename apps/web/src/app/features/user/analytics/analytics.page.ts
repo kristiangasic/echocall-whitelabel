@@ -237,7 +237,6 @@ interface DailyResponse {
       font-variant-numeric: tabular-nums;
     }
     .hint {
-      color: var(--mat-sys-on-surface-variant);
       margin: 0;
     }
   `,

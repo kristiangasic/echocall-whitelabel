@@ -308,6 +308,17 @@ $status-bad: disabled suspended failed past_due no-answer busy;
   max-width: 90ch;
 }
 
+// The small print beside a control: what a field will do with what is typed
+// into it, or where a figure was counted from. It is the quieter line wherever
+// it stands, so the size and the colour are settled here and a component only
+// says how far it sits from its neighbour. Said twenty-five times over, it was
+// body-small in six places and a full-sized paragraph in the rest.
+.hint {
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-small);
+  max-width: 90ch;
+}
+
 // A row of figures. The column count is a number the page chooses, never one
 // the browser guesses from the available width, so the last row is as full as
 // the first: three tiles are 3-1-1, never 2 and a stray one underneath.

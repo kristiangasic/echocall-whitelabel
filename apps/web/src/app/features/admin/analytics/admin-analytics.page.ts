@@ -132,7 +132,6 @@ const WINDOWS = [7, 30, 90] as const;
       }
     }
     .hint {
-      color: var(--mat-sys-on-surface-variant);
       margin: 16px 0 0;
     }
     .nothing .hint {

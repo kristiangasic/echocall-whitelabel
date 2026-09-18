@@ -172,7 +172,6 @@ function cents(value: number): number {
   styles: `
     .hint {
       margin: 0 0 16px;
-      color: var(--mat-sys-on-surface-variant);
     }
     .row {
       display: flex;

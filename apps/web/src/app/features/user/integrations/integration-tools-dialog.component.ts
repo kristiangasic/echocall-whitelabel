@@ -96,7 +96,6 @@ export interface IntegrationToolsResult {
   `,
   styles: `
     .hint {
-      color: var(--mat-sys-on-surface-variant);
       margin: 0 0 8px;
     }
     .access {

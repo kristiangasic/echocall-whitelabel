@@ -142,8 +142,6 @@ import { LocalDatePipe } from '../../shared/local-date.pipe';
       color: var(--mat-sys-error);
     }
     .hint {
-      font: var(--mat-sys-body-small);
-      color: var(--mat-sys-on-surface-variant);
       margin: 4px 0 8px;
     }
   `,

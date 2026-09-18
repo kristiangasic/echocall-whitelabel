@@ -179,8 +179,6 @@ export interface IntegrationDialogData {
       min-width: 320px;
     }
     .hint {
-      color: var(--mat-sys-on-surface-variant);
-      font: var(--mat-sys-body-small);
       margin: 0 0 8px;
     }
   `,

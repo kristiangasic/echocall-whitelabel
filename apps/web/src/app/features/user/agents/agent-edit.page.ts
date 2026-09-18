@@ -396,7 +396,6 @@ const SYSTEM_TOOLS = [
       justify-content: flex-end;
     }
     .hint {
-      color: var(--mat-sys-on-surface-variant);
       margin: 0;
     }
     .knowledge {

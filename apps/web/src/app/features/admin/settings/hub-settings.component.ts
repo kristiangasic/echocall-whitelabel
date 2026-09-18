@@ -167,10 +167,6 @@ type CompanyField = (typeof COMPANY_FIELDS)[number];
   styles: `
     .intro,
     .hint {
-      color: var(--mat-sys-on-surface-variant);
-    }
-    .hint {
-      font: var(--mat-sys-body-small);
       margin: 4px 0 16px;
     }
     .section-title {

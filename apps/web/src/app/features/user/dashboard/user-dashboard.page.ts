@@ -149,8 +149,6 @@ import { conversationTitle } from '../conversations/conversation.model';
   styles: `
     .hint {
       margin: 4px 0 0;
-      font: var(--mat-sys-body-small);
-      color: var(--mat-sys-on-surface-variant);
     }
     /* A plan name is words, not a figure, so it does not take the digit face. */
     .stat-value.plan {
