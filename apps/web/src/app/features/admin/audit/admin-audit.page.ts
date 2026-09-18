@@ -130,9 +130,12 @@ import { HubActivityComponent } from './hub-activity.component';
     .intro {
       color: var(--mat-sys-on-surface-variant);
     }
+    /* Wide enough for what the log actually writes, which in German and French
+       runs a third longer than in English, and still short of the width that
+       would push the columns beside it off the screen. */
     .details {
       display: inline-block;
-      max-width: 280px;
+      max-width: min(34vw, 460px);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

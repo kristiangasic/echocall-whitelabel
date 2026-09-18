@@ -348,9 +348,12 @@ const ROUTE = '/admin/settings/registration';
     .hint {
       margin: 4px 0 16px;
     }
+    /* The preview column holds three samples side by side. At 320px they fit
+       in English and broke two and one in German and French, which made the
+       preview look like a mistake rather than a sample. */
     .settings-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 360px);
       gap: 24px;
       align-items: start;
       margin-bottom: 16px;

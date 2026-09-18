@@ -644,14 +644,23 @@ mat-button-toggle-group {
 // Welded into one strip the words cannot wrap, and what does not fit is simply
 // off the screen: the campaign filters in German end 54px past the right edge
 // of a 320px handset, with the last of the four out of reach. On a phone each
-// option becomes a chip of its own, free to take the next line.
+// option becomes a chip of its own, on a row it shares evenly. Left to wrap
+// where the words ran out, four filters came to rest three across with the
+// fourth alone underneath, and the break moved from one language to the next;
+// equal columns hold the same shape in all three.
 @media (max-width: 599px) {
   mat-button-toggle-group.mat-button-toggle-group {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
     border: none;
     border-radius: 0;
+  }
+
+  // Three options fit across a handset, and two columns would leave the third
+  // on a row of its own.
+  mat-button-toggle-group.mat-button-toggle-group:has(> :nth-child(3):last-child) {
+    grid-template-columns: repeat(3, 1fr);
   }
 
   mat-button-toggle-group.mat-button-toggle-group .mat-button-toggle {
@@ -659,6 +668,13 @@ mat-button-toggle-group {
     border-radius: 999px;
     // Keeps the ripple inside the shape the chip actually has.
     overflow: hidden;
+    text-align: center;
+  }
+
+  // The chip is as wide as its column now, so what it says belongs in the
+  // middle of it rather than against its left edge.
+  mat-button-toggle-group.mat-button-toggle-group .mat-button-toggle-button {
+    width: 100%;
   }
 }
 
