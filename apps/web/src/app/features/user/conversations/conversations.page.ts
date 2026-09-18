@@ -98,19 +98,6 @@ import { providePaginatorIntl } from '../../../shared/paginator-intl';
       }
     </ng-container>
   `,
-  styles: `
-    .row-link {
-      color: inherit;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .row-link:hover {
-      text-decoration: underline;
-    }
-    mat-button-toggle-group {
-      margin-bottom: 16px;
-    }
-  `,
 })
 export class ConversationsPage implements OnInit {
   private readonly hub = inject(HubService);

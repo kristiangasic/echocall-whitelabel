@@ -80,7 +80,7 @@ const STATUSES = ['open', 'in_progress', 'waiting', 'resolved', 'closed'] as con
           <ng-container matColumnDef="subject">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.tickets.subject') }}</th>
             <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.tickets.subject')">
-              <a [routerLink]="['/admin/tickets', row.id]">{{ row.subject }}</a>
+              <a class="row-link" [routerLink]="['/admin/tickets', row.id]">{{ row.subject }}</a>
               @if (row.assignedToAdmin) {
                 <span class="badge">{{ t('admin.tickets.escalatedBadge') }}</span>
               }

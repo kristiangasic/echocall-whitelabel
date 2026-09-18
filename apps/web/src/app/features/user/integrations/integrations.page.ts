@@ -159,7 +159,7 @@ const GROUP_ORDER = [
           </table>
         </div>
       } @else if (!loading()) {
-        <p class="empty">{{ t('user.integrations.empty') }}</p>
+        <p class="empty-panel">{{ t('user.integrations.empty') }}</p>
       }
 
       <h2 class="section-title catalog-title">{{ t('user.integrations.catalog') }}</h2>

@@ -92,16 +92,6 @@ import { EmbedDialogComponent, type EmbedDialogData } from './embed-dialog.compo
       </div>
     </ng-container>
   `,
-  styles: `
-    .row-link {
-      color: inherit;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .row-link:hover {
-      text-decoration: underline;
-    }
-  `,
 })
 export class ChatbotsPage implements OnInit {
   private readonly hub = inject(HubService);

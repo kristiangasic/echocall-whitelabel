@@ -29,12 +29,18 @@ export class LanguageService {
     this.apply(user?.language ?? this.branding.branding().defaultLanguage ?? this.fromBrowser());
   }
 
-  /** Switches the interface and, for signed-in users, stores the choice in their profile. */
+  /**
+   * Switches the interface and, for signed-in users, stores the choice in their
+   * profile. An operator viewing the portal as a customer reads it in whichever
+   * language they pick, but the customer's own saved choice stays the
+   * customer's: the account refuses that write, and asking for it would only
+   * fail out of sight.
+   */
   async change(language: Language): Promise<void> {
     this.apply(language);
-    if (this.auth.user()) {
-      this.auth.setUser(await firstValueFrom(this.api.patch<SessionUser>('/account/profile', { language })));
-    }
+    const user = this.auth.user();
+    if (!user || user.impersonator) return;
+    this.auth.setUser(await firstValueFrom(this.api.patch<SessionUser>('/account/profile', { language })));
   }
 
   private apply(language: Language): void {

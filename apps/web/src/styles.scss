@@ -582,6 +582,34 @@ td.empty {
   text-align: center;
 }
 
+// ---------------------------------------------------------------------------
+// Filter bars. A few words above a list, one of them chosen.
+// ---------------------------------------------------------------------------
+mat-button-toggle-group {
+  margin-bottom: 16px;
+}
+
+// Welded into one strip the words cannot wrap, and what does not fit is simply
+// off the screen: the campaign filters in German end 54px past the right edge
+// of a 320px handset, with the last of the four out of reach. On a phone each
+// option becomes a chip of its own, free to take the next line.
+@media (max-width: 599px) {
+  mat-button-toggle-group.mat-button-toggle-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    border: none;
+    border-radius: 0;
+  }
+
+  mat-button-toggle-group.mat-button-toggle-group .mat-button-toggle {
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 999px;
+    // Keeps the ripple inside the shape the chip actually has.
+    overflow: hidden;
+  }
+}
+
 // A link in a table is a row that opens, so it takes the accent colour and
 // underlines only when it is the target of the pointer or the keyboard.
 td a {
@@ -592,6 +620,14 @@ td a {
 td a:hover,
 td a:focus-visible {
   text-decoration: underline;
+}
+
+// The cell that names a row is the one that opens it, so it carries a little
+// more weight than the cells beside it. Its colour is the table link's own: a
+// name that read as a link in one list and as plain text in another would only
+// be telling the reader which page it was built on.
+td a.row-link {
+  font-weight: 500;
 }
 
 // ---------------------------------------------------------------------------

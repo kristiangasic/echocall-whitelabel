@@ -101,7 +101,9 @@ const PAYABLE = new Set(['draft', 'pending', 'failed']);
           <ng-container matColumnDef="number">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.invoices.number') }}</th>
             <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.invoices.number')" class="nowrap">
-              <a [routerLink]="['/admin/invoices', row.invoice.id]">{{ row.invoice.invoiceNumber }}</a>
+              <a class="row-link" [routerLink]="['/admin/invoices', row.invoice.id]">{{
+                row.invoice.invoiceNumber
+              }}</a>
             </td>
           </ng-container>
           <ng-container matColumnDef="customer">

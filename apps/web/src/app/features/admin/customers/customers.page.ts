@@ -71,7 +71,7 @@ const DEFAULT_PER_PAGE = 25;
           <ng-container matColumnDef="customer">
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.email') }}</th>
             <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.email')">
-              <a [routerLink]="[row.customerId]" data-testid="open">{{ row.email }}</a>
+              <a class="row-link" [routerLink]="[row.customerId]" data-testid="open">{{ row.email }}</a>
               @if (subtitle(row); as sub) {
                 <div class="cell-sub">{{ sub }}</div>
               }

@@ -111,19 +111,6 @@ type Filter = (typeof FILTERS)[number];
       }
     </ng-container>
   `,
-  styles: `
-    .row-link {
-      color: inherit;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .row-link:hover {
-      text-decoration: underline;
-    }
-    mat-button-toggle-group {
-      margin-bottom: 16px;
-    }
-  `,
 })
 export class CampaignsPage implements OnInit {
   private readonly hub = inject(HubService);
