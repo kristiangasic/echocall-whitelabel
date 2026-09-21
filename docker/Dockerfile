@@ -1,5 +1,5 @@
 # Build context is the repository root: docker build -f docker/Dockerfile .
-FROM node:22-bookworm-slim AS build
+FROM node:25-bookworm-slim AS build
 # The lockfile is written by npm 12; older npm versions fail on it.
 RUN npm install -g npm@12
 WORKDIR /app
@@ -11,7 +11,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:22-bookworm-slim AS runtime
+FROM node:25-bookworm-slim AS runtime
 ENV NODE_ENV=production
 RUN npm install -g npm@12
 WORKDIR /app
