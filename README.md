@@ -56,11 +56,11 @@ filled with invented example customers (`npm run screenshots` regenerates them).
 
 ## Requirements
 
-- An EchoCall account with an active subscription and an API key (`eck_live_...`). Sign
-  up at [echocall.de](https://echocall.de) and create the key under **Developer**. The key
-  then needs reseller access, because the portal creates customer accounts on your behalf.
-  Write to [team@echocall.de](mailto:team@echocall.de) and we enable it, usually the same
-  day. The free pay as you go plan qualifies: one euro card verification, no monthly fee.
+- An EchoCall account and an API key (`eck_live_...`). Sign up at
+  [echocall.de](https://echocall.de) and complete the card verification (one euro, no
+  monthly fee on the pay as you go plan). The account is ready the moment that is done:
+  nothing to apply for, nobody to write to. Then create the key under **Developer**; the
+  portal uses it to create customer accounts on your behalf.
 - Docker (recommended), or Node.js 22.22.3+ with npm 12 for a manual install
 - Optional: your own PostgreSQL 14+, MariaDB 10.6+ or MySQL 8 server
   (the Docker Compose setup ships a PostgreSQL container)

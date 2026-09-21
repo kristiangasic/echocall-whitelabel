@@ -199,6 +199,39 @@ export const DEMO_CONVERSATIONS = [
   },
 ];
 
+/** Calls per day over the last thirty days, quiet at the weekends, for the chart on the overview. */
+const CALLS_BY_DAY = [
+  6, 9, 4, 0, 1, 11, 8, 12, 7, 5, 0, 2, 9, 13, 10, 8, 6, 1, 0, 7, 12, 9, 11, 5, 2, 0, 8, 14, 10, 9,
+];
+
+/** The day as the service writes it, `YYYY-MM-DD`, in the machine's own time zone. */
+function dayKey(date) {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
+/**
+ * The daily call statistics, relative to today so the chart is always full.
+ * The service reports only the days that had a call, and so does this.
+ */
+export const DEMO_DAILY = CALLS_BY_DAY.map((callCount, index) => {
+  const day = new Date();
+  day.setDate(day.getDate() - (CALLS_BY_DAY.length - 1 - index));
+  return {
+    date: dayKey(day),
+    agentId: null,
+    callCount,
+    successfulCalls: callCount,
+    failedCalls: 0,
+    totalDuration: callCount * 190,
+    averageDuration: 190,
+    totalCost: Math.round(callCount * 42) / 100,
+    successRate: 100,
+    peakHour: 10,
+  };
+}).filter((row) => row.callCount > 0);
+
 /** The agents that customer has built. */
 export const DEMO_AGENTS = [
   { id: 611, name: 'Reception', language: 'en', voiceId: null, createdAt: '2026-08-04T10:00:00.000Z' },

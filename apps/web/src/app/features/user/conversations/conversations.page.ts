@@ -12,7 +12,12 @@ import { firstValueFrom } from 'rxjs';
 import { HubService } from '../../../core/hub/hub.service';
 import type { Conversation, LiveConversation } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
-import { conversationTitle, type AnyConversation } from './conversation.model';
+import {
+  type AnyConversation,
+  conversationDuration,
+  conversationStatusLabel,
+  conversationTitle,
+} from './conversation.model';
 import { providePaginatorIntl } from '../../../shared/paginator-intl';
 
 @Component({
@@ -124,17 +129,11 @@ export class ConversationsPage implements OnInit {
   }
 
   statusLabel(t: (key: string) => string, conversation: AnyConversation): string {
-    const status = conversation.status;
-    if (!status) return '';
-    const key = `user.conversations.statuses.${status}`;
-    const label = t(key);
-    return label && label !== key ? label : status;
+    return conversationStatusLabel(t, conversation);
   }
 
   duration(seconds: number | null | undefined): string {
-    if (seconds === null || seconds === undefined) return '';
-    const minutes = Math.floor(seconds / 60);
-    return `${minutes}:${String(seconds % 60).padStart(2, '0')}`;
+    return conversationDuration(seconds);
   }
 
   setType(type: 'voice' | 'chat'): void {

@@ -4,23 +4,27 @@
     "title": "Übersicht",
     "welcome": "Willkommen, {{name}}.",
     "notLinked": "Ihr Konto ist noch keinem Kundenkonto zugeordnet. Bitte wenden Sie sich an Ihren Ansprechpartner.",
+    "account": "Konto und Abrechnung",
     "thisPeriod": "Aktueller Zeitraum",
-    "period": "Zeitraum: {{from}} bis {{to}}",
+    "periodRange": "{{from}} bis {{to}}",
+    "fromBalance": "Wird vom Guthaben abgerechnet",
     "voice": {
       "title": "Telefonie",
       "used": "Minuten verbraucht",
       "remaining": "Noch {{count}} Minuten verfügbar",
-      "perMonth": "{{count}} Minuten pro Monat enthalten"
+      "perDay": "Anrufe pro Tag, letzte {{days}} Tage",
+      "calls": "{{count}} Anrufe",
+      "noCalls": "Keine Anrufe in den letzten {{days}} Tagen.",
+      "ofAllowance": "{{percent}} % von {{count}} Minuten"
     },
     "chat": {
       "title": "Chat",
       "used": "Unterhaltungen geführt",
       "remaining": "Noch {{count}} Unterhaltungen verfügbar",
-      "perMonth": "{{count}} Unterhaltungen pro Monat enthalten"
+      "ofAllowance": "{{percent}} % von {{count}} Unterhaltungen"
     },
     "balance": {
-      "title": "Guthaben",
-      "hint": "noch verfügbar"
+      "title": "Guthaben"
     },
     "plan": {
       "title": "Tarif",
@@ -30,6 +34,10 @@
       "active": "Konto aktiv",
       "trial": "Testphase",
       "suspended": "Konto gesperrt"
+    },
+    "kinds": {
+      "voice": "Anruf",
+      "chat": "Chat"
     },
     "recent": {
       "title": "Letzte Gespräche",

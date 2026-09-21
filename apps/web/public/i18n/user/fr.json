@@ -4,23 +4,27 @@
     "title": "Vue d'ensemble",
     "welcome": "Bienvenue, {{name}}.",
     "notLinked": "Votre compte n'est pas encore lié à un compte client. Veuillez contacter votre interlocuteur.",
+    "account": "Compte et facturation",
     "thisPeriod": "Période en cours",
-    "period": "Période : {{from}} au {{to}}",
+    "periodRange": "{{from}} au {{to}}",
+    "fromBalance": "Facturé sur votre solde",
     "voice": {
       "title": "Téléphonie",
       "used": "minutes consommées",
       "remaining": "Encore {{count}} minutes disponibles",
-      "perMonth": "{{count}} minutes par mois incluses"
+      "perDay": "Appels par jour, {{days}} derniers jours",
+      "calls": "{{count}} appels",
+      "noCalls": "Aucun appel au cours des {{days}} derniers jours.",
+      "ofAllowance": "{{percent}} % de {{count}} minutes"
     },
     "chat": {
       "title": "Chat",
       "used": "conversations menées",
       "remaining": "Encore {{count}} conversations disponibles",
-      "perMonth": "{{count}} conversations par mois incluses"
+      "ofAllowance": "{{percent}} % de {{count}} conversations"
     },
     "balance": {
-      "title": "Solde",
-      "hint": "restant à dépenser"
+      "title": "Solde"
     },
     "plan": {
       "title": "Forfait",
@@ -30,6 +34,10 @@
       "active": "Compte actif",
       "trial": "Période d'essai",
       "suspended": "Compte suspendu"
+    },
+    "kinds": {
+      "voice": "Appel",
+      "chat": "Chat"
     },
     "recent": {
       "title": "Conversations récentes",

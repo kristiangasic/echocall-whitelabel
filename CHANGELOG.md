@@ -27,6 +27,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- The two overview pages were rebuilt in one visual language. The customer's overview
+  opens with an account strip (plan, status, balance, current period), measures voice
+  minutes and chat conversations against the plan's allowance with a meter, draws the
+  calls of the last thirty days, and lists the most recent conversations as a table with
+  kind, counterpart, duration and status. The operator's overview opens with the
+  connection as a strip across the top, keeps one panel per figure, and lists the open
+  tickets under their count instead of only counting them.
 - The project is called EchoCall White Label Portal. The repository, the container
   image, the npm workspaces (`@echocall/whitelabel-api`, `-web`, `-api-client`) and the
   example database names carry `whitelabel` instead of `light`, because the old name
@@ -57,6 +64,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- `npm run typecheck` builds the API client first, so a fresh checkout (and the CI run)
+  no longer fails on the client's missing type output.
+- The README no longer says that someone at EchoCall has to enable reseller access: an
+  account is ready as soon as the card verification is done.
 - The browser smoke run starts again. Its harness read a value it never imported, so the
   process died the moment it reported itself ready, and the specs themselves were refused
   by the test runner's loader for reading `import.meta` in a file it compiles to

@@ -1,5 +1,10 @@
 import type { AnyConversation } from './conversation.model';
-import { conversationTitle, isChat } from './conversation.model';
+import {
+  conversationDuration,
+  conversationStatusLabel,
+  conversationTitle,
+  isChat,
+} from './conversation.model';
 
 function chat(fields: Record<string, unknown>): AnyConversation {
   return { type: 'chat', id: 4820, ...fields } as unknown as AnyConversation;
@@ -50,5 +55,35 @@ describe('isChat', () => {
   it('tells the two kinds of conversation apart', () => {
     expect(isChat(chat({}))).toBe(true);
     expect(isChat(call({}))).toBe(false);
+  });
+});
+
+describe('conversationDuration', () => {
+  it('writes seconds as minutes and seconds', () => {
+    expect(conversationDuration(214)).toBe('3:34');
+    expect(conversationDuration(87)).toBe('1:27');
+    expect(conversationDuration(5)).toBe('0:05');
+  });
+
+  it('leaves a call without a length blank', () => {
+    expect(conversationDuration(null)).toBe('');
+    expect(conversationDuration(undefined)).toBe('');
+    expect(conversationDuration(Number.NaN)).toBe('');
+  });
+});
+
+describe('conversationStatusLabel', () => {
+  const t = (key: string) => (key === 'user.conversations.statuses.completed' ? 'Completed' : key);
+
+  it('translates a status the portal knows', () => {
+    expect(conversationStatusLabel(t, call({ status: 'completed' }))).toBe('Completed');
+  });
+
+  it('shows an unknown status as the service reports it', () => {
+    expect(conversationStatusLabel(t, call({ status: 'ringing' }))).toBe('ringing');
+  });
+
+  it('shows nothing for a conversation without a status', () => {
+    expect(conversationStatusLabel(t, call({ status: null }))).toBe('');
   });
 });

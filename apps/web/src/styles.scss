@@ -481,6 +481,224 @@ a.stat:focus-visible {
   background: var(--mat-sys-surface-container);
 }
 
+// ---------------------------------------------------------------------------
+// The two overview pages. Both read top to bottom in the same order: a strip
+// that says what state the account is in, a row of panels with the figures
+// that move, and a table of what happened last. The blocks live here so the
+// operator's page and the customer's page look like one portal, not two.
+// ---------------------------------------------------------------------------
+
+// The strip: label-and-value pairs side by side, the action at the far end.
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 32px;
+  padding: 16px 20px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 16px;
+  background: var(--mat-sys-surface-container-low);
+}
+
+.strip-item {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.strip-label {
+  font: var(--mat-sys-label-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.strip-value {
+  font: var(--mat-sys-title-medium);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+// The action keeps to the right edge while there is one, and takes the whole
+// width once the pairs have wrapped and the edge is nowhere to be seen.
+.strip-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+}
+
+// A line that belongs to the whole strip, not to one pair: the reason a
+// connection failed, and what to do about it.
+.strip-note {
+  flex-basis: 100%;
+  margin: 0;
+  font: var(--mat-sys-body-small);
+}
+
+.strip-bad {
+  border-color: var(--mat-sys-error);
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+.strip-bad .strip-label {
+  color: inherit;
+}
+
+// On the error ground the error chip would vanish, so it turns solid.
+.strip-bad .status {
+  background: var(--mat-sys-error);
+  color: var(--mat-sys-on-error);
+}
+
+// A panel holds one figure and what explains it. The head names it and offers
+// the page behind it, the foot lines stay with the figure, and the actions sit
+// on the bottom edge so the buttons of neighbouring panels line up.
+.panel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.panel-grid.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.panel-grid.cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 20px 12px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 16px;
+  background: var(--mat-sys-surface);
+  min-width: 0;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 36px;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font: var(--mat-sys-title-medium);
+}
+
+.panel-title mat-icon {
+  color: var(--mat-sys-primary);
+}
+
+.panel-figure {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.panel-number {
+  font: var(--mat-sys-headline-large);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.panel-unit {
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.panel-foot {
+  margin: 0;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.panel-foot strong {
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: auto -8px 0;
+  padding-top: 4px;
+}
+
+// A meter: how much of an allowance is gone. Drawn from divs so the figure is
+// readable on its own, and coloured like the bar list so both mean the same.
+.meter {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--mat-sys-surface-container-high);
+  overflow: hidden;
+}
+
+.meter-fill {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: 4px;
+  background: var(--mat-sys-primary);
+}
+
+.meter-full .meter-fill {
+  background: var(--mat-sys-error);
+}
+
+.meter-legend {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+@media (max-width: 1099px) {
+  .panel-grid.cols-3,
+  .panel-grid.cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 599px) {
+  .strip {
+    padding: 16px;
+    gap: 12px 24px;
+  }
+
+  .strip-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .strip-actions > * {
+    flex: 1;
+  }
+
+  .panel-grid,
+  .panel-grid.cols-3,
+  .panel-grid.cols-4 {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .panel {
+    padding: 16px 16px 10px;
+  }
+}
+
 // Label and value pairs that describe one thing: an invoice, a customer, a
 // call. Two columns keep the pairs close to each other instead of stretching a
 // value across the whole window.

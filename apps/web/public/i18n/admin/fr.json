@@ -4,40 +4,39 @@
     "title": "Vue d'ensemble",
     "hub": {
       "title": "Connexion au service",
-      "ok": "Connecté en tant que {{email}}",
+      "connected": "Connecté",
       "failed": "Pas de connexion",
+      "account": "Connecté en tant que",
+      "lastChecked": "Dernière vérification",
       "subscriptionHint": "Le portail nécessite un abonnement actif. Vérifiez votre compte sur",
       "keyHint": "Vérifiez la clé API dans la configuration du serveur et redémarrez le service.",
-      "checkedAt": "Dernière vérification : {{time}}",
       "recheck": "Vérifier maintenant"
     },
     "users": {
-      "all": "Total",
       "title": "Comptes utilisateurs",
-      "total": "{{count}} comptes au total",
       "manage": "Gérer les utilisateurs"
     },
     "customers": {
       "title": "Clients",
-      "customers": "Clients",
       "voiceAgents": "Agents vocaux",
       "chatbots": "Chatbots",
-      "usage": "Consommation (30 jours)"
+      "usage": "Consommation (30 jours)",
+      "manage": "Gérer les clients"
     },
     "balance": {
       "title": "Solde du portail",
-      "credit": "Solde",
       "voiceMinutes": "Minutes vocales",
       "chatMessages": "Messages de chat"
     },
     "subscriptions": {
       "hint": "y compris les résiliés",
-      "title": "Abonnements"
+      "title": "Abonnements",
+      "all": "Tous les abonnements"
     },
     "tickets": {
-      "title": "Tickets",
       "open": "Tickets ouverts",
-      "hint": "en attente d'une réponse"
+      "all": "Tous les tickets",
+      "none": "Aucun ticket ouvert."
     },
     "unavailable": "Le service n'a pas fourni ces chiffres pour le moment."
   },

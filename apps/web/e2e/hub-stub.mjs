@@ -11,6 +11,7 @@ import {
   DEMO_AGENTS,
   DEMO_CONVERSATIONS,
   DEMO_CUSTOMERS,
+  DEMO_DAILY,
   DEMO_LIMITS,
   DEMO_RESELLER_BALANCE,
   DEMO_RESELLER_CREDITS,
@@ -176,6 +177,10 @@ function route(state, method, path, body, customerId, query) {
     const type = query.get('type');
     const rows = state.demo ? DEMO_CONVERSATIONS : [RECENT_CONVERSATION];
     return { status: 200, body: page(type ? rows.filter((row) => row.type === type) : rows) };
+  }
+
+  if (method === 'GET' && path === '/analytics/daily' && state.demo) {
+    return { status: 200, body: { days: 30, agentId: null, data: DEMO_DAILY } };
   }
 
   if (method === 'GET' && path === '/agents' && state.demo) {

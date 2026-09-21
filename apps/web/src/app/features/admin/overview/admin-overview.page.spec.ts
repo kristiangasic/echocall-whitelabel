@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { ADMIN_TEXTS, provideTestI18n } from '../../../testing/i18n';
+import { ADMIN_TEXTS, provideTestI18n, TEXTS } from '../../../testing/i18n';
 import { AdminOverviewPage } from './admin-overview.page';
 
 const OVERVIEW = {
@@ -133,5 +133,40 @@ describe('AdminOverviewPage', () => {
 
     expect(text(fixture, 'tile-customers')).toContain('–');
     expect(text(fixture, 'tile-customers')).not.toContain('NaN');
+  });
+
+  it('lists the open tickets under their count and leaves the closed ones out', async () => {
+    const fixture = await render();
+
+    const table = text(fixture, 'open-tickets');
+    expect(table).toContain('Rechnung');
+    expect(table).toContain('Rueckruf');
+    expect(table).not.toContain('Erledigt');
+    expect(table).toContain(ADMIN_TEXTS.tickets.statuses.in_progress);
+  });
+
+  it('says so when no ticket is waiting', async () => {
+    const fixture = await render({ tickets: [] });
+
+    expect(text(fixture, 'tile-tickets')).toContain('0');
+    expect(text(fixture, 'open-tickets')).toContain(ADMIN_TEXTS.overview.tickets.none);
+  });
+
+  it("counts the portal's own accounts beside the operator figures", async () => {
+    const fixture = await render();
+
+    const panel = text(fixture, 'tile-users');
+    expect(panel).toContain('3');
+    expect(panel).toContain('1 ' + TEXTS.roles.admin);
+    expect(panel).toContain('1 ' + TEXTS.statuses.invited);
+  });
+
+  it('names the connection and the account it uses in the strip', async () => {
+    const fixture = await render();
+
+    const strip = text(fixture, 'hub-card');
+    expect(strip).toContain(ADMIN_TEXTS.overview.hub.connected);
+    expect(strip).toContain('operator@example.com');
+    expect(fixture.nativeElement.querySelector('[data-testid="hub-card"].strip-bad')).toBeNull();
   });
 });

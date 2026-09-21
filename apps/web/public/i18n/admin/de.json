@@ -4,40 +4,39 @@
     "title": "Übersicht",
     "hub": {
       "title": "Verbindung zum Dienst",
-      "ok": "Verbunden als {{email}}",
+      "connected": "Verbunden",
       "failed": "Keine Verbindung",
+      "account": "Angemeldet als",
+      "lastChecked": "Zuletzt geprüft",
       "subscriptionHint": "Das Portal braucht ein aktives Abonnement. Prüfen Sie Ihr Konto unter",
       "keyHint": "Prüfen Sie den API-Schlüssel in der Serverkonfiguration und starten Sie den Dienst neu.",
-      "checkedAt": "Zuletzt geprüft: {{time}}",
       "recheck": "Jetzt prüfen"
     },
     "users": {
-      "all": "Gesamt",
       "title": "Benutzerkonten",
-      "total": "{{count}} Konten insgesamt",
       "manage": "Benutzer verwalten"
     },
     "customers": {
       "title": "Kunden",
-      "customers": "Kunden",
       "voiceAgents": "Sprachagenten",
       "chatbots": "Chatbots",
-      "usage": "Verbrauch (30 Tage)"
+      "usage": "Verbrauch (30 Tage)",
+      "manage": "Kunden verwalten"
     },
     "balance": {
       "title": "Guthaben des Portals",
-      "credit": "Guthaben",
       "voiceMinutes": "Sprachminuten",
       "chatMessages": "Chat-Nachrichten"
     },
     "subscriptions": {
       "hint": "auch gekündigte",
-      "title": "Abonnements"
+      "title": "Abonnements",
+      "all": "Alle Abonnements"
     },
     "tickets": {
-      "title": "Tickets",
       "open": "Offene Tickets",
-      "hint": "warten auf eine Antwort"
+      "all": "Alle Tickets",
+      "none": "Keine offenen Tickets."
     },
     "unavailable": "Der Dienst hat diese Zahlen gerade nicht geliefert."
   },

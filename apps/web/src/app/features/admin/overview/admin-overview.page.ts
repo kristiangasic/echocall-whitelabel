@@ -2,27 +2,27 @@ import { Component, inject, type OnInit, signal, type WritableSignal } from '@an
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../../core/api/api.service';
 import { formatMoney } from '../../../core/format/money';
 import { AdminHubService } from '../../../core/hub/admin-hub.service';
-import type { ResellerCredits, ResellerStats } from '../../../core/hub/hub.models';
+import type { ResellerCredits, ResellerStats, ResellerTicketRow } from '../../../core/hub/hub.models';
 import { LanguageService } from '../../../core/i18n/language.service';
 import type { AdminOverview, HubStatus } from '../../../core/models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
 
-/** One ticket of the operator's book; only the state decides whether it still needs attention. */
-interface TicketRow {
-  status: string;
-}
+/** How many open tickets the overview lists before pointing at the full book. */
+const TICKET_ROWS = 5;
 
-/** How many tickets are still open, and whether a later page could hold more. */
+/** The tickets that still need an answer: how many, the first few, and whether a later page could hold more. */
 interface OpenTickets {
   count: number;
   partial: boolean;
+  rows: ResellerTicketRow[];
 }
 
 @Component({
@@ -31,6 +31,7 @@ interface OpenTickets {
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
+    MatTableModule,
     RouterLink,
     TranslocoDirective,
     LocalDatePipe,
@@ -38,7 +39,9 @@ interface OpenTickets {
   providers: [provideTranslocoScope('admin')],
   template: `
     <ng-container *transloco="let t">
-      <h1 class="page-title">{{ t('admin.overview.title') }}</h1>
+      <div class="page-head">
+        <h1 class="page-title">{{ t('admin.overview.title') }}</h1>
+      </div>
       @if (loading()) {
         <mat-progress-bar mode="indeterminate" />
       } @else if (loadError()) {
@@ -51,276 +54,236 @@ interface OpenTickets {
           rest of the page means anything, so it runs across the top as the line
           the operator reads before looking any further.
         -->
-        <section class="hub" [class.hub-bad]="!o.hub.ok" data-testid="hub-card">
-          <mat-icon class="hub-icon" aria-hidden="true">{{ o.hub.ok ? 'check_circle' : 'error' }}</mat-icon>
-          <div class="hub-text">
-            <p class="hub-title">{{ t('admin.overview.hub.title') }}</p>
-            <p class="hub-status">
-              {{
-                o.hub.ok
-                  ? t('admin.overview.hub.ok', { email: o.hub.email ?? '' })
-                  : t('admin.overview.hub.failed')
-              }}
-            </p>
-            @if (!o.hub.ok) {
-              <p role="alert" class="hub-reason">
-                {{ t(notify.errorKey(o.hub.error?.code ?? 'not_checked')) }}
-                @if (o.hub.error?.code === 'no_active_subscription') {
-                  {{ t('admin.overview.hub.subscriptionHint') }}
-                  <a href="https://echocall.de" target="_blank" rel="noopener">echocall.de</a>
-                } @else {
-                  {{ t('admin.overview.hub.keyHint') }}
-                }
-              </p>
-            }
-            <p class="hub-checked">
+        <section class="strip section" [class.strip-bad]="!o.hub.ok" data-testid="hub-card">
+          <div class="strip-item">
+            <span class="strip-label">{{ t('admin.overview.hub.title') }}</span>
+            <span>
+              <span [class]="o.hub.ok ? 'status status-active' : 'status status-failed'">
+                {{ o.hub.ok ? t('admin.overview.hub.connected') : t('admin.overview.hub.failed') }}
+              </span>
+            </span>
+          </div>
+          @if (o.hub.ok) {
+            <div class="strip-item">
+              <span class="strip-label">{{ t('admin.overview.hub.account') }}</span>
+              <span class="strip-value">{{ o.hub.email || '–' }}</span>
+            </div>
+          }
+          <div class="strip-item">
+            <span class="strip-label">{{ t('admin.overview.hub.lastChecked') }}</span>
+            <span class="strip-value">
               @if (o.hub.checkedAt) {
-                {{ t('admin.overview.hub.checkedAt', { time: o.hub.checkedAt | localDate }) }}
+                {{ o.hub.checkedAt | localDate }}
               } @else {
                 {{ t('errors.not_checked') }}
               }
-            </p>
+            </span>
           </div>
-          <button
-            mat-stroked-button
-            type="button"
-            class="hub-action"
-            (click)="recheck()"
-            [disabled]="checking()"
-            data-testid="recheck"
-          >
-            <mat-icon>refresh</mat-icon>
-            {{ t('admin.overview.hub.recheck') }}
-          </button>
+          <div class="strip-actions">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="recheck()"
+              [disabled]="checking()"
+              data-testid="recheck"
+            >
+              <mat-icon>refresh</mat-icon>
+              {{ t('admin.overview.hub.recheck') }}
+            </button>
+          </div>
+          @if (!o.hub.ok) {
+            <p role="alert" class="strip-note">
+              {{ t(notify.errorKey(o.hub.error?.code ?? 'not_checked')) }}
+              @if (o.hub.error?.code === 'no_active_subscription') {
+                {{ t('admin.overview.hub.subscriptionHint') }}
+                <a href="https://echocall.de" target="_blank" rel="noopener">echocall.de</a>
+              } @else {
+                {{ t('admin.overview.hub.keyHint') }}
+              }
+            </p>
+          }
         </section>
 
-        <div class="stat-grid section" data-testid="operator-tiles">
-          <a class="stat" routerLink="/admin/customers" data-testid="tile-customers">
-            <span class="stat-label">{{ t('admin.overview.customers.title') }}</span>
+        <!--
+          Every operator figure is its own panel, empty on its own when the
+          service has a bad minute, so one failed call never blanks the page.
+        -->
+        <div class="panel-grid cols-4 section" data-testid="operator-tiles">
+          <section class="panel" data-testid="tile-customers">
+            <div class="panel-head">
+              <h2 class="panel-title">
+                <mat-icon aria-hidden="true">groups</mat-icon>
+                {{ t('admin.overview.customers.title') }}
+              </h2>
+            </div>
             @if (stats(); as s) {
-              <span class="stat-value">{{ number(s.totalCustomers) }}</span>
-              <p class="stat-foot">
+              <div class="panel-figure">
+                <span class="panel-number">{{ number(s.totalCustomers) }}</span>
+              </div>
+              <p class="panel-foot">
                 {{ number(s.totalVoiceAgents) }} {{ t('admin.overview.customers.voiceAgents') }} &middot;
                 {{ number(s.totalChatbots) }} {{ t('admin.overview.customers.chatbots') }}
               </p>
-              <p class="stat-foot">{{ t('admin.overview.customers.usage') }}: {{ usageCost() }}</p>
-            } @else {
-              <span class="stat-value">&ndash;</span>
-              <p class="stat-foot">{{ t('admin.overview.unavailable') }}</p>
-            }
-          </a>
-
-          <a class="stat" routerLink="/admin/subscriptions" data-testid="tile-subscriptions">
-            <span class="stat-label">{{ t('admin.overview.subscriptions.title') }}</span>
-            <!-- A count of zero is an answer, not a gap: check for null, not for truth. -->
-            @if (subscriptions() !== null) {
-              <span class="stat-value">{{ subscriptions() }}</span>
-              <p class="stat-foot">{{ t('admin.overview.subscriptions.hint') }}</p>
-            } @else {
-              <span class="stat-value">&ndash;</span>
-              <p class="stat-foot">{{ t('admin.overview.unavailable') }}</p>
-            }
-          </a>
-
-          <div class="stat" data-testid="tile-balance">
-            <span class="stat-label">{{ t('admin.overview.balance.title') }}</span>
-            @if (balanceEur(); as amount) {
-              <span class="stat-value">{{ amount }}</span>
-            } @else {
-              <span class="stat-value">&ndash;</span>
-            }
-            @if (credits(); as c) {
-              <p class="stat-foot">
-                {{ number(c.voiceMinutesAvailable) }} {{ t('admin.overview.balance.voiceMinutes') }} &middot;
-                {{ number(c.chatMessagesAvailable) }}
-                {{ t('admin.overview.balance.chatMessages') }}
+              <p class="panel-foot">
+                {{ t('admin.overview.customers.usage') }}: <strong>{{ usageCost() }}</strong>
               </p>
             } @else {
-              <p class="stat-foot">{{ t('admin.overview.unavailable') }}</p>
+              <div class="panel-figure"><span class="panel-number">&ndash;</span></div>
+              <p class="panel-foot">{{ t('admin.overview.unavailable') }}</p>
             }
-          </div>
+            <div class="panel-actions">
+              <a mat-button routerLink="/admin/customers">{{ t('admin.overview.customers.manage') }}</a>
+            </div>
+          </section>
 
-          <a class="stat" routerLink="/admin/tickets" data-testid="tile-tickets">
-            <span class="stat-label">{{ t('admin.overview.tickets.open') }}</span>
-            @if (openTickets(); as tickets) {
-              <span class="stat-value">{{ tickets.count }}{{ tickets.partial ? '+' : '' }}</span>
-              <p class="stat-foot">{{ t('admin.overview.tickets.hint') }}</p>
+          <section class="panel" data-testid="tile-subscriptions">
+            <div class="panel-head">
+              <h2 class="panel-title">
+                <mat-icon aria-hidden="true">sell</mat-icon>
+                {{ t('admin.overview.subscriptions.title') }}
+              </h2>
+            </div>
+            <!-- A count of zero is an answer, not a gap: check for null, not for truth. -->
+            @if (subscriptions() !== null) {
+              <div class="panel-figure">
+                <span class="panel-number">{{ subscriptions() }}</span>
+              </div>
+              <p class="panel-foot">{{ t('admin.overview.subscriptions.hint') }}</p>
             } @else {
-              <span class="stat-value">&ndash;</span>
-              <p class="stat-foot">{{ t('admin.overview.unavailable') }}</p>
+              <div class="panel-figure"><span class="panel-number">&ndash;</span></div>
+              <p class="panel-foot">{{ t('admin.overview.unavailable') }}</p>
             }
-          </a>
+            <div class="panel-actions">
+              <a mat-button routerLink="/admin/subscriptions">{{ t('admin.overview.subscriptions.all') }}</a>
+            </div>
+          </section>
+
+          <section class="panel" data-testid="tile-balance">
+            <div class="panel-head">
+              <h2 class="panel-title">
+                <mat-icon aria-hidden="true">account_balance_wallet</mat-icon>
+                {{ t('admin.overview.balance.title') }}
+              </h2>
+            </div>
+            <div class="panel-figure">
+              <span class="panel-number">{{ balanceEur() ?? '–' }}</span>
+            </div>
+            @if (credits(); as c) {
+              <p class="panel-foot">
+                {{ number(c.voiceMinutesAvailable) }} {{ t('admin.overview.balance.voiceMinutes') }} &middot;
+                {{ number(c.chatMessagesAvailable) }} {{ t('admin.overview.balance.chatMessages') }}
+              </p>
+            } @else {
+              <p class="panel-foot">{{ t('admin.overview.unavailable') }}</p>
+            }
+          </section>
+
+          <section class="panel" data-testid="tile-users">
+            <div class="panel-head">
+              <h2 class="panel-title">
+                <mat-icon aria-hidden="true">manage_accounts</mat-icon>
+                {{ t('admin.overview.users.title') }}
+              </h2>
+            </div>
+            <div class="panel-figure">
+              <span class="panel-number">{{ o.users.total }}</span>
+            </div>
+            <p class="panel-foot">
+              {{ o.users.admins }} {{ t('roles.admin') }} &middot; {{ o.users.users }} {{ t('roles.user') }}
+            </p>
+            <p class="panel-foot">
+              {{ o.users.active }} {{ t('statuses.active') }} &middot; {{ o.users.invited }}
+              {{ t('statuses.invited') }} &middot; {{ o.users.disabled }} {{ t('statuses.disabled') }}
+            </p>
+            <div class="panel-actions">
+              <a mat-button routerLink="/admin/users">{{ t('admin.overview.users.manage') }}</a>
+            </div>
+          </section>
         </div>
 
         <section class="section">
           <div class="page-head">
-            <h2 class="section-title">{{ t('admin.overview.users.title') }}</h2>
-            <a mat-stroked-button routerLink="/admin/users">{{ t('admin.overview.users.manage') }}</a>
+            <h2 class="section-title">
+              {{ t('admin.overview.tickets.open') }}
+              @if (openTickets(); as tickets) {
+                <span class="count" data-testid="tile-tickets"
+                  >{{ tickets.count }}{{ tickets.partial ? '+' : '' }}</span
+                >
+              }
+            </h2>
+            <a mat-stroked-button routerLink="/admin/tickets">{{ t('admin.overview.tickets.all') }}</a>
           </div>
-          <!--
-            The same accounts counted by role and by status: three sums that are
-            all the same number, so one panel holds the total once and the two
-            ways of splitting it beside each other.
-          -->
-          <div class="users" data-testid="user-counts">
-            <div class="users-total">
-              <span class="users-label">{{ t('admin.overview.users.all') }}</span>
-              <span class="users-count">{{ o.users.total }}</span>
+          @if (openTickets(); as tickets) {
+            <div class="table-wrap">
+              <table mat-table [dataSource]="tickets.rows" data-testid="open-tickets">
+                <ng-container matColumnDef="subject">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('admin.tickets.subject') }}</th>
+                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.tickets.subject')">
+                    <a class="row-link" [routerLink]="['/admin/tickets', row.id]">{{ row.subject }}</a>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="priority">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('admin.tickets.priority') }}</th>
+                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.tickets.priority')">
+                    @if (row.priority) {
+                      {{ t('admin.tickets.priorities.' + row.priority) }}
+                    }
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="updated">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('admin.tickets.updated') }}</th>
+                  <td
+                    mat-cell
+                    *matCellDef="let row"
+                    [attr.data-label]="t('admin.tickets.updated')"
+                    class="nowrap"
+                  >
+                    @if (row.updatedAt) {
+                      {{ row.updatedAt | localDate }}
+                    }
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
+                  <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.status')">
+                    <span [class]="'status status-' + row.status">{{
+                      t('admin.tickets.statuses.' + row.status)
+                    }}</span>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="columns"></tr>
+                <tr mat-row *matRowDef="let row; columns: columns"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell empty" [attr.colspan]="columns.length">
+                    {{ t('admin.overview.tickets.none') }}
+                  </td>
+                </tr>
+              </table>
             </div>
-            <dl class="users-part">
-              <div class="users-line">
-                <dt>{{ t('roles.admin') }}</dt>
-                <dd>{{ o.users.admins }}</dd>
-              </div>
-              <div class="users-line">
-                <dt>{{ t('roles.user') }}</dt>
-                <dd>{{ o.users.users }}</dd>
-              </div>
-            </dl>
-            <dl class="users-part">
-              <div class="users-line">
-                <dt>{{ t('statuses.active') }}</dt>
-                <dd>{{ o.users.active }}</dd>
-              </div>
-              <div class="users-line">
-                <dt>{{ t('statuses.invited') }}</dt>
-                <dd>{{ o.users.invited }}</dd>
-              </div>
-              <div class="users-line">
-                <dt>{{ t('statuses.disabled') }}</dt>
-                <dd>{{ o.users.disabled }}</dd>
-              </div>
-            </dl>
-          </div>
+          } @else {
+            <p class="hint" data-testid="tile-tickets">{{ t('admin.overview.unavailable') }}</p>
+          }
         </section>
       }
     </ng-container>
   `,
   styles: `
-    .hub {
+    .section-title {
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding: 16px 20px;
-      border: 1px solid var(--mat-sys-outline-variant);
-      border-radius: 16px;
-      background: var(--mat-sys-surface-container-low);
+      gap: 8px;
     }
-    .hub-icon {
-      color: var(--mat-sys-primary);
-      flex: none;
-    }
-    .hub-text {
-      flex: 1;
-      min-width: 0;
-    }
-    .hub-text p {
-      margin: 0;
-    }
-    .hub-title {
-      font: var(--mat-sys-label-large);
-      color: var(--mat-sys-on-surface-variant);
-    }
-    .hub-status {
-      font: var(--mat-sys-title-medium);
-      overflow-wrap: anywhere;
-    }
-    .hub-checked,
-    .hub-reason {
-      font: var(--mat-sys-body-small);
-      color: var(--mat-sys-on-surface-variant);
-      margin-top: 2px;
-    }
-    .hub-action {
-      flex: none;
-    }
-    .hub-bad {
-      border-color: var(--mat-sys-error);
-      background: var(--mat-sys-error-container);
-      color: var(--mat-sys-on-error-container);
-    }
-    .hub-bad .hub-icon,
-    .hub-bad .hub-title,
-    .hub-bad .hub-reason,
-    .hub-bad .hub-checked {
-      color: inherit;
-    }
-    /* Three blocks, three equal columns: the panel uses the width of the page
-       instead of crowding into its left third, and the rules between them show
-       that the same total is being split two different ways. */
-    .users {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      padding: 16px 20px;
-      border: 1px solid var(--mat-sys-outline-variant);
-      border-radius: 16px;
-      background: var(--mat-sys-surface);
-    }
-    .users-total {
-      display: grid;
-      gap: 2px;
-      align-content: start;
-    }
-    .users-label {
-      font: var(--mat-sys-label-large);
-      color: var(--mat-sys-on-surface-variant);
-    }
-    .users-count {
-      font: var(--mat-sys-headline-medium);
-      font-variant-numeric: tabular-nums;
-    }
-    .users-part {
-      margin: 0;
-      display: grid;
-      gap: 4px;
-      align-content: start;
-      min-width: 180px;
-      padding-left: 32px;
-      border-left: 1px solid var(--mat-sys-outline-variant);
-    }
-    .users-line {
-      display: flex;
-      justify-content: space-between;
-      gap: 24px;
-      /* Wide enough for the longest of these words, near enough that the
-         figure still reads as the count of the word beside it. */
-      max-width: 240px;
-      font: var(--mat-sys-body-medium);
-    }
-    .users-line dt {
-      color: var(--mat-sys-on-surface-variant);
-    }
-    .users-line dd {
-      margin: 0;
-      font-variant-numeric: tabular-nums;
-    }
-    @media (max-width: 599px) {
-      .hub {
-        flex-wrap: wrap;
-        padding: 16px;
-      }
-      .hub-action {
-        width: 100%;
-      }
-      // Two columns of figures do not fit beside the total, and a panel that
-      // wraps into three ragged blocks reads worse than three stacked ones.
-      // Stacked, the rule between two blocks runs along the top, not the side.
-      .users {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 16px;
-      }
-      // One column is as wide as the phone, and the figure belongs at its far
-      // edge again rather than a third of the way across it.
-      .users-line {
-        max-width: none;
-      }
-      .users-part {
-        min-width: 0;
-        padding-left: 0;
-        padding-top: 16px;
-        border-left: 0;
-        border-top: 1px solid var(--mat-sys-outline-variant);
-      }
+    /* The number of tickets waiting, on the title of the list that shows them. */
+    .count {
+      display: inline-block;
+      min-width: 24px;
+      padding: 0 8px;
+      border-radius: 12px;
+      text-align: center;
+      font: var(--mat-sys-label-medium);
+      line-height: 24px;
+      background: var(--mat-sys-tertiary-container);
+      color: var(--mat-sys-on-tertiary-container);
     }
   `,
 })
@@ -335,9 +298,11 @@ export class AdminOverviewPage implements OnInit {
   readonly loadError = signal(false);
   readonly checking = signal(false);
 
+  readonly columns = ['subject', 'priority', 'updated', 'status'];
+
   /*
    * Every operator figure is its own signal, empty while it is missing. One hub
-   * call that fails leaves a dash in its own tile and the rest of the page
+   * call that fails leaves a dash in its own panel and the rest of the page
    * standing, which is what an operator needs when the service has a bad minute.
    */
   readonly stats = signal<ResellerStats | null>(null);
@@ -353,7 +318,7 @@ export class AdminOverviewPage implements OnInit {
   number(value: number): string {
     // A service that answers without the figure, or with something that is not
     // one, leaves a dash in its place. The portal talks to installations it does
-    // not control, and a tile reading NaN helps nobody.
+    // not control, and a panel reading NaN helps nobody.
     if (!Number.isFinite(value)) return '–';
     return new Intl.NumberFormat(this.language.current(), { maximumFractionDigits: 1 }).format(value);
   }
@@ -377,7 +342,7 @@ export class AdminOverviewPage implements OnInit {
     await this.loadOperatorFigures();
   }
 
-  /** Reads the operator tiles, each one on its own: a failure empties that tile alone. */
+  /** Reads the operator panels, each one on its own: a failure empties that panel alone. */
   private async loadOperatorFigures(): Promise<void> {
     await Promise.all([
       this.fill(this.stats, () => firstValueFrom(this.hub.get<ResellerStats>('/resellers/stats'))),
@@ -396,16 +361,16 @@ export class AdminOverviewPage implements OnInit {
       }),
       this.fill(this.openTickets, async () => {
         const page = await firstValueFrom(
-          this.hub.page<TicketRow>('/resellers/tickets', { page: 1, perPage: 100 }),
+          this.hub.page<ResellerTicketRow>('/resellers/tickets', { page: 1, perPage: 100 }),
         );
-        const count = page.data.filter((ticket) => ticket.status !== 'closed').length;
+        const open = page.data.filter((ticket) => ticket.status !== 'closed');
         const total = page.pagination?.total ?? page.data.length;
-        return { count, partial: total > page.data.length };
+        return { count: open.length, partial: total > page.data.length, rows: open.slice(0, TICKET_ROWS) };
       }),
     ]);
   }
 
-  /** Runs one tile's hub call and leaves that tile empty when it fails. */
+  /** Runs one panel's hub call and leaves that panel empty when it fails. */
   private async fill<T>(target: WritableSignal<T | null>, read: () => Promise<T>): Promise<void> {
     try {
       target.set(await read());

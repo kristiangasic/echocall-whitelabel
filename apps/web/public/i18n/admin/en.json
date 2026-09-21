@@ -4,40 +4,39 @@
     "title": "Overview",
     "hub": {
       "title": "Connection to the service",
-      "ok": "Connected as {{email}}",
+      "connected": "Connected",
       "failed": "Not connected",
+      "account": "Signed in as",
+      "lastChecked": "Last checked",
       "subscriptionHint": "The portal needs an active subscription. Check your account at",
       "keyHint": "Check the API key in the server configuration and restart the service.",
-      "checkedAt": "Last checked: {{time}}",
       "recheck": "Check now"
     },
     "users": {
-      "all": "Total",
       "title": "User accounts",
-      "total": "{{count}} accounts in total",
       "manage": "Manage users"
     },
     "customers": {
       "title": "Customers",
-      "customers": "Customers",
       "voiceAgents": "Voice agents",
       "chatbots": "Chatbots",
-      "usage": "Usage (30 days)"
+      "usage": "Usage (30 days)",
+      "manage": "Manage customers"
     },
     "balance": {
       "title": "Portal balance",
-      "credit": "Balance",
       "voiceMinutes": "Voice minutes",
       "chatMessages": "Chat messages"
     },
     "subscriptions": {
       "hint": "cancelled ones included",
-      "title": "Subscriptions"
+      "title": "Subscriptions",
+      "all": "All subscriptions"
     },
     "tickets": {
-      "title": "Tickets",
       "open": "Open tickets",
-      "hint": "waiting for an answer"
+      "all": "All tickets",
+      "none": "No open tickets."
     },
     "unavailable": "The service did not return these figures just now."
   },
