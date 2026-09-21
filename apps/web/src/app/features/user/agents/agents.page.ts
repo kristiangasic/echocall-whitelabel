@@ -7,6 +7,7 @@ import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { AgentLanguageNames } from '../../../core/hub/agent-language-names.service';
 import { HubService } from '../../../core/hub/hub.service';
 import type { AgentSummary } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
@@ -46,7 +47,7 @@ import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/
           <ng-container matColumnDef="language">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.agents.language') }}</th>
             <td mat-cell *matCellDef="let a" [attr.data-label]="t('user.agents.language')">
-              {{ a.language || '' }}
+              <span [attr.title]="languageName(a.language, true)">{{ languageName(a.language) }}</span>
             </td>
           </ng-container>
           <ng-container matColumnDef="voice">
@@ -91,6 +92,7 @@ import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/
 })
 export class AgentsPage implements OnInit {
   private readonly hub = inject(HubService);
+  private readonly languageNames = inject(AgentLanguageNames);
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotifyService);
 
@@ -99,7 +101,13 @@ export class AgentsPage implements OnInit {
   readonly columns = ['name', 'language', 'voice', 'status', 'actions'];
 
   ngOnInit(): void {
+    void this.languageNames.load();
     void this.load();
+  }
+
+  /** The language of a row, named rather than left as the stored code. */
+  languageName(code: string | null | undefined, english = false): string {
+    return english ? this.languageNames.englishName(code) : this.languageNames.name(code);
   }
 
   async load(): Promise<void> {

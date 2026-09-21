@@ -7,6 +7,7 @@ import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { AgentLanguageNames } from '../../../core/hub/agent-language-names.service';
 import { HubService } from '../../../core/hub/hub.service';
 import type { ChatbotSummary } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
@@ -47,7 +48,7 @@ import { EmbedDialogComponent, type EmbedDialogData } from './embed-dialog.compo
           <ng-container matColumnDef="language">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.chatbots.language') }}</th>
             <td mat-cell *matCellDef="let c" [attr.data-label]="t('user.chatbots.language')">
-              {{ c.language || '' }}
+              <span [attr.title]="languageName(c.language, true)">{{ languageName(c.language) }}</span>
             </td>
           </ng-container>
           <ng-container matColumnDef="status">
@@ -95,6 +96,7 @@ import { EmbedDialogComponent, type EmbedDialogData } from './embed-dialog.compo
 })
 export class ChatbotsPage implements OnInit {
   private readonly hub = inject(HubService);
+  private readonly languageNames = inject(AgentLanguageNames);
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotifyService);
 
@@ -103,7 +105,13 @@ export class ChatbotsPage implements OnInit {
   readonly columns = ['name', 'language', 'status', 'actions'];
 
   ngOnInit(): void {
+    void this.languageNames.load();
     void this.load();
+  }
+
+  /** The language of a row, named rather than left as the stored code. */
+  languageName(code: string | null | undefined, english = false): string {
+    return english ? this.languageNames.englishName(code) : this.languageNames.name(code);
   }
 
   async load(): Promise<void> {

@@ -193,6 +193,9 @@
     "privacy": "Confidentialité",
     "support": "Assistance"
   },
+  "notices": {
+    "languageAdjusted": "La sélection des langues a été adaptée au modèle vocal choisi."
+  },
   "errors": {
     "unknown": "Une erreur s'est produite. Veuillez réessayer.",
     "network": "Le serveur est injoignable.",

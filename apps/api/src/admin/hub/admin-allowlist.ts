@@ -82,6 +82,9 @@ const RULES: readonly (readonly [string, string])[] = [
   ['GET', '/resellers/activity-log'],
   ['GET', '/resellers/voice-agents'],
   ['GET', '/resellers/chatbots'],
+
+  // Names the language code every agent row carries.
+  ['GET', '/languages/agent'],
 ];
 
 interface CompiledRule {

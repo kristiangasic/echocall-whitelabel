@@ -17,6 +17,8 @@ export type AddKnowledge = Schemas['AddKnowledge'];
 export type Voice = Schemas['Voice'];
 export type AvailableVoice = Schemas['AvailableVoice'];
 export type Language = Schemas['Language'];
+/** A language an agent can speak or write, with names for display. */
+export type AgentLanguage = Schemas['AgentLanguage'];
 
 export type Chatbot = Schemas['Chatbot'];
 export type ChatbotSummary = Schemas['ChatbotSummary'];

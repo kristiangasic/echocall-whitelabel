@@ -2,18 +2,18 @@
   "openapi": "3.1.3",
   "info": {
     "title": "EchoCall Developer Platform - High-Performance AI Voice & Chat API",
-    "version": "1.10.0",
+    "version": "1.11.0",
     "contact": {
-      "name": "EchoCall Developer Support",
-      "url": "https://echocall.de/contact",
+      "name": "EchoCall - Support",
+      "url": "https://echocall.de/support",
       "email": "team@echocall.de"
     },
     "license": {
       "name": "Proprietary - EchoCall Global Terms",
-      "url": "https://echocall.de/agb"
+      "url": "https://echocall.de/terms-conditions"
     },
-    "termsOfService": "https://echocall.de/agb",
-    "description": "\nWelcome to the **EchoCall Public API**. This platform is designed for developers, resellers, and enterprises to programmatically build, manage, and scale ultra-realistic AI voice agents and smart chatbots.\n\n### 🚀 Getting Started\nOur API follows RESTful principles and returns standard JSON responses. To start building, you'll need:\n1.  **An API Key**: Generate your `eck_live_...` key in the [EchoCall Developer Portal](https://hub.echocall.de/developer).\n2.  **Base URL**: Use `https://hub.echocall.de/api/v1` for all requests.\n\n### 🔐 Authentication & Security\nEchoCall uses **Bearer Token Authentication**. Send your API key in the `Authorization` header:\n```bash\ncurl -X GET \"https://hub.echocall.de/api/v1/agents\" \\\n     -H \"Authorization: Bearer YOUR_API_KEY\"\n```\n> [!IMPORTANT]\n> Keep your keys secure. A key grants full access to your account's data under its scopes.\n\n### 🧑‍💼 Acting on behalf of a customer\nReseller keys can run any customer-facing operation as one of their customers by adding the header `X-EchoCall-Customer: <customerId>`. The request is then treated exactly as if that customer had sent it: ownership, limits and usage are the customer's, and none of the reseller operations are reachable with the header set. This is how a self-hosted front end serves many customers with a single key. The customer id is the one returned by `POST /resellers/customers`.\n```bash\ncurl -X GET \"https://hub.echocall.de/api/v1/agents\" \\\n     -H \"Authorization: Bearer YOUR_RESELLER_KEY\" \\\n     -H \"X-EchoCall-Customer: 501\"\n```\n\n### 🎭 White-labeling & Reselling\nEchoCall is built with an **API-First White-labeling Strategy**. \n-   **Proprietary Models**: EchoCall utilizes its own high-performance models, `EchoCall-Voice` and `EchoCall-Smart`, specifically optimized for low-latency conversational AI.\n-   **Reseller Scopes**: Resellers can manage their own customers via the `/resellers` endpoints, adjusting balances, credits, and plans dynamically.\n\n### 🚦 Rate Limiting & Pagination\n-   **Rate Limits**: Limits are applied **per API key, per second** (`rateLimitPerSecond`, **500 requests per second** by default). Every response carries `X-RateLimit-Limit` and `X-RateLimit-Remaining`. Exceeding the limit returns **429** with `Retry-After: 1`.\n-   **Pagination**: Most list endpoints support `page` and `perPage` query parameters. `page` starts at 1; the default `perPage` varies per endpoint and the maximum `perPage` is **100**.\n\n### 🔔 Webhooks\nRegister an endpoint with `POST /webhooks` and EchoCall pushes events to it as they happen. `GET /webhooks/events` returns the full catalog; subscribe to `\"*\"` to receive everything.\n\n**Envelope.** Every delivery is a single JSON object:\n```json\n{\n  \"id\": \"evt_1f0c9a24-6f0e-4a1e-9f0c-2b6a1c1c1c1c\",\n  \"event\": \"call.ended\",\n  \"createdAt\": \"2026-01-31T09:12:44.512Z\",\n  \"data\": { }\n}\n```\n\n**Headers.**\n| Header | Meaning |\n| --- | --- |\n| `X-EchoCall-Event` | Event name, same value as `event` in the body. |\n| `X-EchoCall-Delivery` | Envelope id. Use it to make your handler idempotent. |\n| `X-EchoCall-Signature` | `t=<unix seconds>,v1=<hex>` (see below). |\n| `User-Agent` | `EchoCall-Webhooks/1.0` |\n\n**Signature verification.** `v1` is the HMAC-SHA256 of `${t}.${rawBody}`, keyed with the secret returned once when the webhook was created. Compute it over the **raw** request body, before any JSON parsing, and compare in constant time:\n```js\nimport crypto from 'crypto';\n\nfunction verify(secret, header, rawBody, toleranceSeconds = 300) {\n  const parts = Object.fromEntries(header.split(',').map((p) => p.split('=')));\n  if (Math.abs(Date.now() / 1000 - Number(parts.t)) > toleranceSeconds) return false;\n  const expected = crypto.createHmac('sha256', secret).update(`${parts.t}.${rawBody}`).digest('hex');\n  const a = Buffer.from(expected);\n  const b = Buffer.from(parts.v1 ?? '');\n  return a.length === b.length && crypto.timingSafeEqual(a, b);\n}\n```\n\n**Delivery, retries and auto-disable.** Answer with any 2xx status within **10 seconds**; anything else counts as a failure. A failed delivery is retried three times, after **1s**, **5s** and **30s**. `lastDeliveryAt` and `lastDeliveryStatus` on the webhook record the final outcome of each event, `failedDeliveries` counts consecutive failures and resets to 0 on the next success. After **25** consecutive failures the endpoint is set to `isActive: false` and receives nothing until you re-enable it with `PATCH /webhooks/{id}`. Use `POST /webhooks/{id}/test` to check an endpoint at any time; that ping is sent once, with no retry.\n\n> [!NOTE]\n\n### Errors\n\nEvery failing request answers with the same envelope, whatever went wrong:\n\n```json\n{\n  \"error\": {\n    \"code\": \"validation_error\",\n    \"message\": \"Invalid request body\",\n    \"details\": { \"name\": { \"_errors\": [\"Required\"] } }\n  }\n}\n```\n\nBranch on `error.code`, never on `error.message`: the code is stable, the wording is not.\n`details` appears only on validation failures and carries the per-field report from the\nrequest schema.\n\n| Status | `error.code` | What it means |\n| --- | --- | --- |\n| 400 | `validation_error`, `invalid_id`, `invalid_date`, `bad_request` | The request could not be accepted as written. |\n| 401 | `unauthorized`, `invalid_api_key` | The `Authorization` header was missing, malformed, or the key is unknown, revoked or expired. |\n| 402 | `insufficient_balance` | The account wallet does not cover the purchase. |\n| 403 | `insufficient_permissions`, `forbidden` | The key is valid but lacks the required scope, or the endpoint is reseller-only. |\n| 404 | `not_found` | No such resource is visible to this key. Resources owned by another account are reported as missing. |\n| 409 | `conflict` | The resource exists but its state does not allow the operation. |\n| 412 | `provider_not_configured` | The account is not yet provisioned for the voice engine. |\n| 429 | `rate_limit_exceeded` | Too many requests. Wait for `Retry-After` seconds. |\n| 500 | `internal_error`, `database_error` | An unexpected server fault. Safe to retry. |\n| 502 | `upstream_error`, `sync_failed` | A dependency the endpoint needs answered badly. |\n| 503 | `service_unavailable`, `marketplace_disabled` | The feature is switched off for this deployment. |\n\nA 403 caused by a missing scope also carries `error.requiredScope`, naming the scope the key\nwould need.\n\n### Scopes\n\nEvery API key carries a set of scopes. Each operation names the one it requires in its\n`x-required-scope` extension, and self-service keys are currently issued with all of them.\nReseller endpoints (`/resellers`) and the provisioning hooks (`/provisioning`) carry a scope like\nevery other operation, and additionally require the key to belong to a reseller account: the\nscope alone does not make a key a partner key.\n\n| Scope | What it allows |\n| --- | --- |\n| `read:agents` | Read voice agents, their knowledge sources and their integration assignments. Also required for the voice library and for reading batch calling campaigns. |\n| `write:agents` | Create, change and delete voice agents, their knowledge and their integration assignments. Also required to create, submit, cancel and delete batch calling campaigns. |\n| `read:chatbots` | Read chatbots, their knowledge sources and their integration assignments. |\n| `write:chatbots` | Create, change and delete chatbots, their knowledge and their integration assignments. |\n| `read:phone-numbers` | List owned numbers, browse the marketplace and read regulatory verification state. |\n| `write:phone-numbers` | Buy, reassign, cancel numbers and submit regulatory verification documents. Purchases charge the account wallet. |\n| `read:conversations` | Read call records, chat conversations and chat transcripts. |\n| `write:conversations` | Send messages into a chat conversation, reassign it, archive it and close it. |\n| `read:analytics` | Read usage, revenue and per-agent performance aggregates. |\n| `read:webhooks` | List webhook endpoints and read the event catalog. |\n| `write:webhooks` | Register, change, test and delete webhook endpoints. |\n| `read:tickets` | Read support tickets and their message threads. |\n| `write:tickets` | Open tickets and post replies. |\n| `read:integrations` | List integrations, read one with its credentials masked, and read the tool catalog. |\n| `write:integrations` | Connect, change, test and remove integrations. |\n| `read:billing` | Read plans, invoices, subscription, wallet balance and transactions. |\n| `write:billing` | Start a checkout for a plan. |\n| `read:profile` | Read the account profile, its usage and limits, and the notification inbox. |\n| `write:profile` | Mark notifications read. |\n| `read:resellers` | Read partner data: customers, plans, subscriptions, invoices, analytics and settings. |\n| `write:resellers` | Change partner data and run the provisioning lifecycle hooks. |\n\n### Pagination\n\nList endpoints take `page` (1-based) and `perPage`. `perPage` is clamped to at most 100\neverywhere; the default differs per endpoint and is stated on each operation. The response\ncarries a `pagination` object with `page` and `perPage`, and with `total` only where the\nhandler runs a count query. Where `total` is absent, that is documented on the operation:\npage until you receive fewer items than you asked for.\n"
+    "termsOfService": "https://echocall.de/terms-conditions",
+    "description": "\nWelcome to the **EchoCall Public API**. This platform is designed for developers, resellers, and enterprises to programmatically build, manage, and scale ultra-realistic AI voice agents and smart chatbots.\n\n### 🚀 Getting Started\nOur API follows RESTful principles and returns standard JSON responses. To start building, you'll need:\n1.  **An API Key**: Generate your `eck_live_...` key in the [EchoCall Developer Portal](https://hub.echocall.de/developer).\n2.  **Base URL**: Use `https://hub.echocall.de/api/v1` for all requests.\n\n### 🔐 Authentication & Security\nEchoCall uses **Bearer Token Authentication**. Send your API key in the `Authorization` header:\n```bash\ncurl -X GET \"https://hub.echocall.de/api/v1/agents\" \\\n     -H \"Authorization: Bearer YOUR_API_KEY\"\n```\n> [!IMPORTANT]\n> Keep your keys secure. A key grants full access to your account's data under its scopes.\n\n### 🧑‍💼 Acting on behalf of a customer\nReseller keys can run any customer-facing operation as one of their customers by adding the header `X-EchoCall-Customer: <customerId>`. The request is then treated exactly as if that customer had sent it: ownership, limits and usage are the customer's, and none of the reseller operations are reachable with the header set. This is how a self-hosted front end serves many customers with a single key. The customer id is the one returned by `POST /resellers/customers`.\n```bash\ncurl -X GET \"https://hub.echocall.de/api/v1/agents\" \\\n     -H \"Authorization: Bearer YOUR_RESELLER_KEY\" \\\n     -H \"X-EchoCall-Customer: 501\"\n```\n\n### 🎭 White-labeling & Reselling\nEchoCall is built with an **API-First White-labeling Strategy**. \n-   **Proprietary Models**: EchoCall utilizes its own high-performance models, `EchoCall-Voice` and `EchoCall-Smart`, specifically optimized for low-latency conversational AI.\n-   **Reseller Scopes**: Resellers can manage their own customers via the `/resellers` endpoints, adjusting balances, credits, and plans dynamically.\n\n### 🚦 Rate Limiting & Pagination\n-   **Rate Limits**: Limits are applied **per API key, per second** (`rateLimitPerSecond`, **500 requests per second** by default). Every response carries `X-RateLimit-Limit` and `X-RateLimit-Remaining`. Exceeding the limit returns **429** with `Retry-After: 1`.\n-   **Pagination**: Most list endpoints support `page` and `perPage` query parameters. `page` starts at 1; the default `perPage` varies per endpoint and the maximum `perPage` is **100**.\n\n### 🔔 Webhooks\nRegister an endpoint with `POST /webhooks` and EchoCall pushes events to it as they happen. `GET /webhooks/events` returns the full catalog; subscribe to `\"*\"` to receive everything.\n\n**Envelope.** Every delivery is a single JSON object:\n```json\n{\n  \"id\": \"evt_1f0c9a24-6f0e-4a1e-9f0c-2b6a1c1c1c1c\",\n  \"event\": \"call.ended\",\n  \"createdAt\": \"2026-01-31T09:12:44.512Z\",\n  \"data\": { }\n}\n```\n\n**Headers.**\n| Header | Meaning |\n| --- | --- |\n| `X-EchoCall-Event` | Event name, same value as `event` in the body. |\n| `X-EchoCall-Delivery` | Envelope id. Use it to make your handler idempotent. |\n| `X-EchoCall-Signature` | `t=<unix seconds>,v1=<hex>` (see below). |\n| `User-Agent` | `EchoCall-Webhooks/1.0` |\n\n**Signature verification.** `v1` is the HMAC-SHA256 of `${t}.${rawBody}`, keyed with the secret returned once when the webhook was created. Compute it over the **raw** request body, before any JSON parsing, and compare in constant time:\n```js\nimport crypto from 'crypto';\n\nfunction verify(secret, header, rawBody, toleranceSeconds = 300) {\n  const parts = Object.fromEntries(header.split(',').map((p) => p.split('=')));\n  if (Math.abs(Date.now() / 1000 - Number(parts.t)) > toleranceSeconds) return false;\n  const expected = crypto.createHmac('sha256', secret).update(`${parts.t}.${rawBody}`).digest('hex');\n  const a = Buffer.from(expected);\n  const b = Buffer.from(parts.v1 ?? '');\n  return a.length === b.length && crypto.timingSafeEqual(a, b);\n}\n```\n\n**Delivery, retries and auto-disable.** Answer with any 2xx status within **10 seconds**; anything else counts as a failure. A failed delivery is retried three times, after **1s**, **5s** and **30s**. `lastDeliveryAt` and `lastDeliveryStatus` on the webhook record the final outcome of each event, `failedDeliveries` counts consecutive failures and resets to 0 on the next success. After **25** consecutive failures the endpoint is set to `isActive: false` and receives nothing until you re-enable it with `PATCH /webhooks/{id}`. Use `POST /webhooks/{id}/test` to check an endpoint at any time; that ping is sent once, with no retry.\n\n### Errors\n\nEvery failing request answers with the same envelope, whatever went wrong:\n\n```json\n{\n  \"error\": {\n    \"code\": \"validation_error\",\n    \"message\": \"Invalid request body\",\n    \"details\": { \"name\": { \"_errors\": [\"Required\"] } }\n  }\n}\n```\n\nBranch on `error.code`, never on `error.message`: the code is stable, the wording is not.\n`details` appears only on validation failures and carries the per-field report from the\nrequest schema.\n\n| Status | `error.code` | What it means |\n| --- | --- | --- |\n| 400 | `validation_error`, `invalid_id`, `invalid_date`, `bad_request` | The request could not be accepted as written. |\n| 401 | `unauthorized`, `invalid_api_key` | The `Authorization` header was missing, malformed, or the key is unknown, revoked or expired. |\n| 402 | `insufficient_balance` | The account wallet does not cover the purchase. |\n| 403 | `insufficient_permissions`, `forbidden` | The key is valid but lacks the required scope, or the endpoint is reseller-only. |\n| 404 | `not_found` | No such resource is visible to this key. Resources owned by another account are reported as missing. |\n| 409 | `conflict` | The resource exists but its state does not allow the operation. |\n| 412 | `provider_not_configured` | The account is not yet provisioned for the voice engine. |\n| 429 | `rate_limit_exceeded` | Too many requests. Wait for `Retry-After` seconds. |\n| 500 | `internal_error`, `database_error` | An unexpected server fault. Safe to retry. |\n| 502 | `upstream_error`, `sync_failed` | A dependency the endpoint needs answered badly. |\n| 503 | `service_unavailable`, `marketplace_disabled` | The feature is switched off for this deployment. |\n\nA 403 caused by a missing scope also carries `error.requiredScope`, naming the scope the key\nwould need.\n\n### Scopes\n\nEvery API key carries a set of scopes. Each operation names the one it requires in its\n`x-required-scope` extension, and self-service keys are currently issued with all of them.\nReseller endpoints (`/resellers`) and the provisioning hooks (`/provisioning`) carry a scope like\nevery other operation, and additionally require the key to belong to a reseller account: the\nscope alone does not make a key a partner key.\n\n| Scope | What it allows |\n| --- | --- |\n| `read:agents` | Read voice agents, their knowledge sources and their integration assignments. Also required for the voice library and for reading batch calling campaigns. |\n| `write:agents` | Create, change and delete voice agents, their knowledge and their integration assignments. Also required to create, submit, cancel and delete batch calling campaigns. |\n| `read:chatbots` | Read chatbots, their knowledge sources and their integration assignments. |\n| `write:chatbots` | Create, change and delete chatbots, their knowledge and their integration assignments. |\n| `read:phone-numbers` | List owned numbers, browse the marketplace and read regulatory verification state. |\n| `write:phone-numbers` | Buy, reassign, cancel numbers and submit regulatory verification documents. Purchases charge the account wallet. |\n| `read:conversations` | Read call records, chat conversations and chat transcripts. |\n| `write:conversations` | Send messages into a chat conversation, reassign it, archive it and close it. |\n| `read:analytics` | Read usage, revenue and per-agent performance aggregates. |\n| `read:webhooks` | List webhook endpoints and read the event catalog. |\n| `write:webhooks` | Register, change, test and delete webhook endpoints. |\n| `read:tickets` | Read support tickets and their message threads. |\n| `write:tickets` | Open tickets and post replies. |\n| `read:integrations` | List integrations, read one with its credentials masked, and read the tool catalog. |\n| `write:integrations` | Connect, change, test and remove integrations. |\n| `read:billing` | Read plans, invoices, subscription, wallet balance and transactions. |\n| `write:billing` | Start a checkout for a plan. |\n| `read:profile` | Read the account profile, its usage and limits, and the notification inbox. |\n| `write:profile` | Mark notifications read. |\n| `read:resellers` | Read partner data: customers, plans, subscriptions, invoices, analytics and settings. |\n| `write:resellers` | Change partner data and run the provisioning lifecycle hooks. |\n\n### Pagination\n\nList endpoints take `page` (1-based) and `perPage`. `perPage` is clamped to at most 100\neverywhere; the default differs per endpoint and is stated on each operation. The response\ncarries a `pagination` object with `page` and `perPage`, and with `total` only where the\nhandler runs a count query. Where `total` is absent, that is documented on the operation:\npage until you receive fewer items than you asked for.\n"
   },
   "servers": [
     {
@@ -3250,6 +3250,34 @@
         },
         "required": [
           "code"
+        ]
+      },
+      "AgentLanguage": {
+        "type": "object",
+        "description": "A language an agent can speak or write, named for display.",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "The value to send as `language` or inside `supportedLanguages`, for example `pt-br`."
+          },
+          "name": {
+            "type": "string",
+            "description": "English name of the language, for example `Portuguese (Brazil)`."
+          },
+          "nativeName": {
+            "type": "string",
+            "description": "The name the language calls itself, for example `Português (Brasil)`."
+          },
+          "flag": {
+            "type": "string",
+            "description": "ISO 3166-1 alpha-2 region code for a flag image, for example `br`. Empty when no region fits."
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "nativeName",
+          "flag"
         ]
       },
       "UserProfile": {
@@ -11931,6 +11959,132 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/ActAsCustomer"
+          }
+        ]
+      }
+    },
+    "/languages/agent": {
+      "get": {
+        "tags": [
+          "Utilities"
+        ],
+        "summary": "List the languages an agent can speak or write",
+        "description": "Returns the languages you can assign to an agent, each with an English name, the name the language calls itself, and a region code for a flag image, so a language picker needs no table of its own. This is a different list from `GET /languages`, which returns the locales the dashboard interface is translated into. Populating an agent picker from the locale list is a common mistake and leaves a customer with three choices where the platform supports dozens. Set `type` to `chat` for a text agent, which has no speech synthesis and therefore the longer list. For `voice`, language support depends on the speech model, so pass the same `ttsModel` value you will create the agent with and the answer matches what that agent will accept; leaving it unset answers for the default model. The voice list is read from the live model catalogue, and `meta.source` reports `catalog` when it came from there or `defaults` when a built-in list was used instead. Set `type` to `all` to name any language code the platform may have stored, which is what a list of agents needs to print a language instead of a bare code. The route requires a valid API key but checks no scope.",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Which kind of agent the languages are for, or `all` to name every language the platform knows.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "voice",
+                "chat",
+                "all"
+              ],
+              "default": "voice"
+            }
+          },
+          {
+            "name": "ttsModel",
+            "in": "query",
+            "required": false,
+            "description": "Speech model the voice agent will use, for example `echocall-ultra`. Ignored for `type=chat` and `type=all`. Unset means the default model.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "echocall-flash",
+                "echocall-flash-lite",
+                "echocall-ultra",
+                "echocall-multilingual"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/parameters/ActAsCustomer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The languages available for that kind of agent, sorted by English name.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AgentLanguage"
+                      },
+                      "description": "The available languages."
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "voice",
+                            "chat",
+                            "all"
+                          ],
+                          "description": "The kind of agent the list applies to."
+                        },
+                        "ttsModel": {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "Speech model the answer applies to. Null for `type=chat` and `type=all`."
+                        },
+                        "count": {
+                          "type": "integer",
+                          "description": "How many languages the list holds."
+                        },
+                        "source": {
+                          "type": "string",
+                          "enum": [
+                            "catalog",
+                            "defaults"
+                          ],
+                          "description": "Whether the list came from the live model catalogue or from the built-in tables."
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "ttsModel",
+                        "count",
+                        "source"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
           }
         ]
       }

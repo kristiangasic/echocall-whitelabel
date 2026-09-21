@@ -29,6 +29,7 @@ const RULES: readonly (readonly [string, string])[] = [
   ['GET', '/voices'],
   ['GET', '/voices/available'],
   ['GET', '/languages'],
+  ['GET', '/languages/agent'],
   ['GET', '/phone-numbers'],
   ['GET', '/phone-numbers/countries'],
   ['GET', '/phone-numbers/search'],

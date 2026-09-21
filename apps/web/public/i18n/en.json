@@ -193,6 +193,9 @@
     "privacy": "Privacy",
     "support": "Support"
   },
+  "notices": {
+    "languageAdjusted": "The language selection was adjusted to the chosen voice model."
+  },
   "errors": {
     "unknown": "Something went wrong. Please try again.",
     "network": "The server cannot be reached.",

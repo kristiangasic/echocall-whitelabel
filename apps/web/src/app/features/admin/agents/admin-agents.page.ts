@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { AgentLanguageNames } from '../../../core/hub/agent-language-names.service';
 import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type { ResellerChatbotRow, ResellerVoiceAgentRow } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
@@ -69,6 +70,7 @@ import { type AgentRow, AgentTableComponent } from './agent-table.component';
 })
 export class AdminAgentsPage implements OnInit {
   private readonly hub = inject(AdminHubService);
+  private readonly languageNames = inject(AgentLanguageNames);
   private readonly auth = inject(AuthStore);
   private readonly notify = inject(NotifyService);
   private readonly router = inject(Router);
@@ -96,6 +98,7 @@ export class AdminAgentsPage implements OnInit {
   }
 
   async load(): Promise<void> {
+    void this.languageNames.load('operator');
     this.loading.set(true);
     try {
       const [agents, chatbots] = await Promise.all([

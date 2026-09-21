@@ -1,7 +1,8 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { TranslocoDirective } from '@jsverse/transloco';
+import { AgentLanguageNames } from '../../../core/hub/agent-language-names.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
 
 /** One line of the inventory, reduced to what a voice agent and a chatbot have in common. */
@@ -41,7 +42,7 @@ export interface AgentRow {
           <ng-container matColumnDef="language">
             <th mat-header-cell *matHeaderCellDef>{{ t('admin.agents.language') }}</th>
             <td mat-cell *matCellDef="let row" [attr.data-label]="t('admin.agents.language')">
-              {{ row.language ?? '' }}
+              <span [attr.title]="languageName(row.language, true)">{{ languageName(row.language) }}</span>
             </td>
           </ng-container>
           <ng-container matColumnDef="created">
@@ -82,6 +83,8 @@ export interface AgentRow {
   `,
 })
 export class AgentTableComponent {
+  private readonly languageNames = inject(AgentLanguageNames);
+
   readonly rows = input.required<AgentRow[]>();
   readonly emptyText = input('');
 
@@ -89,4 +92,9 @@ export class AgentTableComponent {
   readonly open = output<number>();
 
   readonly columns = ['name', 'customer', 'language', 'created', 'open'];
+
+  /** The language of a row, named rather than left as the stored code. */
+  languageName(code: string | null | undefined, english = false): string {
+    return english ? this.languageNames.englishName(code) : this.languageNames.name(code);
+  }
 }

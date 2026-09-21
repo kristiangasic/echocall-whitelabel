@@ -27,12 +27,32 @@ describe('AgentEditPage', () => {
     router = TestBed.inject(Router);
     const fixture = TestBed.createComponent(AgentEditPage);
     await fixture.whenStable();
-    http.expectOne('/api/hub/languages').flush([{ code: 'de' }, { code: 'en' }]);
+    flushLanguages();
     http
       .expectOne('/api/hub/voices')
       .flush({ data: [{ id: 'voice_1', name: 'Clara', status: 'ready', type: 'premade' }] });
     http.expectOne('/api/hub/voices/available').flush({ data: [] });
     return fixture;
+  }
+
+  /**
+   * The languages an agent can speak come from the platform and depend on the
+   * speech model, so the page asks again whenever that model changes.
+   */
+  function flushLanguages(): void {
+    const requests = http.match(
+      (r) => r.url === '/api/hub/languages/agent' && r.params.get('type') === 'voice',
+    );
+    expect(requests.length).toBeGreaterThan(0);
+    for (const request of requests) {
+      request.flush({
+        data: [
+          { code: 'de', name: 'German', nativeName: 'Deutsch', flag: 'de' },
+          { code: 'en', name: 'English', nativeName: 'English', flag: 'gb' },
+        ],
+        meta: { type: 'voice', ttsModel: 'echocall-flash', count: 2, source: 'catalog' },
+      });
+    }
   }
 
   afterEach(() => http.verify());

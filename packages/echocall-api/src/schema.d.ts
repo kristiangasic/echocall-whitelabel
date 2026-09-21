@@ -3708,6 +3708,77 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/languages/agent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the languages an agent can speak or write
+         * @description Returns the languages you can assign to an agent, each with an English name, the name the language calls itself, and a region code for a flag image, so a language picker needs no table of its own. This is a different list from `GET /languages`, which returns the locales the dashboard interface is translated into. Populating an agent picker from the locale list is a common mistake and leaves a customer with three choices where the platform supports dozens. Set `type` to `chat` for a text agent, which has no speech synthesis and therefore the longer list. For `voice`, language support depends on the speech model, so pass the same `ttsModel` value you will create the agent with and the answer matches what that agent will accept; leaving it unset answers for the default model. The voice list is read from the live model catalogue, and `meta.source` reports `catalog` when it came from there or `defaults` when a built-in list was used instead. Set `type` to `all` to name any language code the platform may have stored, which is what a list of agents needs to print a language instead of a bare code. The route requires a valid API key but checks no scope.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Speech model the voice agent will use, for example `echocall-ultra`. Ignored for `type=chat` and `type=all`. Unset means the default model. */
+                    ttsModel?: "echocall-flash" | "echocall-flash-lite" | "echocall-ultra" | "echocall-multilingual";
+                    /** @description Which kind of agent the languages are for, or `all` to name every language the platform knows. */
+                    type?: "voice" | "chat" | "all";
+                };
+                header?: {
+                    /** @description Reseller keys only. Runs this request as the named customer of the reseller, exactly as if that customer had sent it with a key of their own: ownership checks, limits and usage all apply to the customer, and none of the reseller operations are reachable while it is set. The value is the customer id returned by `POST /resellers/customers` and listed by `GET /resellers/customers`. Errors: 400 `invalid_customer_header` (not a positive integer), 403 `act_as_requires_reseller` (not a reseller key), 404 `customer_not_found` (no customer of this reseller with that id), 403 `customer_suspended`. The `/resellers/*` and `/provisioning/*` operations never accept it. */
+                    "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The languages available for that kind of agent, sorted by English name. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description The available languages. */
+                            data: components["schemas"]["AgentLanguage"][];
+                            meta: {
+                                /** @description How many languages the list holds. */
+                                count: number;
+                                /**
+                                 * @description Whether the list came from the live model catalogue or from the built-in tables.
+                                 * @enum {string}
+                                 */
+                                source: "catalog" | "defaults";
+                                /** @description Speech model the answer applies to. Null for `type=chat` and `type=all`. */
+                                ttsModel: string | null;
+                                /**
+                                 * @description The kind of agent the list applies to.
+                                 * @enum {string}
+                                 */
+                                type: "voice" | "chat" | "all";
+                            };
+                        };
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["InsufficientScope"];
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/notifications": {
         parameters: {
             query?: never;
@@ -10152,6 +10223,17 @@ export interface components {
                 /** @description Display name of the voice. */
                 name?: string | null;
             };
+        };
+        /** @description A language an agent can speak or write, named for display. */
+        AgentLanguage: {
+            /** @description The value to send as `language` or inside `supportedLanguages`, for example `pt-br`. */
+            code: string;
+            /** @description ISO 3166-1 alpha-2 region code for a flag image, for example `br`. Empty when no region fits. */
+            flag: string;
+            /** @description English name of the language, for example `Portuguese (Brazil)`. */
+            name: string;
+            /** @description The name the language calls itself, for example `Português (Brasil)`. */
+            nativeName: string;
         };
         /** @description Lifetime aggregate metrics for one voice agent. Null when the agent has no recorded activity yet. */
         AgentStats: {

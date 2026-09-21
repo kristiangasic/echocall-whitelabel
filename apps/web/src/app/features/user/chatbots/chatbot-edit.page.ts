@@ -13,7 +13,7 @@ import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { DEFAULT_CHAT_LLM_MODEL, LLM_MODEL_OPTIONS } from '../../../core/hub/hub.constants';
 import { HubService } from '../../../core/hub/hub.service';
-import type { Chatbot, Language } from '../../../core/hub/hub.models';
+import type { AgentLanguage, Chatbot, Language } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { KnowledgePanelComponent } from '../shared/knowledge-panel.component';
 import { IntegrationsPanelComponent } from '../shared/integrations-panel.component';
@@ -78,7 +78,12 @@ const STYLES = ['standard', 'rounded', 'compact'];
               <mat-label>{{ t('user.chatbots.language') }}</mat-label>
               <mat-select formControlName="language" data-testid="chatbot-language">
                 @for (lang of languages(); track lang.code) {
-                  <mat-option [value]="lang.code">{{ lang.code }}</mat-option>
+                  <mat-option [value]="lang.code">
+                    {{ lang.nativeName }}
+                    @if (lang.name !== lang.nativeName) {
+                      <span class="lang-english">{{ lang.name }}</span>
+                    }
+                  </mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -86,7 +91,12 @@ const STYLES = ['standard', 'rounded', 'compact'];
               <mat-label>{{ t('user.chatbots.supportedLanguages') }}</mat-label>
               <mat-select formControlName="supportedLanguages" multiple>
                 @for (lang of languages(); track lang.code) {
-                  <mat-option [value]="lang.code">{{ lang.code }}</mat-option>
+                  <mat-option [value]="lang.code">
+                    {{ lang.nativeName }}
+                    @if (lang.name !== lang.nativeName) {
+                      <span class="lang-english">{{ lang.name }}</span>
+                    }
+                  </mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -162,8 +172,8 @@ const STYLES = ['standard', 'rounded', 'compact'];
               <mat-label>{{ t('user.chatbots.widgetLanguage') }}</mat-label>
               <mat-select formControlName="widgetLanguage">
                 <mat-option value="">{{ t('user.chatbots.widgetLanguageAuto') }}</mat-option>
-                @for (lang of languages(); track lang.code) {
-                  <mat-option [value]="lang.code">{{ lang.code }}</mat-option>
+                @for (lang of interfaceLocales(); track lang.code) {
+                  <mat-option [value]="lang.code">{{ localeName(lang.code) }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -261,6 +271,12 @@ const STYLES = ['standard', 'rounded', 'compact'];
     </ng-container>
   `,
   styles: `
+    /* The English name trails the native one, quietly, so a picker stays scannable. */
+    .lang-english {
+      margin-left: 8px;
+      font: var(--mat-sys-body-small);
+      color: var(--mat-sys-on-surface-variant);
+    }
     .stack {
       display: flex;
       flex-direction: column;
@@ -308,7 +324,9 @@ export class ChatbotEditPage implements OnInit {
   readonly title = signal('');
   readonly loading = signal(false);
   readonly saving = signal(false);
-  readonly languages = signal<Language[]>([]);
+  readonly languages = signal<AgentLanguage[]>([]);
+  /** Interface locales, for the widget's own labels. A different list from the ones the bot writes in. */
+  readonly interfaceLocales = signal<Language[]>([]);
 
   readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],
@@ -362,9 +380,24 @@ export class ChatbotEditPage implements OnInit {
     }
   }
 
+  /**
+   * A widget locale's own name. Taken from the language list the page already
+   * holds, so a locale added later is named without a new translation key.
+   */
+  localeName(code: string): string {
+    return this.languages().find((l) => l.code === code)?.nativeName ?? code.toUpperCase();
+  }
+
   private async loadLanguages(): Promise<void> {
     try {
-      this.languages.set(await firstValueFrom(this.hub.get<Language[]>('/languages')));
+      // Two different questions: which languages the bot can write in, and which
+      // languages the widget's own buttons are translated into.
+      const [languages, locales] = await Promise.all([
+        firstValueFrom(this.hub.list<AgentLanguage>('/languages/agent', { type: 'chat' })),
+        firstValueFrom(this.hub.get<Language[]>('/languages')),
+      ]);
+      this.languages.set(languages);
+      this.interfaceLocales.set(locales);
     } catch (err) {
       this.notify.apiError(err);
     }

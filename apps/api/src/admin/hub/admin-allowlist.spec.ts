@@ -22,6 +22,12 @@ describe('matchOperatorCall', () => {
     expect(matchOperatorCall('GET', '/resellers/voice-agents')).toBe(true);
   });
 
+  it('accepts the language table the agent inventory is named from', () => {
+    expect(matchOperatorCall('GET', '/languages/agent')).toBe(true);
+    expect(matchOperatorCall('POST', '/languages/agent')).toBe(false);
+    expect(matchOperatorCall('GET', '/languages')).toBe(false);
+  });
+
   it('keeps payment flows and payment secrets out of the browser', () => {
     expect(matchOperatorCall('POST', '/resellers/credits/purchase')).toBe(false);
     expect(matchOperatorCall('POST', '/resellers/credits/deduct')).toBe(false);
@@ -37,7 +43,7 @@ describe('matchOperatorCall', () => {
     expect(matchOperatorCall('PATCH', '/resellers/customers/42/unsuspend')).toBe(false);
   });
 
-  it('refuses everything outside the reseller group', () => {
+  it('refuses the customer surfaces, which the admin panel has no business in', () => {
     expect(matchOperatorCall('GET', '/agents')).toBe(false);
     expect(matchOperatorCall('GET', '/users/me')).toBe(false);
     expect(matchOperatorCall('POST', '/provisioning/create')).toBe(false);

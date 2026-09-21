@@ -1,4 +1,5 @@
-import { Component, computed, inject, type OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, type OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -18,7 +19,7 @@ import {
   TTS_MODEL_OPTIONS,
 } from '../../../core/hub/hub.constants';
 import { HubService } from '../../../core/hub/hub.service';
-import type { Agent, AvailableVoice, Language, Voice } from '../../../core/hub/hub.models';
+import type { Agent, AgentLanguage, AvailableVoice, Voice } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { KnowledgePanelComponent } from '../shared/knowledge-panel.component';
 import { IntegrationsPanelComponent } from '../shared/integrations-panel.component';
@@ -84,7 +85,12 @@ const SYSTEM_TOOLS = [
               <mat-label>{{ t('user.agents.language') }}</mat-label>
               <mat-select formControlName="language" data-testid="agent-language">
                 @for (lang of languages(); track lang.code) {
-                  <mat-option [value]="lang.code">{{ lang.code }}</mat-option>
+                  <mat-option [value]="lang.code">
+                    {{ lang.nativeName }}
+                    @if (lang.name !== lang.nativeName) {
+                      <span class="lang-english">{{ lang.name }}</span>
+                    }
+                  </mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -92,7 +98,12 @@ const SYSTEM_TOOLS = [
               <mat-label>{{ t('user.agents.supportedLanguages') }}</mat-label>
               <mat-select formControlName="supportedLanguages" multiple>
                 @for (lang of languages(); track lang.code) {
-                  <mat-option [value]="lang.code">{{ lang.code }}</mat-option>
+                  <mat-option [value]="lang.code">
+                    {{ lang.nativeName }}
+                    @if (lang.name !== lang.nativeName) {
+                      <span class="lang-english">{{ lang.name }}</span>
+                    }
+                  </mat-option>
                 }
               </mat-select>
               <mat-hint>{{ t('user.agents.supportedLanguagesHint') }}</mat-hint>
@@ -339,6 +350,12 @@ const SYSTEM_TOOLS = [
     </ng-container>
   `,
   styles: `
+    /* The English name trails the native one, quietly, so a picker stays scannable. */
+    .lang-english {
+      margin-left: 8px;
+      font: var(--mat-sys-body-small);
+      color: var(--mat-sys-on-surface-variant);
+    }
     .stack {
       display: flex;
       flex-direction: column;
@@ -401,6 +418,7 @@ export class AgentEditPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly notify = inject(NotifyService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly ttsModels = TTS_MODEL_OPTIONS;
   readonly llmModels = LLM_MODEL_OPTIONS;
@@ -411,7 +429,9 @@ export class AgentEditPage implements OnInit {
   readonly title = signal('');
   readonly loading = signal(false);
   readonly saving = signal(false);
-  readonly languages = signal<Language[]>([]);
+  readonly languages = signal<AgentLanguage[]>([]);
+  /** The speech model the loaded language list belongs to. */
+  private languagesModel: string | null = null;
   readonly voices = signal<Voice[]>([]);
   readonly availableVoices = signal<AvailableVoice[]>([]);
 
@@ -456,6 +476,11 @@ export class AgentEditPage implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     this.id.set(id === 'new' || id === null ? null : id);
     void this.loadOptions();
+    // Speech models differ widely in what they can say: one covers 74 languages,
+    // another only English. Asking again on every change keeps the picker honest.
+    this.form.controls.ttsModel.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((model) => void this.loadLanguages(model));
     if (this.id()) void this.loadAgent();
   }
 
@@ -500,17 +525,65 @@ export class AgentEditPage implements OnInit {
   }
 
   private async loadOptions(): Promise<void> {
+    // Started first so all three calls travel together instead of in sequence.
+    const languages = this.loadLanguages(this.form.controls.ttsModel.value);
     try {
-      const [languages, voices, available] = await Promise.all([
-        firstValueFrom(this.hub.get<Language[]>('/languages')),
+      const [voices, available] = await Promise.all([
         firstValueFrom(this.hub.list<Voice>('/voices')),
         firstValueFrom(this.hub.list<AvailableVoice>('/voices/available')),
       ]);
-      this.languages.set(languages);
       this.voices.set(voices);
       this.availableVoices.set(available);
     } catch (err) {
       this.notify.apiError(err);
+    }
+    await languages;
+  }
+
+  /**
+   * The languages this agent can be given. They come from the platform rather
+   * than from the portal's own interface translations, which are a different
+   * thing and offered three choices where the platform supports dozens.
+   */
+  private async loadLanguages(ttsModel: string | null): Promise<void> {
+    const model = ttsModel ?? '';
+    // Loading an agent sets the model the page already asked for, so without
+    // this the picker would fetch the same list twice on every edit.
+    if (this.languagesModel === model && this.languages().length > 0) return;
+    this.languagesModel = model;
+    try {
+      const languages = await firstValueFrom(
+        this.hub.list<AgentLanguage>('/languages/agent', {
+          type: 'voice',
+          ...(ttsModel ? { ttsModel } : {}),
+        }),
+      );
+      this.languages.set(languages);
+      // Only a deliberate model change prunes the selection. Loading an agent
+      // must never quietly drop a language the customer configured.
+      if (this.form.controls.ttsModel.dirty) this.dropUnsupportedLanguages(languages);
+    } catch (err) {
+      this.notify.apiError(err);
+    }
+  }
+
+  /** Keeps the form from offering to save a language the chosen model cannot say. */
+  private dropUnsupportedLanguages(languages: AgentLanguage[]): void {
+    const available = new Set(languages.map((l) => l.code));
+    if (available.size === 0) return;
+    const controls = this.form.controls;
+
+    const supported = controls.supportedLanguages.value.filter((code) => available.has(code));
+    if (supported.length !== controls.supportedLanguages.value.length) {
+      controls.supportedLanguages.setValue(supported);
+      controls.supportedLanguages.markAsDirty();
+    }
+
+    if (!available.has(controls.language.value)) {
+      const replacement = available.has('en') ? 'en' : languages[0].code;
+      controls.language.setValue(replacement);
+      controls.language.markAsDirty();
+      this.notify.success('notices.languageAdjusted');
     }
   }
 

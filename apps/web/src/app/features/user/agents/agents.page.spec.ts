@@ -21,10 +21,23 @@ describe('AgentsPage', () => {
   async function render(agents: unknown[]) {
     const fixture = TestBed.createComponent(AgentsPage);
     await fixture.whenStable();
+    flushLanguages();
     http.expectOne('/api/hub/agents').flush({ data: agents });
     await new Promise((resolve) => setTimeout(resolve, 0));
     await fixture.whenStable();
     return fixture;
+  }
+
+  /** The page names the language of each row from the service's own table. */
+  function flushLanguages() {
+    for (const request of http.match((r) => r.url === '/api/hub/languages/agent')) {
+      request.flush({
+        data: [
+          { code: 'en', name: 'English', nativeName: 'English', flag: 'gb' },
+          { code: 'de', name: 'German', nativeName: 'Deutsch', flag: 'de' },
+        ],
+      });
+    }
   }
 
   it('lists the agents the hub reports', async () => {
@@ -45,6 +58,16 @@ describe('AgentsPage', () => {
     expect(rows[0].textContent).toContain('Clara');
     expect(rows[0].textContent).toContain(USER_TEXTS.agents.statuses.active);
     expect(rows[1].textContent).toContain(USER_TEXTS.agents.statuses.inactive);
+  });
+
+  it('names the language of a row instead of printing its code', async () => {
+    const fixture = await render([
+      { id: 'agent_1', name: 'Beratung', language: 'de', status: 'active' },
+    ]);
+
+    const cell = fixture.nativeElement.querySelector('table tbody tr [title]');
+    expect(cell.textContent.trim()).toBe('Deutsch');
+    expect(cell.getAttribute('title')).toBe('German');
   });
 
   it('names the standard voice for an agent that picked none', async () => {

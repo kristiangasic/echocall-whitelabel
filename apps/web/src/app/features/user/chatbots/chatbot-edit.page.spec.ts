@@ -27,6 +27,16 @@ describe('ChatbotEditPage', () => {
     router = TestBed.inject(Router);
     const fixture = TestBed.createComponent(ChatbotEditPage);
     await fixture.whenStable();
+    // Two lists: the languages the bot writes in, and the locales the widget speaks.
+    http
+      .expectOne((r) => r.url === '/api/hub/languages/agent' && r.params.get('type') === 'chat')
+      .flush({
+        data: [
+          { code: 'de', name: 'German', nativeName: 'Deutsch', flag: 'de' },
+          { code: 'en', name: 'English', nativeName: 'English', flag: 'gb' },
+        ],
+        meta: { type: 'chat', ttsModel: null, count: 2 },
+      });
     http.expectOne('/api/hub/languages').flush([{ code: 'de' }, { code: 'en' }]);
     return fixture;
   }

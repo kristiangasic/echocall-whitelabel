@@ -73,7 +73,20 @@ describe('AdminAgentsPage', () => {
 
   afterEach(() => http.verify());
 
+  /** Both tables name the language of each row from the service's own table. */
+  function flushLanguages() {
+    for (const request of http.match((r) => r.url === '/api/admin/hub/languages/agent')) {
+      request.flush({
+        data: [
+          { code: 'en', name: 'English', nativeName: 'English', flag: 'gb' },
+          { code: 'de', name: 'German', nativeName: 'Deutsch', flag: 'de' },
+        ],
+      });
+    }
+  }
+
   async function answerLoad(agents: unknown[] = AGENTS, chatbots: unknown[] = CHATBOTS) {
+    flushLanguages();
     http.expectOne('/api/admin/hub/resellers/voice-agents').flush({ data: agents });
     http.expectOne('/api/admin/hub/resellers/chatbots').flush({ data: chatbots });
     await settle();
@@ -107,6 +120,17 @@ describe('AdminAgentsPage', () => {
     expect(rows).toHaveLength(1);
     expect(rows[0].textContent).toContain('Webchat');
     expect(rows[0].textContent).toContain('Lina Mayer');
+  });
+
+  it('names the language of a row instead of printing its code', async () => {
+    const fixture = await render(
+      [{ agent: { id: 14, name: 'Beratung', language: 'de', userId: 501, createdAt: null }, owner: null }],
+      [],
+    );
+
+    const cell = rowsOf(fixture, 'voice-agents')[0].querySelector('[title]');
+    expect(cell?.textContent?.trim()).toBe('Deutsch');
+    expect(cell?.getAttribute('title')).toBe('German');
   });
 
   it('opens the owning customer and lands in their workspace', async () => {

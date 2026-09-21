@@ -193,6 +193,9 @@
     "privacy": "Datenschutz",
     "support": "Support"
   },
+  "notices": {
+    "languageAdjusted": "Die Sprachauswahl wurde an das gewählte Stimmmodell angepasst."
+  },
   "errors": {
     "unknown": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
     "network": "Der Server ist nicht erreichbar.",

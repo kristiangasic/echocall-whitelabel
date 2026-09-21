@@ -12,6 +12,9 @@ describe('matchCustomerCall', () => {
     expect(matchCustomerCall('PATCH', '/notifications/read-all')).toBe(true);
     expect(matchCustomerCall('GET', '/billing/invoices')).toBe(true);
     expect(matchCustomerCall('DELETE', '/webhooks/3')).toBe(true);
+    // Two language lists: the interface locales and the ones an agent can speak.
+    expect(matchCustomerCall('GET', '/languages')).toBe(true);
+    expect(matchCustomerCall('GET', '/languages/agent')).toBe(true);
   });
 
   it('refuses everything not listed', () => {
@@ -22,6 +25,7 @@ describe('matchCustomerCall', () => {
     expect(matchCustomerCall('GET', '/billing/invoices/9/pdf')).toBe(false);
     expect(matchCustomerCall('DELETE', '/agents')).toBe(false);
     expect(matchCustomerCall('GET', '/health')).toBe(false);
+    expect(matchCustomerCall('POST', '/languages/agent')).toBe(false);
   });
 
   it('refuses path tricks', () => {
