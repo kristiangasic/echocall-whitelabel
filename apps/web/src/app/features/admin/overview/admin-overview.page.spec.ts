@@ -125,4 +125,13 @@ describe('AdminOverviewPage', () => {
     expect(text(fixture, 'tile-balance')).toContain('€250.75');
     expect(text(fixture, 'tile-subscriptions')).toContain('9');
   });
+
+  it('shows a dash instead of NaN when the service answers without a figure', async () => {
+    // A portal talks to installations it does not control, and an older one can
+    // answer a tile's call without the number the tile is about.
+    const fixture = await render({ stats: {} });
+
+    expect(text(fixture, 'tile-customers')).toContain('–');
+    expect(text(fixture, 'tile-customers')).not.toContain('NaN');
+  });
 });

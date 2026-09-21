@@ -351,6 +351,10 @@ export class AdminOverviewPage implements OnInit {
   }
 
   number(value: number): string {
+    // A service that answers without the figure, or with something that is not
+    // one, leaves a dash in its place. The portal talks to installations it does
+    // not control, and a tile reading NaN helps nobody.
+    if (!Number.isFinite(value)) return '–';
     return new Intl.NumberFormat(this.language.current(), { maximumFractionDigits: 1 }).format(value);
   }
 

@@ -11,7 +11,11 @@ export function isChat(conversation: AnyConversation): conversation is LiveConve
 /** Who the conversation was with: the visitor for chats, the other number for calls. */
 export function conversationTitle(conversation: AnyConversation): string {
   if (isChat(conversation)) {
-    return conversation.visitorName || conversation.visitorEmail || `#${conversation.visitorId}`;
+    // An older installation can leave the visitor's session out, and a list
+    // reading "#undefined" helps nobody. The conversation's own number stands in.
+    return (
+      conversation.visitorName || conversation.visitorEmail || `#${conversation.visitorId || conversation.id}`
+    );
   }
   const number = conversation.direction === 'outbound' ? conversation.toNumber : conversation.fromNumber;
   return number || `#${conversation.id}`;
