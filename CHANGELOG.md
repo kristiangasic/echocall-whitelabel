@@ -25,6 +25,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- The generated client carries `hubLoginEnabled` on customer creation, so the field the
+  portal already sends is typed rather than passed untyped, and the delete endpoint's
+  documented behaviour (it cascades, and refuses a customer who still holds a
+  subscription) is in the vendored document.
 - English is the primary language. A fresh portal starts in English, the sign-in page and
   every unauthenticated page are English, and a browser that asks for a language the portal
   does not carry is answered in English rather than German. German and French are unchanged
@@ -45,6 +49,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `users.sign_in_link_sent`.
 
 ### Fixed
+
+- The browser smoke run starts again. Its harness read a value it never imported, so the
+  process died the moment it reported itself ready, and the specs themselves were refused
+  by the test runner's loader for reading `import.meta` in a file it compiles to
+  CommonJS. Both paths now run on a desktop window and on a phone again.
+- `refresh-spec` refuses a download that has fewer paths than the document already in
+  `spec/`. A service answering that path from an outdated file used to overwrite the
+  vendored document with an older one, which silently dropped endpoints from the generated
+  client.
 
 - Collections are read whether the service answers them as a bare array or wrapped in a
   `{ data }` envelope. Which of the two arrives depends on the endpoint and on the release
