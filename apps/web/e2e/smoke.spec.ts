@@ -1,6 +1,5 @@
 import { execFile } from 'node:child_process';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { expect, test, type Page } from '@playwright/test';
 import { CUSTOMER, OPERATOR, PORTAL_ENV } from './accounts.mjs';
@@ -13,7 +12,10 @@ import { CUSTOMER, OPERATOR, PORTAL_ENV } from './accounts.mjs';
  */
 
 const run = promisify(execFile);
-const here = dirname(fileURLToPath(import.meta.url));
+// Playwright compiles the config and the specs to CommonJS, so this file is
+// reached through require() and `import.meta` is a syntax error in it. The
+// directory therefore comes from __dirname, which that loader does define.
+const here = __dirname;
 const signInLinkCommand = resolve(here, '../../api/dist/cli/sign-in-link.js');
 
 /**
