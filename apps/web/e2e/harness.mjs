@@ -25,7 +25,15 @@ import {
   PORTAL_PORT,
   PORTAL_URL,
 } from './accounts.mjs';
+import { DEMO_CUSTOMERS, DEMO_SIGNED_IN } from './demo-data.mjs';
 import { startHubStub } from './hub-stub.mjs';
+
+/**
+ * Demo mode seeds the invented customers of demo-data.mjs instead of the single
+ * one a smoke run needs, and the stub answers with their balances. The
+ * screenshot run turns it on; a test run never does.
+ */
+const DEMO = process.env.SMOKE_DEMO === '1';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const webRoot = resolve(here, '..');
@@ -143,31 +151,68 @@ async function call(path, { method = 'GET', body, cookie } = {}) {
  * right away. Everything goes through the portal's own API, so the seed cannot
  * drift away from what the portal itself does.
  */
-async function seed() {
-  const admin = await call('/setup/admin', {
-    method: 'POST',
-    body: { email: OPERATOR.email, firstName: OPERATOR.firstName, language: 'de' },
-  });
+/**
+ * Marks demo customers as having a portal login already, without spending the
+ * portal's authentication budget on invitations nobody is going to follow.
+ * Demo mode only, against the throwaway database the run just created.
+ */
+async function markSignedIn(emails) {
+  if (emails.length === 0) return;
+  const apiRequire = createRequire(resolve(apiRoot, 'package.json'));
+  const { Client } = apiRequire('pg');
+  const client = new Client({ connectionString: DATABASE_URL });
+  await client.connect();
+  try {
+    await client.query('UPDATE users SET status = $1 WHERE email = ANY($2)', ['active', emails]);
+  } finally {
+    await client.end();
+  }
+}
 
+async function createCustomer(adminCookie, customer, { acceptInvite }) {
   const created = await call('/admin/customers', {
     method: 'POST',
-    cookie: admin.cookie,
+    cookie: adminCookie,
     body: {
-      email: CUSTOMER.email,
-      firstName: CUSTOMER.firstName,
-      lastName: CUSTOMER.lastName,
-      company: CUSTOMER.company,
-      language: 'de',
+      email: customer.email,
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      company: customer.company,
+      language: customer.language ?? 'de',
       sendInvite: false,
     },
   });
+
+  if (!acceptInvite) return;
 
   const token = new URL(created.body.inviteLink).searchParams.get('token');
   if (!token) fail('the invitation link carried no token');
   await call('/auth/accept-invite', {
     method: 'POST',
-    body: { token, firstName: CUSTOMER.firstName, lastName: CUSTOMER.lastName },
+    body: { token, firstName: customer.firstName, lastName: customer.lastName },
   });
+}
+
+async function seed() {
+  const admin = await call('/setup/admin', {
+    method: 'POST',
+    body: { email: OPERATOR.email, firstName: OPERATOR.firstName, language: DEMO ? 'en' : 'de' },
+  });
+
+  if (DEMO) {
+    // Only the customer whose workspace the pictures show accepts an invitation
+    // for real: the portal allows five authentication calls a minute and that
+    // limit is worth keeping. The others are marked as having signed in once,
+    // which is a state time would produce and nobody signs in as them.
+    for (const customer of DEMO_CUSTOMERS) {
+      await createCustomer(admin.cookie, customer, {
+        acceptInvite: customer.email === DEMO_SIGNED_IN.email,
+      });
+    }
+    await markSignedIn(DEMO_CUSTOMERS.filter((row) => row.acceptInvite === true).map((row) => row.email));
+  } else {
+    await createCustomer(admin.cookie, { ...CUSTOMER, language: 'de' }, { acceptInvite: true });
+  }
 
   await call('/auth/logout', { method: 'POST', cookie: admin.cookie });
 }
@@ -175,7 +220,7 @@ async function seed() {
 if (!existsSync(apiEntry)) fail(`${apiEntry} is missing. Build the portal first: npm run build`);
 if (!existsSync(webDist)) fail(`${webDist} is missing. Build the portal first: npm run build`);
 
-const stub = startHubStub(HUB_PORT);
+const stub = startHubStub(HUB_PORT, { demo: DEMO });
 await stub.listen();
 await resetDatabase();
 const portal = startPortal();

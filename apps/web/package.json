@@ -9,6 +9,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test --watch=false",
     "e2e": "playwright test",
+    "screenshots": "node e2e/screenshots.mjs",
     "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit && tsc -p tsconfig.e2e.json --noEmit",
     "lint": "ng lint"
   },

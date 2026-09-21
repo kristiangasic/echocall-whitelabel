@@ -22,6 +22,20 @@ branding settings.
 **Who it is for:** agencies and resellers who want to offer voice and chat agents to their
 own customers under their own brand, without building a portal from scratch.
 
+## What it looks like
+
+The operator's side on the left, the customer's side on the right, taken from a portal
+filled with invented example customers (`npm run screenshots` regenerates them).
+
+<p>
+  <img src="docs/images/admin-overview.png" width="49%" alt="Admin panel: overview with the connection to the service, customers, subscriptions, portal balance and open tickets">
+  <img src="docs/images/customer-dashboard.png" width="49%" alt="Customer portal: dashboard with minutes used, chats held, balance, plan and recent conversations">
+</p>
+<p>
+  <img src="docs/images/admin-customers.png" width="49%" alt="Admin panel: customer list with service account, portal login, balance and creation date">
+  <img src="docs/images/customer-conversations.png" width="49%" alt="Customer portal: call list with counterpart, start, duration and outcome">
+</p>
+
 ## How it works
 
 - You (the operator) sign in to the **admin panel** and run the business there: customers

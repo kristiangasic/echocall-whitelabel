@@ -7,6 +7,18 @@
  * is started with its API URL pointing here.
  */
 import { createServer } from 'node:http';
+import {
+  DEMO_AGENTS,
+  DEMO_CONVERSATIONS,
+  DEMO_CUSTOMERS,
+  DEMO_LIMITS,
+  DEMO_RESELLER_BALANCE,
+  DEMO_RESELLER_CREDITS,
+  DEMO_RESELLER_STATS,
+  DEMO_RESELLER_TICKETS,
+  DEMO_SUBSCRIPTION_COUNT,
+  DEMO_USAGE,
+} from './demo-data.mjs';
 
 const PREFIX = '/api/v1';
 
@@ -43,30 +55,38 @@ function notFound(method, path) {
   };
 }
 
-/** Keeps the state of one run: customers and support requests. */
-function createState() {
-  return { customers: [], tickets: [], nextCustomerId: 5001, nextTicketId: 1 };
+/**
+ * Keeps the state of one run: customers and support requests.
+ *
+ * In demo mode the stub additionally knows a balance and a usage figure for
+ * each invented customer, so the screenshot run shows a portal that is in use
+ * rather than one that was installed a minute ago. A smoke run never turns it
+ * on and sees the same fixed numbers it always did.
+ */
+function createState(demo) {
+  const profiles = new Map(demo ? DEMO_CUSTOMERS.map((row) => [row.email, row]) : []);
+  return { customers: [], tickets: [], nextCustomerId: 5001, nextTicketId: 1, demo, profiles };
 }
 
-function customerRow(customer) {
+function customerRow(customer, profile) {
   return {
     id: customer.id,
     resellerId: 9,
     userId: customer.id,
     customerReference: null,
     notes: null,
-    createdAt: customer.createdAt,
+    createdAt: profile?.createdAt ?? customer.createdAt,
     user: {
       id: customer.id,
       email: customer.email,
       firstName: customer.firstName,
       lastName: customer.lastName,
       company: customer.company,
-      balanceEur: '25.00',
-      voiceMinutes: 58,
-      chatConversations: 40,
-      accountStatus: 'active',
-      createdAt: customer.createdAt,
+      balanceEur: profile?.balanceEur ?? '25.00',
+      voiceMinutes: profile?.voiceMinutes ?? 58,
+      chatConversations: profile?.chatConversations ?? 40,
+      accountStatus: profile?.accountStatus ?? 'active',
+      createdAt: profile?.createdAt ?? customer.createdAt,
     },
   };
 }
@@ -85,9 +105,9 @@ function ticketSummary(ticket) {
 /**
  * Answers one call. The path is the part behind /api/v1, without the query;
  * customerId is the account the portal acts as, which is unset for the
- * operator's own calls. No route of the stub reads the query.
+ * operator's own calls. Only the conversation list reads the query.
  */
-function route(state, method, path, body, customerId) {
+function route(state, method, path, body, customerId, query) {
   const customer = state.customers.find((row) => row.id === customerId) ?? null;
 
   if (method === 'GET' && path === '/users/me') {
@@ -108,6 +128,7 @@ function route(state, method, path, body, customerId) {
   }
 
   if (method === 'GET' && path === '/users/me/usage') {
+    if (state.demo) return { status: 200, body: DEMO_USAGE };
     return {
       status: 200,
       body: {
@@ -119,6 +140,7 @@ function route(state, method, path, body, customerId) {
   }
 
   if (method === 'GET' && path === '/users/me/limits') {
+    if (state.demo) return { status: 200, body: DEMO_LIMITS };
     return {
       status: 200,
       body: {
@@ -131,7 +153,8 @@ function route(state, method, path, body, customerId) {
   }
 
   if (method === 'GET' && path === '/resellers/customers') {
-    return { status: 200, body: page(state.customers.map(customerRow)) };
+    const rows = state.customers.map((row) => customerRow(row, state.profiles.get(row.email) ?? null));
+    return { status: 200, body: page(rows) };
   }
 
   if (method === 'POST' && path === '/resellers/customers') {
@@ -149,7 +172,23 @@ function route(state, method, path, body, customerId) {
   }
 
   if (method === 'GET' && path === '/conversations') {
-    return { status: 200, body: page([RECENT_CONVERSATION]) };
+    // The portal asks for calls and chats separately, as the service does.
+    const type = query.get('type');
+    const rows = state.demo ? DEMO_CONVERSATIONS : [RECENT_CONVERSATION];
+    return { status: 200, body: page(type ? rows.filter((row) => row.type === type) : rows) };
+  }
+
+  if (method === 'GET' && path === '/agents' && state.demo) {
+    return { status: 200, body: page(DEMO_AGENTS) };
+  }
+
+  // The operator's own figures, one tile of the overview each.
+  if (method === 'GET' && state.demo) {
+    if (path === '/resellers/stats') return { status: 200, body: DEMO_RESELLER_STATS };
+    if (path === '/resellers/credits/balance') return { status: 200, body: DEMO_RESELLER_CREDITS };
+    if (path === '/resellers/balance') return { status: 200, body: DEMO_RESELLER_BALANCE };
+    if (path === '/resellers/subscriptions/count') return { status: 200, body: DEMO_SUBSCRIPTION_COUNT };
+    if (path === '/resellers/tickets') return { status: 200, body: page(DEMO_RESELLER_TICKETS) };
   }
 
   if (method === 'GET' && path === '/tickets') {
@@ -191,8 +230,8 @@ function route(state, method, path, body, customerId) {
  * test runner waits for: it answers 200 only after the harness has seeded the
  * portal, so no test starts against a half-built database.
  */
-export function startHubStub(port) {
-  const state = createState();
+export function startHubStub(port, { demo = false } = {}) {
+  const state = createState(demo);
   let ready = false;
 
   const server = createServer((req, res) => {
@@ -222,7 +261,14 @@ export function startHubStub(port) {
       }
       const header = req.headers['x-echocall-customer'];
       const customerId = typeof header === 'string' ? Number(header) : undefined;
-      const answer = route(state, req.method ?? 'GET', url.pathname.slice(PREFIX.length), body, customerId);
+      const answer = route(
+        state,
+        req.method ?? 'GET',
+        url.pathname.slice(PREFIX.length),
+        body,
+        customerId,
+        url.searchParams,
+      );
       res.writeHead(answer.status, { 'content-type': 'application/json' });
       res.end(JSON.stringify(answer.body ?? {}));
     });

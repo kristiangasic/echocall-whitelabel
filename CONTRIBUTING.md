@@ -33,6 +33,11 @@ service. The variables that move its database and ports are in
 [docs/configuration.md](docs/configuration.md); how it is put together is in
 [docs/architecture.md](docs/architecture.md).
 
+`npm run screenshots` starts the same harness, so it needs the build too, with a set of
+invented customers, and writes the four images the README shows to `docs/images/`. Run it
+after a change to a screen that appears there, look at the images, and commit them with
+the change.
+
 CI runs the same steps, plus the API test suite against PostgreSQL **and** MariaDB, plus a
 Docker image build. All of them must pass.
 
