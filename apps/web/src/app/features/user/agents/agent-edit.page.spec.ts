@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
 import { TEXTS, provideTestI18n } from '../../../testing/i18n';
+import { installAudio } from '../../../testing/voice';
 import { AgentEditPage } from './agent-edit.page';
 
 @Component({ template: '' })
@@ -55,7 +56,23 @@ describe('AgentEditPage', () => {
     }
   }
 
-  afterEach(() => http.verify());
+  let audio: ReturnType<typeof installAudio>;
+
+  beforeEach(() => (audio = installAudio()));
+
+  afterEach(() => {
+    http.verify();
+    audio.restore();
+  });
+
+  /** Lets a click that starts a request reach the testing backend. */
+  const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+  function click(fixture: { nativeElement: HTMLElement }, testId: string): void {
+    const button = fixture.nativeElement.querySelector<HTMLButtonElement>(`[data-testid="${testId}"]`);
+    if (!button) throw new Error(`No element with data-testid="${testId}"`);
+    button.click();
+  }
 
   it('creates an agent from the form values', async () => {
     const fixture = await setup('new');
@@ -131,5 +148,39 @@ describe('AgentEditPage', () => {
     const errors = Array.from(fixture.nativeElement.querySelectorAll('mat-error') as NodeListOf<HTMLElement>);
 
     expect(errors.map((error) => error.textContent?.trim())).toContain(TEXTS.validation.required);
+  });
+
+  it('plays a sample of the chosen voice, in the language of the agent', async () => {
+    const fixture = await setup('new');
+    await fixture.whenStable();
+    fixture.componentInstance.form.patchValue({ voiceId: 'voice_1', language: 'de' });
+    fixture.detectChanges();
+
+    click(fixture, 'voice-preview');
+    await settle();
+
+    const request = http.expectOne('/api/voice/voices/voice_1/sample?language=de');
+    expect(request.request.method).toBe('GET');
+    request.flush(new Blob([new Uint8Array([1, 2, 3, 4])], { type: 'audio/mpeg' }));
+    await settle();
+  });
+
+  it('offers a test call only once the agent exists', async () => {
+    const fresh = await setup('new');
+    await fresh.whenStable();
+    fresh.detectChanges();
+    expect(fresh.nativeElement.querySelector('[data-testid="agent-test-call"]')).toBeNull();
+
+    TestBed.resetTestingModule();
+    const saved = await setup('agent_5');
+    http.expectOne('/api/hub/agents/agent_5').flush({ id: 'agent_5', name: 'Support Line', language: 'de' });
+    await settle();
+    await saved.whenStable();
+    http.expectOne('/api/hub/agents/agent_5/knowledge').flush({ data: [] });
+    http.expectOne('/api/hub/agents/agent_5/integrations').flush({ data: [] });
+    http.expectOne('/api/hub/integrations').flush([]);
+    saved.detectChanges();
+
+    expect(saved.nativeElement.querySelector('[data-testid="agent-test-call"]')).not.toBeNull();
   });
 });

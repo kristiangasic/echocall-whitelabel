@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -21,6 +22,8 @@ import {
 import { HubService } from '../../../core/hub/hub.service';
 import type { Agent, AgentLanguage, AvailableVoice, Voice } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
+import { VoiceSampleError, VoiceService } from '../../../core/voice/voice.service';
+import { AgentCallDialogComponent, type AgentCallDialogData } from './agent-call-dialog.component';
 import { KnowledgePanelComponent } from '../shared/knowledge-panel.component';
 import { IntegrationsPanelComponent } from '../shared/integrations-panel.component';
 import { FieldErrorPipe } from '../../../shared/forms/field-error.pipe';
@@ -59,6 +62,12 @@ const SYSTEM_TOOLS = [
         <h1 class="page-title">
           {{ isNew() ? t('user.agents.createTitle') : t('user.agents.editTitle', { name: title() }) }}
         </h1>
+        @if (!isNew()) {
+          <button mat-stroked-button type="button" (click)="openCall()" data-testid="agent-test-call">
+            <mat-icon>call</mat-icon>
+            {{ t('user.agents.preview.testCall') }}
+          </button>
+        }
         <a mat-stroked-button routerLink="/app/agents">
           <mat-icon>arrow_back</mat-icon>
           {{ t('actions.back') }}
@@ -139,26 +148,42 @@ const SYSTEM_TOOLS = [
             <mat-card-title>{{ t('user.agents.sections.voiceTuning') }}</mat-card-title>
           </mat-card-header>
           <mat-card-content class="grid">
-            <mat-form-field appearance="outline">
-              <mat-label>{{ t('user.agents.voice') }}</mat-label>
-              <mat-select formControlName="voiceId" data-testid="agent-voice">
-                <mat-option value="">{{ t('user.agents.voiceDefault') }}</mat-option>
-                @if (voices().length) {
-                  <mat-optgroup [label]="t('user.agents.voicesOwn')">
-                    @for (voice of voices(); track voice.id) {
-                      <mat-option [value]="voice.id">{{ voice.name }}</mat-option>
-                    }
-                  </mat-optgroup>
-                }
-                @if (availableVoices().length) {
-                  <mat-optgroup [label]="t('user.agents.voicesLibrary')">
-                    @for (voice of availableVoices(); track voice.id) {
-                      <mat-option [value]="voice.id">{{ voice.name }}</mat-option>
-                    }
-                  </mat-optgroup>
-                }
-              </mat-select>
-            </mat-form-field>
+            <div class="voice-row">
+              <mat-form-field appearance="outline" class="grow">
+                <mat-label>{{ t('user.agents.voice') }}</mat-label>
+                <mat-select formControlName="voiceId" data-testid="agent-voice">
+                  <mat-option value="">{{ t('user.agents.voiceDefault') }}</mat-option>
+                  @if (voices().length) {
+                    <mat-optgroup [label]="t('user.agents.voicesOwn')">
+                      @for (voice of voices(); track voice.id) {
+                        <mat-option [value]="voice.id">{{ voice.name }}</mat-option>
+                      }
+                    </mat-optgroup>
+                  }
+                  @if (availableVoices().length) {
+                    <mat-optgroup [label]="t('user.agents.voicesLibrary')">
+                      @for (voice of availableVoices(); track voice.id) {
+                        <mat-option [value]="voice.id">{{ voice.name }}</mat-option>
+                      }
+                    </mat-optgroup>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                type="button"
+                class="voice-play"
+                [disabled]="!form.controls.voiceId.value || voice.loading() !== null"
+                [attr.aria-label]="
+                  sampleIsPlaying() ? t('user.agents.preview.stop') : t('user.agents.preview.play')
+                "
+                [title]="sampleIsPlaying() ? t('user.agents.preview.stop') : t('user.agents.preview.play')"
+                (click)="toggleSample()"
+                data-testid="voice-preview"
+              >
+                <mat-icon>{{ sampleIsPlaying() ? 'stop' : 'play_arrow' }}</mat-icon>
+              </button>
+            </div>
             <mat-form-field appearance="outline">
               <mat-label>{{ t('user.agents.ttsModel') }}</mat-label>
               <mat-select formControlName="ttsModel">
@@ -400,6 +425,19 @@ const SYSTEM_TOOLS = [
       flex: 1;
       min-width: 200px;
     }
+    /* The sample button sits with the voice, not under it. */
+    .voice-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .voice-row .grow {
+      min-width: 0;
+    }
+    .voice-play {
+      flex: none;
+      margin-bottom: 22px;
+    }
     .actions {
       display: flex;
       justify-content: flex-end;
@@ -419,6 +457,8 @@ export class AgentEditPage implements OnInit {
   private readonly router = inject(Router);
   private readonly notify = inject(NotifyService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly dialog = inject(MatDialog);
+  readonly voice = inject(VoiceService);
 
   readonly ttsModels = TTS_MODEL_OPTIONS;
   readonly llmModels = LLM_MODEL_OPTIONS;
@@ -482,6 +522,41 @@ export class AgentEditPage implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((model) => void this.loadLanguages(model));
     if (this.id()) void this.loadAgent();
+  }
+
+  /** Whether the voice the form has chosen is the one being played. */
+  sampleIsPlaying(): boolean {
+    const voiceId = this.form.controls.voiceId.value;
+    return voiceId !== '' && this.voice.playing() === voiceId;
+  }
+
+  /** Speaks one sentence in the chosen voice, in the agent's own language. */
+  async toggleSample(): Promise<void> {
+    const voiceId = this.form.controls.voiceId.value;
+    if (!voiceId) return;
+    if (this.sampleIsPlaying()) {
+      this.voice.stopSample();
+      return;
+    }
+    try {
+      await this.voice.playSample(voiceId, this.form.controls.language.value);
+    } catch (error) {
+      const unsupported = error instanceof VoiceSampleError && error.reason === 'unsupported';
+      if (unsupported) this.notify.error('user.agents.preview.unsupported');
+      else if (error instanceof VoiceSampleError) this.notify.error('user.agents.preview.sampleFailed');
+      else this.notify.apiError(error);
+    }
+  }
+
+  /** Opens a test call with the saved agent. */
+  openCall(): void {
+    const id = this.id();
+    if (id === null) return;
+    this.voice.stopSample();
+    this.dialog.open<AgentCallDialogComponent, AgentCallDialogData>(AgentCallDialogComponent, {
+      data: { agentId: id, agentName: this.title() || this.form.controls.name.value },
+      autoFocus: false,
+    });
   }
 
   addTransfer(): void {

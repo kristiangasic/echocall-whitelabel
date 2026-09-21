@@ -7,6 +7,7 @@ import { JSON_BODY_LIMIT } from './common/http.js';
 import helmet from 'helmet';
 import { AppModule } from './app.module.js';
 import { EMBED_TRPC_PATH, embedRawBody } from './embed/widget-body.js';
+import { handleVoiceUpgrade } from './voice/voice-relay.js';
 import { loadEnv } from './config/env.js';
 
 /** Loads a local .env file when present; hosted deployments set the environment themselves. */
@@ -16,6 +17,16 @@ function loadDotEnv(): void {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
   }
+}
+
+/**
+ * Where a test call's websocket may go: this portal, and nowhere else. The
+ * standard says 'self' already covers a websocket on the same host, but not
+ * every browser agrees, so the address is named outright.
+ */
+function websocketOrigin(appUrl: string): string {
+  const url = new URL(appUrl);
+  return `${url.protocol === 'https:' ? 'wss:' : 'ws:'}//${url.host}`;
 }
 
 async function bootstrap(): Promise<void> {
@@ -40,7 +51,7 @@ async function bootstrap(): Promise<void> {
         'style-src': ["'self'", "'unsafe-inline'"],
         'img-src': ["'self'", 'data:'],
         'font-src': ["'self'"],
-        'connect-src': ["'self'"],
+        'connect-src': ["'self'", websocketOrigin(config.appUrl)],
         'object-src': ["'none'"],
         'base-uri': ["'self'"],
         'form-action': ["'self'"],
@@ -65,6 +76,9 @@ async function bootstrap(): Promise<void> {
   app.use(cookieParser());
   app.setGlobalPrefix('api', { exclude: ['healthz', 'readyz', 'embed/{*path}'] });
   app.enableShutdownHooks();
+  // A test call is a websocket, which no controller can answer: the upgrade
+  // is handled on the server itself, by the relay that owns its tickets.
+  app.getHttpServer().on('upgrade', handleVoiceUpgrade);
   await app.listen(config.port);
 }
 

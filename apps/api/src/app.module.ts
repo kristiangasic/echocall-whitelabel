@@ -21,6 +21,7 @@ import { RegistrationModule } from './registration/registration.module.js';
 import { TwoFactorModule } from './auth/two-factor.module.js';
 import { SettingsModule } from './settings/settings.module.js';
 import { SetupModule } from './setup/setup.module.js';
+import { VoiceModule } from './voice/voice.module.js';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { SetupModule } from './setup/setup.module.js';
     ImpersonationModule,
     AccountModule,
     HubProxyModule,
+    VoiceModule,
     EmbedModule,
     HealthModule,
     // Serves the built Angular app next to the API when WEB_DIST_DIR points at it.
