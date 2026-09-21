@@ -119,7 +119,7 @@ docker compose exec app node apps/api/dist/cli/sign-in-link.js you@example.com
 | `apps/web`              | Angular front end (standalone, zoneless, Angular Material, EN/DE/FR)  |
 | `apps/api`              | NestJS back end for the front end; holds the API key and the database |
 | `packages/echocall-api` | Typed client generated from the published OpenAPI document            |
-| `docker/`               | Dockerfile and Compose setup                                          |
+| `docker/`               | The Dockerfile; the Compose file sits at the repository root          |
 | `docs/`                 | Architecture, configuration, self-hosting, operating, security        |
 
 ## Development
