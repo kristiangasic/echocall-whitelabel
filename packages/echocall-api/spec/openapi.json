@@ -3215,8 +3215,7 @@
               "string",
               "null"
             ],
-            "description": "Short audio sample.",
-            "format": "uri"
+            "description": "Where to hear this voice: the path of GET /voices/{voiceId}/preview for it, relative to the API host. Add a `language` parameter to hear it in the language the agent will speak."
           },
           "labels": {
             "type": [
@@ -3447,12 +3446,40 @@
             "description": "Prepaid wallet balance in EUR."
           },
           "voiceMinutesRemaining": {
-            "type": "integer",
-            "description": "Voice minutes left in the current period."
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Voice minutes left in the current period. Null when the plan sets no cap."
           },
           "chatConversationsRemaining": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Chat conversations left in the current period. Null when the plan sets no cap."
+          },
+          "voiceMinutesUsed": {
             "type": "integer",
-            "description": "Chat conversations left in the current period."
+            "description": "Voice minutes used in the current period."
+          },
+          "chatConversationsUsed": {
+            "type": "integer",
+            "description": "Chat conversations used in the current period."
+          },
+          "voiceMinutesAllowance": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Voice minutes the period started with, plan plus anything bought on top. Null when the plan sets no cap."
+          },
+          "chatConversationsAllowance": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Chat conversations the period started with, plan plus anything bought on top. Null when the plan sets no cap."
           },
           "plan": {
             "type": [
@@ -6381,6 +6408,128 @@
                 }
               }
             }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "write:agents"
+            ]
+          }
+        ]
+      }
+    },
+    "/agents/{agentId}/preview": {
+      "post": {
+        "tags": [
+          "Agents"
+        ],
+        "summary": "Start a browser test call with an agent",
+        "description": "Opens a test call to this agent from a browser, so a customer can hear their agent before it answers a real caller. The response carries no address of the speech engine: `streamPath` is a websocket path on this API host, and this server relays the audio in a format of its own, which is what keeps a portal built on this API free of any third-party name. Join `streamPath` to the API host and swap the scheme for `wss:` to get the address to open. The path may be opened once and within `expiresInSeconds`; afterwards it is refused with 403 and a new call has to be claimed here. On the socket the browser receives `ready` with the audio formats to use, then `audio`, `agent`, `user` and `interrupt` frames, and finally `end`; it sends `audio` frames of microphone data and `end` when the caller hangs up. A test call reaches the real agent and is billed like any other call, so the voice minutes of the account owning the agent are checked first and the call is cut off after `maxSeconds`. An agent that has never been published answers 409: save it once, then try again. This endpoint takes no request body.",
+        "parameters": [
+          {
+            "name": "agentId",
+            "in": "path",
+            "required": true,
+            "description": "Identifier of the voice agent. Accepted either as the public form `agent_12` or as the bare number `12`; the prefix is stripped before the lookup.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/ActAsCustomer"
+          }
+        ],
+        "x-no-request-body": "This endpoint takes no request body.",
+        "x-required-scope": "write:agents",
+        "responses": {
+          "200": {
+            "description": "The call was claimed. Open the websocket within the stated seconds.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "streamPath": {
+                      "type": "string",
+                      "description": "Websocket path on this API host, including the one-time ticket. Relative on purpose: join it to the host you call this API on."
+                    },
+                    "maxSeconds": {
+                      "type": "integer",
+                      "description": "How long the call may run before the server hangs up. Count it down in the interface as well."
+                    },
+                    "expiresInSeconds": {
+                      "type": "integer",
+                      "description": "How long the path stays open for the first connection."
+                    },
+                    "agent": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Identifier of the agent, in the form `agent_<number>`."
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the agent being called."
+                        },
+                        "firstMessage": {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "What the agent opens the call with, when one is configured."
+                        },
+                        "language": {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "The language the agent speaks, as a code from GET /languages/agent."
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "streamPath",
+                    "maxSeconds",
+                    "expiresInSeconds",
+                    "agent"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "402": {
+            "description": "The account owning this agent has no voice minutes left. The error body carries the code `quota_exceeded`. Buy an add-on or wait for the next period, then retry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
           }
         },
         "security": [
@@ -12397,11 +12546,25 @@
           "Voices"
         ],
         "summary": "List selectable library voices",
-        "description": "Returns the voices from the shared library that an agent can be pointed at, each with a preview sample and descriptive labels. The list is fetched live from the voice engine and then filtered: only cloned and generated voices, plus voices whose labels or description mark them as German, are returned, so this is a curated subset and not the complete upstream catalogue. Identifiers here are the library ids used when setting a voice on an agent, which differ in form from the `voice_<number>` ids of GET /voices. The response is not paginated and takes no query parameters, and access is governed by the `read:agents` scope rather than a voice-specific one. If the platform has no voice engine credential configured the call answers 500 with the code `config_error`.",
+        "description": "Returns the voices from the shared library that an agent can be pointed at, each with descriptive labels and the address of a spoken sample. Without `language` the whole library is returned, which is what a portal serving several countries needs; pass a language code to narrow it to the voices offered for that language, plus the account's own cloned and generated voices, which are returned whatever the filter says. Identifiers here are the library ids used when setting a voice on an agent, which differ in form from the `voice_<number>` ids of GET /voices. The response is not paginated, and access is governed by the `read:agents` scope rather than a voice-specific one. If the platform has no voice engine credential configured the call answers 500 with the code `config_error`.",
+        "parameters": [
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "description": "Narrow the list to voices offered for this language, as a code from GET /languages/agent, for example `de` or `pt-br`. Omit it for the full library.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/ActAsCustomer"
+          }
+        ],
         "x-required-scope": "read:agents",
         "responses": {
           "200": {
-            "description": "The filtered library voices. No pagination object is returned.",
+            "description": "The library voices. No pagination object is returned.",
             "content": {
               "application/json": {
                 "schema": {
@@ -12441,10 +12604,77 @@
               "read:agents"
             ]
           }
+        ]
+      }
+    },
+    "/voices/{voiceId}/preview": {
+      "get": {
+        "tags": [
+          "Voices"
         ],
+        "summary": "Hear a voice",
+        "description": "Speaks one sample sentence in the requested language with the given voice and answers with the audio itself, as MP3. Use it next to a voice picker: choosing from a list of names is guesswork, and a voice that sounds right in one language can sound wrong in another. The sample is synthesized on each call, which is why the answer may take a second, and why it carries a long cache header: for one voice and one language it never changes. A language the platform has no sentence for is sampled in English, and the language actually spoken is named in the `Content-Language` header of the response. Both the library ids from GET /voices/available and the `voice_<number>` ids of GET /voices are accepted. A voice the account cannot reach answers 404.",
         "parameters": [
           {
+            "name": "voiceId",
+            "in": "path",
+            "required": true,
+            "description": "Identifier of the voice, either a library id or the form `voice_<number>`.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "description": "The language the sample is spoken in, as a code from GET /languages/agent. Defaults to `en`.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "$ref": "#/components/parameters/ActAsCustomer"
+          }
+        ],
+        "x-required-scope": "read:agents",
+        "responses": {
+          "200": {
+            "description": "The sample was spoken. The body is the audio.",
+            "content": {
+              "audio/mpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary",
+                  "description": "The spoken sample."
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "read:agents"
+            ]
           }
         ]
       }
@@ -16728,10 +16958,11 @@
               "type": "string",
               "enum": [
                 "draft",
-                "pending",
+                "sent",
                 "paid",
                 "failed",
-                "refunded"
+                "overdue",
+                "canceled"
               ]
             }
           },
@@ -16841,10 +17072,11 @@
                                     "type": "string",
                                     "enum": [
                                       "draft",
-                                      "pending",
+                                      "sent",
                                       "paid",
                                       "failed",
-                                      "refunded"
+                                      "overdue",
+                                      "canceled"
                                     ],
                                     "description": "Payment state."
                                   },
@@ -16998,10 +17230,11 @@
                                     "type": "string",
                                     "enum": [
                                       "draft",
-                                      "pending",
+                                      "sent",
                                       "paid",
                                       "failed",
-                                      "refunded"
+                                      "overdue",
+                                      "canceled"
                                     ],
                                     "description": "Payment state."
                                   },
@@ -17334,10 +17567,11 @@
                           "type": "string",
                           "enum": [
                             "draft",
-                            "pending",
+                            "sent",
                             "paid",
                             "failed",
-                            "refunded"
+                            "overdue",
+                            "canceled"
                           ],
                           "description": "Payment state."
                         },

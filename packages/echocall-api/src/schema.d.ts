@@ -919,6 +919,84 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/agents/{agentId}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start a browser test call with an agent
+         * @description Opens a test call to this agent from a browser, so a customer can hear their agent before it answers a real caller. The response carries no address of the speech engine: `streamPath` is a websocket path on this API host, and this server relays the audio in a format of its own, which is what keeps a portal built on this API free of any third-party name. Join `streamPath` to the API host and swap the scheme for `wss:` to get the address to open. The path may be opened once and within `expiresInSeconds`; afterwards it is refused with 403 and a new call has to be claimed here. On the socket the browser receives `ready` with the audio formats to use, then `audio`, `agent`, `user` and `interrupt` frames, and finally `end`; it sends `audio` frames of microphone data and `end` when the caller hangs up. A test call reaches the real agent and is billed like any other call, so the voice minutes of the account owning the agent are checked first and the call is cut off after `maxSeconds`. An agent that has never been published answers 409: save it once, then try again. This endpoint takes no request body.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Reseller keys only. Runs this request as the named customer of the reseller, exactly as if that customer had sent it with a key of their own: ownership checks, limits and usage all apply to the customer, and none of the reseller operations are reachable while it is set. The value is the customer id returned by `POST /resellers/customers` and listed by `GET /resellers/customers`. Errors: 400 `invalid_customer_header` (not a positive integer), 403 `act_as_requires_reseller` (not a reseller key), 404 `customer_not_found` (no customer of this reseller with that id), 403 `customer_suspended`. The `/resellers/*` and `/provisioning/*` operations never accept it. */
+                    "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
+                };
+                path: {
+                    /** @description Identifier of the voice agent. Accepted either as the public form `agent_12` or as the bare number `12`; the prefix is stripped before the lookup. */
+                    agentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The call was claimed. Open the websocket within the stated seconds. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            agent: {
+                                /** @description What the agent opens the call with, when one is configured. */
+                                firstMessage?: string | null;
+                                /** @description Identifier of the agent, in the form `agent_<number>`. */
+                                id: string;
+                                /** @description The language the agent speaks, as a code from GET /languages/agent. */
+                                language?: string | null;
+                                /** @description Name of the agent being called. */
+                                name: string;
+                            };
+                            /** @description How long the path stays open for the first connection. */
+                            expiresInSeconds: number;
+                            /** @description How long the call may run before the server hangs up. Count it down in the interface as well. */
+                            maxSeconds: number;
+                            /** @description Websocket path on this API host, including the one-time ticket. Relative on purpose: join it to the host you call this API on. */
+                            streamPath: string;
+                        };
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                /** @description The account owning this agent has no voice minutes left. The error body carries the code `quota_exceeded`. Buy an add-on or wait for the next period, then retry. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
+                409: components["responses"]["Conflict"];
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/analytics/agents/{agentId}": {
         parameters: {
             query?: never;
@@ -7031,7 +7109,7 @@ export interface paths {
                     /** @description Items per page. Clamped to the range 1 to 500; larger values are reduced to 500. */
                     perPage?: number;
                     /** @description Return only invoices in this state. Omit for all of them. */
-                    status?: "draft" | "pending" | "paid" | "failed" | "refunded";
+                    status?: "draft" | "sent" | "paid" | "failed" | "overdue" | "canceled";
                 };
                 header?: never;
                 path?: never;
@@ -7098,7 +7176,7 @@ export interface paths {
                                      * @description Payment state.
                                      * @enum {string}
                                      */
-                                    status?: "draft" | "pending" | "paid" | "failed" | "refunded";
+                                    status?: "draft" | "sent" | "paid" | "failed" | "overdue" | "canceled";
                                     /** @description Net total in EUR, as a decimal string. */
                                     subtotalEur: string;
                                     /** @description Tax in EUR, as a decimal string. */
@@ -7167,7 +7245,7 @@ export interface paths {
                                      * @description Payment state.
                                      * @enum {string}
                                      */
-                                    status?: "draft" | "pending" | "paid" | "failed" | "refunded";
+                                    status?: "draft" | "sent" | "paid" | "failed" | "overdue" | "canceled";
                                     /** @description Net total in EUR, as a decimal string. */
                                     subtotalEur: string;
                                     /** @description Tax in EUR, as a decimal string. */
@@ -7338,7 +7416,7 @@ export interface paths {
                                  * @description Payment state.
                                  * @enum {string}
                                  */
-                                status?: "draft" | "pending" | "paid" | "failed" | "refunded";
+                                status?: "draft" | "sent" | "paid" | "failed" | "overdue" | "canceled";
                                 /** @description Net total in EUR, as a decimal string. */
                                 subtotalEur: string;
                                 /** @description Tax in EUR, as a decimal string. */
@@ -9727,6 +9805,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/voices/{voiceId}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Hear a voice
+         * @description Speaks one sample sentence in the requested language with the given voice and answers with the audio itself, as MP3. Use it next to a voice picker: choosing from a list of names is guesswork, and a voice that sounds right in one language can sound wrong in another. The sample is synthesized on each call, which is why the answer may take a second, and why it carries a long cache header: for one voice and one language it never changes. A language the platform has no sentence for is sampled in English, and the language actually spoken is named in the `Content-Language` header of the response. Both the library ids from GET /voices/available and the `voice_<number>` ids of GET /voices are accepted. A voice the account cannot reach answers 404.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description The language the sample is spoken in, as a code from GET /languages/agent. Defaults to `en`. */
+                    language?: string;
+                };
+                header?: {
+                    /** @description Reseller keys only. Runs this request as the named customer of the reseller, exactly as if that customer had sent it with a key of their own: ownership checks, limits and usage all apply to the customer, and none of the reseller operations are reachable while it is set. The value is the customer id returned by `POST /resellers/customers` and listed by `GET /resellers/customers`. Errors: 400 `invalid_customer_header` (not a positive integer), 403 `act_as_requires_reseller` (not a reseller key), 404 `customer_not_found` (no customer of this reseller with that id), 403 `customer_suspended`. The `/resellers/*` and `/provisioning/*` operations never accept it. */
+                    "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
+                };
+                path: {
+                    /** @description Identifier of the voice, either a library id or the form `voice_<number>`. */
+                    voiceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The sample was spoken. The body is the audio. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "audio/mpeg": string;
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/voices/available": {
         parameters: {
             query?: never;
@@ -9736,11 +9868,14 @@ export interface paths {
         };
         /**
          * List selectable library voices
-         * @description Returns the voices from the shared library that an agent can be pointed at, each with a preview sample and descriptive labels. The list is fetched live from the voice engine and then filtered: only cloned and generated voices, plus voices whose labels or description mark them as German, are returned, so this is a curated subset and not the complete upstream catalogue. Identifiers here are the library ids used when setting a voice on an agent, which differ in form from the `voice_<number>` ids of GET /voices. The response is not paginated and takes no query parameters, and access is governed by the `read:agents` scope rather than a voice-specific one. If the platform has no voice engine credential configured the call answers 500 with the code `config_error`.
+         * @description Returns the voices from the shared library that an agent can be pointed at, each with descriptive labels and the address of a spoken sample. Without `language` the whole library is returned, which is what a portal serving several countries needs; pass a language code to narrow it to the voices offered for that language, plus the account's own cloned and generated voices, which are returned whatever the filter says. Identifiers here are the library ids used when setting a voice on an agent, which differ in form from the `voice_<number>` ids of GET /voices. The response is not paginated, and access is governed by the `read:agents` scope rather than a voice-specific one. If the platform has no voice engine credential configured the call answers 500 with the code `config_error`.
          */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Narrow the list to voices offered for this language, as a code from GET /languages/agent, for example `de` or `pt-br`. Omit it for the full library. */
+                    language?: string;
+                };
                 header?: {
                     /** @description Reseller keys only. Runs this request as the named customer of the reseller, exactly as if that customer had sent it with a key of their own: ownership checks, limits and usage all apply to the customer, and none of the reseller operations are reachable while it is set. The value is the customer id returned by `POST /resellers/customers` and listed by `GET /resellers/customers`. Errors: 400 `invalid_customer_header` (not a positive integer), 403 `act_as_requires_reseller` (not a reseller key), 404 `customer_not_found` (no customer of this reseller with that id), 403 `customer_suspended`. The `/resellers/*` and `/provisioning/*` operations never accept it. */
                     "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
@@ -9750,7 +9885,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The filtered library voices. No pagination object is returned. */
+                /** @description The library voices. No pagination object is returned. */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -10380,10 +10515,7 @@ export interface components {
             } | null;
             /** @description Display name. */
             name: string;
-            /**
-             * Format: uri
-             * @description Short audio sample.
-             */
+            /** @description Where to hear this voice: the path of GET /voices/{voiceId}/preview for it, relative to the API host. Add a `language` parameter to hear it in the language the agent will speak. */
             previewUrl?: string | null;
         };
         /** @description Prepaid balance and remaining allowances. */
@@ -11293,8 +11425,12 @@ export interface components {
             accountStatus: string | null;
             /** @description Prepaid wallet balance in EUR. */
             balanceEur: number;
-            /** @description Chat conversations left in the current period. */
-            chatConversationsRemaining?: number;
+            /** @description Chat conversations the period started with, plan plus anything bought on top. Null when the plan sets no cap. */
+            chatConversationsAllowance?: number | null;
+            /** @description Chat conversations left in the current period. Null when the plan sets no cap. */
+            chatConversationsRemaining?: number | null;
+            /** @description Chat conversations used in the current period. */
+            chatConversationsUsed?: number;
             /** @description The subscribed plan and its monthly allowances. Null when the account is on no plan. */
             plan?: {
                 /** @description Monthly chat-conversation allowance. */
@@ -11304,8 +11440,12 @@ export interface components {
                 /** @description Monthly voice-minute allowance. */
                 voiceMinutesPerMonth?: number | null;
             } | null;
-            /** @description Voice minutes left in the current period. */
-            voiceMinutesRemaining?: number;
+            /** @description Voice minutes the period started with, plan plus anything bought on top. Null when the plan sets no cap. */
+            voiceMinutesAllowance?: number | null;
+            /** @description Voice minutes left in the current period. Null when the plan sets no cap. */
+            voiceMinutesRemaining?: number | null;
+            /** @description Voice minutes used in the current period. */
+            voiceMinutesUsed?: number;
         };
         /** @description A chat conversation, from the widget or from WhatsApp. */
         LiveConversation: {
