@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
-import { createEchoCallClient, type EchoCallClient, isHubErrorBody } from '@echocall/light-api-client';
+import { createEchoCallClient, type EchoCallClient, isHubErrorBody } from '@echocall/whitelabel-api-client';
 import { type AppConfig, APP_CONFIG } from '../config/env.js';
 import { describeError } from '../common/http-error.js';
 import { HubException } from './hub.exception.js';

@@ -1,5 +1,5 @@
 {
-  "name": "@echocall/light-api-client",
+  "name": "@echocall/whitelabel-api-client",
   "version": "0.1.0",
   "private": true,
   "description": "Typed client for the EchoCall public API, generated from the published OpenAPI document",

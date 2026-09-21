@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: Security problem
-    url: https://github.com/echocall/echocall-light/blob/main/SECURITY.md
+    url: https://github.com/kristiangasic/echocall-whitelabel/blob/main/SECURITY.md
     about: Report it privately instead of opening an issue.
   - name: A question about the EchoCall platform itself
     url: https://echocall.de

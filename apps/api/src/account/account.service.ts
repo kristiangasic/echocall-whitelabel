@@ -1,4 +1,4 @@
-import type { components } from '@echocall/light-api-client';
+import type { components } from '@echocall/whitelabel-api-client';
 import { Inject, Injectable } from '@nestjs/common';
 import { type SessionUser, toSessionUser } from '../auth/session.service.js';
 import { apiError } from '../common/http-error.js';

@@ -68,9 +68,9 @@ up -d` is run from the repository root.
 
 ## Test suite
 
-| Variable            | Description                                                                                                                                                      |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `TEST_DATABASE_URL` | Database the `apps/api` tests run against (they create and drop their own schemas). Defaults to a local PostgreSQL on port 5433, database `echocall_light_test`. |
+| Variable            | Description                                                                                                                                                           |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TEST_DATABASE_URL` | Database the `apps/api` tests run against (they create and drop their own schemas). Defaults to a local PostgreSQL on port 5433, database `echocall_whitelabel_test`. |
 
 ## Browser smoke run
 
@@ -79,8 +79,8 @@ then drives the result through a real browser. Every value has a default, so the
 no configuration on a developer machine; the variables exist so a pipeline can hand out its
 own database and ports.
 
-| Variable             | Default                                                            | Description                                                                                                                |
-| -------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| `SMOKE_DATABASE_URL` | `postgres://postgres:postgres@127.0.0.1:5433/echocall_light_smoke` | PostgreSQL only. The run drops and recreates the `public` schema of this database, so never point it at anything you keep. |
-| `SMOKE_PORTAL_PORT`  | `4010`                                                             | Port the portal under test listens on.                                                                                     |
-| `SMOKE_HUB_PORT`     | `4011`                                                             | Port of the API stub. The portal under test gets `ECHOCALL_API_URL` pointing here, so no real service is ever reached.     |
+| Variable             | Default                                                                 | Description                                                                                                                |
+| -------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `SMOKE_DATABASE_URL` | `postgres://postgres:postgres@127.0.0.1:5433/echocall_whitelabel_smoke` | PostgreSQL only. The run drops and recreates the `public` schema of this database, so never point it at anything you keep. |
+| `SMOKE_PORTAL_PORT`  | `4010`                                                                  | Port the portal under test listens on.                                                                                     |
+| `SMOKE_HUB_PORT`     | `4011`                                                                  | Port of the API stub. The portal under test gets `ECHOCALL_API_URL` pointing here, so no real service is ever reached.     |

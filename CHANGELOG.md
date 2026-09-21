@@ -9,6 +9,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- A code of conduct, issue and pull request templates, and a dependency bot, so the
+  repository reads the way a public one is expected to.
 - Self-service sign-up, off by default. With it on, a sign-up form appears on the sign-in
   page and each sign-up opens a customer account at the service and a portal login in one
   step. The form answers the same way whether the address was free, already had an account
@@ -25,6 +27,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- The project is called EchoCall White Label Portal. The repository, the container
+  image, the npm workspaces (`@echocall/whitelabel-api`, `-web`, `-api-client`) and the
+  example database names carry `whitelabel` instead of `light`, because the old name
+  said nothing about what the software does. An existing install keeps its database;
+  only the project name in `compose.yaml` and the image tag change.
 - The generated client carries `hubLoginEnabled` on customer creation, so the field the
   portal already sends is typed rather than passed untyped, and the delete endpoint's
   documented behaviour (it cascades, and refuses a customer who still holds a
@@ -124,4 +131,4 @@ First public release.
 - Documentation: README, architecture, configuration, self-hosting, database and operating
   guides, a written security review, security policy, contribution guidelines.
 
-[0.1.0]: https://github.com/echocall/echocall-light/releases/tag/v0.1.0
+[0.1.0]: https://github.com/kristiangasic/echocall-whitelabel/releases/tag/v0.1.0

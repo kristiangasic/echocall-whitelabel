@@ -1,4 +1,4 @@
-import type { components, paths } from '@echocall/light-api-client';
+import type { components, paths } from '@echocall/whitelabel-api-client';
 
 /**
  * The hub schemas the workspace pages consume, re-exported under their

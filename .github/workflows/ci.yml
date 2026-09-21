@@ -33,16 +33,16 @@ jobs:
       matrix:
         include:
           - name: postgres
-            url: postgres://postgres:postgres@127.0.0.1:5432/echocall_light_test
+            url: postgres://postgres:postgres@127.0.0.1:5432/echocall_whitelabel_test
           - name: mariadb
-            url: mariadb://root:root@127.0.0.1:3306/echocall_light_test
+            url: mariadb://root:root@127.0.0.1:3306/echocall_whitelabel_test
     name: api-tests (${{ matrix.name }})
     services:
       postgres:
         image: postgres:18-alpine
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: echocall_light_test
+          POSTGRES_DB: echocall_whitelabel_test
         ports: ['5432:5432']
         options: >-
           --health-cmd pg_isready
@@ -53,7 +53,7 @@ jobs:
         image: mariadb:11
         env:
           MARIADB_ROOT_PASSWORD: root
-          MARIADB_DATABASE: echocall_light_test
+          MARIADB_DATABASE: echocall_whitelabel_test
         ports: ['3306:3306']
         options: >-
           --health-cmd "healthcheck.sh --connect --innodb_initialized"
@@ -81,7 +81,7 @@ jobs:
         image: postgres:18-alpine
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: echocall_light_smoke
+          POSTGRES_DB: echocall_whitelabel_smoke
         ports: ['5432:5432']
         options: >-
           --health-cmd pg_isready
@@ -102,7 +102,7 @@ jobs:
       # The run starts its own stub of the service, so no real service is reached.
       - run: npm run e2e
         env:
-          SMOKE_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/echocall_light_smoke
+          SMOKE_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/echocall_whitelabel_smoke
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

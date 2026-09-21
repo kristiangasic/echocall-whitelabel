@@ -12,8 +12,8 @@ The dialect is picked from the `DATABASE_URL` scheme: `postgres://` / `postgresq
 select PostgreSQL, `mysql://` / `mariadb://` select the MySQL driver.
 
 ```
-DATABASE_URL=postgres://light:secret@db.example.com:5432/echocall_light
-DATABASE_URL=mariadb://light:secret@db.example.com:3306/echocall_light
+DATABASE_URL=postgres://light:secret@db.example.com:5432/echocall_whitelabel
+DATABASE_URL=mariadb://light:secret@db.example.com:3306/echocall_whitelabel
 ```
 
 TLS towards the database is controlled by `DATABASE_SSL`: `disable` (default), `require`,
@@ -42,15 +42,15 @@ pg_restore --dbname="$DATABASE_URL" --clean --if-exists portal.dump
 Bundled Compose database:
 
 ```bash
-docker compose exec db pg_dump -U light --format=custom echocall_light > portal.dump
-docker compose exec -T db pg_restore -U light --dbname=echocall_light --clean --if-exists < portal.dump
+docker compose exec db pg_dump -U light --format=custom echocall_whitelabel > portal.dump
+docker compose exec -T db pg_restore -U light --dbname=echocall_whitelabel --clean --if-exists < portal.dump
 ```
 
 MariaDB / MySQL:
 
 ```bash
-mariadb-dump --single-transaction echocall_light > portal.sql   # or mysqldump
-mariadb echocall_light < portal.sql                             # or mysql
+mariadb-dump --single-transaction echocall_whitelabel > portal.sql   # or mysqldump
+mariadb echocall_whitelabel < portal.sql                             # or mysql
 ```
 
 Restore with the portal stopped, then start it: migrations run at startup and bring a dump
@@ -68,6 +68,6 @@ factor has to be set up again. [operating.md](operating.md) walks through both c
 
 The `apps/api` tests need a database server they may create and drop schemas in - never
 point them at anything you care about. By default they expect PostgreSQL on
-`127.0.0.1:5433` with a database `echocall_light_test`; override with
+`127.0.0.1:5433` with a database `echocall_whitelabel_test`; override with
 `TEST_DATABASE_URL`, which also accepts MariaDB/MySQL URLs (CI runs the suite against
 both PostgreSQL and MariaDB).

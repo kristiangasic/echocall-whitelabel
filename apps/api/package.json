@@ -1,7 +1,7 @@
 {
-  "name": "@echocall/light-api",
+  "name": "@echocall/whitelabel-api",
   "version": "0.1.0",
-  "description": "Back end for the EchoCall Light portal: sessions, settings and the hub API bridge",
+  "description": "Back end for the EchoCall White Label Portal portal: sessions, settings and the hub API bridge",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
@@ -19,7 +19,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@echocall/light-api-client": "0.1.0",
+    "@echocall/whitelabel-api-client": "0.1.0",
     "@nestjs/common": "^12.0.1",
     "@nestjs/core": "^12.0.1",
     "@nestjs/platform-express": "^12.0.1",

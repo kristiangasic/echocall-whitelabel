@@ -1,6 +1,8 @@
 # Contributing
 
-Thanks for helping improve EchoCall Light!
+Thanks for helping improve EchoCall White Label Portal!
+
+By taking part you agree to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Setup
 
@@ -8,10 +10,10 @@ Thanks for helping improve EchoCall Light!
   and older versions fail to install it).
 - `npm ci` at the repository root (npm workspaces).
 - The `apps/api` tests need a disposable database, by default PostgreSQL on
-  `127.0.0.1:5433` with a database `echocall_light_test`; override with
+  `127.0.0.1:5433` with a database `echocall_whitelabel_test`; override with
   `TEST_DATABASE_URL`. See [docs/database.md](docs/database.md).
 - The browser smoke run needs the same PostgreSQL server (it uses a second database,
-  `echocall_light_smoke`) and the Playwright browsers: `npx playwright install chromium`.
+  `echocall_whitelabel_smoke`) and the Playwright browsers: `npx playwright install chromium`.
 
 ## Before you open a pull request
 

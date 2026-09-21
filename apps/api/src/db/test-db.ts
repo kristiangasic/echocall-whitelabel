@@ -17,7 +17,7 @@ export interface TestDb {
  */
 export async function createTestDb(): Promise<TestDb> {
   const url =
-    process.env.TEST_DATABASE_URL ?? 'postgres://postgres:postgres@127.0.0.1:5433/echocall_light_test';
+    process.env.TEST_DATABASE_URL ?? 'postgres://postgres:postgres@127.0.0.1:5433/echocall_whitelabel_test';
   const { db, dialect } = createDb(url, 'disable');
   await migrateToLatest(db, dialect);
   const reset = async (): Promise<void> => {

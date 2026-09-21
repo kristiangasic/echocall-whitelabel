@@ -1,14 +1,26 @@
-# EchoCall Light
+# EchoCall White Label Portal
 
-A self-hosted, white-label customer portal and admin panel that runs entirely on the
-[EchoCall](https://echocall.de) public API. You run it under your own brand and domain,
-invite your own customers, and every AI feature your customers use is served by the
-EchoCall platform through a single reseller API key. Your customers never see EchoCall:
-name, logo, colors and legal links all come from your branding settings.
+**A self-hosted white label portal for AI voice and chat agents.** Run a customer portal
+and admin panel under your own brand and domain, invite your own customers, and resell
+voice and chat agents as your own product. Angular and NestJS, Apache-2.0 licensed, up and
+running with one Docker command.
 
-**Who it is for:** agencies and resellers with an active EchoCall subscription who want to
-offer voice and chat agents to their own customers under their own brand, without building
-a portal from scratch.
+[![CI](https://github.com/kristiangasic/echocall-whitelabel/actions/workflows/ci.yml/badge.svg)](https://github.com/kristiangasic/echocall-whitelabel/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/kristiangasic/echocall-whitelabel?display_name=tag&sort=semver)](https://github.com/kristiangasic/echocall-whitelabel/releases)
+[![Node](https://img.shields.io/badge/node-22.22.3%2B-339933)](https://nodejs.org)
+
+> **Read this first.** The portal is the interface, not the telephony. Every AI feature it
+> offers is served by the [EchoCall](https://echocall.de) platform through a single
+> reseller API key, so you need an account there. The free pay as you go plan, which costs
+> a one euro card verification and no subscription fee, is enough to run everything you see
+> here. [How to get a key](#requirements).
+
+Your customers never see EchoCall: name, logo, colors and legal links all come from your
+branding settings.
+
+**Who it is for:** agencies and resellers who want to offer voice and chat agents to their
+own customers under their own brand, without building a portal from scratch.
 
 ## How it works
 
@@ -30,8 +42,11 @@ a portal from scratch.
 
 ## Requirements
 
-- An EchoCall reseller account with an active subscription and an API key
-  (`eck_live_...`) - get one at [echocall.de](https://echocall.de)
+- An EchoCall account with an active subscription and an API key (`eck_live_...`). Sign
+  up at [echocall.de](https://echocall.de) and create the key under **Developer**. The key
+  then needs reseller access, because the portal creates customer accounts on your behalf.
+  Write to [team@echocall.de](mailto:team@echocall.de) and we enable it, usually the same
+  day. The free pay as you go plan qualifies: one euro card verification, no monthly fee.
 - Docker (recommended), or Node.js 22.22.3+ with npm 12 for a manual install
 - Optional: your own PostgreSQL 14+, MariaDB 10.6+ or MySQL 8 server
   (the Docker Compose setup ships a PostgreSQL container)
@@ -39,8 +54,8 @@ a portal from scratch.
 ## Quick start with Docker Compose
 
 ```bash
-git clone https://github.com/echocall/echocall-light.git
-cd echocall-light
+git clone https://github.com/kristiangasic/echocall-whitelabel.git
+cd echocall-whitelabel
 cp .env.example .env
 # Edit .env: set APP_URL, APP_SECRET, ECHOCALL_API_KEY and DB_PASSWORD
 docker compose up -d
@@ -58,8 +73,8 @@ that has stopped working, backup and restore, upgrades.
 Point `DATABASE_URL` at your own server instead of the bundled container:
 
 ```
-DATABASE_URL=postgres://light:secret@db.example.com:5432/echocall_light
-DATABASE_URL=mariadb://light:secret@db.example.com:3306/echocall_light
+DATABASE_URL=postgres://light:secret@db.example.com:5432/echocall_whitelabel
+DATABASE_URL=mariadb://light:secret@db.example.com:3306/echocall_whitelabel
 ```
 
 The schema is created and migrated automatically at startup. Details and backup notes:

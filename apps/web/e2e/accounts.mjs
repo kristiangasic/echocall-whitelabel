@@ -19,7 +19,7 @@ export const READY_URL = `http://127.0.0.1:${HUB_PORT}/e2e/ready`;
 
 /** PostgreSQL only: the run drops and recreates the schema of this database. */
 export const DATABASE_URL =
-  process.env.SMOKE_DATABASE_URL ?? 'postgres://postgres:postgres@127.0.0.1:5433/echocall_light_smoke';
+  process.env.SMOKE_DATABASE_URL ?? 'postgres://postgres:postgres@127.0.0.1:5433/echocall_whitelabel_smoke';
 
 /** The first administrator, created through the first-run setup. */
 export const OPERATOR = {

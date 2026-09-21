@@ -3,8 +3,8 @@
 ## Docker Compose (recommended)
 
 ```bash
-git clone https://github.com/echocall/echocall-light.git
-cd echocall-light
+git clone https://github.com/kristiangasic/echocall-whitelabel.git
+cd echocall-whitelabel
 cp .env.example .env
 # set APP_URL, APP_SECRET, ECHOCALL_API_KEY, DB_PASSWORD
 docker compose up -d
@@ -27,8 +27,8 @@ To use your own database server instead of the bundled container, set `DATABASE_
 ## Plain Docker
 
 ```bash
-docker build -f docker/Dockerfile -t echocall-light .
-docker run -d --name portal --env-file .env -p 3000:3000 echocall-light
+docker build -f docker/Dockerfile -t echocall-whitelabel .
+docker run -d --name portal --env-file .env -p 3000:3000 echocall-whitelabel
 ```
 
 The image serves the web UI, the API, and the health endpoints from one container and

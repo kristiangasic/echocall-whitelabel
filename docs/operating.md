@@ -116,7 +116,7 @@ cp .env portal-env-$(date +%F).bak      # keep this one somewhere else than the 
 Restore into an empty database:
 
 ```bash
-createdb echocall_light
+createdb echocall_whitelabel
 pg_restore --dbname="$DATABASE_URL" --clean --if-exists portal-2026-09-17.dump
 ```
 
