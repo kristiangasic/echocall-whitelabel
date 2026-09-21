@@ -6,6 +6,7 @@ import { createMailbox } from '../testing/mailbox.js';
 import { testConfig } from '../testing/test-app.js';
 import { createSmtpTransport, MailService } from './mail.service.js';
 import { renderInvite } from './templates/invite.js';
+import { LOGO_CID, mailLogo } from './templates/layout.js';
 import { renderRegistration } from './templates/registration.js';
 import { renderSignInLink } from './templates/sign-in-link.js';
 import { renderTest } from './templates/test.js';
@@ -130,15 +131,20 @@ describe('MailService', () => {
   });
 });
 
+/** A one pixel PNG, small enough to keep the test readable. */
+const PIXEL =
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
 describe('mail templates', () => {
   it('never mention a third party product in any language', () => {
-    const ctx = { productName: 'Acme Portal', firstName: 'Kim', link: 'https://x/l' };
+    const brand = { productName: 'Acme Portal', logoDataUrl: null, primaryColor: '#2563eb' };
+    const ctx = { brand, firstName: 'Kim', link: 'https://x/l' };
     for (const language of LANGUAGES) {
       for (const mail of [
         renderInvite(language, ctx),
         renderSignInLink(language, ctx),
         renderRegistration(language, ctx),
-        renderTest(language, 'Acme Portal'),
+        renderTest(language, brand),
       ]) {
         for (const part of [mail.subject, mail.text, mail.html]) {
           expect(part).not.toMatch(/echocall|eleven/i);
@@ -150,7 +156,7 @@ describe('mail templates', () => {
 
   it('escapes user provided values in the HTML part only', () => {
     const mail = renderInvite('en', {
-      productName: '<b>X</b>',
+      brand: { productName: '<b>X</b>', logoDataUrl: null, primaryColor: '#2563eb' },
       firstName: "O'Neil",
       link: 'https://x/?a=1&b=2',
     });
@@ -158,5 +164,43 @@ describe('mail templates', () => {
     expect(mail.html).toContain('href="https://x/?a=1&amp;b=2"');
     expect(mail.text).toContain('https://x/?a=1&b=2');
     expect(mail.text).toContain("Hello O'Neil,");
+  });
+  it('paints the button in the portal colour, in a shade that can be read', () => {
+    const dark = renderInvite('en', {
+      brand: { productName: 'Acme', logoDataUrl: null, primaryColor: '#101820' },
+      firstName: null,
+      link: 'https://x/l',
+    });
+    const light = renderInvite('en', {
+      brand: { productName: 'Acme', logoDataUrl: null, primaryColor: '#fde047' },
+      firstName: null,
+      link: 'https://x/l',
+    });
+
+    expect(dark.html).toContain('background:#101820;color:#ffffff');
+    expect(light.html).toContain('background:#fde047;color:#111827');
+  });
+
+  it('shows the logo as a part of the message, with the product name as its text', () => {
+    const mail = renderInvite('en', {
+      brand: { productName: 'Acme', logoDataUrl: `data:image/png;base64,${PIXEL}`, primaryColor: '#2563eb' },
+      firstName: null,
+      link: 'https://x/l',
+    });
+
+    expect(mail.html).toContain(`<img src="cid:${LOGO_CID}" alt="Acme"`);
+    expect(mail.html).not.toContain('data:image/png');
+  });
+
+  it('hands the logo over as something that can be attached', () => {
+    const logo = mailLogo(`data:image/png;base64,${PIXEL}`);
+
+    expect(logo).toMatchObject({ contentType: 'image/png', cid: LOGO_CID, filename: 'logo.png' });
+    expect(logo?.content.length).toBeGreaterThan(0);
+    expect(mailLogo(null)).toBeNull();
+    // A mail program that cannot draw an SVG would show an empty frame, so the
+    // message falls back to the product name instead.
+    expect(mailLogo('data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=')).toBeNull();
+    expect(mailLogo('https://example.com/logo.png')).toBeNull();
   });
 });

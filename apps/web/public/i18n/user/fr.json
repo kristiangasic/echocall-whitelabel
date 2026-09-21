@@ -709,11 +709,11 @@
     },
     "invoiceStatuses": {
       "draft": "Brouillon",
-      "pending": "En attente",
       "sent": "Envoyée",
       "paid": "Payée",
+      "failed": "Échouée",
       "overdue": "En retard",
-      "cancelled": "Annulée"
+      "canceled": "Annulée"
     },
     "transactionTypes": {
       "topup": "Rechargement",

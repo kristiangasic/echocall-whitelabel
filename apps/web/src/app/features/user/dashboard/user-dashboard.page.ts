@@ -390,12 +390,17 @@ export class UserDashboardPage implements OnInit {
     return [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email;
   });
 
+  /**
+   * The bar measures against what the period really started with: the plan's
+   * allowance plus anything bought on top. Only an account whose hub does not
+   * report that yet falls back to the plan's own figure.
+   */
   readonly voiceMeter = computed(() => {
     const o = this.overview();
     if (!o) return null;
     return meterFor(
       o.usage.voiceMinutesUsed,
-      o.limits.plan?.voiceMinutesPerMonth,
+      o.limits.voiceMinutesAllowance ?? o.limits.plan?.voiceMinutesPerMonth,
       o.limits.voiceMinutesRemaining,
     );
   });
@@ -405,7 +410,7 @@ export class UserDashboardPage implements OnInit {
     if (!o) return null;
     return meterFor(
       o.usage.chatSessionsUsed,
-      o.limits.plan?.chatConversationsPerMonth,
+      o.limits.chatConversationsAllowance ?? o.limits.plan?.chatConversationsPerMonth,
       o.limits.chatConversationsRemaining,
     );
   });

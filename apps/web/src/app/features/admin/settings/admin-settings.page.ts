@@ -30,11 +30,9 @@ import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/
 import { FieldErrorPipe } from '../../../shared/forms/field-error.pipe';
 import { applyServerErrors } from '../../../shared/forms/server-errors';
 import { hexColorValidator, urlValidator } from '../../../shared/forms/validators';
+import { LOGO_TYPES, LogoFileError, prepareLogo } from '../../../shared/images/logo-file';
 import { HubSettingsComponent } from './hub-settings.component';
 
-const LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'];
-/** Keeps the base64 data URL under the 200 KB the API accepts. */
-const LOGO_MAX_BYTES = 140 * 1024;
 const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
 /** Read and written by the sign-up tab. */
 const ROUTE = '/admin/settings/registration';
@@ -85,16 +83,21 @@ const ROUTE = '/admin/settings/registration';
                     (change)="onLogo($event)"
                     data-testid="logo-input"
                   />
-                  <button mat-stroked-button type="button" (click)="logoInput.click()">
+                  <button
+                    mat-stroked-button
+                    type="button"
+                    [disabled]="preparingLogo()"
+                    (click)="logoInput.click()"
+                  >
                     <mat-icon>upload</mat-icon>
-                    {{ t('admin.settings.branding.uploadLogo') }}
+                    {{
+                      preparingLogo()
+                        ? t('admin.settings.branding.logo.working')
+                        : t('admin.settings.branding.uploadLogo')
+                    }}
                   </button>
                   @if (logo()) {
-                    <button
-                      mat-button
-                      type="button"
-                      (click)="brandingForm.controls.logoDataUrl.setValue(null)"
-                    >
+                    <button mat-button type="button" (click)="removeLogo()">
                       {{ t('admin.settings.branding.removeLogo') }}
                     </button>
                   }
@@ -490,6 +493,7 @@ export class AdminSettingsPage implements OnInit {
     defaultLanguage: [this.branding.branding().defaultLanguage],
   });
   readonly savingBranding = signal(false);
+  readonly preparingLogo = signal(false);
 
   readonly logo = toSignal(this.brandingForm.controls.logoDataUrl.valueChanges, {
     initialValue: this.brandingForm.controls.logoDataUrl.value,
@@ -549,22 +553,32 @@ export class AdminSettingsPage implements OnInit {
     control.markAsDirty();
   }
 
-  onLogo(event: Event): void {
+  removeLogo(): void {
+    const control = this.brandingForm.controls.logoDataUrl;
+    control.setValue(null);
+    control.markAsDirty();
+  }
+
+  /**
+   * A picked logo is drawn down to the size the portal shows it at, so a print
+   * sized company logo can be used without anyone editing it first.
+   */
+  async onLogo(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     input.value = '';
     if (!file) return;
-    if (!LOGO_TYPES.includes(file.type)) {
-      this.notify.error('admin.settings.branding.logoType');
-      return;
+    this.preparingLogo.set(true);
+    try {
+      const control = this.brandingForm.controls.logoDataUrl;
+      control.setValue(await prepareLogo(file));
+      control.markAsDirty();
+    } catch (error) {
+      const problem = error instanceof LogoFileError ? error.problem : 'unreadable';
+      this.notify.error(`admin.settings.branding.logo.${problem}`);
+    } finally {
+      this.preparingLogo.set(false);
     }
-    if (file.size > LOGO_MAX_BYTES) {
-      this.notify.error('admin.settings.branding.logoTooLarge');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => this.brandingForm.controls.logoDataUrl.setValue(String(reader.result));
-    reader.readAsDataURL(file);
   }
 
   async saveBranding(): Promise<void> {

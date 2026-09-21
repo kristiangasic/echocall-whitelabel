@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { logoIsInert } from './logo.js';
 
 export const LANGUAGES = ['en', 'de', 'fr'] as const;
 export type Language = (typeof LANGUAGES)[number];
@@ -45,6 +46,7 @@ export const brandingSchema = z.object({
       'Logo must be a PNG, JPEG, WebP or SVG image',
     )
     .max(LOGO_MAX_CHARS, 'Logo must be smaller than 200 KB')
+    .refine(logoIsInert, 'Logo must be a drawing, without script or external references')
     .nullable(),
   primaryColor: z
     .string()

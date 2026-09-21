@@ -115,4 +115,30 @@ describe('SignInPage', () => {
 
     expect(router.url).toBe('/app');
   });
+
+  it('empties the code field after a wrong one without calling it missing', async () => {
+    const fixture = await render('t-1');
+    http
+      .expectOne('/api/auth/sign-in-link/consume')
+      .flush(
+        { challenge: 'c-1', expiresAt: '2026-09-17T10:05:00.000Z' },
+        { status: 202, statusText: 'Accepted' },
+      );
+    await redraw(fixture);
+
+    type(fixture, 'code', '000000');
+    submit(fixture);
+    http
+      .expectOne('/api/auth/2fa/verify')
+      .flush(
+        { error: { code: 'invalid_code', message: 'Wrong code' } },
+        { status: 401, statusText: 'Unauthorized' },
+      );
+    await redraw(fixture);
+
+    const text = fixture.nativeElement.textContent as string;
+    expect(text).toContain(TEXTS.errors.invalid_code);
+    expect(text).not.toContain(TEXTS.validation.required);
+    expect((byTestId(fixture, 'code') as HTMLInputElement).value).toBe('');
+  });
 });

@@ -41,6 +41,7 @@ describe('AdminUsersController', () => {
       'user@example.com',
     ]);
     expect(Object.keys(list.body.data[0]).sort()).toEqual([
+      'acceptedAt',
       'createdAt',
       'echocallCustomerId',
       'email',
@@ -162,7 +163,7 @@ describe('AdminUsersController', () => {
     expect(await lastAudit()).toMatchObject({
       action: 'users.updated',
       targetId: String(user.id),
-      details: { changed: ['firstName', 'lastName', 'language'] },
+      details: { changed: ['firstName', 'language'] },
     });
 
     const self = await api().patch(`/api/admin/users/${admin.id}`).set(asAdmin).send({ status: 'disabled' });
@@ -222,6 +223,38 @@ describe('AdminUsersController', () => {
       .send({ status: 'active' });
     expect(early.status).toBe(409);
     expect(early.body.error.code).toBe('invite_pending');
+
+    // Turned off before it was ever accepted: enabling it would leave a login
+    // with no way in, so the operator has to send the invitation again.
+    const parked = await api()
+      .patch(`/api/admin/users/${invited.body.user.id}`)
+      .set(asAdmin)
+      .send({ status: 'disabled' });
+    expect(parked.status).toBe(200);
+    const revived = await api()
+      .patch(`/api/admin/users/${invited.body.user.id}`)
+      .set(asAdmin)
+      .send({ status: 'active' });
+    expect(revived.status).toBe(409);
+    expect(revived.body.error.code).toBe('invite_pending');
+  });
+
+  it('records only the fields an update really changed', async () => {
+    const listed = await api().get('/api/admin/users').set(asAdmin);
+    const before = listed.body.data.find((row: { id: number }) => row.id === user.id);
+    const same = await api()
+      .patch(`/api/admin/users/${user.id}`)
+      .set(asAdmin)
+      .send({ firstName: before.firstName ?? '', language: before.language, role: before.role });
+    expect(same.status).toBe(200);
+    expect(await lastAudit()).toMatchObject({ action: 'users.updated', details: { changed: [] } });
+
+    const one = await api().patch(`/api/admin/users/${user.id}`).set(asAdmin).send({
+      firstName: 'Renamed',
+      language: before.language,
+    });
+    expect(one.status).toBe(200);
+    expect(await lastAudit()).toMatchObject({ details: { changed: ['firstName'] } });
   });
 
   it('sends a sign-in link for active accounts only', async () => {

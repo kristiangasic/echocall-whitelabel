@@ -8,6 +8,7 @@ import { RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { AgentLanguageNames } from '../../../core/hub/agent-language-names.service';
+import { AgentVoiceNames } from '../../../core/hub/agent-voice-names.service';
 import { HubService } from '../../../core/hub/hub.service';
 import type { AgentSummary } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
@@ -53,7 +54,7 @@ import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/
           <ng-container matColumnDef="voice">
             <th mat-header-cell *matHeaderCellDef>{{ t('user.agents.voice') }}</th>
             <td mat-cell *matCellDef="let a" [attr.data-label]="t('user.agents.voice')">
-              {{ a.voice?.name || t('user.agents.voiceDefault') }}
+              {{ voiceName(a) || t('user.agents.voiceDefault') }}
             </td>
           </ng-container>
           <ng-container matColumnDef="status">
@@ -93,6 +94,7 @@ import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/
 export class AgentsPage implements OnInit {
   private readonly hub = inject(HubService);
   private readonly languageNames = inject(AgentLanguageNames);
+  private readonly voiceNames = inject(AgentVoiceNames);
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotifyService);
 
@@ -102,7 +104,17 @@ export class AgentsPage implements OnInit {
 
   ngOnInit(): void {
     void this.languageNames.load();
+    void this.voiceNames.load();
     void this.load();
+  }
+
+  /**
+   * The voice of a row. An agent set up before the platform started storing the
+   * name carries only the identifier, which is looked up here so the row does
+   * not call a chosen voice the default one.
+   */
+  voiceName(agent: AgentSummary): string {
+    return agent.voice?.name || this.voiceNames.name(agent.voice?.id);
   }
 
   /** The language of a row, named rather than left as the stored code. */

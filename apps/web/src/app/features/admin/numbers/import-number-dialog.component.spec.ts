@@ -176,8 +176,13 @@ describe('ImportNumberDialogComponent', () => {
     fixture.componentInstance.form.patchValue({ phoneNumber: '+4930111222', label: 'Berlin' });
     await fixture.componentInstance.submit();
     await settle();
+    fixture.detectChanges();
 
     http.expectNone(PATH);
+    expect(fixture.componentInstance.form.controls.address.errors).toEqual({ required: true });
+    expect(fixture.nativeElement.querySelector('mat-error')?.textContent?.trim()).toBe(
+      TEXTS.validation.required,
+    );
   });
 
   it('refuses a number that is not in international notation', async () => {
@@ -219,7 +224,24 @@ describe('ImportNumberDialogComponent', () => {
     });
     await fixture.componentInstance.submit();
     await settle();
+    fixture.detectChanges();
 
     http.expectNone(PATH);
+    expect(fixture.componentInstance.form.controls.token.errors).toEqual({ required: true });
+    expect(fixture.nativeElement.querySelector('mat-error')?.textContent?.trim()).toBe(
+      TEXTS.validation.required,
+    );
+  });
+
+  it('demands only the fields of the connection that is chosen', async () => {
+    const fixture = await render();
+    const form = fixture.componentInstance.form;
+
+    form.patchValue({ phoneNumber: '+4930111222', label: 'Berlin' });
+    expect(form.controls.address.errors).toEqual({ required: true });
+
+    form.patchValue({ provider: 'twilio', sid: 'AC123', token: 'tok' });
+    expect(form.controls.address.errors).toBeNull();
+    expect(form.valid).toBe(true);
   });
 });

@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -22,6 +23,9 @@ const TRANSPORTS = ['auto', 'udp', 'tcp', 'tls'] as const;
 
 /** How the media stream is protected. */
 const ENCRYPTIONS = ['disabled', 'allowed', 'required'] as const;
+
+/** The controls a connection can demand; which of them it demands depends on the choice. */
+const PROVIDER_CONTROLS = ['address', 'sid', 'token'] as const;
 
 /** The controls that hold a credential; they are emptied once the import went through. */
 const SECRET_CONTROLS = ['outboundPassword', 'inboundPassword', 'token', 'apiKeySecret'] as const;
@@ -101,7 +105,11 @@ export interface ImportNumberResult {
             <mat-form-field appearance="outline" class="full" subscriptSizing="dynamic">
               <mat-label>{{ t('admin.numbers.importDialog.sip.address') }}</mat-label>
               <input matInput formControlName="address" data-testid="address" />
-              <mat-hint>{{ t('admin.numbers.importDialog.sip.addressHint') }}</mat-hint>
+              @if (form.controls.address | fieldError; as e) {
+                <mat-error>{{ t(e.key, e.params) }}</mat-error>
+              } @else {
+                <mat-hint>{{ t('admin.numbers.importDialog.sip.addressHint') }}</mat-hint>
+              }
             </mat-form-field>
             <div class="row">
               <mat-form-field appearance="outline">
@@ -154,10 +162,22 @@ export interface ImportNumberResult {
               <mat-form-field appearance="outline">
                 <mat-label>{{ t('admin.numbers.importDialog.carrier.sid') }}</mat-label>
                 <input matInput formControlName="sid" autocomplete="off" data-testid="sid" />
+                @if (form.controls.sid | fieldError; as e) {
+                  <mat-error>{{ t(e.key, e.params) }}</mat-error>
+                }
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>{{ t('admin.numbers.importDialog.carrier.token') }}</mat-label>
-                <input matInput type="password" formControlName="token" autocomplete="off" />
+                <input
+                  matInput
+                  type="password"
+                  formControlName="token"
+                  autocomplete="off"
+                  data-testid="token"
+                />
+                @if (form.controls.token | fieldError; as e) {
+                  <mat-error>{{ t(e.key, e.params) }}</mat-error>
+                }
               </mat-form-field>
             </div>
             <div class="row">
@@ -249,8 +269,30 @@ export class ImportNumberDialogComponent {
     apiKeySecret: [''],
   });
 
+  constructor() {
+    this.demandProviderFields(this.form.controls.provider.value);
+    this.form.controls.provider.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((provider) => this.demandProviderFields(provider));
+  }
+
+  /**
+   * Each connection has the fields without which it cannot be reached: the
+   * trunk its address, the carrier account its identifier and token. Only the
+   * chosen connection's fields are demanded, so a block that is no longer shown
+   * never holds the form back.
+   */
+  private demandProviderFields(provider: (typeof PROVIDERS)[number]): void {
+    const needed: readonly string[] = provider === 'sip_trunk' ? ['address'] : ['sid', 'token'];
+    for (const name of PROVIDER_CONTROLS) {
+      const control = this.form.controls[name];
+      control.setValidators(needed.includes(name) ? [Validators.required] : []);
+      control.updateValueAndValidity({ emitEvent: false });
+    }
+  }
+
   async submit(): Promise<void> {
-    if (!this.valid()) {
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
@@ -265,18 +307,6 @@ export class ImportNumberDialogComponent {
     } finally {
       this.busy.set(false);
     }
-  }
-
-  /**
-   * The number and the label are always needed, and each connection has the one
-   * field without which it cannot be reached: the trunk its address, the
-   * carrier account its identifier and token.
-   */
-  private valid(): boolean {
-    if (this.form.invalid) return false;
-    const value = this.form.getRawValue();
-    if (value.provider === 'sip_trunk') return value.address.trim().length > 0;
-    return value.sid.trim().length > 0 && value.token.length > 0;
   }
 
   /** Sends only the block that belongs to the chosen connection, and only filled fields. */

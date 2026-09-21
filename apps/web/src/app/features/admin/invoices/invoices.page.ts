@@ -21,20 +21,18 @@ import { LocalDatePipe } from '../../../shared/local-date.pipe';
 import { providePaginatorIntl } from '../../../shared/paginator-intl';
 import { type CustomerOption, customerOption } from '../customer-option';
 import { InvoiceDialogComponent, type InvoiceDialogResult } from './invoice-dialog.component';
+import { INVOICE_STATUSES, invoiceStatusLabel } from './invoice-status';
 
 const DEFAULT_PER_PAGE = 25;
 
 /** How many customers the filter loads at once; the hub caps a page at 500. */
 const CUSTOMER_PAGE = 500;
 
-/** The states the hub stores on an invoice; the filter offers them and nothing else. */
-const STATUSES = ['draft', 'pending', 'paid', 'failed', 'refunded'] as const;
-
 /** An invoice that has not gone out yet is the only one that can be recorded as sent. */
 const SENDABLE = new Set(['draft']);
 
-/** A payment can still be recorded on anything that is not settled or refunded. */
-const PAYABLE = new Set(['draft', 'pending', 'failed']);
+/** A payment can still be recorded on anything that is not settled or dropped. */
+const PAYABLE = new Set(['draft', 'sent', 'failed', 'overdue']);
 
 /**
  * The invoices an operator raises against their own customers. The portal only
@@ -137,7 +135,7 @@ const PAYABLE = new Set(['draft', 'pending', 'failed']);
             <th mat-header-cell *matHeaderCellDef>{{ t('fields.status') }}</th>
             <td mat-cell *matCellDef="let row" [attr.data-label]="t('fields.status')">
               <span class="status" [class]="'status status-' + row.invoice.status">
-                {{ t('admin.invoices.statuses.' + row.invoice.status) }}
+                {{ statusLabel(row.invoice.status, t) }}
               </span>
             </td>
           </ng-container>
@@ -161,7 +159,7 @@ const PAYABLE = new Set(['draft', 'pending', 'failed']);
           <tr mat-row *matRowDef="let row; columns: columns"></tr>
           <tr class="mat-row" *matNoDataRow>
             <td class="mat-cell empty" [attr.colspan]="columns.length">
-              {{ t('admin.invoices.empty') }}
+              {{ t(filtered() ? 'admin.invoices.noMatch' : 'admin.invoices.empty') }}
             </td>
           </tr>
         </table>
@@ -226,7 +224,7 @@ export class AdminInvoicesPage implements OnInit {
   private readonly language = inject(LanguageService);
 
   readonly columns = ['number', 'customer', 'date', 'due', 'total', 'status', 'actions'];
-  readonly statuses = STATUSES;
+  readonly statuses = INVOICE_STATUSES;
   readonly rows = signal<ResellerInvoiceRow[]>([]);
   readonly customers = signal<CustomerOption[]>([]);
   readonly total = signal(0);
@@ -249,6 +247,16 @@ export class AdminInvoicesPage implements OnInit {
   /** The name of the customer, or the address when the hub knows no name. */
   customerName(row: ResellerInvoiceRow): string {
     return row.customer?.name || row.customer?.email || String(row.invoice.userId);
+  }
+
+  /** True while the list shows a part of the invoices rather than all of them. */
+  filtered(): boolean {
+    return this.status() !== '' || this.customerId() !== 0;
+  }
+
+  /** Named here so the template can reach it; the rule itself is shared. */
+  statusLabel(status: string | null | undefined, t: (key: string) => string): string {
+    return invoiceStatusLabel(status, t);
   }
 
   canMarkSent(row: ResellerInvoiceRow): boolean {

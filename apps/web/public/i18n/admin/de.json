@@ -363,6 +363,7 @@
     "intro": "Rechnungen, die Sie Ihren Kunden stellen. Versand und Einzug bleiben bei Ihnen.",
     "create": "Rechnung erstellen",
     "empty": "Es wurde noch keine Rechnung erstellt.",
+    "noMatch": "Zu diesem Filter gibt es keine Rechnung.",
     "number": "Nummer",
     "customer": "Kunde",
     "date": "Datum",
@@ -376,10 +377,12 @@
     "allCustomers": "Alle Kunden",
     "statuses": {
       "draft": "Entwurf",
-      "pending": "Versendet",
+      "sent": "Versendet",
       "paid": "Bezahlt",
       "failed": "Fehlgeschlagen",
-      "refunded": "Erstattet"
+      "overdue": "Überfällig",
+      "canceled": "Storniert",
+      "unknown": "Unbekannt"
     },
     "itemTypes": {
       "subscription": "Abonnement",
@@ -586,9 +589,13 @@
       "productName": "Produktname",
       "uploadLogo": "Logo hochladen",
       "removeLogo": "Logo entfernen",
-      "logoHint": "PNG, JPEG, WebP oder SVG, höchstens 140 KB.",
-      "logoType": "Bitte ein PNG-, JPEG-, WebP- oder SVG-Bild wählen.",
-      "logoTooLarge": "Das Logo darf höchstens 140 KB groß sein.",
+      "logoHint": "PNG, JPEG, WebP oder SVG. Große Bilder werden beim Hochladen automatisch verkleinert.",
+      "logo": {
+        "type": "Bitte ein PNG-, JPEG-, WebP- oder SVG-Bild wählen.",
+        "tooLarge": "Dieses Bild lässt sich nicht klein genug rechnen. Bitte ein einfacheres Logo wählen.",
+        "unreadable": "Diese Datei lässt sich nicht als Bild öffnen.",
+        "working": "Logo wird vorbereitet ..."
+      },
       "primaryColor": "Hauptfarbe",
       "supportEmail": "Support-Adresse",
       "imprintUrl": "Link zum Impressum",

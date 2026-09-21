@@ -3,10 +3,10 @@ import { type MailContext, type RenderedMail, renderMail } from './layout.js';
 
 const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>[1]> = {
   de: (ctx) => ({
-    subject: `Ihre Einladung zu ${ctx.productName}`,
+    subject: `Ihre Einladung zu ${ctx.brand.productName}`,
     greeting: ctx.firstName ? `Hallo ${ctx.firstName},` : 'Hallo,',
     paragraphs: [
-      `Sie wurden zu ${ctx.productName} eingeladen. Über den folgenden Link aktivieren Sie Ihr Konto. Danach melden Sie sich immer mit einem Link an, den wir Ihnen per E-Mail schicken.`,
+      `Sie wurden zu ${ctx.brand.productName} eingeladen. Über den folgenden Link aktivieren Sie Ihr Konto. Danach melden Sie sich immer mit einem Link an, den wir Ihnen per E-Mail schicken.`,
     ],
     button: { label: 'Einladung annehmen', url: ctx.link },
     closing: [
@@ -15,10 +15,10 @@ const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>
     ],
   }),
   en: (ctx) => ({
-    subject: `Your invitation to ${ctx.productName}`,
+    subject: `Your invitation to ${ctx.brand.productName}`,
     greeting: ctx.firstName ? `Hello ${ctx.firstName},` : 'Hello,',
     paragraphs: [
-      `You have been invited to ${ctx.productName}. Use the link below to activate your account. From then on you sign in with a link we e-mail you, so there is no password to remember.`,
+      `You have been invited to ${ctx.brand.productName}. Use the link below to activate your account. From then on you sign in with a link we e-mail you, so there is no password to remember.`,
     ],
     button: { label: 'Accept invitation', url: ctx.link },
     closing: [
@@ -27,10 +27,10 @@ const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>
     ],
   }),
   fr: (ctx) => ({
-    subject: `Votre invitation à ${ctx.productName}`,
+    subject: `Votre invitation à ${ctx.brand.productName}`,
     greeting: ctx.firstName ? `Bonjour ${ctx.firstName},` : 'Bonjour,',
     paragraphs: [
-      `Vous avez été invité(e) à ${ctx.productName}. Utilisez le lien ci-dessous pour activer votre compte. Ensuite, vous vous connectez avec un lien que nous vous envoyons par e-mail, sans mot de passe à retenir.`,
+      `Vous avez été invité(e) à ${ctx.brand.productName}. Utilisez le lien ci-dessous pour activer votre compte. Ensuite, vous vous connectez avec un lien que nous vous envoyons par e-mail, sans mot de passe à retenir.`,
     ],
     button: { label: "Accepter l'invitation", url: ctx.link },
     closing: [
@@ -41,5 +41,5 @@ const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>
 };
 
 export function renderInvite(language: Language, ctx: MailContext): RenderedMail {
-  return renderMail(ctx.productName, COPY[language](ctx));
+  return renderMail(ctx.brand, COPY[language](ctx));
 }

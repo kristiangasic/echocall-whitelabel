@@ -159,6 +159,24 @@ describe('UserDashboardPage', () => {
     expect(text(fixture, 'account')).toContain(USER_TEXTS.dashboard.plan.none);
   });
 
+  it('measures against the minutes bought on top, not the plan alone', async () => {
+    const fixture = await render({
+      overview: {
+        ...OVERVIEW,
+        limits: {
+          ...OVERVIEW.limits,
+          voiceMinutesAllowance: 300,
+          voiceMinutesRemaining: 258,
+          plan: { name: 'Business', voiceMinutesPerMonth: 100 },
+        },
+      },
+    });
+
+    const panel = text(fixture, 'voice-panel');
+    expect(panel).toContain(filled(USER_TEXTS.dashboard.voice.remaining, { count: 258 }));
+    expect(panel).toContain(filled(USER_TEXTS.dashboard.voice.ofAllowance, { percent: 14, count: 300 }));
+  });
+
   it('measures the chats the same way once the plan includes some', async () => {
     const fixture = await render({
       overview: {

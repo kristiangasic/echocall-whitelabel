@@ -83,7 +83,7 @@ const USER_NAV: NavItem[] = [
         [opened]="!isHandset()"
         [fixedInViewport]="isHandset()"
       >
-        <div class="shell-brand">
+        <div class="shell-brand" [class.stacked]="branding().logoDataUrl">
           @if (branding().logoDataUrl; as logo) {
             <img class="shell-logo" [src]="logo" alt="" />
           } @else {
@@ -135,6 +135,9 @@ const USER_NAV: NavItem[] = [
               >
                 <mat-icon>menu</mat-icon>
               </button>
+            }
+            @if (isHandset() && branding().logoDataUrl; as logo) {
+              <img class="shell-toolbar-logo" [src]="logo" alt="" />
             }
             <span class="shell-title">{{ branding().productName }}</span>
             <span class="shell-spacer"></span>
@@ -231,9 +234,20 @@ const USER_NAV: NavItem[] = [
       gap: 12px;
       padding: 20px 16px 12px;
     }
+    /*
+     * A logo is as wide as its owner drew it, and next to one there is no room
+     * left for a product name. With a logo the two are stacked, so neither has
+     * to give way to the other.
+     */
+    .shell-brand.stacked {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
     .shell-logo {
       max-height: 40px;
-      max-width: 160px;
+      max-width: 100%;
+      object-fit: contain;
     }
     .shell-mark {
       width: 28px;
@@ -243,6 +257,10 @@ const USER_NAV: NavItem[] = [
     }
     .shell-name {
       font: var(--mat-sys-title-medium);
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     /*
      * The banner belongs to the header, not to the page: an operator who has
@@ -258,6 +276,12 @@ const USER_NAV: NavItem[] = [
       gap: 4px;
       background: var(--mat-sys-surface);
       border-bottom: 1px solid var(--mat-sys-outline-variant);
+    }
+    /* On a phone the menu is closed, so the header carries the logo. */
+    .shell-toolbar-logo {
+      max-height: 24px;
+      max-width: 88px;
+      object-fit: contain;
     }
     .shell-title {
       font: var(--mat-sys-title-medium);

@@ -363,6 +363,7 @@
     "intro": "Invoices you raise against your customers. Sending and collecting stay with you.",
     "create": "Create an invoice",
     "empty": "No invoice has been created yet.",
+    "noMatch": "No invoice matches this filter.",
     "number": "Number",
     "customer": "Customer",
     "date": "Date",
@@ -376,10 +377,12 @@
     "allCustomers": "All customers",
     "statuses": {
       "draft": "Draft",
-      "pending": "Sent",
+      "sent": "Sent",
       "paid": "Paid",
       "failed": "Failed",
-      "refunded": "Refunded"
+      "overdue": "Overdue",
+      "canceled": "Cancelled",
+      "unknown": "Unknown"
     },
     "itemTypes": {
       "subscription": "Subscription",
@@ -586,9 +589,13 @@
       "productName": "Product name",
       "uploadLogo": "Upload logo",
       "removeLogo": "Remove logo",
-      "logoHint": "PNG, JPEG, WebP or SVG, at most 140 KB.",
-      "logoType": "Please choose a PNG, JPEG, WebP or SVG image.",
-      "logoTooLarge": "The logo must be 140 KB or smaller.",
+      "logoHint": "PNG, JPEG, WebP or SVG. Large pictures are shrunk for you while they upload.",
+      "logo": {
+        "type": "Please choose a PNG, JPEG, WebP or SVG image.",
+        "tooLarge": "This picture cannot be made small enough. Please choose a simpler logo.",
+        "unreadable": "This file cannot be opened as a picture.",
+        "working": "Preparing the logo ..."
+      },
       "primaryColor": "Primary colour",
       "supportEmail": "Support address",
       "imprintUrl": "Imprint link",

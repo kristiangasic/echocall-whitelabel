@@ -26,6 +26,8 @@ export interface AdminUserRow {
   echocallCustomerId: number | null;
   /** Whether this login asks for a code from an authenticator app as well. */
   twoFactorEnabled: boolean;
+  /** When the invitation was accepted; null while the account has no way in. */
+  acceptedAt: string | null;
   lastLoginAt: string | null;
   createdAt: string;
 }
@@ -66,6 +68,7 @@ export function toAdminRow(row: UserRow): AdminUserRow {
     language: row.language,
     echocallCustomerId: row.echocallCustomerId,
     twoFactorEnabled: row.totpSecret !== null && row.totpConfirmedAt !== null,
+    acceptedAt: row.acceptedAt?.toISOString() ?? null,
     lastLoginAt: row.lastLoginAt?.toISOString() ?? null,
     createdAt: row.createdAt.toISOString(),
   };
@@ -170,7 +173,9 @@ export class AdminUsersService {
       throw apiError(400, 'customer_required', 'Users need a customer id');
     if (echocallCustomerId !== null && echocallCustomerId !== user.echocallCustomerId)
       await this.assertCustomerFree(echocallCustomerId, id);
-    if (patch.status === 'active' && user.status === 'invited')
+    // An account that never accepted its invitation has no way in. Turning it
+    // active would leave a login nobody can use and no invitation to follow.
+    if (patch.status === 'active' && (user.status === 'invited' || user.acceptedAt === null))
       throw apiError(
         409,
         'invite_pending',
@@ -187,7 +192,11 @@ export class AdminUsersService {
     await this.db.updateTable('users').set(changes).where('id', '=', id).execute();
     if (patch.status === 'disabled') await this.sessions.revokeAllForUser(id);
 
-    const changed = (Object.keys(patch) as (keyof UpdateUserDto)[]).filter((key) => patch[key] !== undefined);
+    // Only what the account now says differently; a field sent back unchanged
+    // is not a change, and an audit log that says otherwise cannot be read.
+    const changed = (Object.keys(changes) as (keyof UserUpdate)[]).filter(
+      (key) => key !== 'updatedAt' && changes[key] !== user[key as keyof typeof user],
+    );
     await this.audit.record({
       actorUserId: ctx.actor?.id ?? null,
       action: 'users.updated',

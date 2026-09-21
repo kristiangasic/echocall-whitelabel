@@ -3,13 +3,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule, type PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { ApiService } from '../../../core/api/api.service';
 import { formatMoney } from '../../../core/format/money';
 import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type {
@@ -23,6 +25,7 @@ import { LanguageService } from '../../../core/i18n/language.service';
 import { readApiError } from '../../../core/errors/api-error';
 import type { AdminUser, UserStatus } from '../../../core/models';
 import { NotifyService } from '../../../core/notify/notify.service';
+import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/confirm-dialog.component';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
 import { providePaginatorIntl } from '../../../shared/paginator-intl';
 import {
@@ -30,6 +33,12 @@ import {
   type BalanceDialogData,
   type BalanceDialogResult,
 } from './balance-dialog.component';
+import {
+  CustomerDialogComponent,
+  type CustomerDialogData,
+  type CustomerDialogResult,
+} from './customer-dialog.component';
+import type { AccountStatus, CustomerRow } from './customer-row';
 import { PortalLoginService } from './portal-login.service';
 
 const DEFAULT_PER_PAGE = 25;
@@ -52,6 +61,7 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
     MatButtonModule,
     MatCardModule,
     MatIconModule,
+    MatMenuModule,
     MatPaginatorModule,
     MatProgressBarModule,
     MatTableModule,
@@ -112,6 +122,36 @@ const KNOWN_USAGE_TYPES = new Set(['voice_minute', 'chat_session']);
                 </button>
               }
             }
+            <button
+              mat-icon-button
+              type="button"
+              [matMenuTriggerFor]="menu"
+              [attr.aria-label]="t('actions.more')"
+              data-testid="more"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item type="button" (click)="edit()" data-testid="edit">
+                <mat-icon>edit</mat-icon>
+                <span>{{ t('actions.edit') }}</span>
+              </button>
+              @if (c.user?.accountStatus === 'suspended') {
+                <button mat-menu-item type="button" (click)="setSuspended(false)" data-testid="unsuspend">
+                  <mat-icon>lock_open</mat-icon>
+                  <span>{{ t('admin.customers.unsuspend') }}</span>
+                </button>
+              } @else {
+                <button mat-menu-item type="button" (click)="setSuspended(true)" data-testid="suspend">
+                  <mat-icon>lock</mat-icon>
+                  <span>{{ t('admin.customers.suspend') }}</span>
+                </button>
+              }
+              <button mat-menu-item type="button" (click)="remove()" data-testid="delete">
+                <mat-icon>delete</mat-icon>
+                <span>{{ t('actions.delete') }}</span>
+              </button>
+            </mat-menu>
           </div>
         </div>
 
@@ -377,6 +417,8 @@ export class AdminCustomerDetailPage implements OnInit {
   private readonly hub = inject(AdminHubService);
   private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(MatDialog);
+  private readonly api = inject(ApiService);
+  private readonly router = inject(Router);
   private readonly notify = inject(NotifyService);
   private readonly transloco = inject(TranslocoService);
   private readonly language = inject(LanguageService);
@@ -570,6 +612,95 @@ export class AdminCustomerDetailPage implements OnInit {
       lastName: user.lastName,
     });
     if (login) this.login.set(login);
+  }
+
+  /**
+   * The customer as the list holds it, so the dialogs and the calls an operator
+   * reaches from here work on exactly the same record as the list does.
+   */
+  private row(): CustomerRow | null {
+    const customer = this.customer();
+    if (!customer) return null;
+    return {
+      customerId: this.id(),
+      email: customer.user?.email ?? '',
+      firstName: customer.user?.firstName ?? null,
+      lastName: customer.user?.lastName ?? null,
+      company: customer.user?.company ?? null,
+      accountStatus: (customer.user?.accountStatus as AccountStatus | undefined) ?? null,
+      balanceEur: null,
+      createdAt: customer.user?.createdAt ?? null,
+      login: this.login(),
+    };
+  }
+
+  /** Changes who the customer is, in the service and in their portal login at once. */
+  edit(): void {
+    const customer = this.row();
+    if (!customer) return;
+    const data: CustomerDialogData = { mode: 'edit', customer };
+    this.dialog
+      .open<CustomerDialogComponent, CustomerDialogData, CustomerDialogResult>(CustomerDialogComponent, {
+        data,
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (!result) return;
+        this.notify.success('admin.customers.saved');
+        void this.load();
+      });
+  }
+
+  /** Shuts the customer out of the service, or lets them back in. */
+  setSuspended(suspend: boolean): void {
+    const customer = this.row();
+    if (!customer) return;
+    const data: ConfirmDialogData = {
+      titleKey: suspend ? 'admin.customers.suspendTitle' : 'admin.customers.unsuspendTitle',
+      messageKey: suspend ? 'admin.customers.suspendMessage' : 'admin.customers.unsuspendMessage',
+      params: { email: customer.email },
+      confirmKey: suspend ? 'admin.customers.suspend' : 'admin.customers.unsuspend',
+      destructive: suspend,
+    };
+    this.confirm(data, async () => {
+      await firstValueFrom(
+        this.api.post(`/admin/customers/${this.id()}/${suspend ? 'suspend' : 'unsuspend'}`),
+      );
+      this.notify.success('admin.customers.saved');
+      await this.load();
+    });
+  }
+
+  /** Deletes the customer. Nothing is left to show here afterwards, so the list is. */
+  remove(): void {
+    const customer = this.row();
+    if (!customer) return;
+    const data: ConfirmDialogData = {
+      titleKey: 'admin.customers.deleteTitle',
+      messageKey: 'admin.customers.deleteMessage',
+      params: { email: customer.email },
+      confirmKey: 'actions.delete',
+      destructive: true,
+    };
+    this.confirm(data, async () => {
+      await firstValueFrom(this.api.delete(`/admin/customers/${this.id()}`));
+      this.notify.success('admin.customers.deleted');
+      await this.router.navigateByUrl('/admin/customers');
+    });
+  }
+
+  private confirm(data: ConfirmDialogData, run: () => Promise<void>): void {
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, { data })
+      .afterClosed()
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
+        try {
+          await run();
+        } catch (err) {
+          this.notify.apiError(err);
+        }
+      });
   }
 
   /** Books money onto the wallet or off it, once an amount and a reason are given. */

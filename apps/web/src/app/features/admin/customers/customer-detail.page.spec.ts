@@ -107,7 +107,10 @@ describe('AdminCustomerDetailPage', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([{ path: 'app', component: BlankPage }]),
+        provideRouter([
+          { path: 'app', component: BlankPage },
+          { path: 'admin/customers', component: BlankPage },
+        ]),
         { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(dialogResult) }) } },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '501' }) } } },
       ],
@@ -277,6 +280,36 @@ describe('AdminCustomerDetailPage', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[data-testid="missing"]')).not.toBeNull();
+  });
+
+  it('suspends the customer from the page that shows them', async () => {
+    dialogResult = true;
+    const fixture = await render();
+
+    fixture.componentInstance.setSuspended(true);
+    await settle();
+    const call = http.expectOne('/api/admin/customers/501/suspend');
+    expect(call.request.method).toBe('POST');
+    call.flush({ success: true });
+    await settle();
+    await answerLoad();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.customer()).not.toBeNull();
+  });
+
+  it('goes back to the list once the customer is deleted', async () => {
+    dialogResult = true;
+    const fixture = await render();
+
+    fixture.componentInstance.remove();
+    await settle();
+    const call = http.expectOne('/api/admin/customers/501');
+    expect(call.request.method).toBe('DELETE');
+    call.flush({ success: true });
+    await settle();
+
+    expect(TestBed.inject(Router).url).toBe('/admin/customers');
   });
 
   it('takes the customer from the list when the service answers no single one', async () => {

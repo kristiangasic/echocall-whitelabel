@@ -113,7 +113,7 @@ import { UserDialogComponent, type UserDialogData, type UserDialogResult } from 
             <mat-icon>edit</mat-icon>
             <span>{{ t('actions.edit') }}</span>
           </button>
-          @if (user.status === 'invited') {
+          @if (user.acceptedAt === null) {
             <button mat-menu-item type="button" (click)="resendInvite(user)">
               <mat-icon>send</mat-icon>
               <span>{{ t('admin.users.resendInvite') }}</span>
@@ -132,11 +132,17 @@ import { UserDialogComponent, type UserDialogData, type UserDialogResult } from 
             </button>
           }
           @if (user.id !== myId()) {
+            <!--
+              An account that never accepted its invitation cannot be enabled:
+              there would be no way into it. The invitation is sent again above.
+            -->
             @if (user.status === 'disabled') {
-              <button mat-menu-item type="button" (click)="setStatus(user, 'active')">
-                <mat-icon>person</mat-icon>
-                <span>{{ t('admin.users.enable') }}</span>
-              </button>
+              @if (user.acceptedAt !== null) {
+                <button mat-menu-item type="button" (click)="setStatus(user, 'active')">
+                  <mat-icon>person</mat-icon>
+                  <span>{{ t('admin.users.enable') }}</span>
+                </button>
+              }
             } @else {
               <button mat-menu-item type="button" (click)="setStatus(user, 'disabled')">
                 <mat-icon>person_off</mat-icon>

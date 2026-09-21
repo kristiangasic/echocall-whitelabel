@@ -1,5 +1,5 @@
 import type { Language } from '../../settings/branding.js';
-import { type RenderedMail, renderMail } from './layout.js';
+import { type MailBrand, type RenderedMail, renderMail } from './layout.js';
 
 const COPY: Record<Language, (productName: string) => Parameters<typeof renderMail>[1]> = {
   de: (productName) => ({
@@ -25,6 +25,6 @@ const COPY: Record<Language, (productName: string) => Parameters<typeof renderMa
   }),
 };
 
-export function renderTest(language: Language, productName: string): RenderedMail {
-  return renderMail(productName, COPY[language](productName));
+export function renderTest(language: Language, brand: MailBrand): RenderedMail {
+  return renderMail(brand, COPY[language](brand.productName));
 }

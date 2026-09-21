@@ -363,6 +363,7 @@
     "intro": "Les factures que vous adressez à vos clients. L'envoi et le recouvrement vous reviennent.",
     "create": "Créer une facture",
     "empty": "Aucune facture n'a encore été créée.",
+    "noMatch": "Aucune facture ne correspond à ce filtre.",
     "number": "Numéro",
     "customer": "Client",
     "date": "Date",
@@ -376,10 +377,12 @@
     "allCustomers": "Tous les clients",
     "statuses": {
       "draft": "Brouillon",
-      "pending": "Envoyée",
+      "sent": "Envoyée",
       "paid": "Payée",
       "failed": "Échouée",
-      "refunded": "Remboursée"
+      "overdue": "En retard",
+      "canceled": "Annulée",
+      "unknown": "Inconnu"
     },
     "itemTypes": {
       "subscription": "Abonnement",
@@ -586,9 +589,13 @@
       "productName": "Nom du produit",
       "uploadLogo": "Téléverser un logo",
       "removeLogo": "Retirer le logo",
-      "logoHint": "PNG, JPEG, WebP ou SVG, 140 Ko maximum.",
-      "logoType": "Veuillez choisir une image PNG, JPEG, WebP ou SVG.",
-      "logoTooLarge": "Le logo ne doit pas dépasser 140 Ko.",
+      "logoHint": "PNG, JPEG, WebP ou SVG. Les grandes images sont réduites automatiquement lors de l'envoi.",
+      "logo": {
+        "type": "Veuillez choisir une image PNG, JPEG, WebP ou SVG.",
+        "tooLarge": "Cette image ne peut pas être suffisamment réduite. Veuillez choisir un logo plus simple.",
+        "unreadable": "Ce fichier ne peut pas être ouvert comme une image.",
+        "working": "Préparation du logo ..."
+      },
       "primaryColor": "Couleur principale",
       "supportEmail": "Adresse d'assistance",
       "imprintUrl": "Lien vers les mentions légales",

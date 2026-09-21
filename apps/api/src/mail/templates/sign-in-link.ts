@@ -3,9 +3,9 @@ import { type MailContext, type RenderedMail, renderMail } from './layout.js';
 
 const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>[1]> = {
   en: (ctx) => ({
-    subject: `Your sign-in link for ${ctx.productName}`,
+    subject: `Your sign-in link for ${ctx.brand.productName}`,
     greeting: ctx.firstName ? `Hello ${ctx.firstName},` : 'Hello,',
-    paragraphs: [`Use the link below to sign in to ${ctx.productName}. No password needed.`],
+    paragraphs: [`Use the link below to sign in to ${ctx.brand.productName}. No password needed.`],
     button: { label: 'Sign in', url: ctx.link },
     closing: [
       'The link works once and is valid for fifteen minutes.',
@@ -13,9 +13,11 @@ const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>
     ],
   }),
   de: (ctx) => ({
-    subject: `Ihr Anmeldelink für ${ctx.productName}`,
+    subject: `Ihr Anmeldelink für ${ctx.brand.productName}`,
     greeting: ctx.firstName ? `Hallo ${ctx.firstName},` : 'Hallo,',
-    paragraphs: [`Über den folgenden Link melden Sie sich bei ${ctx.productName} an. Ganz ohne Passwort.`],
+    paragraphs: [
+      `Über den folgenden Link melden Sie sich bei ${ctx.brand.productName} an. Ganz ohne Passwort.`,
+    ],
     button: { label: 'Anmelden', url: ctx.link },
     closing: [
       'Der Link funktioniert einmal und ist fünfzehn Minuten gültig.',
@@ -23,10 +25,10 @@ const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>
     ],
   }),
   fr: (ctx) => ({
-    subject: `Votre lien de connexion pour ${ctx.productName}`,
+    subject: `Votre lien de connexion pour ${ctx.brand.productName}`,
     greeting: ctx.firstName ? `Bonjour ${ctx.firstName},` : 'Bonjour,',
     paragraphs: [
-      `Utilisez le lien ci-dessous pour vous connecter à ${ctx.productName}. Aucun mot de passe nécessaire.`,
+      `Utilisez le lien ci-dessous pour vous connecter à ${ctx.brand.productName}. Aucun mot de passe nécessaire.`,
     ],
     button: { label: 'Se connecter', url: ctx.link },
     closing: [
@@ -37,5 +39,5 @@ const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>
 };
 
 export function renderSignInLink(language: Language, ctx: MailContext): RenderedMail {
-  return renderMail(ctx.productName, COPY[language](ctx));
+  return renderMail(ctx.brand, COPY[language](ctx));
 }

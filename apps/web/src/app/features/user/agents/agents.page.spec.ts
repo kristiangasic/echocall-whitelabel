@@ -22,6 +22,7 @@ describe('AgentsPage', () => {
     const fixture = TestBed.createComponent(AgentsPage);
     await fixture.whenStable();
     flushLanguages();
+    flushVoices();
     http.expectOne('/api/hub/agents').flush({ data: agents });
     await new Promise((resolve) => setTimeout(resolve, 0));
     await fixture.whenStable();
@@ -37,6 +38,13 @@ describe('AgentsPage', () => {
           { code: 'de', name: 'German', nativeName: 'Deutsch', flag: 'de' },
         ],
       });
+    }
+  }
+
+  /** The page fills in a voice name the agent itself does not carry. */
+  function flushVoices() {
+    for (const request of http.match((r) => r.url === '/api/hub/voices/available')) {
+      request.flush({ data: [{ id: 'v-benny', name: 'Benny' }] });
     }
   }
 
@@ -61,9 +69,7 @@ describe('AgentsPage', () => {
   });
 
   it('names the language of a row instead of printing its code', async () => {
-    const fixture = await render([
-      { id: 'agent_1', name: 'Beratung', language: 'de', status: 'active' },
-    ]);
+    const fixture = await render([{ id: 'agent_1', name: 'Beratung', language: 'de', status: 'active' }]);
 
     const cell = fixture.nativeElement.querySelector('table tbody tr [title]');
     expect(cell.textContent.trim()).toBe('Deutsch');
@@ -75,6 +81,22 @@ describe('AgentsPage', () => {
 
     const row = fixture.nativeElement.querySelector('table tbody tr');
     expect(row.textContent).toContain(USER_TEXTS.agents.voiceDefault);
+  });
+
+  it('names a voice the agent kept only as an identifier', async () => {
+    const fixture = await render([
+      {
+        id: 'agent_3',
+        name: 'Reception',
+        language: 'en',
+        status: 'active',
+        voice: { id: 'v-benny', name: null },
+      },
+    ]);
+
+    const row = fixture.nativeElement.querySelector('table tbody tr');
+    expect(row.textContent).toContain('Benny');
+    expect(row.textContent).not.toContain(USER_TEXTS.agents.voiceDefault);
   });
 
   it('shows the empty hint without agents', async () => {

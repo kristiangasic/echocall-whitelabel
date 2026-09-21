@@ -1,5 +1,5 @@
 import { Component, inject, input, type OnInit, signal } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormGroupDirective, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -36,7 +36,7 @@ import { FieldErrorPipe } from '../../shared/forms/field-error.pipe';
       <h1 class="auth-title">{{ t(challenge() ? 'auth.twoFactor.title' : 'auth.signIn.title') }}</h1>
       @if (challenge()) {
         <p class="auth-intro">{{ t('auth.twoFactor.intro') }}</p>
-        <form [formGroup]="codeForm" (ngSubmit)="submitCode()" novalidate>
+        <form [formGroup]="codeForm" #codeFormDir="ngForm" (ngSubmit)="submitCode(codeFormDir)" novalidate>
           <mat-form-field appearance="outline" class="full">
             <mat-label>{{ t('auth.twoFactor.code') }}</mat-label>
             <input
@@ -125,7 +125,7 @@ export class SignInPage implements OnInit {
     }
   }
 
-  async submitCode(): Promise<void> {
+  async submitCode(form: FormGroupDirective): Promise<void> {
     const challenge = this.challenge();
     if (!challenge || this.codeForm.invalid) {
       this.codeForm.markAllAsTouched();
@@ -145,7 +145,10 @@ export class SignInPage implements OnInit {
         this.challenge.set(null);
         this.failed.set(true);
       }
-      this.codeForm.controls.code.reset();
+      // The field is emptied for the next try. Emptying it through the form
+      // itself also clears the submitted mark, so the now empty field does not
+      // report itself as missing beside the answer the visitor came for.
+      form.resetForm();
     } finally {
       this.busy.set(false);
     }

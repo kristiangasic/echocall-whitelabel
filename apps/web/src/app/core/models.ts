@@ -119,6 +119,8 @@ export interface AdminUser {
   language: Language;
   echocallCustomerId: number | null;
   twoFactorEnabled: boolean;
+  /** When the invitation was accepted; null while the account has no way in. */
+  acceptedAt: string | null;
   lastLoginAt: string | null;
   createdAt: string;
 }
@@ -236,6 +238,9 @@ export interface HubUsage {
 export interface HubLimits {
   accountStatus: string | null;
   balanceEur: number;
+  /** What the period started with, the plan plus anything bought on top. Null when nothing caps it. */
+  voiceMinutesAllowance?: number | null;
+  chatConversationsAllowance?: number | null;
   voiceMinutesRemaining?: number;
   chatConversationsRemaining?: number;
   plan?: {

@@ -5,10 +5,18 @@ import { APP_CONFIG, type AppConfig } from '../config/env.js';
 import { SettingsService, type SmtpSettings } from '../settings/settings.service.js';
 import type { MailRecipient, MailSender } from './mail-sender.js';
 import { renderInvite } from './templates/invite.js';
-import { pickLanguage, type RenderedMail } from './templates/layout.js';
+import { type MailBrand, mailLogo, pickLanguage, type RenderedMail } from './templates/layout.js';
 import { renderRegistration } from './templates/registration.js';
 import { renderSignInLink } from './templates/sign-in-link.js';
 import { renderTest } from './templates/test.js';
+
+/** A picture that travels inside the message, named so the body can show it. */
+export interface MailAttachment {
+  filename: string;
+  content: Buffer;
+  contentType: string;
+  cid: string;
+}
 
 export interface MailMessage {
   from: string;
@@ -16,6 +24,7 @@ export interface MailMessage {
   subject: string;
   text: string;
   html: string;
+  attachments?: MailAttachment[];
 }
 
 export interface MailTransport {
@@ -78,15 +87,15 @@ export class MailService implements MailSender {
   }
 
   async sendInvite(to: MailRecipient, link: string): Promise<boolean> {
-    const productName = (await this.settings.getBranding()).productName;
-    const mail = renderInvite(pickLanguage(to.language), { productName, firstName: to.firstName, link });
+    const brand = await this.brand();
+    const mail = renderInvite(pickLanguage(to.language), { brand, firstName: to.firstName, link });
     return this.deliver(to.email, mail, 'invitation');
   }
 
   async sendSignInLink(to: MailRecipient, link: string): Promise<boolean> {
-    const productName = (await this.settings.getBranding()).productName;
+    const brand = await this.brand();
     const mail = renderSignInLink(pickLanguage(to.language), {
-      productName,
+      brand,
       firstName: to.firstName,
       link,
     });
@@ -94,9 +103,9 @@ export class MailService implements MailSender {
   }
 
   async sendRegistration(to: MailRecipient, link: string): Promise<boolean> {
-    const productName = (await this.settings.getBranding()).productName;
+    const brand = await this.brand();
     const mail = renderRegistration(pickLanguage(to.language), {
-      productName,
+      brand,
       firstName: to.firstName,
       link,
     });
@@ -108,11 +117,9 @@ export class MailService implements MailSender {
     const active = await this.resolveSmtp();
     if (!active) throw apiError(409, 'mail_not_configured', 'Configure the e-mail server first');
     const branding = await this.settings.getBranding();
-    const mail = renderTest(branding.defaultLanguage, branding.productName);
+    const mail = renderTest(branding.defaultLanguage, branding);
     try {
-      await this.transportFor(active.smtp).sendMail(
-        this.message(active.smtp, branding.productName, to, mail),
-      );
+      await this.transportFor(active.smtp).sendMail(this.message(active.smtp, branding, to, mail));
     } catch (error) {
       this.logger.error(`Test mail to ${to} failed: ${describeError(error)}`);
       throw apiError(502, 'smtp_failed', `The e-mail server refused the message: ${errorMessage(error)}`);
@@ -125,9 +132,9 @@ export class MailService implements MailSender {
       this.logger.warn(`Mail is not configured; ${kind} for ${to} was not sent`);
       return false;
     }
-    const productName = (await this.settings.getBranding()).productName;
+    const brand = await this.brand();
     try {
-      await this.transportFor(active.smtp).sendMail(this.message(active.smtp, productName, to, mail));
+      await this.transportFor(active.smtp).sendMail(this.message(active.smtp, brand, to, mail));
       return true;
     } catch (error) {
       this.logger.error(`Sending ${kind} to ${to} failed: ${describeError(error)}`);
@@ -135,13 +142,21 @@ export class MailService implements MailSender {
     }
   }
 
-  private message(smtp: SmtpSettings, productName: string, to: string, mail: RenderedMail): MailMessage {
+  /** Everything a mail shows of the portal it comes from. */
+  private async brand(): Promise<MailBrand> {
+    const { productName, logoDataUrl, primaryColor } = await this.settings.getBranding();
+    return { productName, logoDataUrl, primaryColor };
+  }
+
+  private message(smtp: SmtpSettings, brand: MailBrand, to: string, mail: RenderedMail): MailMessage {
+    const logo = mailLogo(brand.logoDataUrl);
     return {
-      from: formatFrom(productName, smtp.from),
+      from: formatFrom(brand.productName, smtp.from),
       to,
       subject: mail.subject,
       text: mail.text,
       html: mail.html,
+      ...(logo === null ? {} : { attachments: [logo] }),
     };
   }
 }

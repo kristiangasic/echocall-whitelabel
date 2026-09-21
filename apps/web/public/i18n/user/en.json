@@ -709,11 +709,11 @@
     },
     "invoiceStatuses": {
       "draft": "Draft",
-      "pending": "Pending",
       "sent": "Sent",
       "paid": "Paid",
+      "failed": "Failed",
       "overdue": "Overdue",
-      "cancelled": "Cancelled"
+      "canceled": "Cancelled"
     },
     "transactionTypes": {
       "topup": "Top-up",

@@ -15,7 +15,7 @@ const DETAIL = {
     subtotalEur: '100.00',
     taxEur: '19.00',
     totalEur: '119.00',
-    status: 'pending',
+    status: 'sent',
     issuedDate: '2026-09-01T00:00:00.000Z',
     dueDate: '2026-09-15T00:00:00.000Z',
     paidDate: null,
@@ -83,7 +83,15 @@ describe('AdminInvoiceDetailPage', () => {
 
     expect(text).toContain('R7-202609-0001');
     expect(text).toContain('Lina Mayer');
-    expect(text).toContain(ADMIN_TEXTS.invoices.statuses.pending);
+    expect(text).toContain(ADMIN_TEXTS.invoices.statuses.sent);
+  });
+
+  it('shows a state it does not know as it came, not as a key', async () => {
+    const fixture = await render({ ...DETAIL, invoice: { ...DETAIL.invoice, status: 'disputed' } });
+    const text = fixture.nativeElement.textContent as string;
+
+    expect(text).toContain('disputed');
+    expect(text).not.toContain('admin.invoices.statuses');
   });
 
   it('lists the line items with their kind and their amounts', async () => {

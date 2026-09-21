@@ -13,6 +13,7 @@ import type { ResellerInvoiceDetail } from '../../../core/hub/hub.models';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
+import { invoiceStatusLabel } from './invoice-status';
 
 /**
  * One invoice with everything it charges for. The amounts are the ones the hub
@@ -52,7 +53,7 @@ import { LocalDatePipe } from '../../../shared/local-date.pipe';
             }
           </div>
           <span class="status" [class]="'status status-' + d.invoice.status">
-            {{ t('admin.invoices.statuses.' + d.invoice.status) }}
+            {{ statusLabel(d.invoice.status, t) }}
           </span>
         </div>
 
@@ -212,6 +213,11 @@ export class AdminInvoiceDetailPage implements OnInit {
 
   ngOnInit(): void {
     void this.load(Number(this.route.snapshot.paramMap.get('id')));
+  }
+
+  /** Named here so the template can reach it; the rule itself is shared. */
+  statusLabel(status: string | null | undefined, t: (key: string) => string): string {
+    return invoiceStatusLabel(status, t);
   }
 
   money(value: string | number | null | undefined): string {

@@ -3,10 +3,10 @@ import { type MailContext, type RenderedMail, renderMail } from './layout.js';
 
 const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>[1]> = {
   en: (ctx) => ({
-    subject: `Confirm your address for ${ctx.productName}`,
+    subject: `Confirm your address for ${ctx.brand.productName}`,
     greeting: ctx.firstName ? `Welcome ${ctx.firstName},` : 'Welcome,',
     paragraphs: [
-      `Your account at ${ctx.productName} is ready. One click on the link below confirms this address and opens it.`,
+      `Your account at ${ctx.brand.productName} is ready. One click on the link below confirms this address and opens it.`,
     ],
     button: { label: 'Open your account', url: ctx.link },
     closing: [
@@ -15,10 +15,10 @@ const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>
     ],
   }),
   de: (ctx) => ({
-    subject: `Bestätigen Sie Ihre Adresse für ${ctx.productName}`,
+    subject: `Bestätigen Sie Ihre Adresse für ${ctx.brand.productName}`,
     greeting: ctx.firstName ? `Willkommen ${ctx.firstName},` : 'Willkommen,',
     paragraphs: [
-      `Ihr Konto bei ${ctx.productName} steht bereit. Ein Klick auf den folgenden Link bestätigt diese Adresse und öffnet es.`,
+      `Ihr Konto bei ${ctx.brand.productName} steht bereit. Ein Klick auf den folgenden Link bestätigt diese Adresse und öffnet es.`,
     ],
     button: { label: 'Konto öffnen', url: ctx.link },
     closing: [
@@ -27,10 +27,10 @@ const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>
     ],
   }),
   fr: (ctx) => ({
-    subject: `Confirmez votre adresse pour ${ctx.productName}`,
+    subject: `Confirmez votre adresse pour ${ctx.brand.productName}`,
     greeting: ctx.firstName ? `Bienvenue ${ctx.firstName},` : 'Bienvenue,',
     paragraphs: [
-      `Votre compte chez ${ctx.productName} est prêt. Un clic sur le lien ci-dessous confirme cette adresse et l'ouvre.`,
+      `Votre compte chez ${ctx.brand.productName} est prêt. Un clic sur le lien ci-dessous confirme cette adresse et l'ouvre.`,
     ],
     button: { label: 'Ouvrir votre compte', url: ctx.link },
     closing: [
@@ -41,5 +41,5 @@ const COPY: Record<Language, (ctx: MailContext) => Parameters<typeof renderMail>
 };
 
 export function renderRegistration(language: Language, ctx: MailContext): RenderedMail {
-  return renderMail(ctx.productName, COPY[language](ctx));
+  return renderMail(ctx.brand, COPY[language](ctx));
 }
