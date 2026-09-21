@@ -41,6 +41,25 @@ describe('renameProduct', () => {
     expect(result).toEqual({ echocallId: 7, enabled: true, missing: null, when: '2026-09-17' });
   });
 
+  it('leaves the name of a model setting alone, so the field keeps its value', () => {
+    const result = renameProduct(
+      { llmModel: 'EchoCall-Voice', ttsModel: 'echocall-ultra', model: 'EchoCall-Smart' },
+      'Acme Voice',
+    );
+
+    expect(result).toEqual({ llmModel: 'EchoCall-Voice', ttsModel: 'echocall-ultra', model: 'EchoCall-Smart' });
+  });
+
+  it('still renames the service where a model setting is described in words', () => {
+    const result = renameProduct(
+      { llmModel: 'EchoCall-Voice', description: 'The EchoCall model answering this agent.' },
+      'Acme Voice',
+    );
+
+    expect(result.llmModel).toBe('EchoCall-Voice');
+    expect(result.description).toBe('The Acme Voice model answering this agent.');
+  });
+
   it('does not touch a longer word that merely starts the same way', () => {
     const result = renameProduct({ note: 'EchoCallable is a different word.' }, 'Acme Voice');
 

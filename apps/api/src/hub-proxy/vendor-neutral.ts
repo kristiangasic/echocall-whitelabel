@@ -16,22 +16,35 @@ const PRODUCT_NAME = /\bEchoCall\b/g;
 const ADDRESS = /^(https?:|mailto:|data:|\/)/i;
 
 /**
+ * Keys whose value names a setting instead of describing one. The service
+ * identifies its language models by names that carry its own product name, and
+ * the portal hands those back unchanged when a customer saves an agent. Renamed,
+ * such a value no longer matches anything the service knows, so the model field
+ * shows up empty and a save would store a setting that does not exist.
+ */
+const SETTING_KEYS = new Set(['llmModel', 'ttsModel', 'model']);
+
+/**
  * Replaces the service's product name with the portal's own, everywhere in a
  * decoded JSON body. Anything that is not a string is passed through as it is.
  */
 export function renameProduct<T>(body: T, productName: string): T {
-  return map(body, productName) as T;
+  return map(body, productName, null) as T;
 }
 
-function map(value: unknown, productName: string): unknown {
+function map(value: unknown, productName: string, key: string | null): unknown {
   if (typeof value === 'string') {
     if (ADDRESS.test(value)) return value;
+    if (key !== null && SETTING_KEYS.has(key)) return value;
     return value.replace(PRODUCT_NAME, productName);
   }
-  if (Array.isArray(value)) return value.map((entry) => map(entry, productName));
+  if (Array.isArray(value)) return value.map((entry) => map(entry, productName, key));
   if (value !== null && typeof value === 'object') {
     return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>).map(([key, entry]) => [key, map(entry, productName)]),
+      Object.entries(value as Record<string, unknown>).map(([entryKey, entry]) => [
+        entryKey,
+        map(entry, productName, entryKey),
+      ]),
     );
   }
   return value;
