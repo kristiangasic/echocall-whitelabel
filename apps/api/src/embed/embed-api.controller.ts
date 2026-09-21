@@ -77,7 +77,9 @@ export class EmbedApiController {
         body: req.method === 'GET' || req.method === 'HEAD' ? undefined : requestBody(req),
       });
     } catch {
-      res.status(502).json({ error: { code: 'upstream_unavailable', message: 'The chat service did not answer' } });
+      res
+        .status(502)
+        .json({ error: { code: 'upstream_unavailable', message: 'The chat service did not answer' } });
       return;
     }
 
@@ -92,7 +94,9 @@ export class EmbedApiController {
     try {
       payload = JSON.parse(text);
     } catch {
-      res.status(502).json({ error: { code: 'upstream_unavailable', message: 'The chat service answered unreadably' } });
+      res
+        .status(502)
+        .json({ error: { code: 'upstream_unavailable', message: 'The chat service answered unreadably' } });
       return;
     }
     const neutral = neutralizeWidgetPayload(payload, this.embedBase());
@@ -125,7 +129,9 @@ export class EmbedApiController {
     try {
       upstream = await this.fetchImpl(`${this.serviceOrigin()}/uploads/${path}`);
     } catch {
-      res.status(502).json({ error: { code: 'upstream_unavailable', message: 'The chat service did not answer' } });
+      res
+        .status(502)
+        .json({ error: { code: 'upstream_unavailable', message: 'The chat service did not answer' } });
       return;
     }
     if (!upstream.ok) {

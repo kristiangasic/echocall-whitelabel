@@ -47,7 +47,11 @@ describe('renameProduct', () => {
       'Acme Voice',
     );
 
-    expect(result).toEqual({ llmModel: 'EchoCall-Voice', ttsModel: 'echocall-ultra', model: 'EchoCall-Smart' });
+    expect(result).toEqual({
+      llmModel: 'EchoCall-Voice',
+      ttsModel: 'echocall-ultra',
+      model: 'EchoCall-Smart',
+    });
   });
 
   it('still renames the service where a model setting is described in words', () => {

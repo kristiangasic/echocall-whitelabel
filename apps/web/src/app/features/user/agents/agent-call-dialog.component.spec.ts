@@ -138,10 +138,12 @@ describe('AgentCallDialogComponent', () => {
     const fixture = await open();
     byTestId<HTMLButtonElement>(fixture, 'call-start').click();
     await settle();
-    http.expectOne('/api/voice/agents/agent_7/call').flush(
-      { error: { code: 'quota_exceeded', message: 'No minutes left' } },
-      { status: 402, statusText: 'Payment Required' },
-    );
+    http
+      .expectOne('/api/voice/agents/agent_7/call')
+      .flush(
+        { error: { code: 'quota_exceeded', message: 'No minutes left' } },
+        { status: 402, statusText: 'Payment Required' },
+      );
     await settle();
     fixture.detectChanges();
 

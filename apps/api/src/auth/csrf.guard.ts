@@ -20,7 +20,8 @@ export class CsrfGuard implements CanActivate {
     const req = ctx.switchToHttp().getRequest<Request>();
     if (!MUTATING.has(req.method)) return true;
     // A route meant for someone else's page carries no session to protect.
-    if (this.reflector.getAllAndOverride<boolean>(CROSS_SITE, [ctx.getHandler(), ctx.getClass()])) return true;
+    if (this.reflector.getAllAndOverride<boolean>(CROSS_SITE, [ctx.getHandler(), ctx.getClass()]))
+      return true;
     const value = req.headers[CSRF_HEADER];
     if (typeof value === 'string' && value.toLowerCase() === CSRF_HEADER_VALUE.toLowerCase()) return true;
     throw apiError(403, 'csrf_header_missing', `Mutating requests must send the ${CSRF_HEADER_VALUE} header`);

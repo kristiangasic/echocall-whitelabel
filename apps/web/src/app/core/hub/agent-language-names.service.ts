@@ -49,9 +49,7 @@ export class AgentLanguageNames {
 
   private async fetch(surface: LanguageSurface): Promise<void> {
     const api = surface === 'operator' ? this.adminHub : this.hub;
-    const languages = await firstValueFrom(
-      api.list<AgentLanguage>('/languages/agent', { type: 'all' }),
-    );
+    const languages = await firstValueFrom(api.list<AgentLanguage>('/languages/agent', { type: 'all' }));
     const merged = { ...this.byCode() };
     for (const language of languages) merged[normalize(language.code)] = language;
     this.byCode.set(merged);
