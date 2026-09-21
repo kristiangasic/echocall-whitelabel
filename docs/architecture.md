@@ -162,7 +162,11 @@ well.
 
 Generated from the published EchoCall OpenAPI document (`openapi-typescript` +
 `openapi-fetch`). Regenerate with `npm run refresh-spec && npm run generate -w
-packages/echocall-api` when the upstream API gains endpoints.
+packages/echocall-api` when the upstream API gains endpoints. `refresh-spec` compares the
+download against the document in `spec/` and refuses one that has fewer paths, so a
+service answering that path from an outdated file cannot quietly shrink the client;
+`ECHOCALL_OPENAPI_URL` points it elsewhere and `ECHOCALL_ALLOW_SPEC_DOWNGRADE=1` writes it
+anyway.
 
 ## Key decisions
 

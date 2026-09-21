@@ -6040,7 +6040,7 @@ export interface paths {
         put?: never;
         /**
          * Create a customer account
-         * @description Creates a new end-customer account owned by the reseller, links it to the reseller and writes an activity-log entry. The account is created active, with passwordless login and the plain user role. When `sendPasswordEmail` is true, which is the default, a login code is mailed to the address; a failure to send that mail is logged and swallowed, so the customer still exists and can request a code later. An email that already belongs to any account is refused with 400 `validation_error`. `language` (de, en or fr, default de) sets the portal and e-mail language of the account. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
+         * @description Creates a new end-customer account owned by the reseller, links it to the reseller and writes an activity-log entry. The account is created active, with passwordless login and the plain user role. When `sendPasswordEmail` is true, which is the default, a login code is mailed to the address; a failure to send that mail is logged and swallowed, so the customer still exists and can request a code later. An email that already belongs to any account is refused with 400 `validation_error`. `language` (de, en or fr, default de) sets the portal and e-mail language of the account. `hubLoginEnabled` (default true) decides whether the customer may sign in on echocall.de at all; a partner running their own portal sends false, and the account is then refused at both login paths here. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
          */
         post: {
             parameters: {
@@ -6049,13 +6049,15 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            /** @description The identity of the customer to create. Only `email` is required; `sendPasswordEmail` decides whether a login code is mailed out immediately and `language` sets the portal and e-mail language. */
+            /** @description The identity of the customer to create. Only `email` is required; `sendPasswordEmail` decides whether a login code is mailed out immediately, `language` sets the portal and e-mail language, and `hubLoginEnabled` decides whether the account may sign in on echocall.de. */
             requestBody: {
                 content: {
                     "application/json": {
                         company?: string;
                         email: string;
                         firstName?: string;
+                        /** @default true */
+                        hubLoginEnabled?: boolean;
                         /**
                          * @default de
                          * @enum {string}
@@ -6139,7 +6141,7 @@ export interface paths {
         post?: never;
         /**
          * Delete a customer account
-         * @description Deletes one of the reseller customers and writes an activity-log entry. This is a direct row delete of the user record and it cannot be undone; the handler cascades nothing itself, so prefer suspending an account over deleting it unless removal is really what you want. A customer that does not exist, or that belongs to another reseller, is reported as 404 `not_found` rather than 403, so one reseller cannot probe for the customers of another. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`. This endpoint takes no request body.
+         * @description Deletes one of the reseller customers and writes an activity-log entry. Everything the account owns goes with it: voice agents, chatbots, knowledge entries, tickets, campaigns, webhooks, notifications, the reseller link and the subscription history. It cannot be undone, so prefer suspending an account over deleting it unless removal is really what you want. A customer that still holds a subscription in `active`, `paused` or `past_due` is refused with 400 `subscription_active` and nothing is deleted: cancel the subscriptions first. A customer that does not exist, or that belongs to another reseller, is reported as 404 `not_found` rather than 403, so one reseller cannot probe for the customers of another. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`. This endpoint takes no request body.
          */
         delete: {
             parameters: {
