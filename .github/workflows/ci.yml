@@ -103,7 +103,7 @@ jobs:
       - run: npm run e2e
         env:
           SMOKE_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/echocall_whitelabel_smoke
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: smoke-run
