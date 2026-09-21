@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { JSON_BODY_LIMIT } from './common/http.js';
 import helmet from 'helmet';
 import { AppModule } from './app.module.js';
+import { EMBED_TRPC_PATH, embedRawBody } from './embed/widget-body.js';
 import { loadEnv } from './config/env.js';
 
 /** Loads a local .env file when present; hosted deployments set the environment themselves. */
@@ -57,6 +58,9 @@ async function bootstrap(): Promise<void> {
   // third of that, which is the difference between a fast and a slow first visit
   // over a phone connection.
   app.use(compression());
+  // What a widget posts is only passed on, so it is kept as raw bytes; parsing
+  // it would lose a body whose content type the widget spells twice.
+  app.use(EMBED_TRPC_PATH, embedRawBody(JSON_BODY_LIMIT));
   app.useBodyParser('json', { limit: JSON_BODY_LIMIT });
   app.use(cookieParser());
   app.setGlobalPrefix('api', { exclude: ['healthz', 'readyz', 'embed/{*path}'] });

@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import { JSON_BODY_LIMIT } from '../common/http.js';
 import { type AppConfig, APP_CONFIG, loadEnv } from '../config/env.js';
 import { DB, DB_DIALECT } from '../db/db.service.js';
+import { EMBED_TRPC_PATH, embedRawBody } from '../embed/widget-body.js';
 import { createTestDb, type TestDb } from '../db/test-db.js';
 import { HUB_FETCH } from '../echocall/hub-client.factory.js';
 import { MAIL_TRANSPORT_FACTORY } from '../mail/mail.service.js';
@@ -113,6 +114,7 @@ export async function createTestApp(
   }).compile();
   const app = moduleRef.createNestApplication<NestExpressApplication>({ logger: false, bodyParser: false });
   app.set('trust proxy', 1);
+  app.use(EMBED_TRPC_PATH, embedRawBody(JSON_BODY_LIMIT));
   app.useBodyParser('json', { limit: JSON_BODY_LIMIT });
   app.use(cookieParser());
   app.setGlobalPrefix('api', { exclude: ['healthz', 'readyz', 'embed/{*path}'] });
