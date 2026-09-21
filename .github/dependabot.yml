@@ -1,0 +1,24 @@
+# Security advisories reach the repository on their own; this keeps the ordinary
+# updates coming in batches that are small enough to read.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      angular:
+        patterns: ['@angular*', 'angular-eslint']
+      nest:
+        patterns: ['@nestjs/*']
+      development:
+        dependency-type: development
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: monthly
+  - package-ecosystem: docker
+    directory: '/docker'
+    schedule:
+      interval: monthly

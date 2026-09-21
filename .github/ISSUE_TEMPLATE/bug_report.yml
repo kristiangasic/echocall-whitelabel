@@ -1,0 +1,62 @@
+name: Bug report
+description: Something in the portal does not behave the way it is documented.
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please do not report a security problem here. Send it to the address in
+        [SECURITY.md](../blob/main/SECURITY.md) instead, so it can be fixed before it is public.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what the portal did instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce it
+      description: The steps, starting from a signed-in session or from a fresh installation.
+      placeholder: |
+        1. Sign in as an operator
+        2. Open ...
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The release or the commit the installation runs.
+      placeholder: v0.1.0, or the commit hash
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How it is installed
+      options:
+        - Docker Compose
+        - Plain Docker
+        - Node.js without Docker
+        - Development checkout
+    validations:
+      required: true
+  - type: dropdown
+    id: database
+    attributes:
+      label: Database
+      options:
+        - PostgreSQL
+        - MariaDB
+        - MySQL
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log output
+      description: The server log around the moment it went wrong. Remove your API key and any address you do not want public.
+      render: text
