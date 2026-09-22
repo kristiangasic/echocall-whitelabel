@@ -143,11 +143,25 @@ export class AdminCustomersService {
   /** Removes the customer in the hub and the portal login with it; nothing is left to sign in with. */
   async remove(customerId: number, ctx: ActionContext): Promise<void> {
     const login = await this.findLogin(customerId);
+    // The audit row is all that remains of the customer, so it names the
+    // address; a customer without a portal login has one only in the hub.
+    const email = login?.email ?? (await this.hubEmail(customerId));
     await this.hub.raw('DELETE', `/resellers/customers/${customerId}`, {});
     await this.afterHub(customerId, async () => {
       if (login) await this.db.deleteFrom('users').where('id', '=', login.id).execute();
     });
-    await this.record(ctx, 'customers.deleted', customerId, { email: login?.email ?? null });
+    await this.record(ctx, 'customers.deleted', customerId, { email });
+  }
+
+  /** The address the hub has for a customer, or null when it cannot be read: a deletion must not hang on it. */
+  private async hubEmail(customerId: number): Promise<string | null> {
+    try {
+      const found = await this.hub.raw('GET', `/resellers/customers/${customerId}`, {});
+      return readCustomerEmail(found.body);
+    } catch (error) {
+      this.logger.warn(`Could not read customer ${customerId} before deleting it: ${describeError(error)}`);
+      return null;
+    }
   }
 
   private async applyToLogin(login: UserRow | null, changes: UserUpdate): Promise<AdminUserRow | null> {
@@ -210,6 +224,12 @@ function optional(key: string, value: string | undefined): Record<string, string
 /** Passes a key on whenever the operator sent it, empty string included: that is how a field is cleared. */
 function present(key: string, value: string | undefined): Record<string, string> {
   return value === undefined ? {} : { [key]: value };
+}
+
+/** A hub customer carries its account under `user`; a missing address is null, not a failure. */
+function readCustomerEmail(body: unknown): string | null {
+  const email = (body as { user?: { email?: unknown } } | null)?.user?.email;
+  return typeof email === 'string' && email.length > 0 ? email : null;
 }
 
 /** The hub answers a created customer with its new user id; anything else is a broken contract. */

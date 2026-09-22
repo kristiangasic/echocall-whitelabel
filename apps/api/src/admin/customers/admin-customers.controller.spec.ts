@@ -31,6 +31,13 @@ describe('AdminCustomersController', () => {
     'PATCH /resellers/customers/901/suspend': { body: { success: true } },
     'PATCH /resellers/customers/901/unsuspend': { body: { success: true } },
     'DELETE /resellers/customers/901': { status: 204 },
+    // A customer that was never invited to the portal: its address lives only in the hub.
+    'GET /resellers/customers/950': {
+      body: { userId: 950, user: { id: 950, email: 'hubonly@example.com' } },
+    },
+    'DELETE /resellers/customers/950': { status: 204 },
+    // The hub cannot say who this is (no GET route), but still deletes.
+    'DELETE /resellers/customers/960': { status: 204 },
   });
 
   beforeAll(async () => {
@@ -173,7 +180,36 @@ describe('AdminCustomersController', () => {
     expect(hubCalls('DELETE', '/resellers/customers/901')).toHaveLength(1);
     const emails = (await users()).body.data.map((row: { email: string }) => row.email);
     expect(emails).not.toContain('new@example.com');
-    expect(await lastAudit()).toMatchObject({ action: 'customers.deleted', targetId: '901' });
+    expect(hubCalls('GET', '/resellers/customers/901')).toHaveLength(0);
+    expect(await lastAudit()).toMatchObject({
+      action: 'customers.deleted',
+      targetId: '901',
+      details: { email: 'new@example.com' },
+    });
+  });
+
+  it('names the hub address in the audit when the customer has no portal login', async () => {
+    const res = await api().delete('/api/admin/customers/950').set(asAdmin);
+
+    expect(res.status).toBe(204);
+    expect(hubCalls('DELETE', '/resellers/customers/950')).toHaveLength(1);
+    expect(await lastAudit()).toMatchObject({
+      action: 'customers.deleted',
+      targetId: '950',
+      details: { email: 'hubonly@example.com' },
+    });
+  });
+
+  it('still deletes when the hub cannot say who the customer was', async () => {
+    const res = await api().delete('/api/admin/customers/960').set(asAdmin);
+
+    expect(res.status).toBe(204);
+    expect(hubCalls('DELETE', '/resellers/customers/960')).toHaveLength(1);
+    expect(await lastAudit()).toMatchObject({
+      action: 'customers.deleted',
+      targetId: '960',
+      details: { email: null },
+    });
   });
 
   it('refuses an id that is not a customer id', async () => {
