@@ -87,8 +87,8 @@ that has stopped working, backup and restore, upgrades.
 Point `DATABASE_URL` at your own server instead of the bundled container:
 
 ```
-DATABASE_URL=postgres://light:secret@db.example.com:5432/echocall_whitelabel
-DATABASE_URL=mariadb://light:secret@db.example.com:3306/echocall_whitelabel
+DATABASE_URL=postgres://whitelabel:CHANGE_ME@db.example.com:5432/echocall_whitelabel
+DATABASE_URL=mariadb://whitelabel:CHANGE_ME@db.example.com:3306/echocall_whitelabel
 ```
 
 The schema is created and migrated automatically at startup. Details and backup notes:

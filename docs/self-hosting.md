@@ -108,20 +108,21 @@ so the way back from a release is that dump. Read [CHANGELOG.md](../CHANGELOG.md
 you upgrade, then check `/readyz` and sign in once afterwards.
 
 An install set up before 0.2.0, while the project was still called `echocall-light`, keeps
-its data only under the old names. Put these two lines into `.env` before the first
+its data only under the old names. Put these three lines into `.env` before the first
 `docker compose up` on the new code:
 
 ```dotenv
 COMPOSE_PROJECT_NAME=echocall-light
 DB_NAME=echocall_light
+DB_USER=light
 ```
 
-Compose names the volume after the project and the bundled database after `DB_NAME`, and
-both defaults changed with the rename. Without the first line Compose creates
-`echocall-whitelabel_db-data`, empty, and the portal opens on its first-run page while the
-data sits untouched in `echocall-light_db-data`; without the second the app looks for a
-database the old volume does not contain and cannot start. `docker compose config` shows
-the project name and the `DATABASE_URL` that are in effect.
+Compose names the volume after the project and the bundled database and its user after
+`DB_NAME` and `DB_USER`, and all three defaults changed with the rename. Without the first
+line Compose creates `echocall-whitelabel_db-data`, empty, and the portal opens on its
+first-run page while the data sits untouched in `echocall-light_db-data`; without the other
+two the app connects with a user and a database the old volume does not contain and cannot
+start. `docker compose config` shows the project name and the `DATABASE_URL` in effect.
 
 ## Backups
 

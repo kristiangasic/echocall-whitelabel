@@ -12,8 +12,8 @@ The dialect is picked from the `DATABASE_URL` scheme: `postgres://` / `postgresq
 select PostgreSQL, `mysql://` / `mariadb://` select the MySQL driver.
 
 ```
-DATABASE_URL=postgres://light:secret@db.example.com:5432/echocall_whitelabel
-DATABASE_URL=mariadb://light:secret@db.example.com:3306/echocall_whitelabel
+DATABASE_URL=postgres://whitelabel:CHANGE_ME@db.example.com:5432/echocall_whitelabel
+DATABASE_URL=mariadb://whitelabel:CHANGE_ME@db.example.com:3306/echocall_whitelabel
 ```
 
 TLS towards the database is controlled by `DATABASE_SSL`: `disable` (default), `require`,
@@ -42,8 +42,8 @@ pg_restore --dbname="$DATABASE_URL" --clean --if-exists portal.dump
 Bundled Compose database:
 
 ```bash
-docker compose exec db pg_dump -U light --format=custom echocall_whitelabel > portal.dump
-docker compose exec -T db pg_restore -U light --dbname=echocall_whitelabel --clean --if-exists < portal.dump
+docker compose exec db pg_dump -U whitelabel --format=custom echocall_whitelabel > portal.dump
+docker compose exec -T db pg_restore -U whitelabel --dbname=echocall_whitelabel --clean --if-exists < portal.dump
 ```
 
 MariaDB / MySQL:

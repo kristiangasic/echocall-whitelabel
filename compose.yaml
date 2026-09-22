@@ -7,12 +7,12 @@ services:
     image: postgres:18-alpine
     environment:
       POSTGRES_DB: ${DB_NAME:-echocall_whitelabel}
-      POSTGRES_USER: light
+      POSTGRES_USER: ${DB_USER:-whitelabel}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
     volumes:
       - db-data:/var/lib/postgresql
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U light -d ${DB_NAME:-echocall_whitelabel}']
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-whitelabel} -d ${DB_NAME:-echocall_whitelabel}']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -24,7 +24,7 @@ services:
       dockerfile: docker/Dockerfile
     env_file: .env
     environment:
-      DATABASE_URL: postgres://light:${DB_PASSWORD}@db:5432/${DB_NAME:-echocall_whitelabel}
+      DATABASE_URL: postgres://${DB_USER:-whitelabel}:${DB_PASSWORD}@db:5432/${DB_NAME:-echocall_whitelabel}
     ports:
       # The port on the host is yours to choose; 3000 is often taken already.
       - '${HTTP_PORT:-3000}:3000'

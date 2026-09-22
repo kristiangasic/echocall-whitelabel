@@ -55,9 +55,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   image, the npm workspaces (`@echocall/whitelabel-api`, `-web`, `-api-client`) and the
   example database names carry `whitelabel` instead of `light`, because the old name
   said nothing about what the software does. An existing install keeps its data when
-  `.env` pins the old names (`COMPOSE_PROJECT_NAME=echocall-light` and
-  `DB_NAME=echocall_light`), because Compose names the volume after the project and the
-  bundled database after `DB_NAME`, and both defaults changed with the rename.
+  `.env` pins the old names (`COMPOSE_PROJECT_NAME=echocall-light`, `DB_NAME=echocall_light`
+  and `DB_USER=light`), because Compose names the volume after the project and the bundled
+  database and its user after `DB_NAME` and `DB_USER`, and all three defaults changed with
+  the rename.
   [docs/self-hosting.md](docs/self-hosting.md) has the step.
 - The generated client carries `hubLoginEnabled` on customer creation, so the field the
   portal already sends is typed rather than passed untyped, and the delete endpoint's

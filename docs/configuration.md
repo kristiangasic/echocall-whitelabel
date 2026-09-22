@@ -65,6 +65,7 @@ up -d` is run from the repository root.
 | ---------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `DB_PASSWORD`          | unset                 | Password of the bundled PostgreSQL container; also used to build `DATABASE_URL` for the app service. Compose refuses to start without it.                                             |
 | `HTTP_PORT`            | `3000`                | Port the portal is published on **on the host**. Move it when 3000 is taken; the container keeps 3000, so `PORT` stays untouched.                                                     |
+| `DB_USER`              | `whitelabel`          | User of the bundled PostgreSQL database; also the user in the `DATABASE_URL` built for the app service. An install from before 0.2.0 keeps `light`.                                   |
 | `DB_NAME`              | `echocall_whitelabel` | Name of the bundled PostgreSQL database; also the database in the `DATABASE_URL` built for the app service. An install from before 0.2.0 keeps `echocall_light`.                      |
 | `COMPOSE_PROJECT_NAME` | `echocall-whitelabel` | Read by Compose itself: names the containers and the database volume. An install from before 0.2.0 keeps `echocall-light`, or Compose starts a second, empty volume next to the data. |
 
