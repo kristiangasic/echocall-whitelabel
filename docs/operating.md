@@ -140,8 +140,8 @@ start instead of leaving half a schema. They are forward-only: the way back from
 is the backup you took before it. Read `CHANGELOG.md` first, take a dump, then upgrade.
 
 After the upgrade, check `/readyz` and sign in once. An install from before 0.2.0 needs
-`COMPOSE_PROJECT_NAME=echocall-light` in `.env` first, or it starts on an empty
-database; [self-hosting.md](self-hosting.md) explains why.
+`COMPOSE_PROJECT_NAME=echocall-light` and `DB_NAME=echocall_light` in `.env` first, or it
+does not find its database; [self-hosting.md](self-hosting.md) explains why.
 
 ## Rotating `APP_SECRET`
 
