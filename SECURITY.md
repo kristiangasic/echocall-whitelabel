@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Please report vulnerabilities privately to **security@echocall.de**. Do not open a public
+Please report vulnerabilities privately to **team@echocall.de**. Do not open a public
 issue for security problems. Include steps to reproduce and, if possible, the affected
 version or commit. You will receive an acknowledgement within a few business days; please
 give us reasonable time to ship a fix before disclosing.
