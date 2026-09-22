@@ -246,6 +246,8 @@
     "invalid_challenge": "The sign-in has expired. Please sign in again.",
     "two_factor_already_enabled": "This account already has a second factor.",
     "registration_closed": "This portal does not take sign-ups.",
-    "smtp_required": "Set up a mail server first. Without one the portal cannot send the links."
+    "smtp_required": "Set up a mail server first. Without one the portal cannot send the links.",
+    "company_details_incomplete": "Your company details are incomplete. Complete them under Settings and the invoice can be issued.",
+    "invoice_unavailable": "The invoice is not available right now."
   }
 }

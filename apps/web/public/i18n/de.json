@@ -246,6 +246,8 @@
     "invalid_challenge": "Die Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an.",
     "two_factor_already_enabled": "Für dieses Konto ist bereits ein zweiter Faktor eingerichtet.",
     "registration_closed": "Dieses Portal nimmt keine Registrierungen an.",
-    "smtp_required": "Richten Sie zuerst einen Mailserver ein. Ohne ihn kann das Portal die Links nicht verschicken."
+    "smtp_required": "Richten Sie zuerst einen Mailserver ein. Ohne ihn kann das Portal die Links nicht verschicken.",
+    "company_details_incomplete": "Ihre Firmendaten sind unvollständig. Ergänzen Sie sie unter Einstellungen, dann lässt sich die Rechnung erstellen.",
+    "invoice_unavailable": "Die Rechnung ist gerade nicht abrufbar."
   }
 }

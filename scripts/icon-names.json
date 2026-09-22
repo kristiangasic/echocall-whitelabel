@@ -53,6 +53,7 @@
   "person",
   "person_add",
   "person_off",
+  "picture_as_pdf",
   "play_arrow",
   "post_add",
   "public",
@@ -72,6 +73,7 @@
   "upload",
   "verified_user",
   "visibility",
+  "warning",
   "webhook",
   "workspace_premium"
 ]

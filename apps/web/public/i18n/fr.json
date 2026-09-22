@@ -246,6 +246,8 @@
     "invalid_challenge": "La connexion a expiré. Veuillez vous reconnecter.",
     "two_factor_already_enabled": "Ce compte possède déjà un deuxième facteur.",
     "registration_closed": "Ce portail n’accepte pas d’inscriptions.",
-    "smtp_required": "Configurez d’abord un serveur de messagerie. Sans lui, le portail ne peut pas envoyer les liens."
+    "smtp_required": "Configurez d’abord un serveur de messagerie. Sans lui, le portail ne peut pas envoyer les liens.",
+    "company_details_incomplete": "Vos données d'entreprise sont incomplètes. Complétez-les dans les Réglages pour pouvoir émettre la facture.",
+    "invoice_unavailable": "La facture n'est pas disponible pour le moment."
   }
 }

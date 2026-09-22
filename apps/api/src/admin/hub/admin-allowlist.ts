@@ -15,6 +15,9 @@
  *   which is what /api/admin/customers does. Forwarding them raw would let the
  *   browser create a customer nobody can sign in as, or delete one whose portal
  *   login still works.
+ * - GET /resellers/invoices/{id}/pdf: the hub answers a proxied call with a link
+ *   to one of its own session-protected routes, which a portal browser cannot
+ *   read. /api/admin/invoices/{id}/pdf fetches the document itself instead.
  * - everything outside /resellers: the customer surfaces belong to the customer
  *   proxy, which scopes them to the signed-in customer.
  */

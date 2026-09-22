@@ -11,6 +11,9 @@ import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { ApiService } from '../../../core/api/api.service';
+import { DownloadService } from '../../../core/download/download.service';
+import { readBlobApiError } from '../../../core/errors/api-error';
 import { formatMoney } from '../../../core/format/money';
 import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type { ResellerCustomer, ResellerInvoiceRow } from '../../../core/hub/hub.models';
@@ -142,17 +145,15 @@ const PAYABLE = new Set(['draft', 'sent', 'failed', 'overdue']);
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let row" class="cell-actions">
-              @if (canMarkSent(row) || canMarkPaid(row)) {
-                <button
-                  mat-icon-button
-                  type="button"
-                  [matMenuTriggerFor]="menu"
-                  [matMenuTriggerData]="{ row: row }"
-                  [attr.aria-label]="t('actions.more')"
-                >
-                  <mat-icon>more_vert</mat-icon>
-                </button>
-              }
+              <button
+                mat-icon-button
+                type="button"
+                [matMenuTriggerFor]="menu"
+                [matMenuTriggerData]="{ row: row }"
+                [attr.aria-label]="t('actions.more')"
+              >
+                <mat-icon>more_vert</mat-icon>
+              </button>
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="columns"></tr>
@@ -176,6 +177,16 @@ const PAYABLE = new Set(['draft', 'sent', 'failed', 'overdue']);
 
       <mat-menu #menu="matMenu">
         <ng-template matMenuContent let-row="row">
+          <button
+            mat-menu-item
+            type="button"
+            (click)="download(row)"
+            [disabled]="downloading() === row.invoice.id"
+            data-testid="download-pdf"
+          >
+            <mat-icon>picture_as_pdf</mat-icon>
+            <span>{{ t('admin.invoices.downloadPdf') }}</span>
+          </button>
           @if (canMarkSent(row)) {
             <button mat-menu-item type="button" (click)="markSent(row)" data-testid="mark-sent">
               <mat-icon>outgoing_mail</mat-icon>
@@ -219,6 +230,8 @@ const PAYABLE = new Set(['draft', 'sent', 'failed', 'overdue']);
 })
 export class AdminInvoicesPage implements OnInit {
   private readonly hub = inject(AdminHubService);
+  private readonly api = inject(ApiService);
+  private readonly downloads = inject(DownloadService);
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotifyService);
   private readonly language = inject(LanguageService);
@@ -234,6 +247,8 @@ export class AdminInvoicesPage implements OnInit {
   /** The customer the list is narrowed to, or 0 for all of them. */
   readonly customerId = signal(0);
   readonly loading = signal(false);
+  /** The invoice whose document is being fetched, so its menu entry can wait. */
+  readonly downloading = signal<number | null>(null);
 
   ngOnInit(): void {
     void this.load();
@@ -265,6 +280,24 @@ export class AdminInvoicesPage implements OnInit {
 
   canMarkPaid(row: ResellerInvoiceRow): boolean {
     return PAYABLE.has(row.invoice.status ?? '');
+  }
+
+  /**
+   * Fetches the document and hands it to the browser. The service renders it on
+   * demand, and refuses outright while the company details an invoice has to
+   * carry are incomplete, which is a 409 the operator needs to read as such.
+   */
+  async download(row: ResellerInvoiceRow): Promise<void> {
+    this.downloading.set(row.invoice.id);
+    try {
+      const file = await firstValueFrom(this.api.blob(`/admin/invoices/${row.invoice.id}/pdf`));
+      this.downloads.save(file, `${row.invoice.invoiceNumber ?? `invoice-${row.invoice.id}`}.pdf`);
+    } catch (err) {
+      const failure = await readBlobApiError(err);
+      this.notify.error(this.notify.errorKey(failure.code));
+    } finally {
+      this.downloading.set(null);
+    }
   }
 
   /** A narrower filter can leave the current page empty, so filtering starts over. */

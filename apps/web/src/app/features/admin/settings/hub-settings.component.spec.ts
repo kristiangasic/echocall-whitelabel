@@ -14,6 +14,21 @@ const COMPANY = {
   companyLogo: null,
 };
 
+/** The company as it looks once the invoice details are filled in. */
+const INVOICE_COMPANY = {
+  ...COMPANY,
+  companyPostalCode: '10115',
+  companyCity: 'Berlin',
+  companyCountry: 'DE',
+  companyTaxNumber: '',
+  companyBankName: 'Musterbank',
+  companyIban: 'DE02120300000000202051',
+  companyBic: 'BYLADEM1001',
+  companyPaymentTermsDays: 30,
+  companyInvoiceFooter: 'Vielen Dank fuer Ihren Auftrag.',
+  missingCompanyFields: [],
+};
+
 const SETTINGS = {
   companyName: 'Muster Telekom',
   companyAddress: 'Hauptstrasse 1, 10115 Berlin',
@@ -128,6 +143,72 @@ describe('HubSettingsComponent', () => {
     request.flush({ success: true });
     await settle();
     await answerLoad();
+  });
+
+  it('shows the invoice details the service has on file', async () => {
+    const fixture = await render(INVOICE_COMPANY);
+    const form = fixture.componentInstance.companyForm.getRawValue();
+
+    expect(form.companyPostalCode).toBe('10115');
+    expect(form.companyCity).toBe('Berlin');
+    expect(form.companyBankName).toBe('Musterbank');
+    expect(form.companyPaymentTermsDays).toBe(30);
+    expect(form.companyInvoiceFooter).toBe('Vielen Dank fuer Ihren Auftrag.');
+    expect(fixture.nativeElement.querySelector('[data-testid="company-incomplete"]')).toBeNull();
+  });
+
+  // The operator should read this here, not from a refused invoice.
+  it('says which details are still missing before an invoice is written', async () => {
+    const fixture = await render({
+      ...INVOICE_COMPANY,
+      companyCity: '',
+      missingCompanyFields: ['companyCity', 'companyVatId'],
+    });
+
+    const warning = fixture.nativeElement.querySelector('[data-testid="company-incomplete"]') as HTMLElement;
+    expect(warning).not.toBeNull();
+    expect(warning.textContent).toContain(ADMIN_TEXTS.settings.hub.city);
+    expect(warning.textContent).toContain(ADMIN_TEXTS.settings.hub.vatId);
+  });
+
+  it('stores an IBAN the way the service keeps it, however it was typed', async () => {
+    const fixture = await render(INVOICE_COMPANY);
+
+    fixture.componentInstance.companyForm.controls.companyIban.setValue('de44 5001 0517 5407 3249 31');
+    void fixture.componentInstance.saveCompany();
+    await settle();
+    const request = http.expectOne('/api/admin/hub/resellers/company');
+
+    expect(request.request.body).toEqual({ companyIban: 'DE44500105175407324931' });
+
+    request.flush({ success: true });
+    await settle();
+    await answerLoad(INVOICE_COMPANY);
+  });
+
+  it('treats the same IBAN written with spaces as unchanged', async () => {
+    const fixture = await render(INVOICE_COMPANY);
+
+    fixture.componentInstance.companyForm.controls.companyIban.setValue('DE02 1203 0000 0000 2020 51');
+    await fixture.componentInstance.saveCompany();
+    await settle();
+
+    http.expectNone('/api/admin/hub/resellers/company');
+  });
+
+  it('sends a changed payment term as a number', async () => {
+    const fixture = await render(INVOICE_COMPANY);
+
+    fixture.componentInstance.companyForm.controls.companyPaymentTermsDays.setValue(7);
+    void fixture.componentInstance.saveCompany();
+    await settle();
+    const request = http.expectOne('/api/admin/hub/resellers/company');
+
+    expect(request.request.body).toEqual({ companyPaymentTermsDays: 7 });
+
+    request.flush({ success: true });
+    await settle();
+    await answerLoad(INVOICE_COMPANY);
   });
 
   it('removes the logo by sending nothing rather than an empty string', async () => {

@@ -43,3 +43,31 @@ export function fieldErrors(error: ApiError): Record<string, string> {
   }
   return out;
 }
+
+/**
+ * The same reading for a request that asked for a blob. Angular hands the body
+ * back as a Blob whatever the status, so a failed download carries its envelope
+ * as unparsed text and would otherwise always read as `unknown`.
+ */
+export async function readBlobApiError(error: unknown): Promise<ApiError> {
+  if (error instanceof HttpErrorResponse && error.error instanceof Blob) {
+    try {
+      const parsed: unknown = JSON.parse(await error.error.text());
+      return readApiError(
+        new HttpErrorResponse({
+          error: parsed,
+          status: error.status,
+          statusText: error.statusText,
+          url: error.url ?? undefined,
+        }),
+      );
+    } catch {
+      return {
+        status: error.status,
+        code: error.status === 0 ? 'network' : 'unknown',
+        message: error.message,
+      };
+    }
+  }
+  return readApiError(error);
+}

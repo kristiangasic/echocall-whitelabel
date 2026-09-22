@@ -435,7 +435,8 @@
       "tax": "Steuer",
       "gross": "Brutto",
       "submit": "Rechnung anlegen"
-    }
+    },
+    "downloadPdf": "Als PDF herunterladen"
   },
   "numbers": {
     "title": "Rufnummern",
@@ -660,7 +661,19 @@
       "stored": "Hinterlegt",
       "notStored": "Nicht hinterlegt",
       "saved": "Gespeichert.",
-      "nothingChanged": "Es gab nichts zu speichern."
+      "nothingChanged": "Es gab nichts zu speichern.",
+      "postalCode": "PLZ",
+      "city": "Ort",
+      "country": "Land",
+      "taxNumber": "Steuernummer",
+      "invoiceDetails": "Angaben auf Ihren Rechnungen",
+      "invoiceDetailsHint": "Bankverbindung, Zahlungsziel und Fußzeile erscheinen auf jeder Rechnung, die Sie ausstellen.",
+      "bankName": "Bank",
+      "iban": "IBAN",
+      "bic": "BIC",
+      "paymentTerms": "Zahlungsziel (Tage)",
+      "invoiceFooter": "Fußzeile der Rechnung",
+      "incomplete": "Solange diese Angaben fehlen, lässt sich keine Rechnung erstellen: {{fields}}."
     }
   },
   "audit": {

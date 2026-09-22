@@ -435,7 +435,8 @@
       "tax": "Taxe",
       "gross": "Brut",
       "submit": "Créer la facture"
-    }
+    },
+    "downloadPdf": "Télécharger en PDF"
   },
   "numbers": {
     "title": "Numéros",
@@ -660,7 +661,19 @@
       "stored": "Enregistrée",
       "notStored": "Non enregistrée",
       "saved": "Enregistré.",
-      "nothingChanged": "Il n'y avait rien à enregistrer."
+      "nothingChanged": "Il n'y avait rien à enregistrer.",
+      "postalCode": "Code postal",
+      "city": "Ville",
+      "country": "Pays",
+      "taxNumber": "Numéro fiscal",
+      "invoiceDetails": "Mentions sur vos factures",
+      "invoiceDetailsHint": "Les coordonnées bancaires, le délai de paiement et le pied de page figurent sur chaque facture que vous émettez.",
+      "bankName": "Banque",
+      "iban": "IBAN",
+      "bic": "BIC",
+      "paymentTerms": "Délai de paiement (jours)",
+      "invoiceFooter": "Pied de page de la facture",
+      "incomplete": "Aucune facture ne peut être émise tant que ces mentions manquent : {{fields}}."
     }
   },
   "audit": {

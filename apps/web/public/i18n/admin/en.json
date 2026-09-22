@@ -435,7 +435,8 @@
       "tax": "Tax",
       "gross": "Gross",
       "submit": "Create the invoice"
-    }
+    },
+    "downloadPdf": "Download as PDF"
   },
   "numbers": {
     "title": "Phone numbers",
@@ -660,7 +661,19 @@
       "stored": "Stored",
       "notStored": "Not stored",
       "saved": "Saved.",
-      "nothingChanged": "There was nothing to save."
+      "nothingChanged": "There was nothing to save.",
+      "postalCode": "Postal code",
+      "city": "City",
+      "country": "Country",
+      "taxNumber": "Tax number",
+      "invoiceDetails": "Details on the invoices you issue",
+      "invoiceDetailsHint": "Bank details, payment term and footer appear on every invoice you issue.",
+      "bankName": "Bank",
+      "iban": "IBAN",
+      "bic": "BIC",
+      "paymentTerms": "Payment term (days)",
+      "invoiceFooter": "Invoice footer",
+      "incomplete": "No invoice can be issued while these details are missing: {{fields}}."
     }
   },
   "audit": {

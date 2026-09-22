@@ -12,8 +12,24 @@ import type { ResellerCompany, ResellerSettings } from '../../../core/hub/hub.mo
 import { NotifyService } from '../../../core/notify/notify.service';
 import { FieldErrorPipe } from '../../../shared/forms/field-error.pipe';
 
-/** The company fields this form owns; the rest of the profile is left untouched. */
-const COMPANY_FIELDS = ['companyName', 'companyLegalName', 'companyAddress', 'companyVatId'] as const;
+/**
+ * The company fields this form owns; the rest of the profile is left untouched.
+ * All of them are text: the payment term is a number and is handled apart.
+ */
+const COMPANY_FIELDS = [
+  'companyName',
+  'companyLegalName',
+  'companyAddress',
+  'companyPostalCode',
+  'companyCity',
+  'companyCountry',
+  'companyVatId',
+  'companyTaxNumber',
+  'companyBankName',
+  'companyIban',
+  'companyBic',
+  'companyInvoiceFooter',
+] as const;
 
 type CompanyField = (typeof COMPANY_FIELDS)[number];
 
@@ -49,6 +65,12 @@ type CompanyField = (typeof COMPANY_FIELDS)[number];
 
       <h2 class="section-title">{{ t('admin.settings.hub.company') }}</h2>
       <p class="hint">{{ t('admin.settings.hub.companyHint') }}</p>
+      @if (missing().length > 0) {
+        <p class="incomplete" role="status" data-testid="company-incomplete">
+          <mat-icon>warning</mat-icon>
+          <span>{{ t('admin.settings.hub.incomplete', { fields: missingLabels(t) }) }}</span>
+        </p>
+      }
       <form [formGroup]="companyForm" (ngSubmit)="saveCompany()" novalidate>
         <div class="row">
           <mat-form-field appearance="outline">
@@ -82,6 +104,79 @@ type CompanyField = (typeof COMPANY_FIELDS)[number];
             }
           </mat-form-field>
         </div>
+        <div class="row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('admin.settings.hub.postalCode') }}</mat-label>
+            <input matInput formControlName="companyPostalCode" />
+            @if (companyForm.controls.companyPostalCode | fieldError; as e) {
+              <mat-error>{{ t(e.key, e.params) }}</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('admin.settings.hub.city') }}</mat-label>
+            <input matInput formControlName="companyCity" />
+            @if (companyForm.controls.companyCity | fieldError; as e) {
+              <mat-error>{{ t(e.key, e.params) }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('admin.settings.hub.country') }}</mat-label>
+            <input matInput formControlName="companyCountry" />
+            @if (companyForm.controls.companyCountry | fieldError; as e) {
+              <mat-error>{{ t(e.key, e.params) }}</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('admin.settings.hub.taxNumber') }}</mat-label>
+            <input matInput formControlName="companyTaxNumber" />
+            @if (companyForm.controls.companyTaxNumber | fieldError; as e) {
+              <mat-error>{{ t(e.key, e.params) }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <h3 class="sub-title">{{ t('admin.settings.hub.invoiceDetails') }}</h3>
+        <p class="hint">{{ t('admin.settings.hub.invoiceDetailsHint') }}</p>
+        <div class="row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('admin.settings.hub.bankName') }}</mat-label>
+            <input matInput formControlName="companyBankName" />
+            @if (companyForm.controls.companyBankName | fieldError; as e) {
+              <mat-error>{{ t(e.key, e.params) }}</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('admin.settings.hub.iban') }}</mat-label>
+            <input matInput formControlName="companyIban" />
+            @if (companyForm.controls.companyIban | fieldError; as e) {
+              <mat-error>{{ t(e.key, e.params) }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('admin.settings.hub.bic') }}</mat-label>
+            <input matInput formControlName="companyBic" />
+            @if (companyForm.controls.companyBic | fieldError; as e) {
+              <mat-error>{{ t(e.key, e.params) }}</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('admin.settings.hub.paymentTerms') }}</mat-label>
+            <input matInput formControlName="companyPaymentTermsDays" type="number" min="0" max="365" />
+            @if (companyForm.controls.companyPaymentTermsDays | fieldError; as e) {
+              <mat-error>{{ t(e.key, e.params) }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>{{ t('admin.settings.hub.invoiceFooter') }}</mat-label>
+          <input matInput formControlName="companyInvoiceFooter" />
+          @if (companyForm.controls.companyInvoiceFooter | fieldError; as e) {
+            <mat-error>{{ t(e.key, e.params) }}</mat-error>
+          }
+        </mat-form-field>
         <button mat-flat-button type="submit" [disabled]="saving()" data-testid="save-hub-company">
           {{ t('actions.save') }}
         </button>
@@ -197,6 +292,17 @@ type CompanyField = (typeof COMPANY_FIELDS)[number];
     .logo-row button {
       margin-top: 8px;
     }
+    .incomplete {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 16px;
+      color: var(--mat-sys-error);
+    }
+    .sub-title {
+      font: var(--mat-sys-title-small);
+      margin: 8px 0 0;
+    }
     .states {
       list-style: none;
       margin: 0 0 16px;
@@ -231,14 +337,37 @@ export class HubSettingsComponent implements OnInit {
     companyName: '',
     companyLegalName: '',
     companyAddress: '',
+    companyPostalCode: '',
+    companyCity: '',
+    companyCountry: '',
     companyVatId: '',
+    companyTaxNumber: '',
+    companyBankName: '',
+    companyIban: '',
+    companyBic: '',
+    companyInvoiceFooter: '',
   };
+
+  /** The payment term as stored, kept apart because it is a number. */
+  private storedPaymentTerms = 14;
+
+  /** Which invoice details the service still considers missing. */
+  readonly missing = signal<string[]>([]);
 
   readonly companyForm = this.fb.group({
     companyName: ['', Validators.maxLength(200)],
     companyLegalName: ['', Validators.maxLength(200)],
     companyAddress: ['', Validators.maxLength(500)],
+    companyPostalCode: ['', Validators.maxLength(20)],
+    companyCity: ['', Validators.maxLength(100)],
+    companyCountry: ['', Validators.maxLength(100)],
     companyVatId: ['', Validators.maxLength(64)],
+    companyTaxNumber: ['', Validators.maxLength(50)],
+    companyBankName: ['', Validators.maxLength(255)],
+    companyIban: ['', Validators.maxLength(34)],
+    companyBic: ['', Validators.maxLength(11)],
+    companyPaymentTermsDays: [14, [Validators.min(0), Validators.max(365)]],
+    companyInvoiceFooter: ['', Validators.maxLength(1000)],
   });
 
   readonly logoForm = this.fb.group({
@@ -267,9 +396,19 @@ export class HubSettingsComponent implements OnInit {
         companyName: company.companyName ?? '',
         companyLegalName: company.companyLegalName ?? '',
         companyAddress: company.companyAddress ?? '',
+        companyPostalCode: company.companyPostalCode ?? '',
+        companyCity: company.companyCity ?? '',
+        companyCountry: company.companyCountry ?? '',
         companyVatId: company.companyVatId ?? '',
+        companyTaxNumber: company.companyTaxNumber ?? '',
+        companyBankName: company.companyBankName ?? '',
+        companyIban: company.companyIban ?? '',
+        companyBic: company.companyBic ?? '',
+        companyInvoiceFooter: company.companyInvoiceFooter ?? '',
       };
-      this.companyForm.reset({ ...this.stored });
+      this.storedPaymentTerms = company.companyPaymentTermsDays ?? 14;
+      this.missing.set(company.missingCompanyFields ?? []);
+      this.companyForm.reset({ ...this.stored, companyPaymentTermsDays: this.storedPaymentTerms });
       this.logoForm.reset({ logoUrl: company.brandLogo ?? '' });
       // Credentials are never echoed back, so the fields start empty every time.
       this.keysForm.reset({
@@ -286,6 +425,25 @@ export class HubSettingsComponent implements OnInit {
     }
   }
 
+  /**
+   * The fields the service still wants, under the labels this form gives them.
+   * An unknown name is shown as it came, so a new requirement is still legible
+   * here before this list learns about it.
+   */
+  missingLabels(t: (key: string) => string): string {
+    const labels: Record<string, string> = {
+      companyName: 'companyName',
+      companyAddress: 'address',
+      companyPostalCode: 'postalCode',
+      companyCity: 'city',
+      companyVatId: 'vatId',
+      companyTaxNumber: 'taxNumber',
+    };
+    return this.missing()
+      .map((field) => (labels[field] ? t('admin.settings.hub.' + labels[field]) : field))
+      .join(', ');
+  }
+
   /** Patches the fields that differ from what the service reported, and nothing else. */
   async saveCompany(): Promise<void> {
     if (this.companyForm.invalid) {
@@ -293,11 +451,16 @@ export class HubSettingsComponent implements OnInit {
       return;
     }
     const value = this.companyForm.getRawValue();
-    const body: Partial<Record<CompanyField, string>> = {};
+    const body: Partial<Record<CompanyField, string>> & { companyPaymentTermsDays?: number } = {};
     for (const field of COMPANY_FIELDS) {
-      const next = value[field].trim();
+      // An IBAN is written with spaces as often as without, and is the same
+      // account either way; the service stores it in one form.
+      const next =
+        field === 'companyIban' ? value[field].split(' ').join('').toUpperCase() : value[field].trim();
       if (next !== this.stored[field]) body[field] = next;
     }
+    const terms = Number(value.companyPaymentTermsDays);
+    if (Number.isFinite(terms) && terms !== this.storedPaymentTerms) body.companyPaymentTermsDays = terms;
     if (Object.keys(body).length === 0) {
       this.notify.success('admin.settings.hub.nothingChanged');
       return;

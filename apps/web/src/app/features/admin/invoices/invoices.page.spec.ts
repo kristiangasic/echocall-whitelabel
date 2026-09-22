@@ -4,7 +4,9 @@ import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
+import { DownloadService } from '../../../core/download/download.service';
 import type { ResellerInvoiceRow } from '../../../core/hub/hub.models';
+import { NotifyService } from '../../../core/notify/notify.service';
 import { ADMIN_TEXTS, provideTestI18n } from '../../../testing/i18n';
 import { AdminInvoicesPage } from './invoices.page';
 
@@ -56,9 +58,13 @@ const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 describe('AdminInvoicesPage', () => {
   let http: HttpTestingController;
   let dialogResult: unknown;
+  let saved: { name: string; type: string }[];
+  let errors: string[];
 
   beforeEach(async () => {
     dialogResult = undefined;
+    saved = [];
+    errors = [];
     await TestBed.configureTestingModule({
       imports: [AdminInvoicesPage, provideTestI18n()],
       providers: [
@@ -66,6 +72,19 @@ describe('AdminInvoicesPage', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(dialogResult) }) } },
+        {
+          provide: DownloadService,
+          useValue: { save: (blob: Blob, name: string) => saved.push({ name, type: blob.type }) },
+        },
+        {
+          provide: NotifyService,
+          useValue: {
+            error: (key: string) => errors.push(key),
+            errorKey: (code: string) => 'errors.' + code,
+            success: () => {},
+            apiError: () => {},
+          },
+        },
       ],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
@@ -189,5 +208,41 @@ describe('AdminInvoicesPage', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain(ADMIN_TEXTS.invoices.empty);
+  });
+
+  // The hub answers a proxied call with a link into its own session, which a
+  // portal browser cannot open, so the document comes through the portal.
+  it('downloads the document through the portal and names it after the invoice', async () => {
+    const fixture = await render();
+
+    const done = fixture.componentInstance.download(ROWS[0]);
+    await settle();
+    const request = http.expectOne('/api/admin/invoices/21/pdf');
+    expect(request.request.responseType).toBe('blob');
+    request.flush(new Blob(['%PDF-1.4'], { type: 'application/pdf' }));
+    await done;
+
+    expect(saved).toEqual([{ name: 'R7-202609-0001.pdf', type: 'application/pdf' }]);
+    expect(fixture.componentInstance.downloading()).toBeNull();
+  });
+
+  // A failed blob request carries its envelope as a Blob, which reads as
+  // 'unknown' unless it is parsed - the operator would never learn what to fix.
+  it('reports what the refusal said instead of a generic failure', async () => {
+    const fixture = await render();
+
+    const done = fixture.componentInstance.download(ROWS[0]);
+    await settle();
+    http.expectOne('/api/admin/invoices/21/pdf').flush(
+      new Blob([JSON.stringify({ error: { code: 'company_details_incomplete', message: 'incomplete' } })], {
+        type: 'application/json',
+      }),
+      { status: 409, statusText: 'Conflict' },
+    );
+    await done;
+
+    expect(errors).toEqual(['errors.company_details_incomplete']);
+    expect(saved).toEqual([]);
+    expect(fixture.componentInstance.downloading()).toBeNull();
   });
 });
