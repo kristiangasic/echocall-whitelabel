@@ -30,7 +30,7 @@ body:
     attributes:
       label: Version
       description: The release or the commit the installation runs.
-      placeholder: v0.1.0, or the commit hash
+      placeholder: v0.2.0, or the commit hash
     validations:
       required: true
   - type: dropdown

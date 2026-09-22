@@ -98,7 +98,7 @@ they should not be reachable from the internet.
 
 ```bash
 git fetch --tags
-git checkout v0.1.0          # or: git pull, for the tip of main
+git checkout v0.2.0          # or: git pull, for the tip of main
 docker compose up -d --build
 ```
 

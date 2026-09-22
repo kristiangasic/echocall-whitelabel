@@ -1,6 +1,6 @@
 {
   "name": "@echocall/whitelabel-api-client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Typed client for the EchoCall public API, generated from the published OpenAPI document",
   "license": "Apache-2.0",

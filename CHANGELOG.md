@@ -7,6 +7,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-22
+
 ### Added
 
 - A code of conduct, issue and pull request templates, and a dependency bot, so the
@@ -30,10 +32,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   customer still holds, so a working line cannot be dropped by accident. It needs a
   service that carries `DELETE /resellers/phone-numbers/{id}`; against an older one the
   button answers with an error and nothing is removed.
-- **Invoices** in the admin panel hands an invoice over as a PDF. Raising one was possible
-  before, handing it over was not. The service renders the document and the portal streams
-  the bytes, so reading it needs nothing but a portal session. It needs a service that
-  carries `GET /resellers/invoices/{id}/pdf`.
+- **Invoices** in the admin panel hands an invoice over as a PDF, from the list and from
+  the invoice's own page. Raising one was possible before, handing it over was not. The
+  service renders the document and the portal streams the bytes, so reading it needs
+  nothing but a portal session. It needs a service that carries
+  `GET /resellers/invoices/{id}/pdf`.
 - **Settings, Invoice details** carries what goes on those invoices in the operator's own
   name: address, tax numbers, bank details, payment term and footer. It names the
   mandatory fields that are still empty, because while one of them is, the service refuses
@@ -90,15 +93,18 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `spec/`. A service answering that path from an outdated file used to overwrite the
   vendored document with an older one, which silently dropped endpoints from the generated
   client.
-
 - Collections are read whether the service answers them as a bare array or wrapped in a
   `{ data }` envelope. Which of the two arrives depends on the endpoint and on the release
   the service runs; the portal used to require the envelope, so an operator panel talking
   to an older service showed an empty customer list and an error instead of the customers.
+- Deleting a customer who never had a portal login is recorded with the address the
+  service had for them. The audit row is all that remains of the customer, and for such a
+  customer it used to carry no address at all.
 
 ## [0.1.0] - 2026-09-17
 
-First public release.
+The first complete version. It was never tagged, so 0.2.0 is the first tagged release; the
+link below points at the commit that carried this version.
 
 ### Added
 
@@ -156,4 +162,6 @@ First public release.
 - Documentation: README, architecture, configuration, self-hosting, database and operating
   guides, a written security review, security policy, contribution guidelines.
 
-[0.1.0]: https://github.com/kristiangasic/echocall-whitelabel/releases/tag/v0.1.0
+[Unreleased]: https://github.com/kristiangasic/echocall-whitelabel/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/kristiangasic/echocall-whitelabel/releases/tag/v0.2.0
+[0.1.0]: https://github.com/kristiangasic/echocall-whitelabel/tree/c41c033
