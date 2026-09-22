@@ -24,6 +24,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   is exercised on every run.
 - **Settings, Sign-up** in the admin panel carries the sign-up switch. It cannot be
   switched on while no mail server is configured, because a sign-up depends on mail.
+- **Numbers** in the admin panel can remove a number from the inventory. Importing was a
+  one-way street until now: a trunk typed in wrong, or one whose contract has ended,
+  stayed in the list for good. The button asks first, and the service refuses a number a
+  customer still holds, so a working line cannot be dropped by accident. It needs a
+  service that carries `DELETE /resellers/phone-numbers/{id}`; against an older one the
+  button answers with an error and nothing is removed.
 
 ### Changed
 
