@@ -22,22 +22,23 @@ Usage, limits, balance and plan data are never stored - they are fetched live pe
 
 NestJS 12, ESM, Express. Modules:
 
-| Module      | Responsibility                                                                                   |
-| ----------- | ------------------------------------------------------------------------------------------------ |
-| `config`    | Loads and validates the environment once at startup (zod); fails fast                            |
-| `db`        | Kysely with a PostgreSQL or MySQL dialect picked from `DATABASE_URL`; runs migrations on startup |
-| `echocall`  | Typed client factory for the EchoCall API plus a cached hub status (periodic re-check)           |
-| `auth`      | Sessions (httpOnly cookie), CSRF guard, roles guard, login rate limiting                         |
-| `setup`     | First-run: connection check and creation of the initial admin                                    |
-| `admin/*`   | Overview, user management (invite, edit, disable, delete), customers, impersonation              |
-| `admin/hub` | Forwards allow-listed operator calls to the EchoCall API under `/api/admin/hub`                  |
-| `settings`  | Branding (name, logo, color, legal links, default language) and SMTP                             |
-| `account`   | Own profile, the customer usage overview and invoice downloads                                   |
-| `hub-proxy` | Forwards allow-listed customer calls to the EchoCall API under `/api/hub`                        |
-| `embed`     | Re-serves the chat widget from the portal's own domain under `/embed`                            |
-| `audit`     | Append-only log of admin actions with actor, IP and outcome                                      |
-| `mail`      | Invitation and sign-in link mails via SMTP; falls back to one-time links                         |
-| `health`    | `/healthz` (liveness) and `/readyz` (database + hub) for orchestration                           |
+| Module           | Responsibility                                                                                   |
+| ---------------- | ------------------------------------------------------------------------------------------------ |
+| `config`         | Loads and validates the environment once at startup (zod); fails fast                            |
+| `db`             | Kysely with a PostgreSQL or MySQL dialect picked from `DATABASE_URL`; runs migrations on startup |
+| `echocall`       | Typed client factory for the EchoCall API plus a cached hub status (periodic re-check)           |
+| `auth`           | Sessions (httpOnly cookie), CSRF guard, roles guard, login rate limiting                         |
+| `setup`          | First-run: connection check and creation of the initial admin                                    |
+| `admin/*`        | Overview, user management (invite, edit, disable, delete), customers, impersonation              |
+| `admin/hub`      | Forwards allow-listed operator calls to the EchoCall API under `/api/admin/hub`                  |
+| `admin/invoices` | Streams the PDF of an invoice the operator raised, fetched from the EchoCall API                 |
+| `settings`       | Branding (name, logo, color, legal links, default language) and SMTP                             |
+| `account`        | Own profile, the customer usage overview and invoice downloads                                   |
+| `hub-proxy`      | Forwards allow-listed customer calls to the EchoCall API under `/api/hub`                        |
+| `embed`          | Re-serves the chat widget from the portal's own domain under `/embed`                            |
+| `audit`          | Append-only log of admin actions with actor, IP and outcome                                      |
+| `mail`           | Invitation and sign-in link mails via SMTP; falls back to one-time links                         |
+| `health`         | `/healthz` (liveness) and `/readyz` (database + hub) for orchestration                           |
 
 Cross-cutting rules:
 
@@ -71,7 +72,9 @@ typed straight from the OpenAPI document. Three rules keep that from becoming a 
 
 Anything that is not a plain forward stays in its own controller: the account module, for
 instance, fetches an invoice PDF from the hub and streams the bytes, because the hub's own
-download link is readable only by a hub browser session.
+download link is readable only by a hub browser session. The operator's own invoices work
+the same way in `admin/invoices`, and both controllers rewrite the filename they hand to
+the browser unless the hub's own is plainly a filename.
 
 ## The operator proxy (`/api/admin/hub`)
 

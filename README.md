@@ -41,9 +41,9 @@ filled with invented example customers (`npm run screenshots` regenerates them).
 - You (the operator) sign in to the **admin panel** and run the business there: customers
   (create an EchoCall account and its portal login in one step, top up and withdraw
   balance, read transactions and usage), plans and pricing, subscriptions, add-ons,
-  invoices, phone numbers, support tickets, revenue and cost analytics, the agents your
-  customers built, your own company data and payment keys, plus portal branding, mail
-  settings and the audit log.
+  invoices and their PDF, phone numbers, support tickets, revenue and cost analytics,
+  the agents your customers built, your own company data and payment keys, plus portal
+  branding, mail settings and the audit log.
 - Your customers sign in to the **customer portal**: voice agents and chatbots, phone
   numbers, conversations with transcripts, analytics, knowledge base, integrations,
   campaigns and support requests, next to usage, balance, plan and invoices.

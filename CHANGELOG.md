@@ -30,6 +30,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   customer still holds, so a working line cannot be dropped by accident. It needs a
   service that carries `DELETE /resellers/phone-numbers/{id}`; against an older one the
   button answers with an error and nothing is removed.
+- **Invoices** in the admin panel hands an invoice over as a PDF. Raising one was possible
+  before, handing it over was not. The service renders the document and the portal streams
+  the bytes, so reading it needs nothing but a portal session. It needs a service that
+  carries `GET /resellers/invoices/{id}/pdf`.
+- **Settings, Invoice details** carries what goes on those invoices in the operator's own
+  name: address, tax numbers, bank details, payment term and footer. It names the
+  mandatory fields that are still empty, because while one of them is, the service refuses
+  to raise or render an invoice at all.
 
 ### Changed
 
