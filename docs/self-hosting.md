@@ -107,6 +107,14 @@ failed migration stops the start instead of leaving half a schema; they are forw
 so the way back from a release is that dump. Read [CHANGELOG.md](../CHANGELOG.md) before
 you upgrade, then check `/readyz` and sign in once afterwards.
 
+An install set up before 0.2.0, while the project was still called `echocall-light`, keeps
+its database only under the old project name. Compose names the volume after the project,
+so put `COMPOSE_PROJECT_NAME=echocall-light` into `.env` before the first
+`docker compose up` on the new code. Without that line Compose creates
+`echocall-whitelabel_db-data`, empty, and the portal opens on its first-run page while the
+data sits untouched in `echocall-light_db-data`. `docker compose config | grep ^name:`
+shows which name is in effect.
+
 ## Backups
 
 Everything the portal owns lives in its database (accounts, settings including your logo,

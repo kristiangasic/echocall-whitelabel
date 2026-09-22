@@ -54,8 +54,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - The project is called EchoCall White Label Portal. The repository, the container
   image, the npm workspaces (`@echocall/whitelabel-api`, `-web`, `-api-client`) and the
   example database names carry `whitelabel` instead of `light`, because the old name
-  said nothing about what the software does. An existing install keeps its database;
-  only the project name in `compose.yaml` and the image tag change.
+  said nothing about what the software does. An existing install keeps its database
+  when `.env` pins the old project name (`COMPOSE_PROJECT_NAME=echocall-light`), because
+  Compose names the database volume after the project; without that line the new name
+  starts an empty database next to the old one. [docs/self-hosting.md](docs/self-hosting.md)
+  has the step.
 - The generated client carries `hubLoginEnabled` on customer creation, so the field the
   portal already sends is typed rather than passed untyped, and the delete endpoint's
   documented behaviour (it cascades, and refuses a customer who still holds a
