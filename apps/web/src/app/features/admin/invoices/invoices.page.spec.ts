@@ -81,8 +81,8 @@ describe('AdminInvoicesPage', () => {
           useValue: {
             error: (key: string) => errors.push(key),
             errorKey: (code: string) => 'errors.' + code,
-            success: () => {},
-            apiError: () => {},
+            success: () => undefined,
+            apiError: () => undefined,
           },
         },
       ],
