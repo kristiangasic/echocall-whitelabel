@@ -464,6 +464,10 @@
     "releaseTitle": "Take the number back",
     "releaseMessage": "Number {{number}} is taken from the customer and returns to the pool. Calls to it no longer reach them afterwards.",
     "released": "The number is back in the pool.",
+    "delete": "Remove",
+    "deleteTitle": "Remove the number",
+    "deleteMessage": "Number {{number}} is removed from the pool for good, together with the trunk credentials stored with it. The contract with the carrier it came from is not affected.",
+    "deleted": "The number was removed.",
     "imported": "Number {{number}} was imported.",
     "assignDialog": {
       "title": "Assign the number",

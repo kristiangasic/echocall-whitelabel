@@ -64,6 +64,7 @@ const RULES: readonly (readonly [string, string])[] = [
   ['POST', '/resellers/phone-numbers/import'],
   ['POST', '/resellers/phone-numbers/{id}/assign'],
   ['POST', '/resellers/phone-numbers/{id}/release'],
+  ['DELETE', '/resellers/phone-numbers/{id}'],
 
   ['GET', '/resellers/tickets'],
   ['GET|PATCH', '/resellers/tickets/{id}'],

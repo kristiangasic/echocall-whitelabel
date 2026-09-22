@@ -15,6 +15,7 @@ describe('matchOperatorCall', () => {
     expect(matchOperatorCall('POST', '/resellers/addons/sell')).toBe(true);
     expect(matchOperatorCall('POST', '/resellers/invoices/7/mark-paid')).toBe(true);
     expect(matchOperatorCall('POST', '/resellers/phone-numbers/7/assign')).toBe(true);
+    expect(matchOperatorCall('DELETE', '/resellers/phone-numbers/7')).toBe(true);
     expect(matchOperatorCall('POST', '/resellers/tickets/7/escalate')).toBe(true);
     expect(matchOperatorCall('GET', '/resellers/analytics/revenue')).toBe(true);
     expect(matchOperatorCall('PATCH', '/resellers/settings/company')).toBe(true);

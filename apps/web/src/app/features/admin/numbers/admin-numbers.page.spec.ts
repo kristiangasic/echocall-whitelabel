@@ -145,6 +145,23 @@ describe('AdminNumbersPage', () => {
     await answerLoad();
   });
 
+  it('asks before removing a number from the pool for good', async () => {
+    const fixture = await render();
+
+    fixture.componentInstance.remove(FREE);
+    await settle();
+    http.expectNone('/api/admin/hub/resellers/phone-numbers/7');
+
+    dialogResult = true;
+    fixture.componentInstance.remove(FREE);
+    await settle();
+    const request = http.expectOne('/api/admin/hub/resellers/phone-numbers/7');
+    expect(request.request.method).toBe('DELETE');
+    request.flush({ success: true });
+    await settle();
+    await answerLoad();
+  });
+
   it('reads both lists again after a number was imported', async () => {
     const fixture = await render();
     dialogResult = { phoneNumber: '+4930999888' };

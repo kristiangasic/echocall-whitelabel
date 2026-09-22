@@ -93,6 +93,9 @@ import { ImportNumberDialogComponent, type ImportNumberResult } from './import-n
                 <button mat-stroked-button type="button" (click)="assign(row)" data-testid="assign">
                   {{ t('admin.numbers.assign') }}
                 </button>
+                <button mat-stroked-button type="button" (click)="remove(row)" data-testid="delete">
+                  {{ t('admin.numbers.delete') }}
+                </button>
               </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="availableColumns"></tr>
@@ -263,6 +266,34 @@ export class AdminNumbersPage implements OnInit {
         try {
           await firstValueFrom(this.hub.post(`/resellers/phone-numbers/${row.phoneNumber.id}/release`));
           this.notify.success('admin.numbers.released');
+          await this.load();
+        } catch (err) {
+          this.notify.apiError(err);
+        }
+      });
+  }
+
+  /**
+   * Drops a number out of the pool for good. Only offered for numbers no
+   * customer holds, and the confirmation spells out that the stored trunk
+   * credentials go with it while the carrier contract does not.
+   */
+  remove(number: PhoneNumber): void {
+    const data: ConfirmDialogData = {
+      titleKey: 'admin.numbers.deleteTitle',
+      messageKey: 'admin.numbers.deleteMessage',
+      params: { number: number.phoneNumber },
+      confirmKey: 'admin.numbers.delete',
+      destructive: true,
+    };
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, { data })
+      .afterClosed()
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
+        try {
+          await firstValueFrom(this.hub.delete(`/resellers/phone-numbers/${number.id}`));
+          this.notify.success('admin.numbers.deleted');
           await this.load();
         } catch (err) {
           this.notify.apiError(err);

@@ -464,6 +464,10 @@
     "releaseTitle": "Nummer zurückholen",
     "releaseMessage": "Die Nummer {{number}} wird dem Kunden entzogen und geht zurück in den Bestand. Anrufe darauf erreichen den Kunden danach nicht mehr.",
     "released": "Die Nummer liegt wieder im Bestand.",
+    "delete": "Entfernen",
+    "deleteTitle": "Nummer entfernen",
+    "deleteMessage": "Die Nummer {{number}} wird endgültig aus dem Bestand entfernt, samt der hinterlegten Trunk-Zugangsdaten. Der Vertrag beim Anbieter der Nummer bleibt davon unberührt.",
+    "deleted": "Die Nummer wurde entfernt.",
     "imported": "Die Nummer {{number}} wurde übernommen.",
     "assignDialog": {
       "title": "Nummer zuteilen",

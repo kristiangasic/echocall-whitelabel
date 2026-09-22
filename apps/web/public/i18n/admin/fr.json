@@ -464,6 +464,10 @@
     "releaseTitle": "Reprendre le numéro",
     "releaseMessage": "Le numéro {{number}} est retiré au client et retourne dans le parc. Les appels vers ce numéro ne le joindront plus.",
     "released": "Le numéro est de retour dans le parc.",
+    "delete": "Supprimer",
+    "deleteTitle": "Supprimer le numéro",
+    "deleteMessage": "Le numéro {{number}} est définitivement retiré du parc, avec les identifiants de trunk enregistrés. Le contrat auprès de l'opérateur du numéro n'est pas affecté.",
+    "deleted": "Le numéro a été supprimé.",
     "imported": "Le numéro {{number}} a été repris.",
     "assignDialog": {
       "title": "Attribuer le numéro",
