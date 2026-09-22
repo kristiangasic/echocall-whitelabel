@@ -6,7 +6,9 @@ import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
-import { readApiError } from '../../../core/errors/api-error';
+import { ApiService } from '../../../core/api/api.service';
+import { DownloadService } from '../../../core/download/download.service';
+import { readApiError, readBlobApiError } from '../../../core/errors/api-error';
 import { formatMoney, formatUnitPrice } from '../../../core/format/money';
 import { AdminHubService } from '../../../core/hub/admin-hub.service';
 import type { ResellerInvoiceDetail } from '../../../core/hub/hub.models';
@@ -52,9 +54,21 @@ import { invoiceStatusLabel } from './invoice-status';
               <p class="page-hint">{{ d.invoice.description }}</p>
             }
           </div>
-          <span class="status" [class]="'status status-' + d.invoice.status">
-            {{ statusLabel(d.invoice.status, t) }}
-          </span>
+          <div class="head-actions">
+            <span class="status" [class]="'status status-' + d.invoice.status">
+              {{ statusLabel(d.invoice.status, t) }}
+            </span>
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="download(d)"
+              [disabled]="downloading()"
+              data-testid="download-pdf"
+            >
+              <mat-icon>picture_as_pdf</mat-icon>
+              {{ t('admin.invoices.downloadPdf') }}
+            </button>
+          </div>
         </div>
 
         <dl class="facts panel">
@@ -177,6 +191,11 @@ import { invoiceStatusLabel } from './invoice-status';
     .back {
       margin-bottom: 8px;
     }
+    .head-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
     /* Grid and labels come from the shared .facts rules; only the frame is local. */
     .facts {
       margin-bottom: 8px;
@@ -202,6 +221,8 @@ import { invoiceStatusLabel } from './invoice-status';
 })
 export class AdminInvoiceDetailPage implements OnInit {
   private readonly hub = inject(AdminHubService);
+  private readonly api = inject(ApiService);
+  private readonly downloads = inject(DownloadService);
   private readonly route = inject(ActivatedRoute);
   private readonly notify = inject(NotifyService);
   private readonly language = inject(LanguageService);
@@ -210,6 +231,7 @@ export class AdminInvoiceDetailPage implements OnInit {
   readonly detail = signal<ResellerInvoiceDetail | null>(null);
   readonly loading = signal(false);
   readonly missing = signal(false);
+  readonly downloading = signal(false);
 
   ngOnInit(): void {
     void this.load(Number(this.route.snapshot.paramMap.get('id')));
@@ -245,6 +267,24 @@ export class AdminInvoiceDetailPage implements OnInit {
       timeZone: 'UTC',
     });
     return `${format.format(new Date(start))} - ${format.format(new Date(end))}`;
+  }
+
+  /**
+   * The document comes through the portal, as on the list: the service renders
+   * it on demand, and refuses with a 409 while the sender details it has to
+   * carry are incomplete, which the operator needs to read as such.
+   */
+  async download(detail: ResellerInvoiceDetail): Promise<void> {
+    this.downloading.set(true);
+    try {
+      const file = await firstValueFrom(this.api.blob(`/admin/invoices/${detail.invoice.id}/pdf`));
+      this.downloads.save(file, `${detail.invoice.invoiceNumber ?? `invoice-${detail.invoice.id}`}.pdf`);
+    } catch (err) {
+      const failure = await readBlobApiError(err);
+      this.notify.error(this.notify.errorKey(failure.code));
+    } finally {
+      this.downloading.set(false);
+    }
   }
 
   private async load(id: number): Promise<void> {

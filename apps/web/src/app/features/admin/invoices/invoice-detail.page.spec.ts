@@ -2,6 +2,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { DownloadService } from '../../../core/download/download.service';
+import { NotifyService } from '../../../core/notify/notify.service';
 import { ADMIN_TEXTS, provideTestI18n } from '../../../testing/i18n';
 import { AdminInvoiceDetailPage } from './invoice-detail.page';
 
@@ -50,8 +52,12 @@ const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 describe('AdminInvoiceDetailPage', () => {
   let http: HttpTestingController;
+  let saved: { name: string; type: string }[];
+  let errors: string[];
 
   beforeEach(async () => {
+    saved = [];
+    errors = [];
     await TestBed.configureTestingModule({
       imports: [AdminInvoiceDetailPage, provideTestI18n()],
       providers: [
@@ -59,6 +65,19 @@ describe('AdminInvoiceDetailPage', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '21' }) } } },
+        {
+          provide: DownloadService,
+          useValue: { save: (blob: Blob, name: string) => saved.push({ name, type: blob.type }) },
+        },
+        {
+          provide: NotifyService,
+          useValue: {
+            error: (key: string) => errors.push(key),
+            errorKey: (code: string) => 'errors.' + code,
+            success: () => undefined,
+            apiError: () => undefined,
+          },
+        },
       ],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
@@ -126,5 +145,43 @@ describe('AdminInvoiceDetailPage', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="missing"]')?.textContent).toContain(
       ADMIN_TEXTS.invoices.detail.notFound,
     );
+  });
+
+  // The invoice page is where a partner reads a document; it must hand it out
+  // there too, through the portal, since a hub link would need a hub session.
+  it('downloads the document from the invoice page and names it after the invoice', async () => {
+    const fixture = await render();
+    const button = fixture.nativeElement.querySelector('[data-testid="download-pdf"]') as HTMLButtonElement;
+
+    button.click();
+    await settle();
+    const request = http.expectOne('/api/admin/invoices/21/pdf');
+    expect(request.request.responseType).toBe('blob');
+    request.flush(new Blob(['%PDF-1.4'], { type: 'application/pdf' }));
+    await settle();
+
+    expect(saved).toEqual([{ name: 'R7-202609-0001.pdf', type: 'application/pdf' }]);
+    expect(fixture.componentInstance.downloading()).toBe(false);
+  });
+
+  it('reports what the refusal said instead of a generic failure', async () => {
+    const fixture = await render();
+
+    const loaded = fixture.componentInstance.detail();
+    if (!loaded) throw new Error('the invoice did not load');
+
+    const done = fixture.componentInstance.download(loaded);
+    await settle();
+    http.expectOne('/api/admin/invoices/21/pdf').flush(
+      new Blob([JSON.stringify({ error: { code: 'company_details_incomplete', message: 'incomplete' } })], {
+        type: 'application/json',
+      }),
+      { status: 409, statusText: 'Conflict' },
+    );
+    await done;
+
+    expect(errors).toEqual(['errors.company_details_incomplete']);
+    expect(saved).toEqual([]);
+    expect(fixture.componentInstance.downloading()).toBe(false);
   });
 });
