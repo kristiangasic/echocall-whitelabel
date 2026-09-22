@@ -2,7 +2,7 @@
   "openapi": "3.1.3",
   "info": {
     "title": "EchoCall Developer Platform - High-Performance AI Voice & Chat API",
-    "version": "1.11.0",
+    "version": "1.12.0",
     "contact": {
       "name": "EchoCall - Support",
       "url": "https://echocall.de/support",
@@ -4843,6 +4843,73 @@
             ],
             "description": "Logo used in the branded portal.",
             "format": "uri"
+          },
+          "companyPostalCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Postal code of the sender address."
+          },
+          "companyCity": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "City of the sender address."
+          },
+          "companyCountry": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Country of the sender address."
+          },
+          "companyTaxNumber": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Tax number, for a sender that has no VAT identification number."
+          },
+          "companyBankName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Bank the payment is to reach."
+          },
+          "companyIban": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "IBAN printed on an unpaid invoice."
+          },
+          "companyBic": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "BIC printed alongside the IBAN."
+          },
+          "companyPaymentTermsDays": {
+            "type": "integer",
+            "description": "Days an invoice is given to be paid. 14 when it was never set."
+          },
+          "companyInvoiceFooter": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Free text printed at the foot of every invoice."
+          },
+          "missingCompanyFields": {
+            "type": "array",
+            "description": "Which of the details an invoice has to carry are still missing. While this is not empty, raising an invoice and rendering one are both refused with 409 `company_details_incomplete`.",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -17133,6 +17200,74 @@
                                     ],
                                     "additionalProperties": true
                                   },
+                                  "taxRate": {
+                                    "type": "string",
+                                    "description": "The tax rate the invoice was issued at, in percent, as a decimal string."
+                                  },
+                                  "pdfUrl": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "Where the rendered document is served, once one has been rendered. Readable only with a browser session, not with an API key."
+                                  },
+                                  "pdfGeneratedAt": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "date-time",
+                                    "description": "When the document was last rendered."
+                                  },
+                                  "customerName": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient name as it stood when the invoice was raised."
+                                  },
+                                  "customerCompany": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient company at that moment."
+                                  },
+                                  "customerAddress": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient street address at that moment."
+                                  },
+                                  "customerPostalCode": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient postal code at that moment."
+                                  },
+                                  "customerCity": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient city at that moment."
+                                  },
+                                  "customerCountry": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient country at that moment."
+                                  },
+                                  "customerVatId": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient VAT ID at that moment."
+                                  },
                                   "createdAt": {
                                     "type": "string",
                                     "format": "date-time",
@@ -17290,6 +17425,74 @@
                                       "null"
                                     ],
                                     "additionalProperties": true
+                                  },
+                                  "taxRate": {
+                                    "type": "string",
+                                    "description": "The tax rate the invoice was issued at, in percent, as a decimal string."
+                                  },
+                                  "pdfUrl": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "Where the rendered document is served, once one has been rendered. Readable only with a browser session, not with an API key."
+                                  },
+                                  "pdfGeneratedAt": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "format": "date-time",
+                                    "description": "When the document was last rendered."
+                                  },
+                                  "customerName": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient name as it stood when the invoice was raised."
+                                  },
+                                  "customerCompany": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient company at that moment."
+                                  },
+                                  "customerAddress": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient street address at that moment."
+                                  },
+                                  "customerPostalCode": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient postal code at that moment."
+                                  },
+                                  "customerCity": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient city at that moment."
+                                  },
+                                  "customerCountry": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient country at that moment."
+                                  },
+                                  "customerVatId": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "The recipient VAT ID at that moment."
                                   },
                                   "createdAt": {
                                     "type": "string",
@@ -17505,7 +17708,7 @@
           "Reseller"
         ],
         "summary": "Get one invoice with its line items",
-        "description": "Returns a single invoice raised by this reseller, together with the customer it is addressed to and its line items. An invoice of another reseller answers 404 `not_found`. Reseller invoices have no stored PDF column, so a PDF link is never part of this response and is always null on them; a document is rendered on demand by the billing invoice endpoints instead. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.",
+        "description": "Returns a single invoice raised by this reseller, together with the customer it is addressed to and its line items. An invoice of another reseller answers 404 `not_found`. The recipient details are a snapshot taken when the invoice was raised, so a later change to the customer record leaves the document as it went out. `pdfUrl` is null until a document has been rendered; render one with GET /resellers/invoices/{id}/pdf. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.",
         "parameters": [
           {
             "name": "id",
@@ -17628,6 +17831,74 @@
                           ],
                           "additionalProperties": true
                         },
+                        "taxRate": {
+                          "type": "string",
+                          "description": "The tax rate the invoice was issued at, in percent, as a decimal string."
+                        },
+                        "pdfUrl": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Where the rendered document is served, once one has been rendered. Readable only with a browser session, not with an API key."
+                        },
+                        "pdfGeneratedAt": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date-time",
+                          "description": "When the document was last rendered."
+                        },
+                        "customerName": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The recipient name as it stood when the invoice was raised."
+                        },
+                        "customerCompany": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The recipient company at that moment."
+                        },
+                        "customerAddress": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The recipient street address at that moment."
+                        },
+                        "customerPostalCode": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The recipient postal code at that moment."
+                        },
+                        "customerCity": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The recipient city at that moment."
+                        },
+                        "customerCountry": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The recipient country at that moment."
+                        },
+                        "customerVatId": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The recipient VAT ID at that moment."
+                        },
                         "createdAt": {
                           "type": "string",
                           "format": "date-time",
@@ -17741,6 +18012,98 @@
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "read:resellers"
+            ]
+          }
+        ],
+        "x-required-scope": "read:resellers"
+      }
+    },
+    "/resellers/invoices/{id}/pdf": {
+      "get": {
+        "tags": [
+          "Reseller"
+        ],
+        "summary": "Render an invoice as PDF",
+        "description": "Renders an invoice this reseller raised and answers in whichever form the `Accept` header asks for. Send `Accept: application/pdf` and the body is the document itself, which is what an API key should use: the `pdfUrl` of the JSON form points at a route only a signed-in browser session can read. The document carries the reseller as its sender and the recipient details as they stood when the invoice was raised. It is drawn on every call rather than served from a cache, so a correction to the company details is on the next copy. An invoice of another reseller answers 404 `not_found`. While the company details required on an invoice are incomplete nothing is rendered at all: the call answers 409 `company_details_incomplete` and lists the missing fields in `error.missing`, which are filled in with PATCH /resellers/settings/company. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identifier of the invoice. A value that is not an integer is answered with 400 `invalid_id`.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "required": false,
+            "description": "Set to `application/pdf` to receive the document itself. Anything else returns the JSON link.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "application/json",
+                "application/pdf"
+              ],
+              "default": "application/json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The document was rendered: the document itself, or a link to it.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pdfUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "Where the rendered invoice is served. Readable only with a browser session, not with an API key."
+                    }
+                  },
+                  "required": [
+                    "pdfUrl"
+                  ]
+                }
+              },
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary",
+                  "description": "The rendered invoice."
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
           },
           "429": {
             "$ref": "#/components/responses/RateLimited"
@@ -18109,7 +18472,7 @@
           "Reseller"
         ],
         "summary": "Take a phone number back from a customer",
-        "description": "Returns a number to the reseller inventory. The owner and the purchase timestamp are cleared, any pending cancellation is cleared as well, and a revocation timestamp is stamped. The number only has to be booked under the calling reseller: releasing a number that is already unassigned succeeds and simply rewrites the same empty state. A number belonging to another reseller, or none at all, answers 404. This endpoint takes no request body. The API key must belong to a reseller account.",
+        "description": "Returns a number to the reseller inventory. The owner and the purchase timestamp are cleared, any pending cancellation is cleared as well, and a revocation timestamp is stamped. The number also stops answering on the customer voice agent and is booked back onto the reseller account, so the next assignment starts from a clean line. The number only has to be booked under the calling reseller: releasing a number that is already unassigned succeeds and simply rewrites the same empty state. A number belonging to another reseller, or none at all, answers 404. This endpoint takes no request body. The API key must belong to a reseller account.",
         "parameters": [
           {
             "name": "id",
@@ -18152,6 +18515,76 @@
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": [
+              "write:resellers"
+            ]
+          }
+        ],
+        "x-required-scope": "write:resellers"
+      }
+    },
+    "/resellers/phone-numbers/{id}": {
+      "delete": {
+        "tags": [
+          "Reseller"
+        ],
+        "summary": "Remove a phone number from the inventory",
+        "description": "Deletes an imported number for good: the record here and its registration with the telephony provider, including the stored SIP credentials. Use it for a trunk that was imported with wrong details or whose contract has ended. The number must be booked under the calling reseller and must currently be unassigned; a number a customer still holds answers 409 `number_assigned` and has to be released first, so that a working line cannot be dropped by accident. A number belonging to another reseller, or none at all, answers 404. Deleting the record does not cancel the number with the carrier it was bought from. This endpoint takes no request body.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identifier of the phone number record to delete. A non-numeric value answers 400 `invalid_id`.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "x-no-request-body": "This endpoint takes no request body.",
+        "responses": {
+          "200": {
+            "description": "The number was deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success"
+                  ],
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
           },
           "429": {
             "$ref": "#/components/responses/RateLimited"
@@ -18521,6 +18954,33 @@
                   },
                   "companyEmail": {
                     "type": "string"
+                  },
+                  "companyPostalCode": {
+                    "type": "string"
+                  },
+                  "companyCity": {
+                    "type": "string"
+                  },
+                  "companyCountry": {
+                    "type": "string"
+                  },
+                  "companyTaxNumber": {
+                    "type": "string"
+                  },
+                  "companyBankName": {
+                    "type": "string"
+                  },
+                  "companyIban": {
+                    "type": "string"
+                  },
+                  "companyBic": {
+                    "type": "string"
+                  },
+                  "companyPaymentTermsDays": {
+                    "type": "number"
+                  },
+                  "companyInvoiceFooter": {
+                    "type": "string"
                   }
                 }
               }
@@ -18652,6 +19112,33 @@
                       "string",
                       "null"
                     ]
+                  },
+                  "companyPostalCode": {
+                    "type": "string"
+                  },
+                  "companyCity": {
+                    "type": "string"
+                  },
+                  "companyCountry": {
+                    "type": "string"
+                  },
+                  "companyTaxNumber": {
+                    "type": "string"
+                  },
+                  "companyBankName": {
+                    "type": "string"
+                  },
+                  "companyIban": {
+                    "type": "string"
+                  },
+                  "companyBic": {
+                    "type": "string"
+                  },
+                  "companyPaymentTermsDays": {
+                    "type": "number"
+                  },
+                  "companyInvoiceFooter": {
+                    "type": "string"
                   }
                 }
               }

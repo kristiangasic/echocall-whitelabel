@@ -5887,9 +5887,18 @@ export interface paths {
                         brandLogo?: string | null;
                         brandPrimaryColor?: string;
                         companyAddress?: string;
+                        companyBankName?: string;
+                        companyBic?: string;
+                        companyCity?: string;
+                        companyCountry?: string;
+                        companyIban?: string;
+                        companyInvoiceFooter?: string;
                         companyLegalName?: string;
                         companyLogo?: string;
                         companyName?: string;
+                        companyPaymentTermsDays?: number;
+                        companyPostalCode?: string;
+                        companyTaxNumber?: string;
                         companyVatId?: string;
                     };
                 };
@@ -7143,6 +7152,20 @@ export interface paths {
                                      * @description When the record was written.
                                      */
                                     createdAt?: string;
+                                    /** @description The recipient street address at that moment. */
+                                    customerAddress?: string | null;
+                                    /** @description The recipient city at that moment. */
+                                    customerCity?: string | null;
+                                    /** @description The recipient company at that moment. */
+                                    customerCompany?: string | null;
+                                    /** @description The recipient country at that moment. */
+                                    customerCountry?: string | null;
+                                    /** @description The recipient name as it stood when the invoice was raised. */
+                                    customerName?: string | null;
+                                    /** @description The recipient postal code at that moment. */
+                                    customerPostalCode?: string | null;
+                                    /** @description The recipient VAT ID at that moment. */
+                                    customerVatId?: string | null;
                                     /** @description What the invoice covers. */
                                     description?: string | null;
                                     /**
@@ -7170,6 +7193,13 @@ export interface paths {
                                     paidDate?: string | null;
                                     /** @description How it was or will be paid. */
                                     paymentMethod?: string | null;
+                                    /**
+                                     * Format: date-time
+                                     * @description When the document was last rendered.
+                                     */
+                                    pdfGeneratedAt?: string | null;
+                                    /** @description Where the rendered document is served, once one has been rendered. Readable only with a browser session, not with an API key. */
+                                    pdfUrl?: string | null;
                                     /** @description The reseller that raised it. */
                                     resellerId: number;
                                     /**
@@ -7181,6 +7211,8 @@ export interface paths {
                                     subtotalEur: string;
                                     /** @description Tax in EUR, as a decimal string. */
                                     taxEur?: string;
+                                    /** @description The tax rate the invoice was issued at, in percent, as a decimal string. */
+                                    taxRate?: string;
                                     /** @description Gross total in EUR, as a decimal string. */
                                     totalEur: string;
                                     /**
@@ -7212,6 +7244,20 @@ export interface paths {
                                      * @description When the record was written.
                                      */
                                     createdAt?: string;
+                                    /** @description The recipient street address at that moment. */
+                                    customerAddress?: string | null;
+                                    /** @description The recipient city at that moment. */
+                                    customerCity?: string | null;
+                                    /** @description The recipient company at that moment. */
+                                    customerCompany?: string | null;
+                                    /** @description The recipient country at that moment. */
+                                    customerCountry?: string | null;
+                                    /** @description The recipient name as it stood when the invoice was raised. */
+                                    customerName?: string | null;
+                                    /** @description The recipient postal code at that moment. */
+                                    customerPostalCode?: string | null;
+                                    /** @description The recipient VAT ID at that moment. */
+                                    customerVatId?: string | null;
                                     /** @description What the invoice covers. */
                                     description?: string | null;
                                     /**
@@ -7239,6 +7285,13 @@ export interface paths {
                                     paidDate?: string | null;
                                     /** @description How it was or will be paid. */
                                     paymentMethod?: string | null;
+                                    /**
+                                     * Format: date-time
+                                     * @description When the document was last rendered.
+                                     */
+                                    pdfGeneratedAt?: string | null;
+                                    /** @description Where the rendered document is served, once one has been rendered. Readable only with a browser session, not with an API key. */
+                                    pdfUrl?: string | null;
                                     /** @description The reseller that raised it. */
                                     resellerId: number;
                                     /**
@@ -7250,6 +7303,8 @@ export interface paths {
                                     subtotalEur: string;
                                     /** @description Tax in EUR, as a decimal string. */
                                     taxEur?: string;
+                                    /** @description The tax rate the invoice was issued at, in percent, as a decimal string. */
+                                    taxRate?: string;
                                     /** @description Gross total in EUR, as a decimal string. */
                                     totalEur: string;
                                     /**
@@ -7344,7 +7399,7 @@ export interface paths {
         };
         /**
          * Get one invoice with its line items
-         * @description Returns a single invoice raised by this reseller, together with the customer it is addressed to and its line items. An invoice of another reseller answers 404 `not_found`. Reseller invoices have no stored PDF column, so a PDF link is never part of this response and is always null on them; a document is rendered on demand by the billing invoice endpoints instead. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
+         * @description Returns a single invoice raised by this reseller, together with the customer it is addressed to and its line items. An invoice of another reseller answers 404 `not_found`. The recipient details are a snapshot taken when the invoice was raised, so a later change to the customer record leaves the document as it went out. `pdfUrl` is null until a document has been rendered; render one with GET /resellers/invoices/{id}/pdf. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
          */
         get: {
             parameters: {
@@ -7383,6 +7438,20 @@ export interface paths {
                                  * @description When the record was written.
                                  */
                                 createdAt?: string;
+                                /** @description The recipient street address at that moment. */
+                                customerAddress?: string | null;
+                                /** @description The recipient city at that moment. */
+                                customerCity?: string | null;
+                                /** @description The recipient company at that moment. */
+                                customerCompany?: string | null;
+                                /** @description The recipient country at that moment. */
+                                customerCountry?: string | null;
+                                /** @description The recipient name as it stood when the invoice was raised. */
+                                customerName?: string | null;
+                                /** @description The recipient postal code at that moment. */
+                                customerPostalCode?: string | null;
+                                /** @description The recipient VAT ID at that moment. */
+                                customerVatId?: string | null;
                                 /** @description What the invoice covers. */
                                 description?: string | null;
                                 /**
@@ -7410,6 +7479,13 @@ export interface paths {
                                 paidDate?: string | null;
                                 /** @description How it was or will be paid. */
                                 paymentMethod?: string | null;
+                                /**
+                                 * Format: date-time
+                                 * @description When the document was last rendered.
+                                 */
+                                pdfGeneratedAt?: string | null;
+                                /** @description Where the rendered document is served, once one has been rendered. Readable only with a browser session, not with an API key. */
+                                pdfUrl?: string | null;
                                 /** @description The reseller that raised it. */
                                 resellerId: number;
                                 /**
@@ -7421,6 +7497,8 @@ export interface paths {
                                 subtotalEur: string;
                                 /** @description Tax in EUR, as a decimal string. */
                                 taxEur?: string;
+                                /** @description The tax rate the invoice was issued at, in percent, as a decimal string. */
+                                taxRate?: string;
                                 /** @description Gross total in EUR, as a decimal string. */
                                 totalEur: string;
                                 /**
@@ -7577,6 +7655,116 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/resellers/invoices/{id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Render an invoice as PDF
+         * @description Renders an invoice this reseller raised and answers in whichever form the `Accept` header asks for. Send `Accept: application/pdf` and the body is the document itself, which is what an API key should use: the `pdfUrl` of the JSON form points at a route only a signed-in browser session can read. The document carries the reseller as its sender and the recipient details as they stood when the invoice was raised. It is drawn on every call rather than served from a cache, so a correction to the company details is on the next copy. An invoice of another reseller answers 404 `not_found`. While the company details required on an invoice are incomplete nothing is rendered at all: the call answers 409 `company_details_incomplete` and lists the missing fields in `error.missing`, which are filled in with PATCH /resellers/settings/company. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Set to `application/pdf` to receive the document itself. Anything else returns the JSON link. */
+                    Accept?: "application/json" | "application/pdf";
+                };
+                path: {
+                    /** @description Identifier of the invoice. A value that is not an integer is answered with 400 `invalid_id`. */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The document was rendered: the document itself, or a link to it. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /**
+                             * Format: uri
+                             * @description Where the rendered invoice is served. Readable only with a browser session, not with an API key.
+                             */
+                            pdfUrl: string;
+                        };
+                        "application/pdf": string;
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
+                409: components["responses"]["Conflict"];
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/resellers/phone-numbers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a phone number from the inventory
+         * @description Deletes an imported number for good: the record here and its registration with the telephony provider, including the stored SIP credentials. Use it for a trunk that was imported with wrong details or whose contract has ended. The number must be booked under the calling reseller and must currently be unassigned; a number a customer still holds answers 409 `number_assigned` and has to be released first, so that a working line cannot be dropped by accident. A number belonging to another reseller, or none at all, answers 404. Deleting the record does not cancel the number with the carrier it was bought from. This endpoint takes no request body.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Identifier of the phone number record to delete. A non-numeric value answers 400 `invalid_id`. */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The number was deleted. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success: boolean;
+                        };
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
+                409: components["responses"]["Conflict"];
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/resellers/phone-numbers/{id}/assign": {
         parameters: {
             query?: never;
@@ -7645,7 +7833,7 @@ export interface paths {
         put?: never;
         /**
          * Take a phone number back from a customer
-         * @description Returns a number to the reseller inventory. The owner and the purchase timestamp are cleared, any pending cancellation is cleared as well, and a revocation timestamp is stamped. The number only has to be booked under the calling reseller: releasing a number that is already unassigned succeeds and simply rewrites the same empty state. A number belonging to another reseller, or none at all, answers 404. This endpoint takes no request body. The API key must belong to a reseller account.
+         * @description Returns a number to the reseller inventory. The owner and the purchase timestamp are cleared, any pending cancellation is cleared as well, and a revocation timestamp is stamped. The number also stops answering on the customer voice agent and is booked back onto the reseller account, so the next assignment starts from a clean line. The number only has to be booked under the calling reseller: releasing a number that is already unassigned succeeds and simply rewrites the same empty state. A number belonging to another reseller, or none at all, answers 404. This endpoint takes no request body. The API key must belong to a reseller account.
          */
         post: {
             parameters: {
@@ -8281,9 +8469,18 @@ export interface paths {
                 content: {
                     "application/json": {
                         companyAddress?: string;
+                        companyBankName?: string;
+                        companyBic?: string;
+                        companyCity?: string;
+                        companyCountry?: string;
                         companyEmail?: string;
+                        companyIban?: string;
+                        companyInvoiceFooter?: string;
                         companyName?: string;
+                        companyPaymentTermsDays?: number;
                         companyPhone?: string;
+                        companyPostalCode?: string;
+                        companyTaxNumber?: string;
                         companyVatId?: string;
                     };
                 };
@@ -11829,6 +12026,18 @@ export interface components {
             brandPrimaryColor?: string | null;
             /** @description Postal address. */
             companyAddress?: string | null;
+            /** @description Bank the payment is to reach. */
+            companyBankName?: string | null;
+            /** @description BIC printed alongside the IBAN. */
+            companyBic?: string | null;
+            /** @description City of the sender address. */
+            companyCity?: string | null;
+            /** @description Country of the sender address. */
+            companyCountry?: string | null;
+            /** @description IBAN printed on an unpaid invoice. */
+            companyIban?: string | null;
+            /** @description Free text printed at the foot of every invoice. */
+            companyInvoiceFooter?: string | null;
             /** @description Registered legal name. */
             companyLegalName?: string | null;
             /**
@@ -11838,8 +12047,16 @@ export interface components {
             companyLogo?: string | null;
             /** @description Trading name. */
             companyName?: string | null;
+            /** @description Days an invoice is given to be paid. 14 when it was never set. */
+            companyPaymentTermsDays?: number;
+            /** @description Postal code of the sender address. */
+            companyPostalCode?: string | null;
+            /** @description Tax number, for a sender that has no VAT identification number. */
+            companyTaxNumber?: string | null;
             /** @description VAT identification number. */
             companyVatId?: string | null;
+            /** @description Which of the details an invoice has to carry are still missing. While this is not empty, raising an invoice and rendering one are both refused with 409 `company_details_incomplete`. */
+            missingCompanyFields?: string[];
         };
         /** @description Prepaid voice and chat credits held by the reseller. */
         ResellerCredits: {
