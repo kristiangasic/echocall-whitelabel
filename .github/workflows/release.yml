@@ -26,7 +26,7 @@ jobs:
           --health-timeout 3s
           --health-retries 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: 22
@@ -58,7 +58,7 @@ jobs:
     needs: verify
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -84,7 +84,7 @@ jobs:
     needs: image
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # The notes are the section this version already has in the changelog.
       - name: Cut the changelog section for this tag
         run: |
