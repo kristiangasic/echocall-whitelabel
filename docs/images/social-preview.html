@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Social preview</title>
+    <style>
+      :root {
+        --ink: #1b1c1f;
+        --muted: #5b6170;
+        --blue: #2f6be6;
+        --blue-soft: #e4ecfb;
+        --line: #d9dde6;
+        --bg: #f7f8fb;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1280px;
+        height: 640px;
+        overflow: hidden;
+        background: var(--bg);
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        color: var(--ink);
+      }
+      .card {
+        position: relative;
+        width: 1280px;
+        height: 640px;
+      }
+      .glow {
+        position: absolute;
+        right: -160px;
+        top: -220px;
+        width: 760px;
+        height: 760px;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, #dbe6fb 0%, rgba(219, 230, 251, 0) 100%);
+      }
+      .text {
+        position: absolute;
+        left: 72px;
+        top: 78px;
+        width: 560px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 34px;
+      }
+      .brand .mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
+        background: var(--blue);
+      }
+      .brand span {
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+      }
+      h1 {
+        margin: 0 0 20px;
+        font-size: 48px;
+        line-height: 1.08;
+        font-weight: 700;
+        letter-spacing: -0.6px;
+      }
+      h1 em {
+        font-style: normal;
+        color: var(--blue);
+      }
+      p {
+        margin: 0 0 30px;
+        font-size: 22px;
+        line-height: 1.4;
+        color: var(--muted);
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .chip {
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #fff;
+        border: 1px solid var(--line);
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .chip.blue {
+        background: var(--blue-soft);
+        border-color: var(--blue-soft);
+        color: #1e4fb8;
+      }
+      .shot {
+        position: absolute;
+        left: 690px;
+        top: 72px;
+        width: 900px;
+        height: 620px;
+        border-radius: 16px;
+        background: #fff;
+        border: 1px solid var(--line);
+        box-shadow:
+          0 30px 60px rgba(27, 28, 31, 0.16),
+          0 4px 12px rgba(27, 28, 31, 0.06);
+        overflow: hidden;
+      }
+      .bar {
+        height: 34px;
+        background: #f1f3f7;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding-left: 14px;
+      }
+      .bar i {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #cfd4de;
+        display: block;
+      }
+      .shot img {
+        display: block;
+        width: 1160px;
+        height: auto;
+      }
+      .foot {
+        position: absolute;
+        left: 72px;
+        bottom: 44px;
+        width: 590px;
+        font-size: 17px;
+        color: var(--muted);
+      }
+      .foot b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="glow"></div>
+      <div class="text">
+        <div class="brand">
+          <div class="mark"></div>
+          <span>EchoCall White Label Portal</span>
+        </div>
+        <h1>Sell AI voice and chat agents <em>under your own brand</em></h1>
+        <p>
+          A self-hosted customer portal and admin panel for resellers. Your domain, your logo, your prices. Up
+          and running with one Docker command.
+        </p>
+        <div class="chips">
+          <span class="chip blue">Open source</span><span class="chip">Angular 22</span
+          ><span class="chip">NestJS</span><span class="chip">Apache-2.0</span
+          ><span class="chip">Docker</span>
+        </div>
+      </div>
+      <div class="shot">
+        <div class="bar"><i></i><i></i><i></i></div>
+        <img src="SHOT_SRC" alt="" />
+      </div>
+      <div class="foot"><b>github.com/kristiangasic/echocall-whitelabel</b></div>
+    </div>
+  </body>
+</html>

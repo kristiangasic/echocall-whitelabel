@@ -19,6 +19,7 @@
     "test": "npm run test --workspaces --if-present",
     "e2e": "npm run e2e -w apps/web",
     "screenshots": "npm run screenshots -w apps/web",
+    "social-preview": "npm run social-preview -w apps/web",
     "check:vendor-neutral": "node scripts/check-vendor-neutral.mjs",
     "check:white-label": "node scripts/check-white-label.mjs",
     "check:paginator-intl": "node scripts/check-paginator-intl.mjs",
