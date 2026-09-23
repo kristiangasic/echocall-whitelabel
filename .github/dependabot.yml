@@ -14,6 +14,11 @@ updates:
         patterns: ['@nestjs/*']
       development:
         dependency-type: development
+    ignore:
+      # TypeScript 7 is the native compiler; Angular, the Nest CLI and
+      # typescript-eslint do not build on it yet. Minors keep coming.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
   - package-ecosystem: github-actions
     directory: '/'
     schedule:
@@ -22,3 +27,8 @@ updates:
     directory: '/docker'
     schedule:
       interval: monthly
+    ignore:
+      # The image follows Node's LTS line and moves majors on purpose, not
+      # whenever a new odd release appears.
+      - dependency-name: node
+        update-types: ['version-update:semver-major']
