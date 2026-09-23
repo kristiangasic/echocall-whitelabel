@@ -22,6 +22,12 @@ branding settings.
 **Who it is for:** agencies and resellers who want to offer voice and chat agents to their
 own customers under their own brand, without building a portal from scratch.
 
+**Background reading:** the
+[guide on echocall.de](https://echocall.de/en/blog/white-label-ki-agenten-portal-open-source-2026)
+explains the business model behind the portal, why the customer data stays on your own
+server, and how a reseller runs it day to day. Also available
+[in German](https://echocall.de/blog/white-label-ki-agenten-portal-open-source-2026).
+
 ## What it looks like
 
 The operator's side on the left, the customer's side on the right, taken from a portal
