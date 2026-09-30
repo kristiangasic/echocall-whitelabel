@@ -7,6 +7,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- The database and application containers now tell automatic image updaters to leave them
+  alone (`com.centurylinklabs.watchtower.enable=false`). An updater that swaps the database
+  out while it holds live data, or that reaches for a registry image under the name of the
+  one built here, does more harm than the update is worth. Upgrade both on purpose, the way
+  [docs/self-hosting.md](docs/self-hosting.md) describes.
+
 ## [0.2.0] - 2026-09-22
 
 ### Added

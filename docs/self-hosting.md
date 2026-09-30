@@ -107,6 +107,12 @@ failed migration stops the start instead of leaving half a schema; they are forw
 so the way back from a release is that dump. Read [CHANGELOG.md](../CHANGELOG.md) before
 you upgrade, then check `/readyz` and sign in once afterwards.
 
+Both containers carry `com.centurylinklabs.watchtower.enable=false`, so an automatic
+image updater such as Watchtower passes them by. That is on purpose. The database holds
+live data while it runs and should move to a new Postgres when you say so, with a dump in
+hand, and the application image is built here and exists in no registry, so whatever an
+updater finds under that name is not ours. Upgrade both the way this page describes.
+
 An install set up before 0.2.0, while the project was still called `echocall-light`, keeps
 its data only under the old names. Put these three lines into `.env` before the first
 `docker compose up` on the new code:

@@ -139,6 +139,12 @@ Migrations run at startup, before the server listens, and a failed migration sto
 start instead of leaving half a schema. They are forward-only: the way back from a release
 is the backup you took before it. Read `CHANGELOG.md` first, take a dump, then upgrade.
 
+Both containers carry `com.centurylinklabs.watchtower.enable=false`, so an automatic
+image updater such as Watchtower passes them by. That is on purpose. The database holds
+live data while it runs and should move to a new Postgres when you say so, with a dump in
+hand, and the application image is built here and exists in no registry, so whatever an
+updater finds under that name is not ours. Upgrade both the way this page describes.
+
 After the upgrade, check `/readyz` and sign in once. An install from before 0.2.0 needs
 `COMPOSE_PROJECT_NAME=echocall-light`, `DB_NAME=echocall_light` and `DB_USER=light` in
 `.env` first, or it does not find its database; [self-hosting.md](self-hosting.md) explains

@@ -16,6 +16,11 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    labels:
+      # Keep automatic image updaters away from the database. Watchtower and the
+      # like replace a container as soon as the tag moves, and this one holds the
+      # live data while it runs. Upgrade Postgres on purpose, with a dump in hand.
+      com.centurylinklabs.watchtower.enable: 'false'
     restart: unless-stopped
 
   app:
@@ -31,6 +36,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    labels:
+      # This image is built right here and exists in no registry, so an updater
+      # that goes looking for it can only find something that is not ours.
+      com.centurylinklabs.watchtower.enable: 'false'
     restart: unless-stopped
 
 volumes:
