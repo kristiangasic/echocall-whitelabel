@@ -1006,7 +1006,7 @@ export interface paths {
         };
         /**
          * Get agent statistics
-         * @description Returns the lifetime aggregate metrics of one voice agent: call counts, durations, cost, token consumption and quality scores. The figures come from a rolling aggregate, not from a scan of the call records, so they are cheap to read but can lag the very latest call by a short interval. An agent that exists but has no recorded activity yet answers 200 with `stats` set to null. An agent that does not belong to the calling account answers 404, the same as one that does not exist; a path segment that is not a number answers 400.
+         * @description Returns the lifetime aggregate metrics of one voice agent: call counts, durations, cost, token consumption and quality scores. The figures are read live from the conversation records, so a call is counted as soon as it has ended. Cost is in USD, as the voice engine reports it. An agent that exists but has no recorded activity yet answers 200 with `stats` set to null. An agent that does not belong to the calling account answers 404, the same as one that does not exist; a path segment that is not a number answers 400.
          */
         get: {
             parameters: {
@@ -1016,7 +1016,7 @@ export interface paths {
                     "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
                 };
                 path: {
-                    /** @description Numeric identifier of the voice agent. */
+                    /** @description Identifier of the voice agent, as `agent_42` or the bare number. */
                     agentId: number;
                 };
                 cookie?: never;
@@ -1062,7 +1062,7 @@ export interface paths {
         };
         /**
          * Get chatbot statistics
-         * @description Returns the lifetime aggregate metrics of one chatbot: session counts, durations, cost, token consumption and quality scores. The counters are the same aggregate used for voice agents, so the fields are named after calls even though they count chat sessions, and the two call-length extremes tracked for voice are absent. A chatbot with no recorded activity yet answers 200 with `stats` set to null. A chatbot that does not belong to the calling account answers 404, the same as one that does not exist; a path segment that is not a number answers 400.
+         * @description Returns the lifetime aggregate metrics of one chatbot: session counts, durations, cost, token consumption and quality scores. The figures are read live from the conversation records and count a chat session and a spoken widget conversation alike, so the fields are named after calls even though most entries are chat sessions; the two call-length extremes tracked for voice agents are absent. Cost is in USD, as the voice engine reports it. A chatbot with no recorded activity yet answers 200 with `stats` set to null. A chatbot that does not belong to the calling account answers 404, the same as one that does not exist; a path segment that is not a number answers 400.
          */
         get: {
             parameters: {
@@ -1118,12 +1118,12 @@ export interface paths {
         };
         /**
          * Get daily call metrics
-         * @description Returns one row of call metrics per calendar day, oldest day first, ready to plot as a time series. Days with no activity are absent from the result rather than present as zeroes. The window is the last `days` days counted back from now, optionally narrowed to a single agent. The applied `days` value and `agentId` are echoed in the response, which matters because an out-of-range or non-numeric `days` is silently replaced by 30 rather than rejected.
+         * @description Returns one row of metrics per calendar day, oldest day first, ready to plot as a time series. The figures are read live from the conversation records, so a conversation is counted as soon as it has ended, and the voice calls, chat sessions and avatar sessions of the account each count as one call. Cost is in USD, as the voice engine reports it. Days with no activity are absent from the result rather than present as zeroes. The window is the last `days` days counted back from now, optionally narrowed to a single agent. The applied `days` value and `agentId` are echoed in the response, which matters because an out-of-range or non-numeric `days` is silently replaced by 30 rather than rejected.
          */
         get: {
             parameters: {
                 query?: {
-                    /** @description Restrict the series to one agent. Omit for the whole account. No error is raised for an unknown agent, the series is simply empty. */
+                    /** @description Restrict the series to one voice agent, by its `agent_42` identifier or the bare number. Omit for the whole account. No error is raised for an unknown agent, the series is simply empty. */
                     agentId?: string;
                     /** @description Size of the window in days. Must be between 1 and 365; a value outside that range, or one that is not a number, falls back to 30 without an error. Check the `days` field of the response for what was used. */
                     days?: number;
@@ -1144,7 +1144,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            /** @description Agent the series was narrowed to, or null for the whole account. */
+                            /** @description Agent the series was narrowed to, as `agent_42`, or null for the whole account. */
                             agentId: string | null;
                             /** @description One entry per day that had activity, oldest first. */
                             data: components["schemas"]["DailyStat"][];
@@ -2129,7 +2129,7 @@ export interface paths {
         put?: never;
         /**
          * Create a chatbot
-         * @description Creates a chatbot and provisions it in the voice engine in the same request, then derives its hosted chat page URL from the new identifier. Only `name` is required; the language defaults to `de` and the widget appearance fields all have platform defaults. Unset text fields are stored with sensible fallbacks, so an omitted `greeting` becomes a generic opening line and an omitted display name repeats `name`. The response carries the new identifier and the public URL, not the full chatbot.
+         * @description Creates a chatbot and provisions it in the voice engine in the same request, then derives its hosted chat page URL from the new identifier. Only `name` is required; the language defaults to `de` and the widget appearance fields all have platform defaults. The widget microphone stays off until `enableVoice` is true; a spoken conversation then runs on the voice allowance of the account, and `voiceId` chooses the voice from GET /voices or GET /voices/available. Unset text fields are stored with sensible fallbacks, so an omitted `greeting` becomes a generic opening line and an omitted display name repeats `name`. The response carries the new identifier and the public URL, not the full chatbot.
          */
         post: {
             parameters: {
@@ -2172,6 +2172,8 @@ export interface paths {
                              */
                             user_transcript?: boolean;
                         };
+                        /** @description Lets visitors talk to the chatbot through the widget microphone. A spoken conversation runs on the voice allowance of the account. Defaults to false. */
+                        enableVoice?: boolean;
                         /** @description The first message a user sees when opening the chat widget. */
                         greeting?: string;
                         /**
@@ -2209,11 +2211,10 @@ export interface paths {
                         systemPrompt?: string;
                         /** @description Marketing hook shown in the proactive teaser bubble before the visitor opens the chat. Independent from `greeting`. Empty = no teaser bubble. */
                         teaserMessage?: string;
-                        /**
-                         * @description If true, disables voice messages and only allows text interaction.
-                         * @default true
-                         */
+                        /** @description Deprecated: the inverse of `enableVoice`, kept for clients written against 1.12. `false` switches the voice on. Ignored when `enableVoice` is present. */
                         textOnlyMode?: boolean;
+                        /** @description The voice the chatbot speaks with, from GET /voices or GET /voices/available. Omit for the engine default voice. Only used while `enableVoice` is true. */
+                        voiceId?: string;
                         /** @description Overrides the widget UI chrome language (buttons, placeholders, aria-labels), independent of the conversation `language`. Empty/omitted = automatic, follows `language`. */
                         widgetLanguage?: string;
                         /**
@@ -2293,7 +2294,7 @@ export interface paths {
         };
         /**
          * Get a chatbot
-         * @description Returns the full public configuration of one chatbot, including the system prompt, the widget appearance, the embedding restrictions and the retention settings. `allowedDomains` and `supportedLanguages` come back as arrays, or as null when nothing is configured. Internal voice engine identifiers are never included. A reseller key may read any chatbot belonging to that reseller; an ordinary key only its own.
+         * @description Returns the full public configuration of one chatbot, including the system prompt, the widget appearance, the widget voice, the embedding restrictions and the retention settings. `allowedDomains` and `supportedLanguages` come back as arrays, or as null when nothing is configured. Internal voice engine identifiers are never included. A reseller key may read any chatbot belonging to that reseller; an ordinary key only its own.
          */
         get: {
             parameters: {
@@ -2372,7 +2373,7 @@ export interface paths {
         head?: never;
         /**
          * Update a chatbot
-         * @description Changes one or more fields on a chatbot. Every field is optional, but the body must contain at least one recognised field: an empty object is rejected with 400. The change is pushed to the voice engine first and then stored; if the engine rejects the push the request still succeeds and the new values are stored, so verify the chatbot afterwards when live behaviour matters. The response is a confirmation message only, not the updated chatbot.
+         * @description Changes one or more fields on a chatbot. Every field is optional, but the body must contain at least one recognised field: an empty object is rejected with 400. `enableVoice` switches the widget microphone, `voiceId` changes the voice and an empty `voiceId` returns to the engine default; the chosen voice is kept while the microphone is off. The older `textOnlyMode` is still read as the inverse of `enableVoice`. The change is pushed to the voice engine first and then stored; if the engine rejects the push the request still succeeds and the new values are stored, so verify the chatbot afterwards when live behaviour matters. The response is a confirmation message only, not the updated chatbot.
          */
         patch: {
             parameters: {
@@ -2395,6 +2396,8 @@ export interface paths {
                         allowedDomains?: string[];
                         /** @description Display name shown in the chat widget */
                         chatbotDisplayName?: string;
+                        /** @description Switches the widget microphone on or off. The chosen voice is kept while it is off. */
+                        enableVoice?: boolean;
                         /** @description Initial greeting message */
                         greeting?: string;
                         /** @description Primary language for the chatbot (ISO 639-1). Affects NLP and default greetings. */
@@ -2422,8 +2425,10 @@ export interface paths {
                         systemPrompt?: string;
                         /** @description Marketing hook shown in the proactive teaser bubble before the visitor opens the chat. Independent from `greeting`. Empty = no teaser bubble. */
                         teaserMessage?: string;
-                        /** @description Disable voice input/output */
+                        /** @description Deprecated: the inverse of `enableVoice`, kept for clients written against 1.12. Ignored when `enableVoice` is present. */
                         textOnlyMode?: boolean;
+                        /** @description The voice the chatbot speaks with, from GET /voices or GET /voices/available. An empty string returns to the engine default voice. */
+                        voiceId?: string;
                         /** @description Overrides the widget UI chrome language (buttons, placeholders, aria-labels), independent of the conversation `language`. Empty/omitted = automatic, follows `language`. */
                         widgetLanguage?: string;
                         /**
@@ -6619,8 +6624,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Adjust customer voice or chat credits
-         * @description Adds to or removes from the voice-minute or chat-conversation allowance of one customer and writes the supplied `reason` into the reseller activity log. `amount` is a signed number: send a negative value to take credits away. The new value is floored at 0, so an over-large deduction empties the allowance instead of going negative. This moves the customer allowance only: it does not touch the reseller own credit pool and it books no wallet transaction. A customer that does not exist, or that belongs to another reseller, is reported as 404 `not_found` rather than 403, so one reseller cannot probe for the customers of another. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
+         * Grant customer voice or chat credits
+         * @description Grants voice minutes or chat conversations to one customer on top of its plan and writes the supplied `reason` into the reseller activity log. The grant is booked in the customer credits ledger, which the usage pool reads, so it shows in the customer dashboard at once. `amount` is a whole number greater than 0: this endpoint only adds. To reduce what a customer may use, change its plan. This moves the customer allowance only: it does not touch the reseller own credit pool and it books no wallet transaction. A customer that does not exist, or that belongs to another reseller, is reported as 404 `not_found` rather than 403, so one reseller cannot probe for the customers of another. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.
          */
         post: {
             parameters: {
@@ -6632,25 +6637,39 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            /** @description Which allowance to move, by how much, and why. `reason` is required and is stored in the activity log. */
+            /** @description Which allowance to grant to, how many units, and why. `reason` is required and is stored in the activity log. */
             requestBody: {
                 content: {
                     "application/json": {
+                        /** @description Units to add: whole voice minutes or chat conversations. Must be greater than 0; this endpoint only grants. */
                         amount: number;
-                        /** @enum {string} */
+                        /**
+                         * @description Which allowance the grant goes to.
+                         * @enum {string}
+                         */
                         creditType: "voice_minutes" | "chat_conversations";
+                        /** @description Why the grant is made. Stored in the activity log and on the ledger entry. */
                         reason: string;
                     };
                 };
             };
             responses: {
-                /** @description The allowance was adjusted. */
+                /** @description The grant was booked. */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
+                            /** @description The ledger balance of that allowance after the grant. */
+                            balance: number;
+                            /**
+                             * @description The allowance the grant went to.
+                             * @enum {string}
+                             */
+                            creditType: "voice_minutes" | "chat_conversations";
+                            /** @description The units that were added. */
+                            granted: number;
                             /** @description Always true. */
                             success: boolean;
                         };
@@ -10571,14 +10590,14 @@ export interface components {
         AgentStats: {
             /** @description Calls the caller dropped. */
             abandonedCalls?: number | null;
-            /** @description Mean cost per call in EUR. */
+            /** @description Mean cost per call in USD. */
             averageCostPerCall?: number;
             /** @description Mean call length in seconds. */
             averageDuration?: number;
-            /** @description Mean automatic evaluation score. */
-            averageEvaluationScore?: number;
-            /** @description Mean satisfaction rating, where ratings were collected. */
-            averageSatisfactionScore?: number;
+            /** @description Mean automatic evaluation score. Null while no evaluation was recorded. */
+            averageEvaluationScore?: number | null;
+            /** @description Mean satisfaction rating. Null while no rating was collected. */
+            averageSatisfactionScore?: number | null;
             /** @description Calls that failed. */
             failedCalls?: number | null;
             /**
@@ -10596,7 +10615,7 @@ export interface components {
             successRate?: number;
             /** @description Calls handled. */
             totalCalls?: number | null;
-            /** @description Total cost in EUR. */
+            /** @description Total cost in USD, as the voice engine reports it. */
             totalCost?: number;
             /** @description Total call seconds. */
             totalDuration?: number | null;
@@ -10816,6 +10835,8 @@ export interface components {
              * @description When the chatbot was created.
              */
             createdAt?: string;
+            /** @description Whether visitors can talk to the chatbot through the widget microphone. */
+            enableVoice?: boolean;
             /** @description Opening message shown when a visitor starts a chat. */
             greeting?: string | null;
             /** @description Numeric chatbot identifier. */
@@ -10853,13 +10874,20 @@ export interface components {
             systemPrompt?: string | null;
             /** @description Message shown next to the closed launcher. */
             teaserMessage?: string | null;
-            /** @description When true, the widget offers no voice mode. */
+            /**
+             * @deprecated
+             * @description The inverse of `enableVoice`, kept for clients written against 1.12. Read `enableVoice` instead.
+             */
             textOnlyMode?: boolean;
             /**
              * Format: date-time
              * @description When the chatbot was last changed.
              */
             updatedAt?: string;
+            /** @description The voice the chatbot speaks with, from GET /voices or GET /voices/available. Null means the engine default voice. */
+            voiceId?: string | null;
+            /** @description Display name of that voice, as it was known when the voice was chosen. */
+            voiceName?: string | null;
             /** @description Language of the widget interface, independent of the bot language. */
             widgetLanguage?: string | null;
             /** @description Corner the launcher is anchored to. */
@@ -10892,18 +10920,18 @@ export interface components {
              */
             type: "url" | "text" | "file";
         };
-        /** @description Lifetime aggregate metrics for one chatbot. Null when the chatbot has no recorded activity yet. Same fields as the agent statistics minus `longestCall` and `shortestCall`, which are not tracked for chat. */
+        /** @description Lifetime aggregate metrics for one chatbot. Null when the chatbot has no recorded activity yet. Counts chat sessions and spoken widget conversations alike. Same fields as the agent statistics minus `longestCall` and `shortestCall`. */
         ChatbotStats: {
             /** @description Sessions the visitor dropped. */
             abandonedCalls?: number | null;
-            /** @description Mean cost per session in EUR. */
+            /** @description Mean cost per session in USD. */
             averageCostPerCall?: number;
             /** @description Mean session length in seconds. */
             averageDuration?: number;
-            /** @description Mean automatic evaluation score. */
-            averageEvaluationScore?: number;
-            /** @description Mean satisfaction rating. */
-            averageSatisfactionScore?: number;
+            /** @description Mean automatic evaluation score. Null while no evaluation was recorded. */
+            averageEvaluationScore?: number | null;
+            /** @description Mean satisfaction rating. Null while no rating was collected. */
+            averageSatisfactionScore?: number | null;
             /** @description Sessions that failed. */
             failedCalls?: number | null;
             /**
@@ -10917,7 +10945,7 @@ export interface components {
             successRate?: number;
             /** @description Sessions handled. */
             totalCalls?: number | null;
-            /** @description Total cost in EUR. */
+            /** @description Total cost in USD, as the voice engine reports it. */
             totalCost?: number;
             /** @description Total session seconds. */
             totalDuration?: number | null;
@@ -11180,6 +11208,8 @@ export interface components {
                  */
                 user_transcript: boolean;
             };
+            /** @description Lets visitors talk to the chatbot through the widget microphone. A spoken conversation runs on the voice allowance of the account. Defaults to false. */
+            enableVoice?: boolean;
             /** @description The first message a user sees when opening the chat widget. */
             greeting?: string;
             /**
@@ -11217,11 +11247,10 @@ export interface components {
             systemPrompt?: string;
             /** @description Marketing hook shown in the proactive teaser bubble before the visitor opens the chat. Independent from `greeting`. Empty = no teaser bubble. */
             teaserMessage?: string;
-            /**
-             * @description If true, disables voice messages and only allows text interaction.
-             * @default true
-             */
-            textOnlyMode: boolean;
+            /** @description Deprecated: the inverse of `enableVoice`, kept for clients written against 1.12. `false` switches the voice on. Ignored when `enableVoice` is present. */
+            textOnlyMode?: boolean;
+            /** @description The voice the chatbot speaks with, from GET /voices or GET /voices/available. Omit for the engine default voice. Only used while `enableVoice` is true. */
+            voiceId?: string;
             /** @description Overrides the widget UI chrome language (buttons, placeholders, aria-labels), independent of the conversation `language`. Empty/omitted = automatic, follows `language`. */
             widgetLanguage?: string;
             /**
@@ -11275,7 +11304,7 @@ export interface components {
             /** @description A concise summary of the issue or request. */
             subject: string;
         };
-        /** @description Call metrics for one calendar day. */
+        /** @description Metrics for one calendar day. A voice call, a chat session and an avatar session each count as one call. */
         DailyStat: {
             /** @description Agent the row belongs to. */
             agentId?: string | null;
@@ -11296,7 +11325,7 @@ export interface components {
             successfulCalls?: number | null;
             /** @description Successful calls as a fraction of all calls. */
             successRate?: number;
-            /** @description Cost of the day in EUR. */
+            /** @description Cost of the day in USD, as the voice engine reports it. */
             totalCost?: number;
             /** @description Total call seconds. */
             totalDuration?: number | null;
@@ -12474,6 +12503,8 @@ export interface components {
             allowedDomains?: string[];
             /** @description Display name shown in the chat widget */
             chatbotDisplayName?: string;
+            /** @description Switches the widget microphone on or off. The chosen voice is kept while it is off. */
+            enableVoice?: boolean;
             /** @description Initial greeting message */
             greeting?: string;
             /** @description Primary language for the chatbot (ISO 639-1). Affects NLP and default greetings. */
@@ -12501,8 +12532,10 @@ export interface components {
             systemPrompt?: string;
             /** @description Marketing hook shown in the proactive teaser bubble before the visitor opens the chat. Independent from `greeting`. Empty = no teaser bubble. */
             teaserMessage?: string;
-            /** @description Disable voice input/output */
+            /** @description Deprecated: the inverse of `enableVoice`, kept for clients written against 1.12. Ignored when `enableVoice` is present. */
             textOnlyMode?: boolean;
+            /** @description The voice the chatbot speaks with, from GET /voices or GET /voices/available. An empty string returns to the engine default voice. */
+            voiceId?: string;
             /** @description Overrides the widget UI chrome language (buttons, placeholders, aria-labels), independent of the conversation `language`. Empty/omitted = automatic, follows `language`. */
             widgetLanguage?: string;
             /**

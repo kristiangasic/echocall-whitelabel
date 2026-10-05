@@ -1,4 +1,5 @@
-import { Component, computed, inject, type OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, type OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -13,7 +14,7 @@ import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { DEFAULT_CHAT_LLM_MODEL, LLM_MODEL_OPTIONS } from '../../../core/hub/hub.constants';
 import { HubService } from '../../../core/hub/hub.service';
-import type { AgentLanguage, Chatbot, Language } from '../../../core/hub/hub.models';
+import type { AgentLanguage, AvailableVoice, Chatbot, Language, Voice } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { KnowledgePanelComponent } from '../shared/knowledge-panel.component';
 import { IntegrationsPanelComponent } from '../shared/integrations-panel.component';
@@ -198,11 +199,34 @@ const STYLES = ['standard', 'rounded', 'compact'];
                 }
               </mat-select>
             </mat-form-field>
-            <div class="toggles span-all">
-              <mat-slide-toggle formControlName="textOnlyMode">
-                {{ t('user.chatbots.textOnlyMode') }}
+            <div class="span-all voice-switch">
+              <mat-slide-toggle formControlName="enableVoice" data-testid="chatbot-voice-toggle">
+                {{ t('user.chatbots.enableVoice') }}
               </mat-slide-toggle>
+              <p class="hint">{{ t('user.chatbots.enableVoiceHint') }}</p>
             </div>
+            @if (voiceOn()) {
+              <mat-form-field appearance="outline" class="span-all">
+                <mat-label>{{ t('user.chatbots.voice') }}</mat-label>
+                <mat-select formControlName="voiceId" data-testid="chatbot-voice">
+                  <mat-option value="">{{ t('user.agents.voiceDefault') }}</mat-option>
+                  @if (voices().length) {
+                    <mat-optgroup [label]="t('user.agents.voicesOwn')">
+                      @for (voice of voices(); track voice.id) {
+                        <mat-option [value]="voice.id">{{ voice.name }}</mat-option>
+                      }
+                    </mat-optgroup>
+                  }
+                  @if (availableVoices().length) {
+                    <mat-optgroup [label]="t('user.agents.voicesLibrary')">
+                      @for (voice of availableVoices(); track voice.id) {
+                        <mat-option [value]="voice.id">{{ voice.name }}</mat-option>
+                      }
+                    </mat-optgroup>
+                  }
+                </mat-select>
+              </mat-form-field>
+            }
             <div class="span-all subgroup">
               <h3 class="subgroup-title">{{ t('user.chatbots.sections.domains') }}</h3>
               <mat-form-field appearance="outline" subscriptSizing="dynamic">
@@ -298,6 +322,16 @@ const STYLES = ['standard', 'rounded', 'compact'];
     .span-all {
       grid-column: 1 / -1;
     }
+    .voice-switch {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .hint {
+      margin: 0;
+      font: var(--mat-sys-body-small);
+      color: var(--mat-sys-on-surface-variant);
+    }
     .actions {
       display: flex;
       justify-content: flex-end;
@@ -313,6 +347,7 @@ export class ChatbotEditPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly notify = inject(NotifyService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly positions = POSITIONS;
   readonly sizes = SIZES;
@@ -327,6 +362,10 @@ export class ChatbotEditPage implements OnInit {
   readonly languages = signal<AgentLanguage[]>([]);
   /** Interface locales, for the widget's own labels. A different list from the ones the bot writes in. */
   readonly interfaceLocales = signal<Language[]>([]);
+  readonly voices = signal<Voice[]>([]);
+  readonly availableVoices = signal<AvailableVoice[]>([]);
+  /** Whether the voice lists were fetched; they are only asked for once the microphone is on. */
+  private voicesLoaded = false;
 
   readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],
@@ -344,17 +383,30 @@ export class ChatbotEditPage implements OnInit {
     widgetLanguage: [''],
     teaserMessage: [''],
     llmModel: [DEFAULT_CHAT_LLM_MODEL],
-    textOnlyMode: [true],
+    enableVoice: [false],
+    voiceId: [''],
     allowedDomains: [''],
     retentionDays: [30],
     saveConversations: [true],
     zeroPiiRetention: [false],
   });
 
+  /** Follows the microphone switch, so the voice picker shows and hides with it. */
+  readonly voiceOn = toSignal(this.form.controls.enableVoice.valueChanges, {
+    initialValue: this.form.controls.enableVoice.value,
+  });
+
   ngOnInit(): void {
     const raw = this.route.snapshot.paramMap.get('id');
     this.id.set(raw === 'new' || raw === null ? null : Number(raw));
     void this.loadLanguages();
+    // Most chatbots stay text only, so the voice lists are fetched the moment
+    // the microphone goes on, here or on a loaded chatbot, and not before.
+    this.form.controls.enableVoice.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((on) => {
+        if (on) void this.ensureVoices();
+      });
     if (this.id() !== null) void this.loadChatbot();
   }
 
@@ -403,6 +455,23 @@ export class ChatbotEditPage implements OnInit {
     }
   }
 
+  /** The voices the chatbot can speak with: the same two lists the agents choose from. */
+  private async ensureVoices(): Promise<void> {
+    if (this.voicesLoaded) return;
+    this.voicesLoaded = true;
+    try {
+      const [voices, available] = await Promise.all([
+        firstValueFrom(this.hub.list<Voice>('/voices')),
+        firstValueFrom(this.hub.list<AvailableVoice>('/voices/available')),
+      ]);
+      this.voices.set(voices);
+      this.availableVoices.set(available);
+    } catch (err) {
+      this.voicesLoaded = false;
+      this.notify.apiError(err);
+    }
+  }
+
   private async loadChatbot(): Promise<void> {
     this.loading.set(true);
     try {
@@ -424,7 +493,8 @@ export class ChatbotEditPage implements OnInit {
         widgetLanguage: bot.widgetLanguage ?? '',
         teaserMessage: bot.teaserMessage ?? '',
         llmModel: bot.llmModel ?? DEFAULT_CHAT_LLM_MODEL,
-        textOnlyMode: bot.textOnlyMode ?? true,
+        enableVoice: bot.enableVoice ?? false,
+        voiceId: bot.voiceId ?? '',
         allowedDomains: (bot.allowedDomains ?? []).join(', '),
         retentionDays: bot.retentionDays ?? 30,
         saveConversations: bot.saveConversations ?? true,
@@ -455,7 +525,8 @@ export class ChatbotEditPage implements OnInit {
       ...(v.widgetLanguage ? { widgetLanguage: v.widgetLanguage } : {}),
       ...(v.teaserMessage ? { teaserMessage: v.teaserMessage } : {}),
       llmModel: v.llmModel,
-      textOnlyMode: v.textOnlyMode,
+      enableVoice: v.enableVoice,
+      ...(v.voiceId ? { voiceId: v.voiceId } : {}),
       ...(this.domains(v.allowedDomains).length ? { allowedDomains: this.domains(v.allowedDomains) } : {}),
       retentionDays: v.retentionDays,
       saveConversations: v.saveConversations,
@@ -483,7 +554,8 @@ export class ChatbotEditPage implements OnInit {
     if (c.widgetLanguage.dirty) out['widgetLanguage'] = v.widgetLanguage;
     if (c.teaserMessage.dirty) out['teaserMessage'] = v.teaserMessage;
     if (c.llmModel.dirty) out['llmModel'] = v.llmModel;
-    if (c.textOnlyMode.dirty) out['textOnlyMode'] = v.textOnlyMode;
+    if (c.enableVoice.dirty) out['enableVoice'] = v.enableVoice;
+    if (c.voiceId.dirty) out['voiceId'] = v.voiceId;
     if (c.allowedDomains.dirty) out['allowedDomains'] = this.domains(v.allowedDomains);
     if (c.retentionDays.dirty) out['retentionDays'] = v.retentionDays;
     if (c.saveConversations.dirty) out['saveConversations'] = v.saveConversations;

@@ -61,13 +61,35 @@ describe('ChatbotEditPage', () => {
       language: 'en',
       allowedDomains: ['example.com', 'shop.example.com'],
       widgetPosition: 'bottom-right',
-      textOnlyMode: true,
+      enableVoice: false,
       retentionDays: 30,
     });
     expect(request.request.body).not.toHaveProperty('status');
     request.flush({ id: 7, name: 'Shop Helper', status: 'active' }, { status: 201, statusText: 'Created' });
     await pending;
     expect(router.url).toBe('/app/chatbots');
+  });
+
+  it('fetches the voices once the microphone is switched on and sends the chosen one', async () => {
+    const fixture = await setup('new');
+    await fixture.whenStable();
+
+    fixture.componentInstance.form.patchValue({ name: 'Shop Helper', enableVoice: true });
+    http
+      .expectOne('/api/hub/voices')
+      .flush({ data: [{ id: 'voice_1', name: 'Clara', status: 'ready', type: 'premade' }] });
+    http.expectOne('/api/hub/voices/available').flush({ data: [] });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="chatbot-voice"]')).not.toBeNull();
+
+    fixture.componentInstance.form.patchValue({ voiceId: 'voice_1' });
+    const pending = fixture.componentInstance.save();
+
+    const request = http.expectOne('/api/hub/chatbots');
+    expect(request.request.body).toMatchObject({ enableVoice: true, voiceId: 'voice_1' });
+    request.flush({ id: 8, name: 'Shop Helper', status: 'active' }, { status: 201, statusText: 'Created' });
+    await pending;
   });
 
   it('loads a chatbot and patches only the changed fields', async () => {

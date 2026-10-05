@@ -2,7 +2,7 @@
   "openapi": "3.1.3",
   "info": {
     "title": "EchoCall Developer Platform - High-Performance AI Voice & Chat API",
-    "version": "1.12.0",
+    "version": "1.13.0",
     "contact": {
       "name": "EchoCall - Support",
       "url": "https://echocall.de/support",
@@ -852,9 +852,28 @@
               "type": "string"
             }
           },
+          "enableVoice": {
+            "type": "boolean",
+            "description": "Whether visitors can talk to the chatbot through the widget microphone."
+          },
+          "voiceId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The voice the chatbot speaks with, from GET /voices or GET /voices/available. Null means the engine default voice."
+          },
+          "voiceName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Display name of that voice, as it was known when the voice was chosen."
+          },
           "textOnlyMode": {
             "type": "boolean",
-            "description": "When true, the widget offers no voice mode."
+            "deprecated": true,
+            "description": "The inverse of `enableVoice`, kept for clients written against 1.12. Read `enableVoice` instead."
           },
           "saveConversations": {
             "type": "boolean",
@@ -1067,10 +1086,17 @@
             },
             "description": "All languages the chatbot can converse in, as ISO-639-1 codes. First element = primary language."
           },
+          "enableVoice": {
+            "type": "boolean",
+            "description": "Lets visitors talk to the chatbot through the widget microphone. A spoken conversation runs on the voice allowance of the account. Defaults to false."
+          },
+          "voiceId": {
+            "type": "string",
+            "description": "The voice the chatbot speaks with, from GET /voices or GET /voices/available. Omit for the engine default voice. Only used while `enableVoice` is true."
+          },
           "textOnlyMode": {
             "type": "boolean",
-            "default": true,
-            "description": "If true, disables voice messages and only allows text interaction."
+            "description": "Deprecated: the inverse of `enableVoice`, kept for clients written against 1.12. `false` switches the voice on. Ignored when `enableVoice` is present."
           },
           "saveConversations": {
             "type": "boolean",
@@ -1213,9 +1239,17 @@
             ],
             "description": "Chatbot status"
           },
+          "enableVoice": {
+            "type": "boolean",
+            "description": "Switches the widget microphone on or off. The chosen voice is kept while it is off."
+          },
+          "voiceId": {
+            "type": "string",
+            "description": "The voice the chatbot speaks with, from GET /voices or GET /voices/available. An empty string returns to the engine default voice."
+          },
           "textOnlyMode": {
             "type": "boolean",
-            "description": "Disable voice input/output"
+            "description": "Deprecated: the inverse of `enableVoice`, kept for clients written against 1.12. Ignored when `enableVoice` is present."
           },
           "saveConversations": {
             "type": "boolean",
@@ -4071,7 +4105,7 @@
       },
       "DailyStat": {
         "type": "object",
-        "description": "Call metrics for one calendar day.",
+        "description": "Metrics for one calendar day. A voice call, a chat session and an avatar session each count as one call.",
         "properties": {
           "date": {
             "type": "string",
@@ -4119,7 +4153,7 @@
           },
           "totalCost": {
             "type": "number",
-            "description": "Cost of the day in EUR."
+            "description": "Cost of the day in USD, as the voice engine reports it."
           },
           "successRate": {
             "type": "number",
@@ -4196,11 +4230,11 @@
           },
           "totalCost": {
             "type": "number",
-            "description": "Total cost in EUR."
+            "description": "Total cost in USD, as the voice engine reports it."
           },
           "averageCostPerCall": {
             "type": "number",
-            "description": "Mean cost per call in EUR."
+            "description": "Mean cost per call in USD."
           },
           "totalTtsTokens": {
             "type": [
@@ -4221,12 +4255,18 @@
             "description": "Successful calls as a fraction of all calls."
           },
           "averageSatisfactionScore": {
-            "type": "number",
-            "description": "Mean satisfaction rating, where ratings were collected."
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Mean satisfaction rating. Null while no rating was collected."
           },
           "averageEvaluationScore": {
-            "type": "number",
-            "description": "Mean automatic evaluation score."
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Mean automatic evaluation score. Null while no evaluation was recorded."
           },
           "totalMessages": {
             "type": [
@@ -4247,7 +4287,7 @@
       },
       "ChatbotStats": {
         "type": "object",
-        "description": "Lifetime aggregate metrics for one chatbot. Null when the chatbot has no recorded activity yet. Same fields as the agent statistics minus `longestCall` and `shortestCall`, which are not tracked for chat.",
+        "description": "Lifetime aggregate metrics for one chatbot. Null when the chatbot has no recorded activity yet. Counts chat sessions and spoken widget conversations alike. Same fields as the agent statistics minus `longestCall` and `shortestCall`.",
         "properties": {
           "totalCalls": {
             "type": [
@@ -4290,11 +4330,11 @@
           },
           "totalCost": {
             "type": "number",
-            "description": "Total cost in EUR."
+            "description": "Total cost in USD, as the voice engine reports it."
           },
           "averageCostPerCall": {
             "type": "number",
-            "description": "Mean cost per session in EUR."
+            "description": "Mean cost per session in USD."
           },
           "totalTtsTokens": {
             "type": [
@@ -4315,12 +4355,18 @@
             "description": "Successful sessions as a fraction of all sessions."
           },
           "averageSatisfactionScore": {
-            "type": "number",
-            "description": "Mean satisfaction rating."
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Mean satisfaction rating. Null while no rating was collected."
           },
           "averageEvaluationScore": {
-            "type": "number",
-            "description": "Mean automatic evaluation score."
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Mean automatic evaluation score. Null while no evaluation was recorded."
           },
           "totalMessages": {
             "type": [
@@ -7072,7 +7118,7 @@
           "Chatbots"
         ],
         "summary": "Create a chatbot",
-        "description": "Creates a chatbot and provisions it in the voice engine in the same request, then derives its hosted chat page URL from the new identifier. Only `name` is required; the language defaults to `de` and the widget appearance fields all have platform defaults. Unset text fields are stored with sensible fallbacks, so an omitted `greeting` becomes a generic opening line and an omitted display name repeats `name`. The response carries the new identifier and the public URL, not the full chatbot.",
+        "description": "Creates a chatbot and provisions it in the voice engine in the same request, then derives its hosted chat page URL from the new identifier. Only `name` is required; the language defaults to `de` and the widget appearance fields all have platform defaults. The widget microphone stays off until `enableVoice` is true; a spoken conversation then runs on the voice allowance of the account, and `voiceId` chooses the voice from GET /voices or GET /voices/available. Unset text fields are stored with sensible fallbacks, so an omitted `greeting` becomes a generic opening line and an omitted display name repeats `name`. The response carries the new identifier and the public URL, not the full chatbot.",
         "requestBody": {
           "required": true,
           "description": "The chatbot configuration, covering behaviour, widget appearance and retention. `allowedDomains` restricts which sites may embed the widget; leave it out to allow any.",
@@ -7164,10 +7210,17 @@
                     },
                     "description": "All languages the chatbot can converse in, as ISO-639-1 codes. First element = primary language."
                   },
+                  "enableVoice": {
+                    "type": "boolean",
+                    "description": "Lets visitors talk to the chatbot through the widget microphone. A spoken conversation runs on the voice allowance of the account. Defaults to false."
+                  },
+                  "voiceId": {
+                    "type": "string",
+                    "description": "The voice the chatbot speaks with, from GET /voices or GET /voices/available. Omit for the engine default voice. Only used while `enableVoice` is true."
+                  },
                   "textOnlyMode": {
                     "type": "boolean",
-                    "default": true,
-                    "description": "If true, disables voice messages and only allows text interaction."
+                    "description": "Deprecated: the inverse of `enableVoice`, kept for clients written against 1.12. `false` switches the voice on. Ignored when `enableVoice` is present."
                   },
                   "saveConversations": {
                     "type": "boolean",
@@ -7302,7 +7355,7 @@
           "Chatbots"
         ],
         "summary": "Get a chatbot",
-        "description": "Returns the full public configuration of one chatbot, including the system prompt, the widget appearance, the embedding restrictions and the retention settings. `allowedDomains` and `supportedLanguages` come back as arrays, or as null when nothing is configured. Internal voice engine identifiers are never included. A reseller key may read any chatbot belonging to that reseller; an ordinary key only its own.",
+        "description": "Returns the full public configuration of one chatbot, including the system prompt, the widget appearance, the widget voice, the embedding restrictions and the retention settings. `allowedDomains` and `supportedLanguages` come back as arrays, or as null when nothing is configured. Internal voice engine identifiers are never included. A reseller key may read any chatbot belonging to that reseller; an ordinary key only its own.",
         "parameters": [
           {
             "name": "chatbotId",
@@ -7361,7 +7414,7 @@
           "Chatbots"
         ],
         "summary": "Update a chatbot",
-        "description": "Changes one or more fields on a chatbot. Every field is optional, but the body must contain at least one recognised field: an empty object is rejected with 400. The change is pushed to the voice engine first and then stored; if the engine rejects the push the request still succeeds and the new values are stored, so verify the chatbot afterwards when live behaviour matters. The response is a confirmation message only, not the updated chatbot.",
+        "description": "Changes one or more fields on a chatbot. Every field is optional, but the body must contain at least one recognised field: an empty object is rejected with 400. `enableVoice` switches the widget microphone, `voiceId` changes the voice and an empty `voiceId` returns to the engine default; the chosen voice is kept while the microphone is off. The older `textOnlyMode` is still read as the inverse of `enableVoice`. The change is pushed to the voice engine first and then stored; if the engine rejects the push the request still succeeds and the new values are stored, so verify the chatbot afterwards when live behaviour matters. The response is a confirmation message only, not the updated chatbot.",
         "parameters": [
           {
             "name": "chatbotId",
@@ -7470,9 +7523,17 @@
                     ],
                     "description": "Chatbot status"
                   },
+                  "enableVoice": {
+                    "type": "boolean",
+                    "description": "Switches the widget microphone on or off. The chosen voice is kept while it is off."
+                  },
+                  "voiceId": {
+                    "type": "string",
+                    "description": "The voice the chatbot speaks with, from GET /voices or GET /voices/available. An empty string returns to the engine default voice."
+                  },
                   "textOnlyMode": {
                     "type": "boolean",
-                    "description": "Disable voice input/output"
+                    "description": "Deprecated: the inverse of `enableVoice`, kept for clients written against 1.12. Ignored when `enableVoice` is present."
                   },
                   "saveConversations": {
                     "type": "boolean",
@@ -10219,7 +10280,7 @@
           "Analytics"
         ],
         "summary": "Get daily call metrics",
-        "description": "Returns one row of call metrics per calendar day, oldest day first, ready to plot as a time series. Days with no activity are absent from the result rather than present as zeroes. The window is the last `days` days counted back from now, optionally narrowed to a single agent. The applied `days` value and `agentId` are echoed in the response, which matters because an out-of-range or non-numeric `days` is silently replaced by 30 rather than rejected.",
+        "description": "Returns one row of metrics per calendar day, oldest day first, ready to plot as a time series. The figures are read live from the conversation records, so a conversation is counted as soon as it has ended, and the voice calls, chat sessions and avatar sessions of the account each count as one call. Cost is in USD, as the voice engine reports it. Days with no activity are absent from the result rather than present as zeroes. The window is the last `days` days counted back from now, optionally narrowed to a single agent. The applied `days` value and `agentId` are echoed in the response, which matters because an out-of-range or non-numeric `days` is silently replaced by 30 rather than rejected.",
         "parameters": [
           {
             "name": "days",
@@ -10237,7 +10298,7 @@
             "name": "agentId",
             "in": "query",
             "required": false,
-            "description": "Restrict the series to one agent. Omit for the whole account. No error is raised for an unknown agent, the series is simply empty.",
+            "description": "Restrict the series to one voice agent, by its `agent_42` identifier or the bare number. Omit for the whole account. No error is raised for an unknown agent, the series is simply empty.",
             "schema": {
               "type": "string"
             }
@@ -10267,7 +10328,7 @@
                     "agentId": {
                       "type": "string",
                       "nullable": true,
-                      "description": "Agent the series was narrowed to, or null for the whole account."
+                      "description": "Agent the series was narrowed to, as `agent_42`, or null for the whole account."
                     },
                     "data": {
                       "type": "array",
@@ -10309,13 +10370,13 @@
           "Analytics"
         ],
         "summary": "Get agent statistics",
-        "description": "Returns the lifetime aggregate metrics of one voice agent: call counts, durations, cost, token consumption and quality scores. The figures come from a rolling aggregate, not from a scan of the call records, so they are cheap to read but can lag the very latest call by a short interval. An agent that exists but has no recorded activity yet answers 200 with `stats` set to null. An agent that does not belong to the calling account answers 404, the same as one that does not exist; a path segment that is not a number answers 400.",
+        "description": "Returns the lifetime aggregate metrics of one voice agent: call counts, durations, cost, token consumption and quality scores. The figures are read live from the conversation records, so a call is counted as soon as it has ended. Cost is in USD, as the voice engine reports it. An agent that exists but has no recorded activity yet answers 200 with `stats` set to null. An agent that does not belong to the calling account answers 404, the same as one that does not exist; a path segment that is not a number answers 400.",
         "parameters": [
           {
             "name": "agentId",
             "in": "path",
             "required": true,
-            "description": "Numeric identifier of the voice agent.",
+            "description": "Identifier of the voice agent, as `agent_42` or the bare number.",
             "schema": {
               "type": "integer"
             }
@@ -10389,7 +10450,7 @@
           "Analytics"
         ],
         "summary": "Get chatbot statistics",
-        "description": "Returns the lifetime aggregate metrics of one chatbot: session counts, durations, cost, token consumption and quality scores. The counters are the same aggregate used for voice agents, so the fields are named after calls even though they count chat sessions, and the two call-length extremes tracked for voice are absent. A chatbot with no recorded activity yet answers 200 with `stats` set to null. A chatbot that does not belong to the calling account answers 404, the same as one that does not exist; a path segment that is not a number answers 400.",
+        "description": "Returns the lifetime aggregate metrics of one chatbot: session counts, durations, cost, token consumption and quality scores. The figures are read live from the conversation records and count a chat session and a spoken widget conversation alike, so the fields are named after calls even though most entries are chat sessions; the two call-length extremes tracked for voice agents are absent. Cost is in USD, as the voice engine reports it. A chatbot with no recorded activity yet answers 200 with `stats` set to null. A chatbot that does not belong to the calling account answers 404, the same as one that does not exist; a path segment that is not a number answers 400.",
         "parameters": [
           {
             "name": "chatbotId",
@@ -13774,8 +13835,8 @@
         "tags": [
           "Reseller"
         ],
-        "summary": "Adjust customer voice or chat credits",
-        "description": "Adds to or removes from the voice-minute or chat-conversation allowance of one customer and writes the supplied `reason` into the reseller activity log. `amount` is a signed number: send a negative value to take credits away. The new value is floored at 0, so an over-large deduction empties the allowance instead of going negative. This moves the customer allowance only: it does not touch the reseller own credit pool and it books no wallet transaction. A customer that does not exist, or that belongs to another reseller, is reported as 404 `not_found` rather than 403, so one reseller cannot probe for the customers of another. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.",
+        "summary": "Grant customer voice or chat credits",
+        "description": "Grants voice minutes or chat conversations to one customer on top of its plan and writes the supplied `reason` into the reseller activity log. The grant is booked in the customer credits ledger, which the usage pool reads, so it shows in the customer dashboard at once. `amount` is a whole number greater than 0: this endpoint only adds. To reduce what a customer may use, change its plan. This moves the customer allowance only: it does not touch the reseller own credit pool and it books no wallet transaction. A customer that does not exist, or that belongs to another reseller, is reported as 404 `not_found` rather than 403, so one reseller cannot probe for the customers of another. Reseller keys only, as everywhere in this group; other keys get 403 `forbidden`.",
         "parameters": [
           {
             "name": "id",
@@ -13789,7 +13850,7 @@
         ],
         "requestBody": {
           "required": true,
-          "description": "Which allowance to move, by how much, and why. `reason` is required and is stored in the activity log.",
+          "description": "Which allowance to grant to, how many units, and why. `reason` is required and is stored in the activity log.",
           "content": {
             "application/json": {
               "schema": {
@@ -13800,13 +13861,16 @@
                     "enum": [
                       "voice_minutes",
                       "chat_conversations"
-                    ]
+                    ],
+                    "description": "Which allowance the grant goes to."
                   },
                   "amount": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Units to add: whole voice minutes or chat conversations. Must be greater than 0; this endpoint only grants."
                   },
                   "reason": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Why the grant is made. Stored in the activity log and on the ledger entry."
                   }
                 },
                 "required": [
@@ -13814,14 +13878,14 @@
                   "amount",
                   "reason"
                 ],
-                "description": "Adjust Customer Credits"
+                "description": "Grant Customer Credits"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "The allowance was adjusted.",
+            "description": "The grant was booked.",
             "content": {
               "application/json": {
                 "schema": {
@@ -13830,10 +13894,29 @@
                     "success": {
                       "type": "boolean",
                       "description": "Always true."
+                    },
+                    "creditType": {
+                      "type": "string",
+                      "enum": [
+                        "voice_minutes",
+                        "chat_conversations"
+                      ],
+                      "description": "The allowance the grant went to."
+                    },
+                    "granted": {
+                      "type": "integer",
+                      "description": "The units that were added."
+                    },
+                    "balance": {
+                      "type": "number",
+                      "description": "The ledger balance of that allowance after the grant."
                     }
                   },
                   "required": [
-                    "success"
+                    "success",
+                    "creditType",
+                    "granted",
+                    "balance"
                   ]
                 }
               }

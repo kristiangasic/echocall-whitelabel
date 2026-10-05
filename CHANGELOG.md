@@ -7,8 +7,23 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Chatbots can take spoken conversations in their widget. The editor has a microphone
+  switch and, once it is on, a voice picker with the same voices the agents choose from.
+  A spoken conversation runs on the voice minutes of the account, not on the chat
+  conversations. Needs API version 1.13.0 at the service: an older service ignores the
+  two fields and the chatbot stays text only.
+
 ### Changed
 
+- The analytics pages (daily series, agent and chatbot statistics) now show live figures.
+  Up to API 1.12 the service answered them from aggregate tables that had stopped being
+  written, so every account looked idle.
+- The typed client was regenerated from API version 1.13.0: a chatbot carries `enableVoice`,
+  `voiceId` and `voiceName` (`textOnlyMode` is deprecated), a credit grant answers with the
+  new balance, and the satisfaction and evaluation scores in the statistics are null until
+  a rating exists.
 - The database and application containers now tell automatic image updaters to leave them
   alone (`com.centurylinklabs.watchtower.enable=false`). An updater that swaps the database
   out while it holds live data, or that reaches for a registry image under the name of the
