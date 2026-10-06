@@ -104,7 +104,9 @@ The schema is created and migrated automatically at startup. Details and backup 
 
 All settings are environment variables, documented one by one in
 [docs/configuration.md](docs/configuration.md) and in [.env.example](.env.example).
-The three you must set: `APP_URL`, `APP_SECRET`, `ECHOCALL_API_KEY`.
+You must set `APP_URL`, `APP_SECRET` and `ECHOCALL_API_KEY`, plus the database: with
+the Docker Compose setup `DB_PASSWORD` (Compose refuses to start without it and builds
+`DATABASE_URL` from it), with your own database server `DATABASE_URL`.
 
 ## Roles
 
