@@ -41,6 +41,12 @@ the change.
 CI runs the same steps, plus the API test suite against PostgreSQL **and** MariaDB, plus a
 Docker image build. All of them must pass.
 
+An Angular update often arrives with a second Angular runtime nested under `apps/web`:
+the Angular packages require each other at the exact same version, so npm cannot replace
+one of them at the root on its own. Two runtimes break dependency injection (NG0203).
+`npm run check` reports it, and `npm run fix:angular-tree` on the branch of the update
+repairs the lock file without rebuilding it. Commit `package-lock.json` afterwards.
+
 ## Ground rules
 
 - **White label is a feature.** Nothing an operator's customer can see may mention

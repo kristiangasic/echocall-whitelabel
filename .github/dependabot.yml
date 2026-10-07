@@ -9,6 +9,10 @@ updates:
     open-pull-requests-limit: 5
     groups:
       angular:
+        # npm nests a new Angular release under apps/web instead of replacing
+        # the one at the root, which leaves two runtimes in the tree. The
+        # repository checks fail such a pull request with the cause, and
+        # "npm run fix:angular-tree" on its branch repairs the lock file.
         patterns: ['@angular*', 'angular-eslint']
       nest:
         patterns: ['@nestjs/*']
