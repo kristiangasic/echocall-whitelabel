@@ -7,6 +7,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-07
+
 ### Added
 
 - Chatbots can take spoken conversations in their widget. The editor has a microphone
@@ -29,6 +31,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   out while it holds live data, or that reaches for a registry image under the name of the
   one built here, does more harm than the update is worth. Upgrade both on purpose, the way
   [docs/self-hosting.md](docs/self-hosting.md) describes.
+- Dependencies moved to their current releases: Angular 22.2.1 (from 22.1.7), NestJS 12.1.2
+  (from 12.0.3), `@nestjs/throttler` 6.7.1, `pg` 8.23.1, `mysql2` 3.24.5, `nodemailer` 10.0.14,
+  `ws` 8.22.0 and `compression` 1.8.2, along with the build and test tooling. The upgrade
+  needs no database migration and no new setting.
+- `npm run check` also fails when the lock file installs a second Angular runtime, which
+  breaks dependency injection in the browser, and `npm run fix:angular-tree` repairs the lock
+  file. [CONTRIBUTING.md](CONTRIBUTING.md) describes when that happens.
 
 ## [0.2.0] - 2026-09-22
 
@@ -189,6 +198,7 @@ link below points at the commit that carried this version.
 - Documentation: README, architecture, configuration, self-hosting, database and operating
   guides, a written security review, security policy, contribution guidelines.
 
-[Unreleased]: https://github.com/kristiangasic/echocall-whitelabel/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/kristiangasic/echocall-whitelabel/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/kristiangasic/echocall-whitelabel/releases/tag/v0.3.0
 [0.2.0]: https://github.com/kristiangasic/echocall-whitelabel/releases/tag/v0.2.0
 [0.1.0]: https://github.com/kristiangasic/echocall-whitelabel/tree/c41c033

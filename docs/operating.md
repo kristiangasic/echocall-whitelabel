@@ -131,7 +131,7 @@ different secret, and the SMTP password and every second factor are lost.
 
 ```bash
 git fetch --tags
-git checkout v0.2.0          # or: git pull, for the tip of main
+git checkout v0.3.0          # or: git pull, for the tip of main
 docker compose up -d --build
 ```
 
