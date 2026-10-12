@@ -3590,6 +3590,346 @@ export interface paths {
         };
         trace?: never;
     };
+    "/integrations/{id}/bookings/{bookingId}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a booking
+         * @description Cancels a booking in the calendar of the integration. The optional `reason` is handed to the calendar provider, which may show it to the attendee.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Reseller keys only. Runs this request as the named customer of the reseller, exactly as if that customer had sent it with a key of their own: ownership checks, limits and usage all apply to the customer, and none of the reseller operations are reachable while it is set. The value is the customer id returned by `POST /resellers/customers` and listed by `GET /resellers/customers`. Errors: 400 `invalid_customer_header` (not a positive integer), 403 `act_as_requires_reseller` (not a reseller key), 404 `customer_not_found` (no customer of this reseller with that id), 403 `customer_suspended`. The `/resellers/*` and `/provisioning/*` operations never accept it. */
+                    "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
+                };
+                path: {
+                    /** @description The `id` of the booking as GET /integrations/bookings returns it. */
+                    bookingId: string;
+                    /** @description Identifier of the calendar integration. */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            /** @description Optional `reason`, at most 500 characters. An empty object or no body cancels without a reason. */
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        reason?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The calendar provider cancelled the booking. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success: boolean;
+                        };
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
+                /** @description The integration is switched off. Error code `integration_inactive`. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The integration has no calendar (error code `not_a_calendar`), or its calendar cannot perform this action (error code `not_supported`). */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+                /** @description The calendar provider refused the request or could not be reached. Error code `provider_error`. The message carries the reason the provider gave, for example that the booking does not exist or no longer waits for a decision. */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/{id}/bookings/{bookingId}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm a booking request
+         * @description Confirms a booking that waits for the host (status `pending`). The calendar provider then informs the attendee as it always does. Only calendars with booking requests support this (Cal.com). The others answer 422 `not_supported`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Reseller keys only. Runs this request as the named customer of the reseller, exactly as if that customer had sent it with a key of their own: ownership checks, limits and usage all apply to the customer, and none of the reseller operations are reachable while it is set. The value is the customer id returned by `POST /resellers/customers` and listed by `GET /resellers/customers`. Errors: 400 `invalid_customer_header` (not a positive integer), 403 `act_as_requires_reseller` (not a reseller key), 404 `customer_not_found` (no customer of this reseller with that id), 403 `customer_suspended`. The `/resellers/*` and `/provisioning/*` operations never accept it. */
+                    "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
+                };
+                path: {
+                    /** @description The `id` of the booking as GET /integrations/bookings returns it. */
+                    bookingId: string;
+                    /** @description Identifier of the calendar integration. */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The calendar provider confirmed the booking. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success: boolean;
+                        };
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
+                /** @description The integration is switched off. Error code `integration_inactive`. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The integration has no calendar (error code `not_a_calendar`), or its calendar cannot perform this action (error code `not_supported`). */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+                /** @description The calendar provider refused the request or could not be reached. Error code `provider_error`. The message carries the reason the provider gave, for example that the booking does not exist or no longer waits for a decision. */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/{id}/bookings/{bookingId}/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decline a booking request
+         * @description Declines a booking that waits for the host (status `pending`). The optional `reason` is handed to the calendar provider, which may show it to the attendee. Only calendars with booking requests support this (Cal.com). The others answer 422 `not_supported`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Reseller keys only. Runs this request as the named customer of the reseller, exactly as if that customer had sent it with a key of their own: ownership checks, limits and usage all apply to the customer, and none of the reseller operations are reachable while it is set. The value is the customer id returned by `POST /resellers/customers` and listed by `GET /resellers/customers`. Errors: 400 `invalid_customer_header` (not a positive integer), 403 `act_as_requires_reseller` (not a reseller key), 404 `customer_not_found` (no customer of this reseller with that id), 403 `customer_suspended`. The `/resellers/*` and `/provisioning/*` operations never accept it. */
+                    "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
+                };
+                path: {
+                    /** @description The `id` of the booking as GET /integrations/bookings returns it. */
+                    bookingId: string;
+                    /** @description Identifier of the calendar integration. */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            /** @description Optional `reason`, at most 500 characters. An empty object or no body declines without a reason. */
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        reason?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The calendar provider declined the booking. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success: boolean;
+                        };
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
+                /** @description The integration is switched off. Error code `integration_inactive`. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The integration has no calendar (error code `not_a_calendar`), or its calendar cannot perform this action (error code `not_supported`). */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+                /** @description The calendar provider refused the request or could not be reached. Error code `provider_error`. The message carries the reason the provider gave, for example that the booking does not exist or no longer waits for a decision. */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/{id}/event-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the event types of a calendar integration
+         * @description Returns the kinds of appointment that can be booked through this integration, read live from the calendar provider: their name, their duration in minutes and their identifier.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Reseller keys only. Runs this request as the named customer of the reseller, exactly as if that customer had sent it with a key of their own: ownership checks, limits and usage all apply to the customer, and none of the reseller operations are reachable while it is set. The value is the customer id returned by `POST /resellers/customers` and listed by `GET /resellers/customers`. Errors: 400 `invalid_customer_header` (not a positive integer), 403 `act_as_requires_reseller` (not a reseller key), 404 `customer_not_found` (no customer of this reseller with that id), 403 `customer_suspended`. The `/resellers/*` and `/provisioning/*` operations never accept it. */
+                    "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
+                };
+                path: {
+                    /** @description Identifier of the calendar integration. */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The event types. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["CalendarEventType"][];
+                        };
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
+                /** @description The integration is switched off. Error code `integration_inactive`. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The integration has no calendar (error code `not_a_calendar`), or its calendar cannot perform this action (error code `not_supported`). */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+                /** @description The calendar provider refused the request or could not be reached. Error code `provider_error`. The message carries the reason the provider gave, for example that the booking does not exist or no longer waits for a decision. */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/integrations/{id}/test": {
         parameters: {
             query?: never;
@@ -3687,6 +4027,92 @@ export interface paths {
                 401: components["responses"]["Unauthorized"];
                 403: components["responses"]["InsufficientScope"];
                 404: components["responses"]["NotFound"];
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the bookings in your connected calendars
+         * @description Returns the bookings of every active integration that has a calendar (Cal.com, Calendly, Google Calendar, Outlook), sorted by start, or of one integration when you pass `integrationId`. Each booking carries the `id` that the confirm, decline and cancel paths take. Bookings are read live from the calendar provider on every request, so poll at a calm pace (once a minute is plenty) rather than in a tight loop. A calendar that could not be read this time is listed in `failed` and its bookings are missing from `data`: treat that as unknown, not as no bookings. An `integrationId` that is not yours, is switched off or has no calendar is answered with an error rather than an empty list.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Only bookings that start at or after this moment. ISO 8601 with time and offset. */
+                    from?: string;
+                    /** @description Only read this integration. */
+                    integrationId?: number;
+                    /** @description Only bookings in these states, as a comma separated list of `accepted`, `pending`, `cancelled` and `rejected`. Case does not matter. */
+                    status?: string;
+                    /** @description Only bookings that start at or before this moment. ISO 8601 with time and offset. Must not be earlier than `from`. */
+                    to?: string;
+                };
+                header?: {
+                    /** @description Reseller keys only. Runs this request as the named customer of the reseller, exactly as if that customer had sent it with a key of their own: ownership checks, limits and usage all apply to the customer, and none of the reseller operations are reachable while it is set. The value is the customer id returned by `POST /resellers/customers` and listed by `GET /resellers/customers`. Errors: 400 `invalid_customer_header` (not a positive integer), 403 `act_as_requires_reseller` (not a reseller key), 404 `customer_not_found` (no customer of this reseller with that id), 403 `customer_suspended`. The `/resellers/*` and `/provisioning/*` operations never accept it. */
+                    "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The bookings, the calendars that were read and the calendars that could not be read. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["CalendarBooking"][];
+                            /** @description Calendars that could not be read this time. Their bookings are missing from `data`, not gone. */
+                            failed: {
+                                /** @description Identifier of the integration. */
+                                integrationId: number;
+                                /** @description Integration type. */
+                                provider: string;
+                            }[];
+                            /** @description Integration types that were read successfully. */
+                            providers: string[];
+                        };
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
+                /** @description The integration is switched off. Error code `integration_inactive`. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The integration has no calendar (error code `not_a_calendar`), or its calendar cannot perform this action (error code `not_supported`). */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
                 429: components["responses"]["RateLimited"];
                 500: components["responses"]["InternalError"];
             };
@@ -10742,6 +11168,64 @@ export interface components {
             chatConversationsRemaining?: number | null;
             /** @description Voice minutes left. */
             voiceMinutesRemaining?: number | null;
+        };
+        /** @description One booking in the calendar of an integration. */
+        CalendarBooking: {
+            /** @description The people booked in, as the provider reports them. */
+            attendees: {
+                /** @description Email address of the attendee. */
+                email: string;
+                /** @description Name of the attendee. */
+                name: string;
+                /** @description Time zone of the attendee, for example `Europe/Berlin`. */
+                timeZone: string | null;
+            }[];
+            /** @description Description of the booking, if any. */
+            description: string | null;
+            /**
+             * Format: date-time
+             * @description End of the booking.
+             */
+            endTime: string;
+            /** @description Identifier of the booking at the calendar provider. This is the value the confirm, decline and cancel paths take: the booking uid for Cal.com, the event id for the other calendars. */
+            id: string;
+            /** @description Identifier of the integration the booking comes from. */
+            integrationId: number;
+            /** @description Where the booking takes place: an address, a phone number or a meeting link. */
+            location: string | null;
+            /** @description Link to the video meeting, if the booking has one. */
+            meetingUrl: string | null;
+            /** @description Integration type the booking comes from, for example `calcom` or `google_calendar`. */
+            provider: string;
+            /** @description Answers the attendee gave in the booking form, keyed by field. The fields depend on how the event type is set up. */
+            responses: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Format: date-time
+             * @description Start of the booking.
+             */
+            startTime: string;
+            /**
+             * @description State of the booking. `pending` is a request that waits for the host to confirm or decline it.
+             * @enum {string}
+             */
+            status: "accepted" | "pending" | "cancelled" | "rejected";
+            /** @description Title of the booking. */
+            title: string;
+        };
+        /** @description One kind of appointment that can be booked in the calendar of an integration. */
+        CalendarEventType: {
+            /** @description Description of the event type, if any. */
+            description?: string | null;
+            /** @description Identifier of the event type at the calendar provider. */
+            id: number | string;
+            /** @description Duration of an appointment in minutes. */
+            length: number;
+            /** @description Short name of the event type in booking links, if the provider has one. */
+            slug?: string | null;
+            /** @description Name of the event type. */
+            title: string;
         };
         /** @description An outbound calling campaign with its counters. */
         Campaign: {
