@@ -429,7 +429,7 @@ export interface paths {
         };
         /**
          * List integrations assigned to an agent
-         * @description Returns every integration currently assigned to this voice agent, together with the tools the agent may call through it. The `enabledTools` field decides which of the integration actions the assistant may call: null means the recommended default set for that integration type, an empty array means the assistant may call nothing, and a list of tool names means exactly those tools and no others. Tool names are the `name` values from the integration tool catalogue. The response is a plain list with no paging, and it includes the health state of each integration so you can see whether a tool would actually work today.
+         * @description Returns every integration currently assigned to this voice agent, together with the tools the agent may call through it. The `enabledTools` field decides which of the integration actions the assistant may call: null means the recommended default set for that integration type, an empty array means the assistant may call nothing, and a list of tool names means exactly those tools and no others. Tool names are the `name` values from the integration tool catalogue. A list may only name tools the permissions of the integration allow (`permitted` in the catalogue, see GET /integrations/{id}/permissions); a tool outside them is refused with 422 and error code `tool_not_permitted`, while a malformed list or an unknown tool name stays a 400 `validation_error`. The response is a plain list with no paging, and it includes the health state of each integration so you can see whether a tool would actually work today. Only integrations of the account that owns the agent are listed, which for a reseller key is the customer account: an assignment that points at an integration of another account is left out. The stored configuration of an integration is not part of this list.
          */
         get: {
             parameters: {
@@ -469,7 +469,7 @@ export interface paths {
         put?: never;
         /**
          * Assign an integration to an agent
-         * @description Gives a voice agent access to one integration, so its tools become callable during a call. The integration must belong to the account that owns the agent, which for a reseller key is the customer account, not the reseller. The `enabledTools` field decides which of the integration actions the assistant may call: null means the recommended default set for that integration type, an empty array means the assistant may call nothing, and a list of tool names means exactly those tools and no others. Tool names are the `name` values from the integration tool catalogue. Assigning an integration that is already assigned returns 409. After the row is written the new tool set is pushed to the voice engine; if that push fails the assignment is rolled back and the request returns 502, so the response always reflects the live agent.
+         * @description Gives a voice agent access to one integration, so its tools become callable during a call. The integration must belong to the account that owns the agent, which for a reseller key is the customer account, not the reseller. The `enabledTools` field decides which of the integration actions the assistant may call: null means the recommended default set for that integration type, an empty array means the assistant may call nothing, and a list of tool names means exactly those tools and no others. Tool names are the `name` values from the integration tool catalogue. A list may only name tools the permissions of the integration allow (`permitted` in the catalogue, see GET /integrations/{id}/permissions); a tool outside them is refused with 422 and error code `tool_not_permitted`, while a malformed list or an unknown tool name stays a 400 `validation_error`. Assigning an integration that is already assigned returns 409. After the row is written the new tool set is pushed to the voice engine; if that push fails the assignment is rolled back and the request returns 502, so the response always reflects the live agent.
          */
         post: {
             parameters: {
@@ -521,6 +521,15 @@ export interface paths {
                 403: components["responses"]["InsufficientScope"];
                 404: components["responses"]["NotFound"];
                 409: components["responses"]["Conflict"];
+                /** @description The `enabledTools` list names a tool the permissions of the integration do not allow. Error code `tool_not_permitted`; the message lists the refused tools. Widen the permissions with PUT /integrations/{id}/permissions or leave the tool out. */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
                 429: components["responses"]["RateLimited"];
                 500: components["responses"]["InternalError"];
                 /** @description The change was applied to our records but could not be pushed to the voice engine, so the assistant tool set is not yet live. Retry the request; for an assignment the row is rolled back first, so a retry starts from a clean state. */
@@ -604,7 +613,7 @@ export interface paths {
         head?: never;
         /**
          * Change the tool selection for an assigned integration
-         * @description Replaces the tool selection for one integration already assigned to a voice agent. The `enabledTools` field decides which of the integration actions the assistant may call: null means the recommended default set for that integration type, an empty array means the assistant may call nothing, and a list of tool names means exactly those tools and no others. Tool names are the `name` values from the integration tool catalogue. The field is required: a body without an `enabledTools` key is rejected with 400, while an explicit null restores the recommended default set. The new selection is saved and then pushed to the voice engine; if the push fails the request returns 502 but the saved selection is kept, so a retry only has to repeat the push.
+         * @description Replaces the tool selection for one integration already assigned to a voice agent. The `enabledTools` field decides which of the integration actions the assistant may call: null means the recommended default set for that integration type, an empty array means the assistant may call nothing, and a list of tool names means exactly those tools and no others. Tool names are the `name` values from the integration tool catalogue. A list may only name tools the permissions of the integration allow (`permitted` in the catalogue, see GET /integrations/{id}/permissions); a tool outside them is refused with 422 and error code `tool_not_permitted`, while a malformed list or an unknown tool name stays a 400 `validation_error`. The field is required: a body without an `enabledTools` key is rejected with 400, while an explicit null restores the recommended default set. The new selection is saved and then pushed to the voice engine; if the push fails the request returns 502 but the saved selection is kept, so a retry only has to repeat the push. An integration of another account answers 404 as if it were not assigned.
          */
         patch: {
             parameters: {
@@ -665,6 +674,15 @@ export interface paths {
                 401: components["responses"]["Unauthorized"];
                 403: components["responses"]["InsufficientScope"];
                 404: components["responses"]["NotFound"];
+                /** @description The `enabledTools` list names a tool the permissions of the integration do not allow. Error code `tool_not_permitted`; the message lists the refused tools. Widen the permissions with PUT /integrations/{id}/permissions or leave the tool out. */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
                 429: components["responses"]["RateLimited"];
                 500: components["responses"]["InternalError"];
                 /** @description The change was applied to our records but could not be pushed to the voice engine, so the assistant tool set is not yet live. Retry the request; for an assignment the row is rolled back first, so a retry starts from a clean state. */
@@ -2483,7 +2501,7 @@ export interface paths {
         };
         /**
          * List integrations assigned to a chatbot
-         * @description Returns every integration currently assigned to this chatbot, together with the tools it may call through them. The `enabledTools` field decides which of the integration actions the assistant may call: null means the recommended default set for that integration type, an empty array means the assistant may call nothing, and a list of tool names means exactly those tools and no others. Tool names are the `name` values from the integration tool catalogue. The response is a plain list with no paging, and it includes the health state of each integration so you can see whether a tool would actually work today.
+         * @description Returns every integration currently assigned to this chatbot, together with the tools it may call through them. The `enabledTools` field decides which of the integration actions the assistant may call: null means the recommended default set for that integration type, an empty array means the assistant may call nothing, and a list of tool names means exactly those tools and no others. Tool names are the `name` values from the integration tool catalogue. A list may only name tools the permissions of the integration allow (`permitted` in the catalogue, see GET /integrations/{id}/permissions); a tool outside them is refused with 422 and error code `tool_not_permitted`, while a malformed list or an unknown tool name stays a 400 `validation_error`. The response is a plain list with no paging, and it includes the health state of each integration so you can see whether a tool would actually work today. Only integrations of the account that owns the chatbot are listed, which for a reseller key is the customer account: an assignment that points at an integration of another account is left out. The stored configuration of an integration is not part of this list.
          */
         get: {
             parameters: {
@@ -2523,7 +2541,7 @@ export interface paths {
         put?: never;
         /**
          * Assign an integration to a chatbot
-         * @description Gives a chatbot access to one integration, so its tools become callable during a chat. The integration must belong to the account that owns the chatbot, which for a reseller key is the customer account, not the reseller. The `enabledTools` field decides which of the integration actions the assistant may call: null means the recommended default set for that integration type, an empty array means the assistant may call nothing, and a list of tool names means exactly those tools and no others. Tool names are the `name` values from the integration tool catalogue. Assigning an integration that is already assigned returns 409. After the row is written the new tool set is pushed to the voice engine; if that push fails the assignment is rolled back and the request returns 502, so the response always reflects the live chatbot.
+         * @description Gives a chatbot access to one integration, so its tools become callable during a chat. The integration must belong to the account that owns the chatbot, which for a reseller key is the customer account, not the reseller. The `enabledTools` field decides which of the integration actions the assistant may call: null means the recommended default set for that integration type, an empty array means the assistant may call nothing, and a list of tool names means exactly those tools and no others. Tool names are the `name` values from the integration tool catalogue. A list may only name tools the permissions of the integration allow (`permitted` in the catalogue, see GET /integrations/{id}/permissions); a tool outside them is refused with 422 and error code `tool_not_permitted`, while a malformed list or an unknown tool name stays a 400 `validation_error`. Assigning an integration that is already assigned returns 409. After the row is written the new tool set is pushed to the voice engine; if that push fails the assignment is rolled back and the request returns 502, so the response always reflects the live chatbot.
          */
         post: {
             parameters: {
@@ -2575,6 +2593,15 @@ export interface paths {
                 403: components["responses"]["InsufficientScope"];
                 404: components["responses"]["NotFound"];
                 409: components["responses"]["Conflict"];
+                /** @description The `enabledTools` list names a tool the permissions of the integration do not allow. Error code `tool_not_permitted`; the message lists the refused tools. Widen the permissions with PUT /integrations/{id}/permissions or leave the tool out. */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
                 429: components["responses"]["RateLimited"];
                 500: components["responses"]["InternalError"];
                 /** @description The change was applied to our records but could not be pushed to the voice engine, so the assistant tool set is not yet live. Retry the request; for an assignment the row is rolled back first, so a retry starts from a clean state. */
@@ -2658,7 +2685,7 @@ export interface paths {
         head?: never;
         /**
          * Change the tool selection for a chatbot integration
-         * @description Replaces the tool selection for one integration already assigned to a chatbot. The `enabledTools` field decides which of the integration actions the assistant may call: null means the recommended default set for that integration type, an empty array means the assistant may call nothing, and a list of tool names means exactly those tools and no others. Tool names are the `name` values from the integration tool catalogue. The field is required: a body without an `enabledTools` key is rejected with 400, while an explicit null restores the recommended default set. The new selection is saved and then pushed to the voice engine; if the push fails the request returns 502 but the saved selection is kept, so a retry only has to repeat the push.
+         * @description Replaces the tool selection for one integration already assigned to a chatbot. The `enabledTools` field decides which of the integration actions the assistant may call: null means the recommended default set for that integration type, an empty array means the assistant may call nothing, and a list of tool names means exactly those tools and no others. Tool names are the `name` values from the integration tool catalogue. A list may only name tools the permissions of the integration allow (`permitted` in the catalogue, see GET /integrations/{id}/permissions); a tool outside them is refused with 422 and error code `tool_not_permitted`, while a malformed list or an unknown tool name stays a 400 `validation_error`. The field is required: a body without an `enabledTools` key is rejected with 400, while an explicit null restores the recommended default set. The new selection is saved and then pushed to the voice engine; if the push fails the request returns 502 but the saved selection is kept, so a retry only has to repeat the push. An integration of another account answers 404 as if it were not assigned.
          */
         patch: {
             parameters: {
@@ -2719,6 +2746,15 @@ export interface paths {
                 401: components["responses"]["Unauthorized"];
                 403: components["responses"]["InsufficientScope"];
                 404: components["responses"]["NotFound"];
+                /** @description The `enabledTools` list names a tool the permissions of the integration do not allow. Error code `tool_not_permitted`; the message lists the refused tools. Widen the permissions with PUT /integrations/{id}/permissions or leave the tool out. */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
                 429: components["responses"]["RateLimited"];
                 500: components["responses"]["InternalError"];
                 /** @description The change was applied to our records but could not be pushed to the voice engine, so the assistant tool set is not yet live. Retry the request; for an assignment the row is rolled back first, so a retry starts from a clean state. */
@@ -3404,7 +3440,7 @@ export interface paths {
         put?: never;
         /**
          * Connect an integration
-         * @description Stores the credentials and settings for one third-party service and returns the new integration's identifier. The integration is created active, but connecting it does not by itself let an agent use it: it still has to be assigned to an agent or chatbot. `config` is a JSON string, not a nested object, so serialise it before sending; the keys it must contain are the ones listed under `configFields` for this type in GET /integrations/types. Nothing is contacted at creation time, so a wrong credential is only noticed later: call the test endpoint afterwards to confirm the connection works.
+         * @description Stores the credentials and settings for one third-party service and returns the new integration's identifier. The integration is created active, but connecting it does not by itself let an agent use it: it still has to be assigned to an agent or chatbot. `config` is a JSON string, not a nested object, so serialise it before sending; the keys it must contain are the ones listed under `configFields` for this type in GET /integrations/types. A `config` that contains the mask `********` anywhere is refused with 400 and error code `masked_without_stored_value`: the mask stands for a stored secret, and a new integration has none, so send the real values. Keys inside `config` that only the server writes (the connection keys and `toolPermissions`) are dropped before the integration is stored. Nothing is contacted at creation time, so a wrong credential is only noticed later: call the test endpoint afterwards to confirm the connection works.
          */
         post: {
             parameters: {
@@ -3464,7 +3500,7 @@ export interface paths {
         };
         /**
          * Read one integration
-         * @description Returns a single integration including its stored `config`, with every secret value replaced by `********`. That masking is one-way: this endpoint tells you which credential fields are populated, never what they contain, and there is no endpoint that reveals them. `config` comes back as a JSON string and has to be parsed. Internal connector and health bookkeeping is not returned. An integration owned by another account answers 404.
+         * @description Returns a single integration including its stored `config`, with every secret value replaced by `********`. A value counts as secret when its field is declared with type `password` for the integration type, when its key contains `secret`, `password`, `passwd`, `token`, `apiKey`, `api_key`, `authorization`, `authValue`, `credential`, `bearer` or `cookie` or ends in `Key` (case-insensitive, at any depth), or when it is a URL that carries its secret inside it, such as the webhook URL of a Discord integration. A secret key covers everything below it. Booleans are never masked, and an empty value stays empty. That masking is one-way: this endpoint tells you which credential fields are populated, never what they contain, and there is no endpoint that reveals them. The masked config can be sent back unchanged with PATCH: a secret sent as `********` keeps its stored value. `config` comes back as a JSON string and has to be parsed. Internal connector and health bookkeeping is not returned, and neither are the connection keys only the server writes into `config`. For an integration type with tool permissions, `config` may carry `toolPermissions`, the stored choice that GET /integrations/{id}/permissions explains in full. An integration owned by another account answers 404.
          */
         get: {
             parameters: {
@@ -3502,7 +3538,7 @@ export interface paths {
         post?: never;
         /**
          * Delete an integration
-         * @description Removes the integration and the credentials stored with it. This cannot be undone, and any agent that was assigned this integration loses the ability to perform its actions from the moment of deletion. To stop use of an integration temporarily while keeping its configuration, set `isActive` to false with a PATCH instead.
+         * @description Removes the integration and the credentials stored with it. When an account of the service was connected through the dashboard for this integration, that connection is removed as well, unless another integration still uses it; this happens on a best-effort basis and never blocks the delete. This cannot be undone, and any agent that was assigned this integration loses the ability to perform its actions from the moment of deletion. To stop use of an integration temporarily while keeping its configuration, set `isActive` to false with a PATCH instead.
          */
         delete: {
             parameters: {
@@ -3542,7 +3578,7 @@ export interface paths {
         head?: never;
         /**
          * Update an integration
-         * @description Changes the name, description, stored configuration or enabled flag of an integration. Only the fields you send are written. `config` is replaced wholesale rather than merged, so send the complete JSON string: a partial config overwrites the stored one and drops whatever it leaves out, masked placeholders included. Setting `isActive` to false stops agents from calling the integration without deleting it. The response confirms the write and does not return the updated record.
+         * @description Changes the name, description, stored configuration or enabled flag of an integration. Only the fields you send are written. A `config` you send is merged with the stored one, one object level at a time. A field that is not secret takes the value you send, and one you leave out is removed, so send every non-secret field you want to keep. A secret field keeps its stored value when you leave it out or send it as `********`, an empty string or null clears it, and any other value replaces it. A value counts as secret when its field is declared with type `password` for the integration type, when its key contains `secret`, `password`, `passwd`, `token`, `apiKey`, `api_key`, `authorization`, `authValue`, `credential`, `bearer` or `cookie` or ends in `Key` (case-insensitive, at any depth), or when it is a URL that carries its secret inside it, such as the webhook URL of a Discord integration. A secret key covers everything below it. Booleans are never masked, and an empty value stays empty. Nested objects are merged by the same rules. In a list of objects, each item you send is matched to a stored item by the first of `id`, `name`, `key` or `url` that both carry with the same value; only a matched item keeps its stored secrets, so a new item has to carry them in full. A list of plain values is replaced. When the destination of a level changes (`host`, `url`, `baseUrl`, `endpoint`, `server`, `domain`, `subdomain`, `instanceUrl`, `smtpHost`, `webhookUrl`, `webhookUrl2`, `webhookUrl3`, `apiEndpoint`, `storeUrl`, `shopUrl`, or any field declared with type `url` for the integration type), the secrets stored on that level and on every level below it are not carried over to the new destination: send them again, or the request is refused with 400 and error code `destination_changed`. A config that still contains `********` where nothing is stored is refused with 400 and error code `masked_without_stored_value`. Keys inside `config` that only the server writes (the connection keys and `toolPermissions`) are dropped from what you send and keep their stored values; change the tool permissions with PUT /integrations/{id}/permissions instead. Setting `isActive` to false stops agents from calling the integration without deleting it. The response confirms the write and does not return the updated record.
          */
         patch: {
             parameters: {
@@ -3557,7 +3593,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            /** @description The fields to change. `config`, if sent, replaces the stored configuration in full. */
+            /** @description The fields to change. `config`, if sent, is merged with the stored configuration: fields that are not secret are replaced, secret fields left out or sent as `********` keep their stored value. */
             requestBody: {
                 content: {
                     "application/json": {
@@ -3930,6 +3966,131 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/integrations/{id}/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read the tool permissions of an integration
+         * @description Returns which tools the agents of the account may use through this integration: the stored choice in `preset`, every tool of the integration with `allowed`, and how many tools each preset would allow. The permissions limit agents only; the account owner keeps full access through the dashboard and the calendar endpoints. Only the integration types connected through the dashboard sign-in have tool permissions; every other type answers 404, with the same status used for an integration that does not exist or belongs to someone else. `preset` is `legacy` while nothing was chosen: agents then keep the tools they had before permissions existed.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Reseller keys only. Runs this request as the named customer of the reseller, exactly as if that customer had sent it with a key of their own: ownership checks, limits and usage all apply to the customer, and none of the reseller operations are reachable while it is set. The value is the customer id returned by `POST /resellers/customers` and listed by `GET /resellers/customers`. Errors: 400 `invalid_customer_header` (not a positive integer), 403 `act_as_requires_reseller` (not a reseller key), 404 `customer_not_found` (no customer of this reseller with that id), 403 `customer_suspended`. The `/resellers/*` and `/provisioning/*` operations never accept it. */
+                    "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
+                };
+                path: {
+                    /** @description Identifier of the integration. A non-numeric value is rejected with 400. */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The permissions of the integration. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["IntegrationPermissions"];
+                        };
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
+                /** @description The stored configuration of the integration cannot be read (error code `validation_error`). */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+            };
+        };
+        /**
+         * Set the tool permissions of an integration
+         * @description Stores which tools the agents of the account may use through this integration, exactly as the dashboard does. Choose a preset (`read`, `read_write`, `full`) or `custom` with the exact tool keys from `tools[].key` of the GET of this path. Only the permissions change; the rest of the stored configuration stays as it is. Every agent and chatbot the integration is assigned to then gets its tool list rebuilt, so the change takes effect in their next conversation: `agentsResynced` counts the agents that were updated, `agentsFailed` the ones that could not be updated now (the saved permissions still apply to them). A tool selection of an agent (`enabledTools`) that names a tool outside the new permissions is not changed, but the tool stays unavailable to the agent. An unusable choice is refused with 422 and error code `validation_error`. Integration types without tool permissions answer 404.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Reseller keys only. Runs this request as the named customer of the reseller, exactly as if that customer had sent it with a key of their own: ownership checks, limits and usage all apply to the customer, and none of the reseller operations are reachable while it is set. The value is the customer id returned by `POST /resellers/customers` and listed by `GET /resellers/customers`. Errors: 400 `invalid_customer_header` (not a positive integer), 403 `act_as_requires_reseller` (not a reseller key), 404 `customer_not_found` (no customer of this reseller with that id), 403 `customer_suspended`. The `/resellers/*` and `/provisioning/*` operations never accept it. */
+                    "X-EchoCall-Customer"?: components["parameters"]["ActAsCustomer"];
+                };
+                path: {
+                    /** @description Identifier of the integration. A non-numeric value is rejected with 400. */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            /** @description The new choice: a preset, or `custom` with the exact tool keys agents may use. */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description `read` allows the reading tools, `read_write` adds the writing tools, `full` allows every tool, `custom` allows exactly the tools listed in `tools`.
+                         * @enum {string}
+                         */
+                        preset: "read" | "read_write" | "full" | "custom";
+                        /** @description The tool keys agents may use, as listed under `tools[].key` by GET /integrations/{id}/permissions. Required and non-empty for `custom`, ignored otherwise. */
+                        tools?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description The permissions were saved and the linked agents rebuilt. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Agents and chatbots whose tool list could not be rebuilt now. The saved permissions still apply to them. */
+                            agentsFailed: number;
+                            /** @description Agents and chatbots whose tool list was rebuilt. */
+                            agentsResynced: number;
+                            data: components["schemas"]["IntegrationPermissions"];
+                        };
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
+                /** @description The choice cannot be saved (error code `validation_error`): the body is malformed (then `error.details` carries the per-field report), the preset is unknown or allows no tool of this integration, a `custom` choice has no tool, a duplicate or a tool key this integration does not offer, or the stored configuration of the integration cannot be read. */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                429: components["responses"]["RateLimited"];
+                500: components["responses"]["InternalError"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/integrations/{id}/test": {
         parameters: {
             query?: never;
@@ -3992,7 +4153,7 @@ export interface paths {
         };
         /**
          * List the tools an integration offers
-         * @description Returns the actions an agent can be allowed to perform through this integration, plus the recommended default selection in `recommended`. Only a few integration types are catalogue-backed; the rest have a fixed tool set that cannot be picked from and answer 404 here, with the same status used for an integration that does not exist or belongs to someone else. Note each tool's `access` level before enabling it: `write` and `delete` tools let the agent change or remove data in the connected service.
+         * @description Returns the actions an agent can be allowed to perform through this integration, plus the recommended default selection in `recommended`. Only a few integration types are catalogue-backed; the rest have a fixed tool set that cannot be picked from and answer 404 here, with the same status used for an integration that does not exist or belongs to someone else. Note each tool's `access` level before enabling it: `write` and `delete` tools let the agent change or remove data in the connected service. `permitted` says whether the permissions of the integration (GET /integrations/{id}/permissions) allow agents to use the tool; a tool that is not permitted cannot be put into `enabledTools` of an agent or chatbot.
          */
         get: {
             parameters: {
@@ -4134,7 +4295,7 @@ export interface paths {
         };
         /**
          * List the integration types you can connect
-         * @description Returns the catalogue of supported third-party services, each with the configuration fields it needs. Read this before creating an integration: `type` gives you the value to send, and `configFields` tells you exactly which keys belong inside the `config` JSON string and which of them are required. Fields declared with type `password` are the ones masked when the integration is read back. The response is a bare JSON array and is the same for every account.
+         * @description Returns the catalogue of supported third-party services, each with the configuration fields it needs. Read this before creating an integration: `type` gives you the value to send, and `configFields` tells you exactly which keys belong inside the `config` JSON string and which of them are required. Fields declared with type `password` are masked when the integration is read back, and so is every other key that looks like a secret (see GET /integrations/{id}). The response is a bare JSON array and is the same for every account.
          */
         get: {
             parameters: {
@@ -11114,7 +11275,7 @@ export interface components {
                 to?: string;
             };
         };
-        /** @description An integration assigned to one agent or chatbot, with that agent tool selection. */
+        /** @description An integration assigned to one agent or chatbot, with that agent tool selection. It always belongs to the account that owns the agent or chatbot. The stored configuration is not included. */
         AssignedIntegration: {
             /**
              * Format: date-time
@@ -11297,16 +11458,18 @@ export interface components {
         /** @description One action an agent can be allowed to perform through an integration. */
         CatalogTool: {
             /**
-             * @description How far the tool can go. Grant `write` and `delete` deliberately.
+             * @description How far the tool can go. Grant `write`, `delete` and `admin` deliberately.
              * @enum {string}
              */
-            access: "read" | "write" | "delete";
+            access: "read" | "write" | "delete" | "admin";
             /** @description Grouping within the integration. */
             category?: string;
             /** @description What the tool does. */
             description: string;
             /** @description Tool name. This is the value to put into `enabledTools`. */
             name: string;
+            /** @description Whether the permissions of the integration (GET /integrations/{id}/permissions) allow agents to use this tool. Only a permitted tool can be put into `enabledTools`; any other is refused with 422 `tool_not_permitted`. Present for every integration type with tool permissions. */
+            permitted?: boolean;
         };
         /** @description The full public configuration of a chatbot, including widget appearance and retention settings. */
         Chatbot: {
@@ -11828,6 +11991,7 @@ export interface components {
                  * @example internal_error
                  * @example customer_not_found
                  * @example customer_suspended
+                 * @example tool_not_permitted
                  */
                 code: string;
                 /** @description Present on validation failures: the per-field report from the request schema. */
@@ -11838,9 +12002,9 @@ export interface components {
                 message: string;
             };
         };
-        /** @description A single integration, with its stored configuration. Every secret value inside `config` is replaced by `********`, so this response tells you which fields are set without revealing them. Internal connector and health bookkeeping is not returned. */
+        /** @description A single integration, with its stored configuration. Every secret value inside `config` is replaced by `********`, so this response tells you which fields are set without revealing them. A value counts as secret when its field is declared with type `password` for the integration type, when its key looks like a secret (the name contains `secret`, `password`, `passwd`, `token`, `apiKey`, `api_key`, `authorization`, `authValue`, `credential`, `bearer` or `cookie`, or ends in `Key`), or when it is a URL that carries its secret inside it, such as the webhook URL of a Discord integration. Booleans are never masked. Internal connector and health bookkeeping is not returned, and neither are the connection keys only the server writes into `config`. For an integration type with tool permissions, `config` may carry `toolPermissions`, the stored choice of GET /integrations/{id}/permissions; it is read-only here and dropped when sent with POST or PATCH. */
         Integration: {
-            /** @description The stored configuration, as a JSON string. Secret values are masked to `********`; null when the stored value could not be parsed and therefore could not be checked for secrets. */
+            /** @description The stored configuration, as a JSON string. Secret values are masked to `********`, at any depth; null when the stored value could not be parsed and therefore could not be checked for secrets. Sending a masked value back with PATCH keeps the stored secret. */
             config?: string | null;
             /**
              * Format: date-time
@@ -11876,6 +12040,77 @@ export interface components {
              * @description When it last changed.
              */
             updatedAt?: string;
+        };
+        /** @description Which tools the agents of the account may use through one integration. The account owner keeps full access through the dashboard and the calendar endpoints; these permissions limit what agents may do in conversations. */
+        IntegrationPermissions: {
+            /**
+             * @description The preset a new connection of this type starts with.
+             * @enum {string}
+             */
+            defaultPreset: "read" | "read_write" | "full";
+            /** @description Identifier of the integration. */
+            integrationId: number;
+            /** @description Whether the stored choice could not be read. When true, agents may use no tool of this integration until a new choice is saved. */
+            invalid: boolean;
+            /**
+             * @description The stored choice. `legacy` means nothing was chosen yet, and agents keep the tools they had before permissions existed. `custom` together with `invalid` true means the stored choice could not be read, and no tool is allowed.
+             * @enum {string}
+             */
+            preset: "read" | "read_write" | "full" | "custom" | "legacy";
+            /** @description How many tools each preset allows for this integration. A preset that allows no tool is `disabled` and cannot be saved. */
+            presets: {
+                /** @description The `full` preset. */
+                full: {
+                    /** @description Number of tools the preset allows. */
+                    count: number;
+                    /** @description Whether the preset allows no tool and therefore cannot be chosen. */
+                    disabled: boolean;
+                };
+                /** @description The `read` preset. */
+                read: {
+                    /** @description Number of tools the preset allows. */
+                    count: number;
+                    /** @description Whether the preset allows no tool and therefore cannot be chosen. */
+                    disabled: boolean;
+                };
+                /** @description The `read_write` preset. */
+                read_write: {
+                    /** @description Number of tools the preset allows. */
+                    count: number;
+                    /** @description Whether the preset allows no tool and therefore cannot be chosen. */
+                    disabled: boolean;
+                };
+            };
+            /** @description Every tool of the integration, with whether agents may use it now. */
+            tools: {
+                /**
+                 * @description How far the tool can go.
+                 * @enum {string}
+                 */
+                access: "read" | "write" | "delete" | "admin";
+                /** @description Whether agents may use the tool with the stored choice. */
+                allowed: boolean;
+                /** @description What the tool does. */
+                description: string;
+                /**
+                 * @description Where `description` comes from. `catalog` is a short text about the tool. `agent` is the instruction the agent receives for the tool, which can be long and may be written in German.
+                 * @enum {string}
+                 */
+                descriptionSource: "catalog" | "agent";
+                /** @description The tool key. This is the value to send in `tools` with a `custom` choice. */
+                key: string;
+                /** @description Readable name of the tool. */
+                label: string;
+                /** @description Whether the tool is part of the recommended default set. */
+                recommended: boolean;
+            }[];
+            /** @description Which third-party service the integration connects to. */
+            type: string;
+            /**
+             * Format: date-time
+             * @description When the choice was last saved; null when nothing was chosen yet or the stored choice could not be read.
+             */
+            updatedAt: string | null;
         };
         /** @description An integration as it appears in a list. The stored configuration is not included. */
         IntegrationSummary: {
@@ -11922,7 +12157,7 @@ export interface components {
                 /** @description Whether the field must be set. */
                 required?: boolean;
                 /**
-                 * @description How the value should be collected. Fields of type `password` are the ones masked in responses.
+                 * @description How the value should be collected. Fields of type `password` are masked in responses, together with every other key that looks like a secret.
                  * @enum {string}
                  */
                 type?: "text" | "password" | "url" | "select" | "number" | "textarea";
@@ -13058,6 +13293,16 @@ export interface components {
             description?: string;
             isActive?: boolean;
             name?: string;
+        };
+        /** @description Which tools the agents of the account may use through this integration */
+        UpdateIntegrationPermissions: {
+            /**
+             * @description `read` allows the reading tools, `read_write` adds the writing tools, `full` allows every tool, `custom` allows exactly the tools listed in `tools`.
+             * @enum {string}
+             */
+            preset: "read" | "read_write" | "full" | "custom";
+            /** @description The tool keys agents may use, as listed under `tools[].key` by GET /integrations/{id}/permissions. Required and non-empty for `custom`, ignored otherwise. */
+            tools?: string[];
         };
         /** @description Consumption over a date window. */
         UsageSummary: {
