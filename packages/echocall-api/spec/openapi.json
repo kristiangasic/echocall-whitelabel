@@ -2,7 +2,7 @@
   "openapi": "3.1.3",
   "info": {
     "title": "EchoCall Developer Platform - High-Performance AI Voice & Chat API",
-    "version": "1.14.0",
+    "version": "1.15.0",
     "contact": {
       "name": "EchoCall - Support",
       "url": "https://echocall.de/support",
@@ -11590,7 +11590,7 @@
           "Integrations"
         ],
         "summary": "List the bookings in your connected calendars",
-        "description": "Returns the bookings of every active integration that has a calendar (Cal.com, Calendly, Google Calendar, Outlook), sorted by start, or of one integration when you pass `integrationId`. Each booking carries the `id` that the confirm, decline and cancel paths take. Bookings are read live from the calendar provider on every request, so poll at a calm pace (once a minute is plenty) rather than in a tight loop. A calendar that could not be read this time is listed in `failed` and its bookings are missing from `data`: treat that as unknown, not as no bookings. An `integrationId` that is not yours, is switched off or has no calendar is answered with an error rather than an empty list.",
+        "description": "Returns the bookings of every active integration that has a calendar (Cal.com, Calendly, Google Calendar, Outlook), sorted by start, or of one integration when you pass `integrationId`. Each booking carries the `id` that the confirm, decline and cancel paths take. Bookings are read live from the calendar provider on every request, so poll at a calm pace (once a minute is plenty) rather than in a tight loop. Each calendar is read across every page its provider hands out, up to a fixed limit, and over a fixed window: Cal.com and Calendly from 3 months back, Google Calendar and Outlook from now, each up to 12 months ahead. `from` and `to` only narrow that window, so a range outside it comes back empty without the calendar being listed in `failed`. A calendar that could not be read in full this time is listed in `failed`. When it could not be read at all, none of its bookings are in `data`. When it was read only in part (a later page failed, or it holds more bookings than the limit), the bookings that were read are in `data` and the rest are missing. Treat a booking missing from a calendar in `failed` as unknown, not as removed or cancelled. An `integrationId` that is not yours, is switched off or has no calendar is answered with an error rather than an empty list.",
         "parameters": [
           {
             "name": "integrationId",
@@ -11616,7 +11616,7 @@
             "name": "from",
             "in": "query",
             "required": false,
-            "description": "Only bookings that start at or after this moment. ISO 8601 with time and offset.",
+            "description": "Only bookings that start at or after this moment. ISO 8601 with time and offset. It narrows the window each calendar is read over and does not widen it.",
             "schema": {
               "type": "string",
               "format": "date-time",
@@ -11640,7 +11640,7 @@
         "x-required-scope": "read:integrations",
         "responses": {
           "200": {
-            "description": "The bookings, the calendars that were read and the calendars that could not be read.",
+            "description": "The bookings, the types of the calendars that were read and the calendars that could not be read in full.",
             "content": {
               "application/json": {
                 "schema": {
@@ -11657,11 +11657,11 @@
                       "items": {
                         "type": "string"
                       },
-                      "description": "Integration types that were read successfully."
+                      "description": "Integration types of which at least one calendar was read, in full or in part. A type can be listed here while one of its calendars is also in `failed`."
                     },
                     "failed": {
                       "type": "array",
-                      "description": "Calendars that could not be read this time. Their bookings are missing from `data`, not gone.",
+                      "description": "Calendars that could not be read in full this time. Their bookings are missing from `data`, all of them or the ones that were not read, and are not gone. A calendar read in part keeps the bookings that were read in `data`.",
                       "items": {
                         "type": "object",
                         "properties": {
@@ -11744,7 +11744,7 @@
           "Integrations"
         ],
         "summary": "List the event types of a calendar integration",
-        "description": "Returns the kinds of appointment that can be booked through this integration, read live from the calendar provider: their name, their duration in minutes and their identifier.",
+        "description": "Returns the kinds of appointment that can be booked through this integration, read live from the calendar provider: their name, their duration in minutes and their identifier. An empty list means the calendar has no event types; a provider that cannot be reached or refuses is answered with 502 `provider_error`, not with an empty list.",
         "parameters": [
           {
             "name": "id",
