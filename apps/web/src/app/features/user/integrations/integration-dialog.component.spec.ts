@@ -17,6 +17,26 @@ const TYPE: IntegrationType = {
   ],
 };
 
+/** Its webhook URL carries the secret, so the service masks it although it is a URL field. */
+const DISCORD: IntegrationType = {
+  type: 'discord',
+  name: 'Discord',
+  description: 'Nachrichten in einen Kanal senden.',
+  requiresApiKey: false,
+  configFields: [{ name: 'webhookUrl', label: 'Webhook URL', type: 'url', required: true }],
+};
+
+const SMTP: IntegrationType = {
+  type: 'smtp',
+  name: 'SMTP',
+  description: 'E-Mails versenden.',
+  requiresApiKey: false,
+  configFields: [
+    { name: 'host', label: 'Host', type: 'text', required: true },
+    { name: 'password', label: 'Password', type: 'password', required: true },
+  ],
+};
+
 /** A type the portal has no wording for, to show what happens then. */
 const UNKNOWN: IntegrationType = {
   type: 'somesuch',
@@ -103,6 +123,61 @@ describe('IntegrationDialogComponent', () => {
     expect(closed).toBe(true);
     http.verify();
   });
+
+  it('keeps a masked Discord webhook URL and does not ask for it again', async () => {
+    const fixture = await render({ types: [DISCORD], integrationId: 5 });
+    http.expectOne('/api/hub/integrations/5').flush({
+      id: 5,
+      type: 'discord',
+      name: 'Kanal',
+      isActive: true,
+      config: JSON.stringify({ webhookUrl: '********' }),
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await fixture.whenStable();
+
+    const component = fixture.componentInstance;
+    expect(component.value('webhookUrl')).toBe('');
+    expect(component.isKept(component.fields()[0])).toBe(true);
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      '[data-testid="integration-field-webhookUrl"]',
+    );
+    expect(input.hasAttribute('required')).toBe(false);
+    expect(fixture.nativeElement.textContent).toContain(USER_TEXTS.integrations.secretKept);
+
+    const pending = component.save();
+    const request = http.expectOne('/api/hub/integrations/5');
+    expect(JSON.parse(request.request.body.config)).toEqual({});
+    request.flush({ success: true });
+    await pending;
+    http.verify();
+  });
+
+  it('asks for the secret again once the destination changes', async () => {
+    const fixture = await render({ types: [SMTP], integrationId: 6 });
+    http.expectOne('/api/hub/integrations/6').flush({
+      id: 6,
+      type: 'smtp',
+      name: 'Mail',
+      isActive: true,
+      config: JSON.stringify({ host: 'smtp.example.com', password: '********' }),
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await fixture.whenStable();
+
+    const component = fixture.componentInstance;
+    const password = component.fields().find((field) => field.name === 'password')!;
+    expect(component.isKept(password)).toBe(true);
+
+    component.setValue('host', 'smtp.other.example');
+    expect(component.destinationChanged()).toBe(true);
+    expect(component.isKept(password)).toBe(false);
+
+    component.setValue('host', 'smtp.example.com');
+    expect(component.isKept(password)).toBe(true);
+    http.verify();
+  });
+
   it('labels a known field the way the portal does', async () => {
     const fixture = await render({ types: [TYPE], type: 'calcom' });
 

@@ -14,7 +14,28 @@ import { HubService } from '../../../core/hub/hub.service';
 import type { Integration, IntegrationType } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { IntegrationCatalogService } from './integration-catalog.service';
-import { MASKED, parseConfig } from './integration-config';
+import { MASKED, maskedKeys, parseConfig } from './integration-config';
+
+/**
+ * Field names the service treats as the place a secret is sent to, besides every
+ * field of type `url`. When one of them changes, it no longer keeps the stored
+ * secrets and asks for them again.
+ */
+const DESTINATION_FIELDS = new Set([
+  'host',
+  'url',
+  'baseUrl',
+  'endpoint',
+  'server',
+  'domain',
+  'subdomain',
+  'instanceUrl',
+  'smtpHost',
+  'webhookUrl',
+  'apiEndpoint',
+  'storeUrl',
+  'shopUrl',
+]);
 
 /** One configuration field of the chosen type, with the parts the form needs filled in. */
 interface ConfigField {
@@ -192,6 +213,10 @@ export class IntegrationDialogComponent implements OnInit {
 
   readonly type = signal<string | null>(null);
   readonly config = signal<Record<string, string>>({});
+  /** Fields whose value the service sent masked: a secret is stored there. */
+  readonly keptKeys = signal<Set<string>>(new Set());
+  /** The configuration as loaded, to notice a changed destination. */
+  private readonly loaded = signal<Record<string, string>>({});
   readonly loading = signal(false);
   readonly saving = signal(false);
 
@@ -229,6 +254,20 @@ export class IntegrationDialogComponent implements OnInit {
         };
       });
   });
+  /**
+   * True once a field naming where the secrets go differs from the loaded value.
+   * The service then no longer keeps the stored secrets, so they have to be typed again.
+   * A masked field is the secret itself and does not count.
+   */
+  readonly destinationChanged = computed(() => {
+    const loaded = this.loaded();
+    return this.fields().some(
+      (field) =>
+        (field.type === 'url' || DESTINATION_FIELDS.has(field.name)) &&
+        !this.keptKeys().has(field.name) &&
+        this.value(field.name).trim() !== (loaded[field.name] ?? '').trim(),
+    );
+  });
   readonly canSave = computed(() => !!this.type() && this.name().trim().length > 0 && !this.saving());
 
   /** What the chosen service does, in the reader's language. */
@@ -251,9 +290,18 @@ export class IntegrationDialogComponent implements OnInit {
     return 'text';
   }
 
-  /** A secret that is stored but not shown: leaving the field empty keeps it. */
+  /**
+   * A secret that is stored but not shown: leaving the field empty keeps it. That
+   * covers password fields and every field the service sent masked, as long as
+   * the destination stays the same.
+   */
   isKept(field: ConfigField): boolean {
-    return field.type === 'password' && !this.isNew() && !this.value(field.name);
+    return (
+      !this.isNew() &&
+      !this.destinationChanged() &&
+      !this.value(field.name) &&
+      (field.type === 'password' || this.keptKeys().has(field.name))
+    );
   }
 
   value(name: string): string {
@@ -267,6 +315,8 @@ export class IntegrationDialogComponent implements OnInit {
   selectType(type: string): void {
     this.type.set(type);
     this.config.set({});
+    this.keptKeys.set(new Set());
+    this.loaded.set({});
     if (!this.name().trim()) this.name.set(this.selected()?.name ?? '');
   }
 
@@ -319,7 +369,10 @@ export class IntegrationDialogComponent implements OnInit {
       this.name.set(integration.name);
       this.description = integration.description ?? '';
       this.active = integration.isActive;
-      this.config.set(parseConfig(integration.config));
+      const config = parseConfig(integration.config);
+      this.keptKeys.set(maskedKeys(integration.config));
+      this.loaded.set(config);
+      this.config.set(config);
     } catch (err) {
       this.notify.apiError(err);
       this.dialogRef.close(false);

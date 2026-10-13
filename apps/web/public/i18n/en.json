@@ -248,6 +248,8 @@
     "registration_closed": "This portal does not take sign-ups.",
     "smtp_required": "Set up a mail server first. Without one the portal cannot send the links.",
     "company_details_incomplete": "Your company details are incomplete. Complete them under Settings and the invoice can be issued.",
-    "invoice_unavailable": "The invoice is not available right now."
+    "invoice_unavailable": "The invoice is not available right now.",
+    "destination_changed": "The destination changed. Enter the password or key again.",
+    "masked_without_stored_value": "A secret value is missing. Enter it again."
   }
 }

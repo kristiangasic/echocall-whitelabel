@@ -7,6 +7,23 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Editing an integration keeps every secret the service stores, not only password fields:
+  a webhook URL or token the service sends masked is no longer asked for again. Once a
+  destination such as the host or a URL changes, the dialog asks for the secrets again,
+  because the service does not carry them over to a new destination. Needs API version
+  1.16.0 at the service.
+
+### Changed
+
+- The typed client was regenerated from API version 1.16.0: integrations come back with
+  their secrets masked, a masked value sent back keeps the stored one, and a changed
+  destination without its secrets is refused with `destination_changed`. The new
+  `/integrations/{id}/permissions` (GET and PUT) reads and sets which tools agents may use
+  through an integration connected by sign-in, and catalog tools carry `access` and
+  `permitted`. The portal does not offer the permissions yet.
+
 ## [0.3.0] - 2026-10-07
 
 ### Added

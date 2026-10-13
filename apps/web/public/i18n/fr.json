@@ -248,6 +248,8 @@
     "registration_closed": "Ce portail n’accepte pas d’inscriptions.",
     "smtp_required": "Configurez d’abord un serveur de messagerie. Sans lui, le portail ne peut pas envoyer les liens.",
     "company_details_incomplete": "Vos données d'entreprise sont incomplètes. Complétez-les dans les Réglages pour pouvoir émettre la facture.",
-    "invoice_unavailable": "La facture n'est pas disponible pour le moment."
+    "invoice_unavailable": "La facture n'est pas disponible pour le moment.",
+    "destination_changed": "La destination a changé. Saisissez à nouveau le mot de passe ou la clé.",
+    "masked_without_stored_value": "Une valeur secrète manque. Saisissez-la à nouveau."
   }
 }
