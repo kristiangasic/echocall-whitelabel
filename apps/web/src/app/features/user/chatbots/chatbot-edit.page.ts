@@ -402,11 +402,9 @@ export class ChatbotEditPage implements OnInit {
     void this.loadLanguages();
     // Most chatbots stay text only, so the voice lists are fetched the moment
     // the microphone goes on, here or on a loaded chatbot, and not before.
-    this.form.controls.enableVoice.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((on) => {
-        if (on) void this.ensureVoices();
-      });
+    this.form.controls.enableVoice.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((on) => {
+      if (on) void this.ensureVoices();
+    });
     if (this.id() !== null) void this.loadChatbot();
   }
 

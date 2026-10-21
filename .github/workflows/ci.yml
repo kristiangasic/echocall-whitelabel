@@ -17,6 +17,8 @@ jobs:
       # The lockfile is written by npm 12; npm 10 (bundled with Node 22) fails to install it.
       - run: npm install -g npm@12
       - run: npm ci
+      # Formatting drifts unnoticed otherwise: one file had already been merged unformatted.
+      - run: npx prettier --check .
       - run: npm run check
       - run: npm run lint
       - run: npm run typecheck
