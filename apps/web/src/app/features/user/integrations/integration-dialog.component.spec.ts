@@ -37,6 +37,33 @@ const SMTP: IntegrationType = {
   ],
 };
 
+const ORG = '11111111-2222-3333-4444-555555555555';
+const CLIENT = '66666666-7777-8888-9999-000000000000';
+const QUEUE = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+
+/** Its lists and limits have no form field; they must survive an edit unchanged. */
+const GENESYS: IntegrationType = {
+  type: 'genesys_cloud',
+  name: 'Genesys Cloud',
+  description: 'Contact-Center-Integration.',
+  requiresApiKey: true,
+  configFields: [
+    {
+      name: 'region',
+      label: 'Region',
+      type: 'select',
+      required: true,
+      options: [
+        { label: 'EU (Frankfurt)', value: 'mypurecloud.de' },
+        { label: 'EU (Ireland)', value: 'mypurecloud.ie' },
+      ],
+    },
+    { name: 'organizationId', label: 'Organisations-ID', type: 'text', required: true },
+    { name: 'oauthClientId', label: 'OAuth Client ID (optional)', type: 'text', required: false },
+    { name: 'oauthClientSecret', label: 'OAuth Client Secret (optional)', type: 'password', required: false },
+  ],
+};
+
 /** A type the portal has no wording for, to show what happens then. */
 const UNKNOWN: IntegrationType = {
   type: 'somesuch',
@@ -175,6 +202,78 @@ describe('IntegrationDialogComponent', () => {
 
     component.setValue('host', 'smtp.example.com');
     expect(component.isKept(password)).toBe(true);
+    http.verify();
+  });
+
+  it('sends the Genesys Cloud lists and limits back in their own types', async () => {
+    const fixture = await render({ types: [GENESYS], integrationId: 8 });
+    const stored = {
+      region: 'mypurecloud.de',
+      organizationId: ORG,
+      oauthClientId: CLIENT,
+      oauthClientSecret: '********',
+      handoffTargets: [{ label: 'Support', type: 'queue', queueId: QUEUE }],
+      dataTables: [],
+      maxConcurrentCalls: 10,
+      chatReplySeconds: 12,
+      toolPermissions: { preset: 'read' },
+    };
+    http.expectOne('/api/hub/integrations/8').flush({
+      id: 8,
+      type: 'genesys_cloud',
+      name: 'Contact Center',
+      isActive: true,
+      config: JSON.stringify(stored),
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await fixture.whenStable();
+
+    const component = fixture.componentInstance;
+    expect(fixture.nativeElement.querySelector('[data-testid="integration-setup-elsewhere"]')).not.toBeNull();
+    component.name.set('Kundenservice');
+
+    const pending = component.save();
+    const request = http.expectOne('/api/hub/integrations/8');
+    expect(request.request.method).toBe('PATCH');
+    expect(JSON.parse(request.request.body.config)).toEqual({
+      region: 'mypurecloud.de',
+      organizationId: ORG,
+      oauthClientId: CLIENT,
+      handoffTargets: [{ label: 'Support', type: 'queue', queueId: QUEUE }],
+      dataTables: [],
+      maxConcurrentCalls: 10,
+      chatReplySeconds: 12,
+    });
+    request.flush({ success: true });
+    await pending;
+
+    expect(closed).toBe(true);
+    http.verify();
+  });
+
+  it('asks for the Genesys Cloud client secret again once the region changes', async () => {
+    const fixture = await render({ types: [GENESYS], integrationId: 8 });
+    http.expectOne('/api/hub/integrations/8').flush({
+      id: 8,
+      type: 'genesys_cloud',
+      name: 'Contact Center',
+      isActive: true,
+      config: JSON.stringify({
+        region: 'mypurecloud.de',
+        organizationId: ORG,
+        oauthClientId: CLIENT,
+        oauthClientSecret: '********',
+      }),
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await fixture.whenStable();
+
+    const component = fixture.componentInstance;
+    const secret = component.fields().find((field) => field.name === 'oauthClientSecret')!;
+    expect(component.isKept(secret)).toBe(true);
+
+    component.setValue('region', 'mypurecloud.ie');
+    expect(component.isKept(secret)).toBe(false);
     http.verify();
   });
 

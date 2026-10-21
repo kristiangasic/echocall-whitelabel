@@ -237,4 +237,34 @@ describe('IntegrationsPage', () => {
 
     expect(fixture.componentInstance.integrations().length).toBe(1);
   });
+
+  it('does not offer a service whose access data only its provider issues, but still edits it', async () => {
+    const genesys = { ...TYPE, type: 'genesys_cloud', name: 'Genesys Cloud', category: 'other' };
+    const fixture = TestBed.createComponent(IntegrationsPage);
+    await fixture.whenStable();
+    http.expectOne('/api/hub/integrations').flush([{ ...INTEGRATION, id: 8, type: 'genesys_cloud' }]);
+    http.expectOne('/api/hub/integrations/types').flush([TYPE, genesys]);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="catalog-genesys_cloud"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="catalog-calcom"]')).not.toBeNull();
+    const row = fixture.nativeElement.querySelector('[data-testid="integrations-table"] tbody tr');
+    expect(row.textContent).toContain('Genesys Cloud');
+
+    await fixture.componentInstance.connect();
+    await fixture.componentInstance.edit(fixture.componentInstance.integrations()[0]);
+    expect(opened).toEqual([
+      { data: { types: [TYPE] } },
+      { data: { types: [TYPE, genesys], integrationId: 8 } },
+    ]);
+  });
+
+  it('opens the permissions of a connection', async () => {
+    const fixture = await render();
+
+    fixture.nativeElement.querySelector('[data-testid="integration-permissions-4"]').click();
+
+    expect(opened).toEqual([{ data: { integrationId: 4, name: 'Termine' } }]);
+  });
 });

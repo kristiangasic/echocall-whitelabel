@@ -14,12 +14,23 @@ import { NotifyService } from '../../../core/notify/notify.service';
 import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/confirm-dialog.component';
 
 /**
- * The fields both owners report. Voice agents carry sourceUrl and status,
- * chatbots carry contentSnippet and fileName instead.
+ * The icon of each kind of entry, written as a table so the icon font build
+ * finds the names; a kind without a row shows the text icon.
+ */
+const KIND_ICONS: Record<string, { icon: string }> = {
+  url: { icon: 'link' },
+  crawl: { icon: 'language' },
+  text: { icon: 'notes' },
+};
+
+/**
+ * The fields both owners report. Voice agents carry sourceUrl, chatbots carry
+ * contentSnippet and fileName instead; both report a status. A crawl entry is a
+ * whole website read in the dashboard, a file entry an uploaded document.
  */
 export interface KnowledgePanelEntry {
   id: number;
-  type: 'url' | 'text' | 'file';
+  type: 'url' | 'text' | 'file' | 'crawl';
   title?: string | null;
   sourceUrl?: string | null;
   status?: string | null;
@@ -53,9 +64,20 @@ export interface KnowledgePanelEntry {
       <mat-list data-testid="knowledge-list">
         @for (entry of entries(); track entry.id) {
           <mat-list-item>
-            <mat-icon matListItemIcon>{{ entry.type === 'url' ? 'link' : 'notes' }}</mat-icon>
-            <span matListItemTitle>{{ label(entry) }}</span>
-            <span matListItemLine>{{ entry.status || entry.contentSnippet || '' }}</span>
+            <mat-icon matListItemIcon>{{ icon(entry) }}</mat-icon>
+            <span matListItemTitle>
+              {{ label(entry) }}
+              @if (entry.status === 'pending' || entry.status === 'failed') {
+                <span
+                  class="status"
+                  [class.failed]="entry.status === 'failed'"
+                  [attr.data-testid]="'knowledge-status-' + entry.id"
+                >
+                  {{ t('user.knowledge.status.' + entry.status) }}
+                </span>
+              }
+            </span>
+            <span matListItemLine>{{ detail(entry) }}</span>
             <span matListItemMeta class="entry-actions">
               @if (entry.type === 'url') {
                 <button
@@ -150,6 +172,17 @@ export interface KnowledgePanelEntry {
       display: flex;
       gap: 4px;
     }
+    .status {
+      margin-left: 8px;
+      padding: 1px 8px;
+      border-radius: 8px;
+      background: var(--mat-sys-surface-container-high);
+      font: var(--mat-sys-label-small);
+    }
+    .status.failed {
+      background: var(--mat-sys-error-container);
+      color: var(--mat-sys-on-error-container);
+    }
   `,
 })
 export class KnowledgePanelComponent implements OnInit {
@@ -174,6 +207,16 @@ export class KnowledgePanelComponent implements OnInit {
 
   label(entry: KnowledgePanelEntry): string {
     return entry.title || entry.sourceUrl || entry.fileName || `#${entry.id}`;
+  }
+
+  icon(entry: KnowledgePanelEntry): string {
+    return (KIND_ICONS[entry.type] ?? KIND_ICONS['text']).icon;
+  }
+
+  /** The second line: where the entry was read from, or how its text begins. */
+  detail(entry: KnowledgePanelEntry): string {
+    const source = entry.sourceUrl && entry.sourceUrl !== entry.title ? entry.sourceUrl : '';
+    return entry.contentSnippet || source || '';
   }
 
   async load(): Promise<void> {
@@ -247,11 +290,18 @@ export class KnowledgePanelComponent implements OnInit {
     }
   }
 
+  /**
+   * The service stores a source it could not process and still answers 201,
+   * with status failed: then the operator is told, and the entry shows it.
+   */
   private async add(body: Record<string, string>): Promise<void> {
     this.busy.set(true);
     try {
-      await firstValueFrom(this.hub.post(`${this.basePath()}/knowledge`, body));
-      this.notify.success('user.knowledge.added');
+      const created = await firstValueFrom(
+        this.hub.post<{ status?: string } | null>(`${this.basePath()}/knowledge`, body),
+      );
+      if (created?.status === 'failed') this.notify.error('user.knowledge.addFailed');
+      else this.notify.success('user.knowledge.added');
       await this.load();
     } catch (err) {
       this.notify.apiError(err);

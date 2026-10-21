@@ -50,6 +50,7 @@ const RULES: readonly (readonly [string, string])[] = [
   ['GET|PATCH|DELETE', '/integrations/{id}'],
   ['POST', '/integrations/{id}/test'],
   ['GET', '/integrations/{id}/tools'],
+  ['GET|PUT', '/integrations/{id}/permissions'],
   ['GET|POST', '/webhooks'],
   ['GET', '/webhooks/events'],
   ['GET|PATCH|DELETE', '/webhooks/{id}'],

@@ -149,7 +149,12 @@
     "refreshed": "La source est en cours de relecture.",
     "added": "Source de connaissances ajoutée.",
     "deleteTitle": "Supprimer la source ?",
-    "deleteMessage": "« {{title}} » sera supprimée définitivement."
+    "deleteMessage": "« {{title}} » sera supprimée définitivement.",
+    "status": {
+      "pending": "En cours de traitement",
+      "failed": "Échec"
+    },
+    "addFailed": "La source a été enregistrée mais n'a pas pu être traitée. Supprimez-la et ajoutez-la à nouveau."
   },
   "chatbots": {
     "title": "Chatbots",
@@ -380,7 +385,8 @@
     "access": {
       "read": "lecture",
       "write": "écriture",
-      "delete": "suppression"
+      "delete": "suppression",
+      "admin": "administration"
     },
     "modes": {
       "recommended": "Actions recommandées",
@@ -523,7 +529,66 @@
         "fields": {
           "webhookUrl": "URL du webhook Zapier"
         }
+      },
+      "genesys_cloud": {
+        "description": "Connexion centre de contact pour Genesys Cloud : vos assistants prennent les appels et les chats de Genesys Cloud, les transfèrent vers des files d'attente ou des numéros et lisent les tables de données autorisées.",
+        "fields": {
+          "region": "Région",
+          "organizationId": "ID de l'organisation",
+          "oauthClientId": "ID client OAuth (facultatif)",
+          "oauthClientSecret": "Secret client OAuth (facultatif)"
+        }
       }
+    },
+    "setupElsewhere": "Cette connexion est configurée par votre fournisseur. Ici, vous pouvez la renommer, la désactiver, définir ses autorisations ou la supprimer.",
+    "notPermitted": "Non autorisé par les autorisations",
+    "permissions": {
+      "button": "Autorisations",
+      "title": "Autorisations pour {{name}}",
+      "description": "Choisissez ce que vos assistants peuvent faire avec {{name}}.",
+      "ownerNote": "Cela limite uniquement vos assistants, pas ce que vous faites vous-même dans le portail.",
+      "notAvailable": "Ce service n'a pas d'autorisations à définir. Les actions qu'un assistant utilise se choisissent dans l'assistant.",
+      "presets": {
+        "read": {
+          "label": "Lecture seule",
+          "hint": "Les assistants peuvent consulter les données sans rien modifier."
+        },
+        "read_write": {
+          "label": "Lecture et écriture",
+          "hint": "Les assistants peuvent consulter, créer et modifier des données, mais ne peuvent rien supprimer."
+        },
+        "full": {
+          "label": "Accès complet",
+          "hint": "Toutes les actions, y compris la suppression et l'administration."
+        },
+        "custom": {
+          "label": "Sélection personnalisée",
+          "hint": "Choisissez chaque action vous-même."
+        },
+        "legacy": {
+          "label": "Périmètre précédent",
+          "hint": "Toutes les actions que vos assistants pouvaient utiliser jusqu'à présent."
+        }
+      },
+      "recommended": "Recommandé",
+      "defaultBadge": "Par défaut",
+      "access": {
+        "read": "Lecture",
+        "write": "Écriture",
+        "delete": "Suppression",
+        "admin": "Administration"
+      },
+      "count": "{{allowed}} actions autorisées sur {{total}}.",
+      "presetEmpty": "{{name}} n'a aucune action pour ce niveau.",
+      "fullWarning": "Avec l'accès complet, vos assistants peuvent aussi supprimer des données.",
+      "customEmpty": "Sélectionnez au moins une action.",
+      "invalid": "Les autorisations enregistrées n'ont pas pu être lues. Veuillez les choisir à nouveau et enregistrer.",
+      "search": "Rechercher des actions",
+      "selectAll": "Tout sélectionner",
+      "selectNone": "Tout désélectionner",
+      "saved": "Autorisations enregistrées.",
+      "savedAssistants": "Autorisations enregistrées. Assistants mis à jour : {{count}}.",
+      "agentsFailed": "Autorisations enregistrées. Certains assistants n'ont pas pu être mis à jour tout de suite, veuillez enregistrer à nouveau."
     }
   },
   "webhooks": {

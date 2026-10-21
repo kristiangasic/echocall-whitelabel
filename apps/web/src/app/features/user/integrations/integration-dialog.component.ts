@@ -13,8 +13,8 @@ import { firstValueFrom } from 'rxjs';
 import { HubService } from '../../../core/hub/hub.service';
 import type { Integration, IntegrationType } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
-import { IntegrationCatalogService } from './integration-catalog.service';
-import { MASKED, maskedKeys, parseConfig } from './integration-config';
+import { IntegrationCatalogService, SETUP_OUTSIDE_PORTAL } from './integration-catalog.service';
+import { configPayload, maskedKeys, parseConfig, rawConfig } from './integration-config';
 
 /**
  * Field names the service treats as the place a secret is sent to, besides every
@@ -36,6 +36,15 @@ const DESTINATION_FIELDS = new Set([
   'storeUrl',
   'shopUrl',
 ]);
+
+/**
+ * Fields that name where a secret goes only for one service. For Genesys Cloud the
+ * stored client secret belongs to one OAuth client in one region; after a change
+ * of either it has to be typed again.
+ */
+const TYPE_DESTINATION_FIELDS: Record<string, ReadonlySet<string>> = {
+  genesys_cloud: new Set(['region', 'oauthClientId']),
+};
 
 /** One configuration field of the chosen type, with the parts the form needs filled in. */
 interface ConfigField {
@@ -122,6 +131,11 @@ export interface IntegrationDialogData {
 
           @if (selected(); as entry) {
             <p class="hint">{{ explain(entry) }}</p>
+            @if (setupElsewhere()) {
+              <p class="hint" data-testid="integration-setup-elsewhere">
+                {{ t('user.integrations.setupElsewhere') }}
+              </p>
+            }
             @if (entry.documentation) {
               <a class="hint" [href]="entry.documentation" target="_blank" rel="noopener">
                 {{ t('user.integrations.documentation') }}
@@ -217,6 +231,8 @@ export class IntegrationDialogComponent implements OnInit {
   readonly keptKeys = signal<Set<string>>(new Set());
   /** The configuration as loaded, to notice a changed destination. */
   private readonly loaded = signal<Record<string, string>>({});
+  /** The configuration as loaded, every value in its own type, to send back what the form does not show. */
+  private raw: Record<string, unknown> = {};
   readonly loading = signal(false);
   readonly saving = signal(false);
 
@@ -261,14 +277,17 @@ export class IntegrationDialogComponent implements OnInit {
    */
   readonly destinationChanged = computed(() => {
     const loaded = this.loaded();
+    const ofType = TYPE_DESTINATION_FIELDS[this.type() ?? ''];
     return this.fields().some(
       (field) =>
-        (field.type === 'url' || DESTINATION_FIELDS.has(field.name)) &&
+        (field.type === 'url' || DESTINATION_FIELDS.has(field.name) || !!ofType?.has(field.name)) &&
         !this.keptKeys().has(field.name) &&
         this.value(field.name).trim() !== (loaded[field.name] ?? '').trim(),
     );
   });
   readonly canSave = computed(() => !!this.type() && this.name().trim().length > 0 && !this.saving());
+  /** A service whose access data the provider issues: the dialog says so. */
+  readonly setupElsewhere = computed(() => SETUP_OUTSIDE_PORTAL.has(this.type() ?? ''));
 
   /** What the chosen service does, in the reader's language. */
   explain(entry: IntegrationType): string {
@@ -317,6 +336,7 @@ export class IntegrationDialogComponent implements OnInit {
     this.config.set({});
     this.keptKeys.set(new Set());
     this.loaded.set({});
+    this.raw = {};
     if (!this.name().trim()) this.name.set(this.selected()?.name ?? '');
   }
 
@@ -353,10 +373,12 @@ export class IntegrationDialogComponent implements OnInit {
     }
   }
 
-  /** Empty secret fields are dropped so the stored value survives the update. */
-  private payload(): Record<string, string> {
-    const entries = Object.entries(this.config()).filter(([, value]) => value !== '' && value !== MASKED);
-    return Object.fromEntries(entries);
+  /**
+   * Empty secret fields are dropped so the stored value survives the update, and
+   * keys the form does not show go back as they came, a list as a list.
+   */
+  private payload(): Record<string, unknown> {
+    return configPayload(this.raw, this.config(), new Set(this.fields().map((field) => field.name)));
   }
 
   private async load(): Promise<void> {
@@ -370,6 +392,7 @@ export class IntegrationDialogComponent implements OnInit {
       this.description = integration.description ?? '';
       this.active = integration.isActive;
       const config = parseConfig(integration.config);
+      this.raw = rawConfig(integration.config);
       this.keptKeys.set(maskedKeys(integration.config));
       this.loaded.set(config);
       this.config.set(config);

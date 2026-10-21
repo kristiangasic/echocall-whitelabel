@@ -60,6 +60,10 @@ export abstract class HubApi {
     return this.api.patch<T>(this.prefix + path, body);
   }
 
+  put<T>(path: string, body: unknown = {}): Observable<T> {
+    return this.api.put<T>(this.prefix + path, body);
+  }
+
   delete<T = unknown>(path: string): Observable<T> {
     return this.api.delete<T>(this.prefix + path);
   }

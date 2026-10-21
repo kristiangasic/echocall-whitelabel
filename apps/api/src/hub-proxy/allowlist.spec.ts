@@ -15,6 +15,9 @@ describe('matchCustomerCall', () => {
     // Two language lists: the interface locales and the ones an agent can speak.
     expect(matchCustomerCall('GET', '/languages')).toBe(true);
     expect(matchCustomerCall('GET', '/languages/agent')).toBe(true);
+    // What the assistants may do through one connected service.
+    expect(matchCustomerCall('GET', '/integrations/7/permissions')).toBe(true);
+    expect(matchCustomerCall('PUT', '/integrations/7/permissions')).toBe(true);
   });
 
   it('refuses everything not listed', () => {
@@ -26,6 +29,9 @@ describe('matchCustomerCall', () => {
     expect(matchCustomerCall('DELETE', '/agents')).toBe(false);
     expect(matchCustomerCall('GET', '/health')).toBe(false);
     expect(matchCustomerCall('POST', '/languages/agent')).toBe(false);
+    expect(matchCustomerCall('PATCH', '/integrations/7/permissions')).toBe(false);
+    expect(matchCustomerCall('DELETE', '/integrations/7/permissions')).toBe(false);
+    expect(matchCustomerCall('PUT', '/integrations/7')).toBe(false);
   });
 
   it('refuses path tricks', () => {

@@ -149,7 +149,12 @@
     "refreshed": "Quelle wird neu eingelesen.",
     "added": "Wissensquelle hinzugefügt.",
     "deleteTitle": "Wissensquelle löschen?",
-    "deleteMessage": "\"{{title}}\" wird dauerhaft gelöscht."
+    "deleteMessage": "\"{{title}}\" wird dauerhaft gelöscht.",
+    "status": {
+      "pending": "Wird verarbeitet",
+      "failed": "Fehlgeschlagen"
+    },
+    "addFailed": "Die Quelle wurde gespeichert, konnte aber nicht verarbeitet werden. Löschen Sie sie und fügen Sie sie erneut hinzu."
   },
   "chatbots": {
     "title": "Chatbots",
@@ -380,7 +385,8 @@
     "access": {
       "read": "lesend",
       "write": "schreibend",
-      "delete": "löschend"
+      "delete": "löschend",
+      "admin": "verwaltend"
     },
     "modes": {
       "recommended": "Empfohlene Aktionen",
@@ -523,7 +529,66 @@
         "fields": {
           "webhookUrl": "Zapier-Webhook-URL"
         }
+      },
+      "genesys_cloud": {
+        "description": "Contact-Center-Anbindung für Genesys Cloud: Ihre Assistenten nehmen Anrufe und Chats aus Genesys Cloud an, übergeben an Warteschlangen oder Rufnummern und lesen freigegebene Datentabellen.",
+        "fields": {
+          "region": "Region",
+          "organizationId": "Organisations-ID",
+          "oauthClientId": "OAuth-Client-ID (optional)",
+          "oauthClientSecret": "OAuth-Client-Secret (optional)"
+        }
       }
+    },
+    "setupElsewhere": "Diese Verbindung richtet Ihr Anbieter ein. Hier können Sie sie umbenennen, ausschalten, ihre Berechtigungen festlegen oder sie löschen.",
+    "notPermitted": "In den Berechtigungen nicht freigegeben",
+    "permissions": {
+      "button": "Berechtigungen",
+      "title": "Berechtigungen für {{name}}",
+      "description": "Legen Sie fest, was Ihre Assistenten mit {{name}} tun dürfen.",
+      "ownerNote": "Das begrenzt nur Ihre Assistenten, nicht das, was Sie selbst im Portal tun.",
+      "notAvailable": "Für diesen Dienst gibt es keine Berechtigungen. Welche seiner Aktionen ein Assistent nutzt, legen Sie im Assistenten fest.",
+      "presets": {
+        "read": {
+          "label": "Nur lesen",
+          "hint": "Assistenten können Daten abrufen, aber nichts ändern."
+        },
+        "read_write": {
+          "label": "Lesen und schreiben",
+          "hint": "Assistenten können Daten abrufen, anlegen und ändern, aber nichts löschen."
+        },
+        "full": {
+          "label": "Voller Zugriff",
+          "hint": "Alle Aktionen, auch Löschen und Verwaltung."
+        },
+        "custom": {
+          "label": "Eigene Auswahl",
+          "hint": "Wählen Sie jede Aktion einzeln aus."
+        },
+        "legacy": {
+          "label": "Bisheriger Umfang",
+          "hint": "Alle Aktionen, die Ihre Assistenten bisher nutzen konnten."
+        }
+      },
+      "recommended": "Empfohlen",
+      "defaultBadge": "Standard",
+      "access": {
+        "read": "Lesen",
+        "write": "Schreiben",
+        "delete": "Löschen",
+        "admin": "Verwaltung"
+      },
+      "count": "{{allowed}} von {{total}} Aktionen erlaubt.",
+      "presetEmpty": "Für diese Stufe gibt es bei {{name}} keine Aktionen.",
+      "fullWarning": "Mit vollem Zugriff können Ihre Assistenten auch Daten löschen.",
+      "customEmpty": "Wählen Sie mindestens eine Aktion aus.",
+      "invalid": "Die gespeicherten Berechtigungen konnten nicht gelesen werden. Bitte wählen Sie sie neu und speichern Sie.",
+      "search": "Aktionen durchsuchen",
+      "selectAll": "Alle auswählen",
+      "selectNone": "Keine auswählen",
+      "saved": "Berechtigungen gespeichert.",
+      "savedAssistants": "Berechtigungen gespeichert. Aktualisierte Assistenten: {{count}}.",
+      "agentsFailed": "Berechtigungen gespeichert. Einige Assistenten konnten nicht sofort aktualisiert werden, bitte speichern Sie erneut."
     }
   },
   "webhooks": {

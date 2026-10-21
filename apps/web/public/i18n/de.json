@@ -250,6 +250,9 @@
     "company_details_incomplete": "Ihre Firmendaten sind unvollständig. Ergänzen Sie sie unter Einstellungen, dann lässt sich die Rechnung erstellen.",
     "invoice_unavailable": "Die Rechnung ist gerade nicht abrufbar.",
     "destination_changed": "Das Ziel hat sich geändert. Bitte das Passwort bzw. den Schlüssel erneut eingeben.",
-    "masked_without_stored_value": "Ein geheimer Wert fehlt. Bitte erneut eingeben."
+    "masked_without_stored_value": "Ein geheimer Wert fehlt. Bitte erneut eingeben.",
+    "conflict": "Das gibt es bereits oder es wird schon verwendet.",
+    "invalid_config": "Einige Einstellungen sind ungültig. Bitte prüfen Sie sie und geben Sie einen gespeicherten geheimen Wert erneut ein, wenn Sie geändert haben, wozu er gehört.",
+    "tool_not_permitted": "Diese Aktion ist in den Berechtigungen des verbundenen Dienstes nicht freigegeben."
   }
 }

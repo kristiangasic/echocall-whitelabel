@@ -3,6 +3,14 @@ import { TranslocoService } from '@jsverse/transloco';
 import type { IntegrationType } from '../../../core/hub/hub.models';
 
 /**
+ * Services the portal cannot set up to the end: their access data are issued
+ * only by the provider of the service, so a connection made here would never
+ * work. They are not offered to connect; a connection that already exists can
+ * still be renamed, switched off, given permissions and deleted.
+ */
+export const SETUP_OUTSIDE_PORTAL: ReadonlySet<string> = new Set(['genesys_cloud']);
+
+/**
  * The catalog of connectable services is written once, in one language, by the
  * platform the portal talks to. The portal keeps its own wording for the
  * entries it knows and falls back to what the platform sent for anything it

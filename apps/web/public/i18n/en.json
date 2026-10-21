@@ -250,6 +250,9 @@
     "company_details_incomplete": "Your company details are incomplete. Complete them under Settings and the invoice can be issued.",
     "invoice_unavailable": "The invoice is not available right now.",
     "destination_changed": "The destination changed. Enter the password or key again.",
-    "masked_without_stored_value": "A secret value is missing. Enter it again."
+    "masked_without_stored_value": "A secret value is missing. Enter it again.",
+    "conflict": "This already exists or is already in use.",
+    "invalid_config": "Some settings are not valid. Check them, and enter a stored secret again if you changed what it belongs to.",
+    "tool_not_permitted": "This action is not allowed by the permissions of the connected service."
   }
 }

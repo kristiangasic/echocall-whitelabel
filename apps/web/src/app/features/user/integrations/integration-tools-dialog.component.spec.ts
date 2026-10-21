@@ -22,7 +22,7 @@ describe('IntegrationToolsDialogComponent', () => {
   let http: HttpTestingController;
   let closed: unknown;
 
-  async function render(data: IntegrationToolsDialogData) {
+  async function render(data: IntegrationToolsDialogData, answer = TOOLS) {
     closed = undefined;
     await TestBed.configureTestingModule({
       imports: [IntegrationToolsDialogComponent, provideTestI18n()],
@@ -36,7 +36,7 @@ describe('IntegrationToolsDialogComponent', () => {
     http = TestBed.inject(HttpTestingController);
     const fixture = TestBed.createComponent(IntegrationToolsDialogComponent);
     await fixture.whenStable();
-    http.expectOne('/api/hub/integrations/4/tools').flush(TOOLS);
+    http.expectOne('/api/hub/integrations/4/tools').flush(answer);
     await new Promise((resolve) => setTimeout(resolve, 0));
     await fixture.whenStable();
     return fixture;
@@ -83,5 +83,32 @@ describe('IntegrationToolsDialogComponent', () => {
     fixture.componentInstance.apply();
 
     expect(closed).toEqual({ enabledTools: ['list_slots', 'cancel_appointment'] });
+  });
+
+  it('keeps a tool the permissions forbid switched off and out of the selection', async () => {
+    const forbidden = {
+      data: [TOOLS.data[0], { ...TOOLS.data[1], permitted: false }, TOOLS.data[2]],
+      recommended: TOOLS.recommended,
+    };
+    const fixture = await render(
+      { integrationId: 4, name: 'Termine', selection: ['list_slots', 'book_appointment'] },
+      forbidden,
+    );
+    const component = fixture.componentInstance;
+
+    const chip = fixture.nativeElement.querySelector('[data-testid="not-permitted-book_appointment"]');
+    expect(chip.textContent.trim()).toBe(USER_TEXTS.integrations.notPermitted);
+    const box: HTMLInputElement = fixture.nativeElement.querySelector(
+      '[data-testid="tool-book_appointment"] input',
+    );
+    expect(box.disabled).toBe(true);
+    expect(component.isEnabled(forbidden.data[1])).toBe(false);
+
+    component.apply();
+    expect(closed).toEqual({ enabledTools: ['list_slots'] });
+
+    component.setRecommended(true);
+    component.setRecommended(false);
+    expect(component.enabled()).toEqual(['list_slots']);
   });
 });

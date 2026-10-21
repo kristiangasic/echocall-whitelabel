@@ -13,9 +13,13 @@ import { HubService } from '../../../core/hub/hub.service';
 import type { IntegrationSummary, IntegrationType } from '../../../core/hub/hub.models';
 import { NotifyService } from '../../../core/notify/notify.service';
 import { ConfirmDialogComponent, type ConfirmDialogData } from '../../../shared/confirm-dialog.component';
-import { IntegrationCatalogService } from './integration-catalog.service';
+import { IntegrationCatalogService, SETUP_OUTSIDE_PORTAL } from './integration-catalog.service';
 import { LocalDatePipe } from '../../../shared/local-date.pipe';
 import { IntegrationDialogComponent, type IntegrationDialogData } from './integration-dialog.component';
+import {
+  IntegrationPermissionsDialogComponent,
+  type IntegrationPermissionsDialogData,
+} from './integration-permissions-dialog.component';
 import {
   IntegrationToolsDialogComponent,
   type IntegrationToolsDialogData,
@@ -133,6 +137,16 @@ const GROUP_ORDER = [
                   [attr.aria-label]="t('user.integrations.tools')"
                 >
                   <mat-icon>handyman</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="showPermissions(row)"
+                  [matTooltip]="t('user.integrations.permissions.button')"
+                  [attr.aria-label]="t('user.integrations.permissions.button')"
+                  [attr.data-testid]="'integration-permissions-' + row.id"
+                >
+                  <mat-icon>verified_user</mat-icon>
                 </button>
                 <button
                   mat-icon-button
@@ -267,6 +281,10 @@ export class IntegrationsPage implements OnInit {
   readonly columns = ['name', 'status', 'lastUsed', 'actions'];
 
   private readonly byType = computed(() => new Map(this.catalog().map((entry) => [entry.type, entry.name])));
+  /** The services the portal can set up to the end; the others are only managed here. */
+  private readonly connectable = computed(() =>
+    this.catalog().filter((entry) => !SETUP_OUTSIDE_PORTAL.has(entry.type)),
+  );
 
   /**
    * The catalog by the work its services do. A gallery of equal cards leaves
@@ -275,7 +293,7 @@ export class IntegrationsPage implements OnInit {
    */
   readonly groups = computed<CatalogGroup[]>(() => {
     const groups = new Map<string, IntegrationType[]>();
-    for (const entry of this.catalog()) {
+    for (const entry of this.connectable()) {
       const category = entry.category ?? 'other';
       const entries = groups.get(category);
       if (entries) entries.push(entry);
@@ -328,7 +346,7 @@ export class IntegrationsPage implements OnInit {
   }
 
   async connect(type?: string): Promise<void> {
-    const data: IntegrationDialogData = { types: this.catalog(), ...(type ? { type } : {}) };
+    const data: IntegrationDialogData = { types: this.connectable(), ...(type ? { type } : {}) };
     const saved = await firstValueFrom(this.dialog.open(IntegrationDialogComponent, { data }).afterClosed());
     if (saved) await this.load();
   }
@@ -342,6 +360,12 @@ export class IntegrationsPage implements OnInit {
   showTools(integration: IntegrationSummary): void {
     const data: IntegrationToolsDialogData = { integrationId: integration.id, name: integration.name };
     this.dialog.open(IntegrationToolsDialogComponent, { data });
+  }
+
+  /** What the assistants may do through the service; the dialog says when it has no such setting. */
+  showPermissions(integration: IntegrationSummary): void {
+    const data: IntegrationPermissionsDialogData = { integrationId: integration.id, name: integration.name };
+    this.dialog.open(IntegrationPermissionsDialogComponent, { data });
   }
 
   async test(integration: IntegrationSummary): Promise<void> {

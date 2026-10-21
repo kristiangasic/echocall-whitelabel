@@ -149,7 +149,12 @@
     "refreshed": "The source is being re-crawled.",
     "added": "Knowledge source added.",
     "deleteTitle": "Delete knowledge source?",
-    "deleteMessage": "“{{title}}” will be deleted permanently."
+    "deleteMessage": "“{{title}}” will be deleted permanently.",
+    "status": {
+      "pending": "Processing",
+      "failed": "Failed"
+    },
+    "addFailed": "The source was saved but could not be processed. Delete it and add it again."
   },
   "chatbots": {
     "title": "Chatbots",
@@ -380,7 +385,8 @@
     "access": {
       "read": "read",
       "write": "write",
-      "delete": "delete"
+      "delete": "delete",
+      "admin": "admin"
     },
     "modes": {
       "recommended": "Recommended actions",
@@ -523,7 +529,66 @@
         "fields": {
           "webhookUrl": "Zapier webhook URL"
         }
+      },
+      "genesys_cloud": {
+        "description": "Contact center connection for Genesys Cloud: your assistants take calls and chats from Genesys Cloud, hand them over to queues or numbers and read released data tables.",
+        "fields": {
+          "region": "Region",
+          "organizationId": "Organization ID",
+          "oauthClientId": "OAuth client ID (optional)",
+          "oauthClientSecret": "OAuth client secret (optional)"
+        }
       }
+    },
+    "setupElsewhere": "This connection is set up by your provider. Here you can rename it, switch it off, set its permissions or delete it.",
+    "notPermitted": "Not allowed by the permissions",
+    "permissions": {
+      "button": "Permissions",
+      "title": "Permissions for {{name}}",
+      "description": "Choose what your assistants may do with {{name}}.",
+      "ownerNote": "This only limits your assistants, not what you do yourself in the portal.",
+      "notAvailable": "This service has no permissions to set. Which of its actions an assistant uses is chosen in the assistant.",
+      "presets": {
+        "read": {
+          "label": "Read only",
+          "hint": "Assistants can look up data but cannot change anything."
+        },
+        "read_write": {
+          "label": "Read and write",
+          "hint": "Assistants can look up, create and change data, but cannot delete anything."
+        },
+        "full": {
+          "label": "Full access",
+          "hint": "All actions, including deleting and administration."
+        },
+        "custom": {
+          "label": "Custom selection",
+          "hint": "Choose each action yourself."
+        },
+        "legacy": {
+          "label": "Previous scope",
+          "hint": "All actions your assistants could use so far."
+        }
+      },
+      "recommended": "Recommended",
+      "defaultBadge": "Default",
+      "access": {
+        "read": "Read",
+        "write": "Write",
+        "delete": "Delete",
+        "admin": "Administration"
+      },
+      "count": "{{allowed}} of {{total}} actions allowed.",
+      "presetEmpty": "{{name}} has no actions for this level.",
+      "fullWarning": "With full access your assistants can also delete data.",
+      "customEmpty": "Select at least one action.",
+      "invalid": "The saved permissions could not be read. Please choose them again and save.",
+      "search": "Search actions",
+      "selectAll": "Select all",
+      "selectNone": "Select none",
+      "saved": "Permissions saved.",
+      "savedAssistants": "Permissions saved. Assistants updated: {{count}}.",
+      "agentsFailed": "Permissions saved. Some assistants could not be updated right away, please save again."
     }
   },
   "webhooks": {

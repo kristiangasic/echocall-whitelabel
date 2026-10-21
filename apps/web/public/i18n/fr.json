@@ -250,6 +250,9 @@
     "company_details_incomplete": "Vos données d'entreprise sont incomplètes. Complétez-les dans les Réglages pour pouvoir émettre la facture.",
     "invoice_unavailable": "La facture n'est pas disponible pour le moment.",
     "destination_changed": "La destination a changé. Saisissez à nouveau le mot de passe ou la clé.",
-    "masked_without_stored_value": "Une valeur secrète manque. Saisissez-la à nouveau."
+    "masked_without_stored_value": "Une valeur secrète manque. Saisissez-la à nouveau.",
+    "conflict": "Cela existe déjà ou est déjà utilisé.",
+    "invalid_config": "Certains paramètres ne sont pas valides. Vérifiez-les et saisissez à nouveau un secret enregistré si vous avez modifié ce à quoi il appartient.",
+    "tool_not_permitted": "Cette action n'est pas autorisée par les autorisations du service connecté."
   }
 }

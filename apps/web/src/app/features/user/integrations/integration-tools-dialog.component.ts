@@ -63,7 +63,7 @@ export interface IntegrationToolsResult {
                 <mat-checkbox
                   matListItemIcon
                   [checked]="isEnabled(tool)"
-                  [disabled]="useRecommended()"
+                  [disabled]="useRecommended() || tool.permitted === false"
                   (change)="toggle(tool, $event.checked)"
                   [attr.data-testid]="'tool-' + tool.name"
                 />
@@ -73,6 +73,11 @@ export interface IntegrationToolsResult {
                 <span class="access">{{ t('user.integrations.access.' + tool.access) }}</span>
                 @if (recommended().includes(tool.name)) {
                   <span class="access">{{ t('user.integrations.recommended') }}</span>
+                }
+                @if (tool.permitted === false) {
+                  <span class="access" [attr.data-testid]="'not-permitted-' + tool.name">
+                    {{ t('user.integrations.notPermitted') }}
+                  </span>
                 }
               </span>
               <span matListItemLine>{{ tool.description }}</span>
@@ -128,14 +133,24 @@ export class IntegrationToolsDialogComponent implements OnInit {
     void this.load();
   }
 
+  /** A tool the permissions of the integration do not allow is never on, whatever the selection says. */
   isEnabled(tool: CatalogTool): boolean {
+    if (tool.permitted === false) return false;
     if (this.useRecommended()) return this.recommended().includes(tool.name);
     return this.enabled().includes(tool.name);
   }
 
+  /** Starting from the recommended set leaves out what the permissions do not allow, which the service would refuse. */
   setRecommended(on: boolean): void {
     this.useRecommended.set(on);
-    if (!on) this.enabled.set([...this.recommended()]);
+    if (!on) {
+      const notPermitted = new Set(
+        this.tools()
+          .filter((tool) => tool.permitted === false)
+          .map((tool) => tool.name),
+      );
+      this.enabled.set(this.recommended().filter((name) => !notPermitted.has(name)));
+    }
   }
 
   toggle(tool: CatalogTool, on: boolean): void {
@@ -144,8 +159,16 @@ export class IntegrationToolsDialogComponent implements OnInit {
     );
   }
 
+  /** A saved selection can still name a tool the permissions now forbid; it is shown off, so it is not sent either. */
   apply(): void {
-    this.dialogRef.close({ enabledTools: this.useRecommended() ? null : this.enabled() });
+    const notPermitted = new Set(
+      this.tools()
+        .filter((tool) => tool.permitted === false)
+        .map((tool) => tool.name),
+    );
+    this.dialogRef.close({
+      enabledTools: this.useRecommended() ? null : this.enabled().filter((name) => !notPermitted.has(name)),
+    });
   }
 
   private async load(): Promise<void> {

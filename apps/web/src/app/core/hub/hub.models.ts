@@ -49,6 +49,8 @@ export type IntegrationType = Schemas['IntegrationType'];
 export type CreateIntegration = Schemas['CreateIntegration'];
 export type UpdateIntegration = Schemas['UpdateIntegration'];
 export type CatalogTool = Schemas['CatalogTool'];
+export type IntegrationPermissions = Schemas['IntegrationPermissions'];
+export type UpdateIntegrationPermissions = Schemas['UpdateIntegrationPermissions'];
 export type AssignedIntegration = Schemas['AssignedIntegration'];
 
 export type Webhook = Schemas['Webhook'];
