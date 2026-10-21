@@ -65,8 +65,9 @@ export interface KnowledgePanelEntry {
         @for (entry of entries(); track entry.id) {
           <mat-list-item>
             <mat-icon matListItemIcon>{{ icon(entry) }}</mat-icon>
-            <span matListItemTitle>
-              {{ label(entry) }}
+            <span matListItemTitle>{{ label(entry) }}</span>
+            <!-- The chip leads the second line: the title is cut off at its end on a phone, the chip must not be. -->
+            <span matListItemLine>
               @if (entry.status === 'pending' || entry.status === 'failed') {
                 <span
                   class="status"
@@ -76,8 +77,8 @@ export interface KnowledgePanelEntry {
                   {{ t('user.knowledge.status.' + entry.status) }}
                 </span>
               }
+              {{ detail(entry) }}
             </span>
-            <span matListItemLine>{{ detail(entry) }}</span>
             <span matListItemMeta class="entry-actions">
               @if (entry.type === 'url') {
                 <button
@@ -173,7 +174,7 @@ export interface KnowledgePanelEntry {
       gap: 4px;
     }
     .status {
-      margin-left: 8px;
+      margin-right: 8px;
       padding: 1px 8px;
       border-radius: 8px;
       background: var(--mat-sys-surface-container-high);

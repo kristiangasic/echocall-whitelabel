@@ -578,7 +578,7 @@
         "delete": "Suppression",
         "admin": "Administration"
       },
-      "count": "{{allowed}} actions autorisées sur {{total}}.",
+      "count": "Actions autorisées : {{allowed}} sur {{total}}.",
       "presetEmpty": "{{name}} n'a aucune action pour ce niveau.",
       "fullWarning": "Avec l'accès complet, vos assistants peuvent aussi supprimer des données.",
       "customEmpty": "Sélectionnez au moins une action.",
