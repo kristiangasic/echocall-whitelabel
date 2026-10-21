@@ -264,7 +264,7 @@ export interface paths {
         post?: never;
         /**
          * Delete a voice agent
-         * @description Deletes a voice agent permanently and removes it from the voice engine. This cannot be undone, and any phone number still routed to this agent stops being answered by it. The removal in the voice engine is attempted first, but a failure there does not stop the local deletion, so the agent always disappears from the account. This endpoint takes no request body.
+         * @description Deletes a voice agent permanently and removes it from the voice engine. This cannot be undone, and any phone number still routed to this agent stops being answered by it. Its integration links and knowledge entries are deleted with it, and so are the indexed knowledge documents that no other agent uses. The removal in the voice engine is attempted first, but a failure there does not stop the local deletion, so the agent always disappears from the account. This endpoint takes no request body.
          */
         delete: {
             parameters: {
@@ -707,7 +707,7 @@ export interface paths {
         };
         /**
          * List agent knowledge sources
-         * @description Returns every knowledge source attached to one voice agent, newest first. These are the documents the agent may draw on when answering, added either as a crawled web page or as literal text. The response is a plain list with no paging. Entries are scoped to the account behind the key, so a reseller key that reads a customer agent sees only the entries its own account added.
+         * @description Returns every knowledge source attached to one voice agent, newest first. These are the documents the agent may draw on when answering, added either as a crawled web page or as literal text. The response is a plain list with no paging. Entries belong to the account that owns the agent, so a reseller key that reads a customer agent sees the same entries as the customer.
          */
         get: {
             parameters: {
@@ -747,7 +747,7 @@ export interface paths {
         put?: never;
         /**
          * Add a knowledge source to an agent
-         * @description Attaches one knowledge source to a voice agent. The body is one of two shapes chosen by `type`: `url` takes a `url` to crawl and index, `text` takes up to 200000 characters of `text` to store verbatim. `title` is optional and defaults to the URL, or to "Text Knowledge" for a text entry. The document is created in the voice engine first, but a failure there is logged and does not fail the request, so an entry can end up stored locally and not yet indexed; it is always reported with status `ready`.
+         * @description Adds one knowledge source to a voice agent. The body is one of two shapes chosen by `type`: `url` takes a `url` to crawl and index, `text` takes up to 200000 characters of `text` to store verbatim. `title` is optional and defaults to the URL, or to "Text Knowledge" for a text entry. The document is created in the voice engine and then attached to the agent, which from then on draws on it in calls. The entry is stored under the account that owns the agent, also when a reseller key adds it. When the document cannot be created or attached, the request still succeeds and the entry is stored with status `failed`; delete it and add it again.
          */
         post: {
             parameters: {
@@ -790,10 +790,10 @@ export interface paths {
                             /** @description Identifier of the new knowledge entry. */
                             id: number;
                             /**
-                             * @description New entries are always reported as ready.
+                             * @description `ready` when the document was created and attached to the agent, `failed` when it was not; a failed entry is not used by the agent.
                              * @enum {string}
                              */
-                            status: "ready";
+                            status: "ready" | "failed";
                             /** @description Label stored for the entry, defaulted when none was sent. */
                             title: string;
                             /**
@@ -830,7 +830,7 @@ export interface paths {
         post?: never;
         /**
          * Delete an agent knowledge source
-         * @description Removes one knowledge source from a voice agent and deletes the indexed document from the voice engine. The entry must belong to this agent and to the account behind the key, otherwise the request is rejected with 404. A failure to delete the indexed copy is logged and does not stop the local deletion. This endpoint takes no request body.
+         * @description Removes one knowledge source from a voice agent: the entry is deleted and the agent no longer draws on the document. The indexed document is deleted from the voice engine as well, unless another entry or another agent still uses it. The entry must belong to this agent, otherwise the request is rejected with 404. A failure in the voice engine is logged and does not stop the local deletion. This endpoint takes no request body.
          */
         delete: {
             parameters: {
@@ -2350,7 +2350,7 @@ export interface paths {
         post?: never;
         /**
          * Delete a chatbot
-         * @description Deletes a chatbot permanently and removes it from the voice engine. This cannot be undone, and any widget still embedded on a website stops working. The removal in the voice engine is attempted first, but a failure there does not stop the local deletion, so the chatbot always disappears from the account. This endpoint takes no request body.
+         * @description Deletes a chatbot permanently and removes it from the voice engine. This cannot be undone, and any widget still embedded on a website stops working. Its integration links and knowledge entries are deleted with it, and so are the indexed knowledge documents that no other agent uses. The removal in the voice engine is attempted first, but a failure there does not stop the local deletion, so the chatbot always disappears from the account. This endpoint takes no request body.
          */
         delete: {
             parameters: {
@@ -2779,7 +2779,7 @@ export interface paths {
         };
         /**
          * List chatbot knowledge sources
-         * @description Returns every knowledge source attached to one chatbot. Only the first 100 characters of each entry are returned, as `contentSnippet`; the full stored text is never sent by this endpoint. The response is a plain list with no paging. Entries are scoped to the account behind the key, so a reseller key that reads a customer chatbot sees only the entries its own account added.
+         * @description Returns every knowledge source attached to one chatbot. Only the first 100 characters of each entry are returned, as `contentSnippet`; the full stored text is never sent by this endpoint. The response is a plain list with no paging. Entries belong to the account that owns the chatbot, so a reseller key that reads a customer chatbot sees the same entries as the customer.
          */
         get: {
             parameters: {
@@ -2818,7 +2818,7 @@ export interface paths {
         put?: never;
         /**
          * Add a knowledge source to a chatbot
-         * @description Attaches one knowledge source to a chatbot. `type` says how to read `content`: for `url` it is the address to draw from, for `text` it is the literal text, and for `file` it is the file body you supply yourself, described by `fileName` and `mimeType`. `content` is always required and must not be empty. Note that the 400 response for an invalid body carries only an error code and a `details` list, with no `message` key, unlike the other endpoints.
+         * @description Adds one knowledge source to a chatbot. `type` says how to read `content`: for `url` it is the address to draw from, for `text` it is the literal text, and for `file` it is the text of the file, named by `fileName` and described by `mimeType`. `content` is always required and must not be empty. The document is created in the voice engine and then attached to the chatbot, which from then on draws on it in conversations. The entry is stored under the account that owns the chatbot, also when a reseller key adds it. When the document cannot be created or attached, the request still succeeds and the entry is stored with status `failed`; delete it and add it again. Note that the 400 response for an invalid body carries only an error code and a `details` list, with no `message` key, unlike the other endpoints.
          */
         post: {
             parameters: {
@@ -2833,7 +2833,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            /** @description The knowledge source. `title`, `fileName` and `mimeType` are optional and stored as given. */
+            /** @description The knowledge source. `title`, `fileName` and `mimeType` are optional and stored as given; without a `title` the entry is named after the URL or the file name. */
             requestBody: {
                 content: {
                     "application/json": {
@@ -2858,6 +2858,11 @@ export interface paths {
                             id: number;
                             /** @description Confirmation text. */
                             message: string;
+                            /**
+                             * @description `ready` when the document was created and attached to the chatbot, `failed` when it was not; a failed entry is not used by the chatbot.
+                             * @enum {string}
+                             */
+                            status: "ready" | "failed";
                         };
                     };
                 };
@@ -2887,7 +2892,7 @@ export interface paths {
         post?: never;
         /**
          * Delete a chatbot knowledge source
-         * @description Removes one knowledge source from a chatbot. The deletion is matched on the knowledge id and the account behind the key, and the chatbot in the path is not checked, so an id belonging to a different chatbot on the same account is also removed. The endpoint answers 200 whether or not an entry was actually deleted, so a repeated call and a wrong id both look like a success. This endpoint takes no request body.
+         * @description Removes one knowledge source from a chatbot: the entry is deleted and the chatbot no longer draws on the document. The indexed document is deleted from the voice engine as well, unless another entry or another agent still uses it. The chatbot must be one the key may use and the entry must belong to this chatbot, otherwise the request is rejected with 404, so a repeated call answers 404. A failure in the voice engine is logged and does not stop the local deletion. This endpoint takes no request body.
          */
         delete: {
             parameters: {
@@ -2906,7 +2911,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The request was accepted. This is also the answer when no matching entry existed. */
+                /** @description The knowledge source was deleted. */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -2918,8 +2923,10 @@ export interface paths {
                         };
                     };
                 };
+                400: components["responses"]["ValidationError"];
                 401: components["responses"]["Unauthorized"];
                 403: components["responses"]["InsufficientScope"];
+                404: components["responses"]["NotFound"];
                 429: components["responses"]["RateLimited"];
                 500: components["responses"]["InternalError"];
             };
@@ -3440,7 +3447,7 @@ export interface paths {
         put?: never;
         /**
          * Connect an integration
-         * @description Stores the credentials and settings for one third-party service and returns the new integration's identifier. The integration is created active, but connecting it does not by itself let an agent use it: it still has to be assigned to an agent or chatbot. `config` is a JSON string, not a nested object, so serialise it before sending; the keys it must contain are the ones listed under `configFields` for this type in GET /integrations/types. A `config` that contains the mask `********` anywhere is refused with 400 and error code `masked_without_stored_value`: the mask stands for a stored secret, and a new integration has none, so send the real values. Keys inside `config` that only the server writes (the connection keys and `toolPermissions`) are dropped before the integration is stored. Nothing is contacted at creation time, so a wrong credential is only noticed later: call the test endpoint afterwards to confirm the connection works.
+         * @description Stores the credentials and settings for one third-party service and returns the new integration's identifier. The integration is created active, but connecting it does not by itself let an agent use it: it still has to be assigned to an agent or chatbot. `config` is a JSON string, not a nested object, so serialise it before sending; the keys it must contain are the ones listed under `configFields` for this type in GET /integrations/types. A `config` that contains the mask `********` anywhere is refused with 400 and error code `masked_without_stored_value`: the mask stands for a stored secret, and a new integration has none, so send the real values. Keys inside `config` that only the server writes (the connection keys and `toolPermissions`) are dropped before the integration is stored. Nothing is contacted at creation time, so a wrong credential is only noticed later: call the test endpoint afterwards to confirm the connection works. A WhatsApp integration whose phone number is already connected in an active integration of another account is refused with 409 and error code `conflict`. A Genesys Cloud integration (type `genesys_cloud`) follows its own rules. An account can have one, and a second one is refused with 409 and error code `conflict`. Its `config` is described by the `GenesysCloudConfig` schema and is checked at once: an invalid value is refused with 400 and error code `invalid_config`, and `error.field` names the part that is wrong (`region`, `organization`, `oauth`, `target`, `table` or `limits`). An `oauthClientSecret` sent as `********` is refused the same way with the field `oauth`. The response never contains the access data Genesys Cloud uses to reach EchoCall: they are generated once in the dashboard under Setup. Link agents with POST /agents/{agentId}/integrations or POST /chatbots/{chatbotId}/integrations; the dashboard then shows the connector id of each linked agent.
          */
         post: {
             parameters: {
@@ -3460,7 +3467,7 @@ export interface paths {
                         description?: string;
                         name: string;
                         /** @enum {string} */
-                        type: "calcom" | "calendly" | "google_calendar" | "google_meet" | "google" | "microsoft" | "google_drive" | "google_sheets" | "gmail" | "hubspot" | "salesforce" | "webhook" | "zapier" | "make" | "slack" | "discord" | "zendesk" | "servicenow" | "twilio" | "whatsapp" | "shopify" | "amazon" | "ebay" | "msteams" | "outlook" | "smtp" | "notion" | "zoom" | "airtable" | "mailchimp" | "n8n" | "jira" | "confluence" | "shopware" | "freshdesk" | "custom";
+                        type: "calcom" | "calendly" | "google_calendar" | "google_meet" | "google" | "microsoft" | "google_drive" | "google_sheets" | "gmail" | "hubspot" | "salesforce" | "webhook" | "zapier" | "make" | "slack" | "discord" | "zendesk" | "servicenow" | "twilio" | "whatsapp" | "shopify" | "amazon" | "ebay" | "msteams" | "outlook" | "smtp" | "notion" | "zoom" | "airtable" | "mailchimp" | "n8n" | "jira" | "confluence" | "shopware" | "freshdesk" | "genesys_cloud" | "custom";
                     };
                 };
             };
@@ -3481,6 +3488,7 @@ export interface paths {
                 400: components["responses"]["ValidationError"];
                 401: components["responses"]["Unauthorized"];
                 403: components["responses"]["InsufficientScope"];
+                409: components["responses"]["Conflict"];
                 429: components["responses"]["RateLimited"];
                 500: components["responses"]["InternalError"];
             };
@@ -3538,7 +3546,7 @@ export interface paths {
         post?: never;
         /**
          * Delete an integration
-         * @description Removes the integration and the credentials stored with it. When an account of the service was connected through the dashboard for this integration, that connection is removed as well, unless another integration still uses it; this happens on a best-effort basis and never blocks the delete. This cannot be undone, and any agent that was assigned this integration loses the ability to perform its actions from the moment of deletion. To stop use of an integration temporarily while keeping its configuration, set `isActive` to false with a PATCH instead.
+         * @description Removes the integration and the credentials stored with it. When an account of the service was connected through the dashboard for this integration, that connection is removed as well, unless another integration still uses it; this happens on a best-effort basis and never blocks the delete. This cannot be undone, and any agent that was assigned this integration loses the ability to perform its actions from the moment of deletion: its assignments to agents and chatbots are removed and their tool lists rebuilt at once. To stop use of an integration temporarily while keeping its configuration, set `isActive` to false with a PATCH instead. Deleting a Genesys Cloud integration also ends its running calls, a call can take up to a minute to end, and its access data stop working at once.
          */
         delete: {
             parameters: {
@@ -3578,7 +3586,7 @@ export interface paths {
         head?: never;
         /**
          * Update an integration
-         * @description Changes the name, description, stored configuration or enabled flag of an integration. Only the fields you send are written. A `config` you send is merged with the stored one, one object level at a time. A field that is not secret takes the value you send, and one you leave out is removed, so send every non-secret field you want to keep. A secret field keeps its stored value when you leave it out or send it as `********`, an empty string or null clears it, and any other value replaces it. A value counts as secret when its field is declared with type `password` for the integration type, when its key contains `secret`, `password`, `passwd`, `token`, `apiKey`, `api_key`, `authorization`, `authValue`, `credential`, `bearer` or `cookie` or ends in `Key` (case-insensitive, at any depth), or when it is a URL that carries its secret inside it, such as the webhook URL of a Discord integration. A secret key covers everything below it. Booleans are never masked, and an empty value stays empty. Nested objects are merged by the same rules. In a list of objects, each item you send is matched to a stored item by the first of `id`, `name`, `key` or `url` that both carry with the same value; only a matched item keeps its stored secrets, so a new item has to carry them in full. A list of plain values is replaced. When the destination of a level changes (`host`, `url`, `baseUrl`, `endpoint`, `server`, `domain`, `subdomain`, `instanceUrl`, `smtpHost`, `webhookUrl`, `webhookUrl2`, `webhookUrl3`, `apiEndpoint`, `storeUrl`, `shopUrl`, or any field declared with type `url` for the integration type), the secrets stored on that level and on every level below it are not carried over to the new destination: send them again, or the request is refused with 400 and error code `destination_changed`. A config that still contains `********` where nothing is stored is refused with 400 and error code `masked_without_stored_value`. Keys inside `config` that only the server writes (the connection keys and `toolPermissions`) are dropped from what you send and keep their stored values; change the tool permissions with PUT /integrations/{id}/permissions instead. Setting `isActive` to false stops agents from calling the integration without deleting it. The response confirms the write and does not return the updated record.
+         * @description Changes the name, description, stored configuration or enabled flag of an integration. Only the fields you send are written. A `config` you send is merged with the stored one, one object level at a time. A field that is not secret takes the value you send, and one you leave out is removed, so send every non-secret field you want to keep. A secret field keeps its stored value when you leave it out or send it as `********`, an empty string or null clears it, and any other value replaces it. A value counts as secret when its field is declared with type `password` for the integration type, when its key contains `secret`, `password`, `passwd`, `token`, `apiKey`, `api_key`, `authorization`, `authValue`, `credential`, `bearer` or `cookie` or ends in `Key` (case-insensitive, at any depth), or when it is a URL that carries its secret inside it, such as the webhook URL of a Discord integration. A secret key covers everything below it. Booleans are never masked, and an empty value stays empty. Nested objects are merged by the same rules. In a list of objects, each item you send is matched to a stored item by the first of `id`, `name`, `key` or `url` that both carry with the same value; only a matched item keeps its stored secrets, so a new item has to carry them in full. A list of plain values is replaced. When the destination of a level changes (`host`, `url`, `baseUrl`, `endpoint`, `server`, `domain`, `subdomain`, `instanceUrl`, `smtpHost`, `webhookUrl`, `webhookUrl2`, `webhookUrl3`, `apiEndpoint`, `storeUrl`, `shopUrl`, or any field declared with type `url` for the integration type), the secrets stored on that level and on every level below it are not carried over to the new destination: send them again, or the request is refused with 400 and error code `destination_changed`. A config that still contains `********` where nothing is stored is refused with 400 and error code `masked_without_stored_value`. Keys inside `config` that only the server writes (the connection keys and `toolPermissions`) are dropped from what you send and keep their stored values; change the tool permissions with PUT /integrations/{id}/permissions instead. Setting `isActive` to false stops agents from calling the integration without deleting it. Every agent and chatbot the integration is assigned to gets its tool list rebuilt at once, so the change takes effect in their next conversation. A WhatsApp integration whose phone number is already connected in an active integration of another account is refused with 409 and error code `conflict`. The response confirms the write and does not return the updated record. For a Genesys Cloud integration the merge rules above do not apply: a `config` you send is checked against `GenesysCloudConfig` and replaces the stored one as a whole, so send every field you want to keep. An invalid one is refused with 400 and error code `invalid_config`, with `error.field` naming the part that is wrong. Leaving `oauthClientSecret` out or sending it as `********` keeps the stored secret only while `oauthClientId` and `region` stay the same; after changing either, send the secret again. Sending both OAuth fields empty removes the OAuth client. Setting `isActive` to false also ends the running calls of the integration; a call can take up to a minute to end.
          */
         patch: {
             parameters: {
@@ -3620,6 +3628,7 @@ export interface paths {
                 401: components["responses"]["Unauthorized"];
                 403: components["responses"]["InsufficientScope"];
                 404: components["responses"]["NotFound"];
+                409: components["responses"]["Conflict"];
                 429: components["responses"]["RateLimited"];
                 500: components["responses"]["InternalError"];
             };
@@ -3975,7 +3984,7 @@ export interface paths {
         };
         /**
          * Read the tool permissions of an integration
-         * @description Returns which tools the agents of the account may use through this integration: the stored choice in `preset`, every tool of the integration with `allowed`, and how many tools each preset would allow. The permissions limit agents only; the account owner keeps full access through the dashboard and the calendar endpoints. Only the integration types connected through the dashboard sign-in have tool permissions; every other type answers 404, with the same status used for an integration that does not exist or belongs to someone else. `preset` is `legacy` while nothing was chosen: agents then keep the tools they had before permissions existed.
+         * @description Returns which tools the agents of the account may use through this integration: the stored choice in `preset`, every tool of the integration with `allowed`, and how many tools each preset would allow. The permissions limit agents only; the account owner keeps full access through the dashboard and the calendar endpoints. Only Genesys Cloud and the integration types connected through the dashboard sign-in have tool permissions; every other type answers 404, with the same status used for an integration that does not exist or belongs to someone else. `preset` is `legacy` while nothing was chosen: agents then keep the tools they had before permissions existed. A Genesys Cloud integration never reports `legacy`: without a stored choice it reports `read`, which allows only the tools that read. Handing a conversation over to a person is always allowed and is not listed in `tools`.
          */
         get: {
             parameters: {
@@ -4102,7 +4111,7 @@ export interface paths {
         put?: never;
         /**
          * Test an integration
-         * @description Calls the connected service with the stored credentials and reports what came back. Use it after creating or reconfiguring an integration, since nothing is verified at write time. The shape of the result depends on the integration type: each connector builds its own diagnostic payload, so read it as free-form JSON rather than a fixed schema, and expect at least an indication of success and a message when it failed. Anything resembling a credential is stripped from the result before it is returned. A connection that fails is still reported inside a 200 response, not as an HTTP error.
+         * @description Calls the connected service with the stored credentials and reports what came back. Use it after creating or reconfiguring an integration, since nothing is verified at write time. The shape of the result depends on the integration type: each connector builds its own diagnostic payload, so read it as free-form JSON rather than a fixed schema, and expect at least an indication of success and a message when it failed. Anything resembling a credential is stripped from the result before it is returned. A connection that fails is still reported inside a 200 response, not as an HTTP error. For Genesys Cloud the result has a fixed shape. Without generated access data the test fails and carries no `data`. Otherwise `data` holds `credentials` (true), `lastVoiceAt` and `lastChatAt` (when Genesys Cloud last opened a call or a chat, or null), `oauth` (`none` without an OAuth client, `ok`, `failed`, or `wrong_organization` when the client belongs to another Genesys Cloud organization), `organizationName` once the client could sign in, and `tools`: every tool with its `name` and its `state`, which is `ready`, `forbidden` when the role of the OAuth client lacks the right, `failed`, `unchecked` for the tools that write, which the test never tries, or `not_configured` when the queue or data table the tool needs is not set up.
          */
         post: {
             parameters: {
@@ -11548,7 +11557,7 @@ export interface components {
         };
         /** @description A knowledge source attached to a chatbot. */
         ChatbotKnowledgeEntry: {
-            /** @description The first 100 characters of the stored content. The full text is not returned by the list endpoint. */
+            /** @description The first 100 characters of the stored content, or of the URL for an entry read from a link. The full text is not returned by the list endpoint. */
             contentSnippet?: string;
             /**
              * Format: date-time
@@ -11559,13 +11568,18 @@ export interface components {
             fileName?: string | null;
             /** @description Identifier of the knowledge entry. */
             id: number;
+            /**
+             * @description `ready` when the chatbot draws on the entry, `pending` while it is still being processed, `failed` when the document could not be created or attached.
+             * @enum {string}
+             */
+            status?: "pending" | "ready" | "failed";
             /** @description Label for the entry. */
             title?: string | null;
             /**
-             * @description How the source was supplied.
+             * @description How the source was supplied. The API adds `url`, `text` and `file` entries; `crawl` entries are added in the dashboard.
              * @enum {string}
              */
-            type: "url" | "text" | "file";
+            type: "url" | "text" | "file" | "crawl";
         };
         /** @description Lifetime aggregate metrics for one chatbot. Null when the chatbot has no recorded activity yet. Counts chat sessions and spoken widget conversations alike. Same fields as the agent statistics minus `longestCall` and `shortestCall`. */
         ChatbotStats: {
@@ -11930,7 +11944,7 @@ export interface components {
             description?: string;
             name: string;
             /** @enum {string} */
-            type: "calcom" | "calendly" | "google_calendar" | "google_meet" | "google" | "microsoft" | "google_drive" | "google_sheets" | "gmail" | "hubspot" | "salesforce" | "webhook" | "zapier" | "make" | "slack" | "discord" | "zendesk" | "servicenow" | "twilio" | "whatsapp" | "shopify" | "amazon" | "ebay" | "msteams" | "outlook" | "smtp" | "notion" | "zoom" | "airtable" | "mailchimp" | "n8n" | "jira" | "confluence" | "shopware" | "freshdesk" | "custom";
+            type: "calcom" | "calendly" | "google_calendar" | "google_meet" | "google" | "microsoft" | "google_drive" | "google_sheets" | "gmail" | "hubspot" | "salesforce" | "webhook" | "zapier" | "make" | "slack" | "discord" | "zendesk" | "servicenow" | "twilio" | "whatsapp" | "shopify" | "amazon" | "ebay" | "msteams" | "outlook" | "smtp" | "notion" | "zoom" | "airtable" | "mailchimp" | "n8n" | "jira" | "confluence" | "shopware" | "freshdesk" | "genesys_cloud" | "custom";
         };
         /** @description Create Support Ticket Configuration */
         CreateTicket: {
@@ -12002,6 +12016,64 @@ export interface components {
                 message: string;
             };
         };
+        /** @description The `config` of an integration of type `genesys_cloud`. Send it as a JSON string, like every `config`. A PATCH that sends `config` replaces the stored one as a whole: fields left out take their defaults, so send every field you want to keep. The access data Genesys Cloud uses to reach EchoCall (API key, client secret, chat key) are never part of it: they are generated in the dashboard and shown there once. */
+        GenesysCloudConfig: {
+            /**
+             * @description How long EchoCall waits for a chat reply before it answers Genesys Cloud. Keep it below the response time Genesys Cloud allows the bot. A later reply is delivered afterwards when an OAuth client with the right to send bot messages is stored; without one, the chat ends on the failure path with error code `timeout`.
+             * @default 12
+             */
+            chatReplySeconds: number;
+            /** @description Genesys Cloud data tables in which agents may look up a row, for example opening hours per branch, at most 10. Looking up needs the OAuth client. */
+            dataTables?: {
+                /**
+                 * Format: uuid
+                 * @description The data table identifier, a UUID.
+                 */
+                datatableId: string;
+                /** @description Name the agent sees, 1 to 60 characters, unique within the list regardless of case. */
+                label: string;
+            }[];
+            /** @description Where agents hand a conversation over to a person, at most 20. Chat agents use only the queues. The agent picks a target by its label; after the handoff, the flow reads the queue or the number from the output variables. */
+            handoffTargets?: {
+                /** @description Name the agent sees, 1 to 60 characters, unique within the list regardless of case. */
+                label: string;
+                /** @description Phone number in international format with country code, for example +4930123456. Required when `type` is `number`. */
+                phoneNumber?: string;
+                /**
+                 * Format: uuid
+                 * @description The queue identifier, a UUID. Required when `type` is `queue`.
+                 */
+                queueId?: string;
+                /**
+                 * @description A queue in Genesys Cloud or a phone number.
+                 * @default queue
+                 * @enum {string}
+                 */
+                type: "queue" | "number";
+            }[];
+            /**
+             * @description How many calls of this integration EchoCall takes at the same time. Further calls end at once on the failure path of the flow.
+             * @default 10
+             */
+            maxConcurrentCalls: number;
+            /**
+             * Format: uuid
+             * @description Client ID of a Genesys Cloud OAuth client with the Client Credentials grant, a UUID. Optional, and only together with `oauthClientSecret`. With it, agents can look up and create contacts, read estimated wait times and data table rows and schedule callbacks, and chat replies that take longer than `chatReplySeconds` are delivered afterwards. What the client may do is set by its roles in Genesys Cloud.
+             */
+            oauthClientId?: string;
+            /** @description Client secret of that OAuth client. Stored encrypted and returned as `********`. On PATCH, leaving it out or sending `********` keeps the stored secret only while `oauthClientId` and `region` stay the same; after changing either, send the secret again. Leave both OAuth fields empty to remove the client. */
+            oauthClientSecret?: string;
+            /**
+             * Format: uuid
+             * @description The identifier of your Genesys Cloud organization, a UUID. Calls from any other organization are refused.
+             */
+            organizationId: string;
+            /**
+             * @description The Genesys Cloud region, recognisable by the address you sign in at. Defaults to `mypurecloud.de`.
+             * @enum {string}
+             */
+            region?: "mypurecloud.de" | "mypurecloud.ie" | "euw2.pure.cloud" | "euc2.pure.cloud" | "mypurecloud.com" | "usw2.pure.cloud" | "cac1.pure.cloud" | "sae1.pure.cloud" | "mec1.pure.cloud" | "aps1.pure.cloud" | "apne2.pure.cloud" | "apne3.pure.cloud" | "mypurecloud.jp" | "mypurecloud.com.au";
+        };
         /** @description A single integration, with its stored configuration. Every secret value inside `config` is replaced by `********`, so this response tells you which fields are set without revealing them. A value counts as secret when its field is declared with type `password` for the integration type, when its key looks like a secret (the name contains `secret`, `password`, `passwd`, `token`, `apiKey`, `api_key`, `authorization`, `authValue`, `credential`, `bearer` or `cookie`, or ends in `Key`), or when it is a URL that carries its secret inside it, such as the webhook URL of a Discord integration. Booleans are never masked. Internal connector and health bookkeeping is not returned, and neither are the connection keys only the server writes into `config`. For an integration type with tool permissions, `config` may carry `toolPermissions`, the stored choice of GET /integrations/{id}/permissions; it is read-only here and dropped when sent with POST or PATCH. */
         Integration: {
             /** @description The stored configuration, as a JSON string. Secret values are masked to `********`, at any depth; null when the stored value could not be parsed and therefore could not be checked for secrets. Sending a masked value back with PATCH keeps the stored secret. */
@@ -12053,7 +12125,7 @@ export interface components {
             /** @description Whether the stored choice could not be read. When true, agents may use no tool of this integration until a new choice is saved. */
             invalid: boolean;
             /**
-             * @description The stored choice. `legacy` means nothing was chosen yet, and agents keep the tools they had before permissions existed. `custom` together with `invalid` true means the stored choice could not be read, and no tool is allowed.
+             * @description The stored choice. `legacy` means nothing was chosen yet, and agents keep the tools they had before permissions existed. A Genesys Cloud integration never reports `legacy`: without a stored choice it reports `read`. `custom` together with `invalid` true means the stored choice could not be read, and no tool is allowed.
              * @enum {string}
              */
             preset: "read" | "read_write" | "full" | "custom" | "legacy";
@@ -12250,18 +12322,21 @@ export interface components {
             id: number;
             /**
              * Format: uri
-             * @description The crawled URL. Omitted for text entries.
+             * @description The URL the entry was read from. Omitted for text and file entries.
              */
             sourceUrl?: string;
-            /** @description Indexing state of the entry. */
-            status: string;
+            /**
+             * @description `ready` when the agent draws on the entry, `pending` while it is still being processed, `failed` when the document could not be created or attached.
+             * @enum {string}
+             */
+            status: "pending" | "ready" | "failed";
             /** @description Label for the entry. */
             title?: string | null;
             /**
-             * @description Whether the source was supplied as a link to crawl or as literal text.
+             * @description How the source was supplied: a link to read, literal text, an uploaded file or a crawled website. The API adds `url` and `text` entries; `file` and `crawl` entries are added in the dashboard.
              * @enum {string}
              */
-            type: "url" | "text";
+            type: "url" | "text" | "file" | "crawl";
         };
         /** @description What a buyer must prove before a regulated number can carry traffic. Null when the requirement set could not be read from the registry. */
         KycRequirement: {
