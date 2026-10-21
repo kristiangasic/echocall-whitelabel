@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { JSON_BODY_LIMIT } from './common/http.js';
 import helmet from 'helmet';
 import { AppModule } from './app.module.js';
+import { embedHeaders } from './embed/embed-headers.js';
 import { EMBED_TRPC_PATH, embedRawBody } from './embed/widget-body.js';
 import { handleVoiceUpgrade } from './voice/voice-relay.js';
 import { loadEnv } from './config/env.js';
@@ -59,10 +60,10 @@ async function bootstrap(): Promise<void> {
       },
     },
   });
-  // The embed surface is framed and scripted by customer sites; its controller
-  // sets its own narrow headers instead of the portal baseline.
+  // The embed surface is framed and scripted by customer sites; it gets a few
+  // narrow headers here and its controller the rest, instead of the portal baseline.
   app.use((req: Request, res: Response, next: NextFunction) =>
-    req.path.startsWith('/embed/') ? next() : baseline(req, res, next),
+    req.path.startsWith('/embed/') ? embedHeaders(req, res, next) : baseline(req, res, next),
   );
   // The portal is often installed without a reverse proxy in front of it, so it
   // compresses its own answers: the largest script drops from around 400 KB to a
