@@ -14,6 +14,7 @@ import { readApiError } from '../../../core/errors/api-error';
 import type { IntegrationPermissions, UpdateIntegrationPermissions } from '../../../core/hub/hub.models';
 import { HubService } from '../../../core/hub/hub.service';
 import { NotifyService } from '../../../core/notify/notify.service';
+import { integrationExists } from './integration-exists';
 
 export interface IntegrationPermissionsDialogData {
   integrationId: number;
@@ -361,8 +362,9 @@ export class IntegrationPermissionsDialogComponent implements OnInit {
       // A choice that could not be read allows nothing: the operator picks again.
       this.preset.set(current.invalid ? null : current.preset);
     } catch (err) {
-      if (readApiError(err).status === 404) this.notAvailable.set(true);
-      else {
+      if (readApiError(err).status === 404 && (await integrationExists(this.hub, this.data.integrationId))) {
+        this.notAvailable.set(true);
+      } else {
         this.notify.apiError(err);
         this.dialogRef.close(false);
       }

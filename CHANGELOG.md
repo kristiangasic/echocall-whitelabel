@@ -38,8 +38,18 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Editing an integration keeps every secret the service stores, not only password fields:
   a webhook URL or token the service sends masked is no longer asked for again. Once a
   destination such as the host or a URL changes, the dialog asks for the secrets again,
-  because the service does not carry them over to a new destination. Needs API version
+  because the service does not carry them over to a new destination. An empty password
+  field with nothing stored behind it no longer claims to keep a value. Needs API version
   1.16.0 at the service.
+- Connecting a service no longer succeeds with a required field left empty, which listed
+  a connection as active that could not work. An edit cannot clear a required field the
+  connection has, while one that never had it can still be renamed or switched off.
+- The actions dialog of a service with a fixed set of actions says that there is nothing
+  to choose, instead of an error and "no actions", and offers no save.
+- The stored configuration of an integration passes through the portal unchanged. The
+  product name was renamed inside it as well, and the next save wrote the changed value
+  back: a webhook address could change, and a portal name with a quote in it made the
+  configuration unreadable.
 - Answers on `/embed/` no longer name the server software and carry
   `X-Content-Type-Options: nosniff`, like the rest of the portal.
 

@@ -151,6 +151,64 @@ describe('IntegrationDialogComponent', () => {
     http.verify();
   });
 
+  it('does not connect a service while a required field is empty', async () => {
+    const fixture = await render({ types: [TYPE], type: 'calcom' });
+    const component = fixture.componentInstance;
+
+    expect(component.name()).toBe('Cal.com');
+    expect(component.canSave()).toBe(false);
+    await component.save();
+    http.expectNone('/api/hub/integrations');
+
+    component.setValue('apiKey', 'cal_live_1');
+    expect(component.canSave()).toBe(true);
+    http.verify();
+  });
+
+  it('does not let a stored required field be cleared', async () => {
+    const fixture = await render({ types: [SMTP], integrationId: 6 });
+    http.expectOne('/api/hub/integrations/6').flush({
+      id: 6,
+      type: 'smtp',
+      name: 'Mail',
+      isActive: true,
+      config: JSON.stringify({ host: 'smtp.example.com', password: '********' }),
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await fixture.whenStable();
+
+    const component = fixture.componentInstance;
+    expect(component.canSave()).toBe(true);
+    component.setValue('host', '');
+    expect(component.canSave()).toBe(false);
+    http.verify();
+  });
+
+  it('does not offer to keep a secret the service has not stored', async () => {
+    const fixture = await render({ types: [TYPE], integrationId: 4 });
+    http.expectOne('/api/hub/integrations/4').flush({
+      id: 4,
+      type: 'calcom',
+      name: 'Termine',
+      isActive: true,
+      config: JSON.stringify({ eventTypeId: '12' }),
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await fixture.whenStable();
+
+    const component = fixture.componentInstance;
+    const apiKey = component.fields().find((field) => field.name === 'apiKey')!;
+    expect(component.isKept(apiKey)).toBe(false);
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      '[data-testid="integration-field-apiKey"]',
+    );
+    expect(input.hasAttribute('required')).toBe(true);
+    expect(fixture.nativeElement.textContent).not.toContain(USER_TEXTS.integrations.secretKept);
+    // A connection that never had the key can still be renamed or switched off.
+    expect(component.canSave()).toBe(true);
+    http.verify();
+  });
+
   it('keeps a masked Discord webhook URL and does not ask for it again', async () => {
     const fixture = await render({ types: [DISCORD], integrationId: 5 });
     http.expectOne('/api/hub/integrations/5').flush({
@@ -199,6 +257,15 @@ describe('IntegrationDialogComponent', () => {
     component.setValue('host', 'smtp.other.example');
     expect(component.destinationChanged()).toBe(true);
     expect(component.isKept(password)).toBe(false);
+    // Save waits for the password, and the field says why.
+    expect(component.canSave()).toBe(false);
+    await fixture.whenStable();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="integration-secret-again-password"]').textContent,
+    ).toContain(USER_TEXTS.integrations.secretAgain);
+    component.setValue('password', 'neu');
+    expect(component.canSave()).toBe(true);
+    component.setValue('password', '');
 
     component.setValue('host', 'smtp.example.com');
     expect(component.isKept(password)).toBe(true);

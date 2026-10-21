@@ -64,6 +64,19 @@ describe('renameProduct', () => {
     expect(result.description).toBe('The Acme Voice model answering this agent.');
   });
 
+  it('passes the stored configuration of an integration through byte for byte', () => {
+    const config = JSON.stringify({
+      url: 'https://example.org/hooks/EchoCall-booking',
+      label: 'EchoCall Support',
+    });
+    const body = { id: 4, name: 'EchoCall hook', config };
+
+    const renamed = renameProduct(body, 'Acme "Voice"');
+
+    expect(renamed.config).toBe(config);
+    expect(renamed.name).toBe('Acme "Voice" hook');
+  });
+
   it('does not touch a longer word that merely starts the same way', () => {
     const result = renameProduct({ note: 'EchoCallable is a different word.' }, 'Acme Voice');
 

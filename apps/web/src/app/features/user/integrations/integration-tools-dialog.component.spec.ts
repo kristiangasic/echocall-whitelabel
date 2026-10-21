@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import type { CatalogTool } from '../../../core/hub/hub.models';
+import { NotifyService } from '../../../core/notify/notify.service';
 import { provideTestI18n, USER_TEXTS } from '../../../testing/i18n';
 import {
   IntegrationToolsDialogComponent,
@@ -21,9 +22,16 @@ const TOOLS: { data: CatalogTool[]; recommended: string[] } = {
 describe('IntegrationToolsDialogComponent', () => {
   let http: HttpTestingController;
   let closed: unknown;
+  let notified: string[];
 
-  async function render(data: IntegrationToolsDialogData, answer = TOOLS) {
-    closed = undefined;
+  async function render(
+    data: IntegrationToolsDialogData,
+    answer: object = TOOLS,
+    status = 200,
+    exists = true,
+  ) {
+    closed = 'open';
+    notified = [];
     await TestBed.configureTestingModule({
       imports: [IntegrationToolsDialogComponent, provideTestI18n()],
       providers: [
@@ -31,13 +39,23 @@ describe('IntegrationToolsDialogComponent', () => {
         provideHttpClientTesting(),
         { provide: MAT_DIALOG_DATA, useValue: data },
         { provide: MatDialogRef, useValue: { close: (value: unknown) => (closed = value) } },
+        { provide: NotifyService, useValue: { apiError: () => notified.push('apiError') } },
       ],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
     const fixture = TestBed.createComponent(IntegrationToolsDialogComponent);
     await fixture.whenStable();
-    http.expectOne('/api/hub/integrations/4/tools').flush(answer);
+    http
+      .expectOne('/api/hub/integrations/4/tools')
+      .flush(answer, status === 200 ? {} : { status, statusText: 'Error' });
     await new Promise((resolve) => setTimeout(resolve, 0));
+    if (status === 404) {
+      // A 404 is read against the integration itself: gone, or a type without a catalog.
+      const lookup = http.expectOne('/api/hub/integrations/4');
+      if (exists) lookup.flush({ id: 4, type: 'calcom', name: 'Termine', isActive: true, config: '{}' });
+      else lookup.flush({ error: { code: 'not_found' } }, { status: 404, statusText: 'Not Found' });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
     await fixture.whenStable();
     return fixture;
   }
@@ -51,6 +69,39 @@ describe('IntegrationToolsDialogComponent', () => {
     expect(list.textContent).toContain('book_appointment');
     expect(list.textContent).toContain(USER_TEXTS.integrations.access.write);
     expect(list.textContent).toContain(USER_TEXTS.integrations.recommended);
+  });
+
+  it('says a service with a fixed set of actions has nothing to choose, without an error', async () => {
+    const fixture = await render(
+      { integrationId: 4, name: 'Termine', selection: null },
+      { error: { code: 'not_found', message: 'This integration has no selectable tool catalog' } },
+      404,
+    );
+
+    expect(notified).toEqual([]);
+    const text = fixture.nativeElement.textContent;
+    expect(text).toContain(USER_TEXTS.integrations.fixedTools);
+    expect(text).not.toContain(USER_TEXTS.integrations.noTools);
+    expect(fixture.nativeElement.querySelector('[data-testid="tools-recommended"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="tools-save"]')).toBeNull();
+  });
+
+  it('reports an integration that is gone and closes', async () => {
+    await render(
+      { integrationId: 4, name: 'Termine', selection: null },
+      { error: { code: 'not_found', message: 'Integration not found' } },
+      404,
+      false,
+    );
+
+    expect(notified).toEqual(['apiError']);
+    expect(closed).toBeUndefined();
+  });
+
+  it('still reports any other failure', async () => {
+    await render({ integrationId: 4, name: 'Termine' }, { error: { code: 'internal_error' } }, 500);
+
+    expect(notified).toEqual(['apiError']);
   });
 
   it('offers no checkboxes when it was opened to look, not to choose', async () => {

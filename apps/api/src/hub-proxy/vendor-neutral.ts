@@ -25,6 +25,14 @@ const ADDRESS = /^(https?:|mailto:|data:|\/)/i;
 const SETTING_KEYS = new Set(['llmModel', 'ttsModel', 'model']);
 
 /**
+ * Keys whose value is the customer's own stored data, sent back as it came on the
+ * next save. The configuration of an integration is a JSON string with addresses
+ * and labels inside it; renamed, a webhook address would point somewhere else and
+ * a product name with a quote in it would leave the JSON unreadable.
+ */
+const STORED_KEYS = new Set(['config']);
+
+/**
  * Replaces the service's product name with the portal's own, everywhere in a
  * decoded JSON body. Anything that is not a string is passed through as it is.
  */
@@ -35,7 +43,7 @@ export function renameProduct<T>(body: T, productName: string): T {
 function map(value: unknown, productName: string, key: string | null): unknown {
   if (typeof value === 'string') {
     if (ADDRESS.test(value)) return value;
-    if (key !== null && SETTING_KEYS.has(key)) return value;
+    if (key !== null && (SETTING_KEYS.has(key) || STORED_KEYS.has(key))) return value;
     return value.replace(PRODUCT_NAME, productName);
   }
   if (Array.isArray(value)) return value.map((entry) => map(entry, productName, key));

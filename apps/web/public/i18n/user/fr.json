@@ -361,6 +361,7 @@
     "description": "Description",
     "documentation": "Documentation du service",
     "secretKept": "Laissez vide pour conserver la valeur enregistrée.",
+    "secretAgain": "La destination a changé. Saisissez à nouveau cette valeur.",
     "active": "Actif",
     "inactive": "Inactif",
     "lastUsed": "Dernière utilisation",
@@ -376,6 +377,7 @@
     "useRecommended": "Utiliser la sélection recommandée",
     "recommended": "recommandé",
     "noTools": "Ce service ne propose aucune action.",
+    "fixedTools": "Ce service a un ensemble fixe d'actions, il n'y a donc rien à choisir ici.",
     "attach": "Ajouter un service",
     "detach": "Retirer le service",
     "noneAssigned": "Aucun service n'est encore attribué à cet assistant.",
@@ -547,7 +549,7 @@
       "title": "Autorisations pour {{name}}",
       "description": "Choisissez ce que vos assistants peuvent faire avec {{name}}.",
       "ownerNote": "Cela limite uniquement vos assistants, pas ce que vous faites vous-même dans le portail.",
-      "notAvailable": "Ce service n'a pas d'autorisations à définir. Les actions qu'un assistant utilise se choisissent dans l'assistant.",
+      "notAvailable": "Ce service n'a pas d'autorisations à définir.",
       "presets": {
         "read": {
           "label": "Lecture seule",

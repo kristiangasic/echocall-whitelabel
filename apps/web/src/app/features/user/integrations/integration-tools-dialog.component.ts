@@ -7,9 +7,11 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { provideTranslocoScope, TranslocoDirective } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { readApiError } from '../../../core/errors/api-error';
 import type { CatalogTool } from '../../../core/hub/hub.models';
 import { HubService } from '../../../core/hub/hub.service';
 import { NotifyService } from '../../../core/notify/notify.service';
+import { integrationExists } from './integration-exists';
 
 /**
  * Without `selection` the dialog only shows what an integration can do.
@@ -46,7 +48,9 @@ export interface IntegrationToolsResult {
         @if (loading()) {
           <mat-progress-bar mode="indeterminate" />
         }
-        @if (selectable) {
+        @if (fixedSet()) {
+          <p class="hint" data-testid="tools-fixed">{{ t('user.integrations.fixedTools') }}</p>
+        } @else if (selectable) {
           <p class="hint">{{ t('user.integrations.toolsHint') }}</p>
           <mat-checkbox
             [checked]="useRecommended()"
@@ -83,12 +87,14 @@ export interface IntegrationToolsResult {
               <span matListItemLine>{{ tool.description }}</span>
             </mat-list-item>
           } @empty {
-            <p class="hint">{{ t('user.integrations.noTools') }}</p>
+            @if (!fixedSet() && !loading()) {
+              <p class="hint">{{ t('user.integrations.noTools') }}</p>
+            }
           }
         </mat-list>
       </mat-dialog-content>
       <mat-dialog-actions align="end">
-        @if (selectable) {
+        @if (selectable && !fixedSet()) {
           <button mat-button mat-dialog-close type="button">{{ t('actions.cancel') }}</button>
           <button mat-flat-button type="button" (click)="apply()" data-testid="tools-save">
             {{ t('actions.save') }}
@@ -126,6 +132,8 @@ export class IntegrationToolsDialogComponent implements OnInit {
   readonly tools = signal<CatalogTool[]>([]);
   readonly recommended = signal<string[]>([]);
   readonly loading = signal(false);
+  /** The service answers 404 for a type whose actions are fixed, when the integration exists: nothing to choose, nothing to save. */
+  readonly fixedSet = signal(false);
   readonly useRecommended = signal(this.data.selection === null);
   readonly enabled = signal<string[]>(this.data.selection ?? []);
 
@@ -182,7 +190,14 @@ export class IntegrationToolsDialogComponent implements OnInit {
       this.tools.set(result.data);
       this.recommended.set(result.recommended);
     } catch (err) {
-      this.notify.apiError(err);
+      if (readApiError(err).status === 404 && (await integrationExists(this.hub, this.data.integrationId))) {
+        this.fixedSet.set(true);
+      } else if (readApiError(err).status === 404) {
+        this.notify.apiError(err);
+        this.dialogRef.close();
+      } else {
+        this.notify.apiError(err);
+      }
     } finally {
       this.loading.set(false);
     }

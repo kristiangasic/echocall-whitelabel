@@ -361,6 +361,7 @@
     "description": "Description",
     "documentation": "Service documentation",
     "secretKept": "Leave empty to keep the stored value.",
+    "secretAgain": "The destination changed. Enter this value again.",
     "active": "Active",
     "inactive": "Inactive",
     "lastUsed": "Last used",
@@ -376,6 +377,7 @@
     "useRecommended": "Use the recommended selection",
     "recommended": "recommended",
     "noTools": "This service offers no actions.",
+    "fixedTools": "This service comes with a fixed set of actions, so there is nothing to choose here.",
     "attach": "Add a service",
     "detach": "Remove the service",
     "noneAssigned": "No service is assigned to this assistant yet.",
@@ -547,7 +549,7 @@
       "title": "Permissions for {{name}}",
       "description": "Choose what your assistants may do with {{name}}.",
       "ownerNote": "This only limits your assistants, not what you do yourself in the portal.",
-      "notAvailable": "This service has no permissions to set. Which of its actions an assistant uses is chosen in the assistant.",
+      "notAvailable": "This service has no permissions to set.",
       "presets": {
         "read": {
           "label": "Read only",

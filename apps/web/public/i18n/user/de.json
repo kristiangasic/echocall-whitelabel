@@ -361,6 +361,7 @@
     "description": "Beschreibung",
     "documentation": "Dokumentation des Dienstes",
     "secretKept": "Leer lassen, um den gespeicherten Wert zu behalten.",
+    "secretAgain": "Das Ziel hat sich geändert. Bitte geben Sie diesen Wert erneut ein.",
     "active": "Aktiv",
     "inactive": "Inaktiv",
     "lastUsed": "Zuletzt genutzt",
@@ -376,6 +377,7 @@
     "useRecommended": "Empfohlene Auswahl verwenden",
     "recommended": "empfohlen",
     "noTools": "Dieser Dienst bietet keine Aktionen an.",
+    "fixedTools": "Dieser Dienst bringt einen festen Satz an Aktionen mit, hier gibt es nichts auszuwählen.",
     "attach": "Dienst hinzufügen",
     "detach": "Dienst entfernen",
     "noneAssigned": "Diesem Assistenten ist noch kein Dienst zugewiesen.",
@@ -547,7 +549,7 @@
       "title": "Berechtigungen für {{name}}",
       "description": "Legen Sie fest, was Ihre Assistenten mit {{name}} tun dürfen.",
       "ownerNote": "Das begrenzt nur Ihre Assistenten, nicht das, was Sie selbst im Portal tun.",
-      "notAvailable": "Für diesen Dienst gibt es keine Berechtigungen. Welche seiner Aktionen ein Assistent nutzt, legen Sie im Assistenten fest.",
+      "notAvailable": "Für diesen Dienst gibt es keine Berechtigungen.",
       "presets": {
         "read": {
           "label": "Nur lesen",

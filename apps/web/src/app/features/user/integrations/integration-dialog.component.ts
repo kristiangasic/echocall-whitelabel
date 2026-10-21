@@ -186,6 +186,10 @@ export interface IntegrationDialogData {
                 />
                 @if (isKept(field)) {
                   <mat-hint>{{ t('user.integrations.secretKept') }}</mat-hint>
+                } @else if (needsAgain(field)) {
+                  <mat-hint [attr.data-testid]="'integration-secret-again-' + field.name">
+                    {{ t('user.integrations.secretAgain') }}
+                  </mat-hint>
                 }
               </mat-form-field>
             }
@@ -285,7 +289,14 @@ export class IntegrationDialogComponent implements OnInit {
         this.value(field.name).trim() !== (loaded[field.name] ?? '').trim(),
     );
   });
-  readonly canSave = computed(() => !!this.type() && this.name().trim().length > 0 && !this.saving());
+  /** A required field left empty stops the save: the service stores it anyway and lists a connection that cannot work. */
+  readonly canSave = computed(
+    () =>
+      !!this.type() &&
+      this.name().trim().length > 0 &&
+      !this.saving() &&
+      !this.fields().some((field) => this.missing(field)),
+  );
   /** A service whose access data the provider issues: the dialog says so. */
   readonly setupElsewhere = computed(() => SETUP_OUTSIDE_PORTAL.has(this.type() ?? ''));
 
@@ -310,17 +321,37 @@ export class IntegrationDialogComponent implements OnInit {
   }
 
   /**
-   * A secret that is stored but not shown: leaving the field empty keeps it. That
-   * covers password fields and every field the service sent masked, as long as
-   * the destination stays the same.
+   * A secret that is stored but not shown: leaving the field empty keeps it. The
+   * service masks every stored secret, so a field it sent masked is one, as long as
+   * the destination stays the same. An empty password field has nothing stored.
    */
   isKept(field: ConfigField): boolean {
     return (
       !this.isNew() &&
       !this.destinationChanged() &&
       !this.value(field.name) &&
-      (field.type === 'password' || this.keptKeys().has(field.name))
+      this.keptKeys().has(field.name)
     );
+  }
+
+  /** A stored secret the changed destination no longer keeps: it has to be typed again. */
+  needsAgain(field: ConfigField): boolean {
+    return (
+      !this.isNew() &&
+      this.destinationChanged() &&
+      this.keptKeys().has(field.name) &&
+      !this.value(field.name).trim()
+    );
+  }
+
+  /**
+   * A required field without a value. On an edit only a field the connection had
+   * counts, so clearing it is stopped; a field it never had does not lock the
+   * connection against a rename or switching it off.
+   */
+  private missing(field: ConfigField): boolean {
+    if (!field.required || this.isKept(field) || this.value(field.name).trim()) return false;
+    return this.isNew() || !!(this.loaded()[field.name] ?? '').trim() || this.keptKeys().has(field.name);
   }
 
   value(name: string): string {

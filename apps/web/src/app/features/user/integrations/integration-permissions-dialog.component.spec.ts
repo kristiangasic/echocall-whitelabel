@@ -48,7 +48,7 @@ describe('IntegrationPermissionsDialogComponent', () => {
   let closed: unknown;
   let messages: string[];
 
-  async function render(answer: IntegrationPermissions | 'missing') {
+  async function render(answer: IntegrationPermissions | 'missing' | 'gone') {
     closed = undefined;
     messages = [];
     await TestBed.configureTestingModule({
@@ -72,11 +72,19 @@ describe('IntegrationPermissionsDialogComponent', () => {
     const fixture = TestBed.createComponent(IntegrationPermissionsDialogComponent);
     fixture.detectChanges();
     const request = http.expectOne(URL);
-    if (answer === 'missing') {
+    if (answer === 'missing' || answer === 'gone') {
       request.flush(
         { error: { code: 'not_found', message: 'Integration not found' } },
         { status: 404, statusText: 'Not Found' },
       );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      // A 404 is read against the integration itself: gone, or a type without permissions.
+      const lookup = http.expectOne('/api/hub/integrations/7');
+      if (answer === 'missing') {
+        lookup.flush({ id: 7, type: 'calcom', name: 'Kalender', isActive: true, config: '{}' });
+      } else {
+        lookup.flush({ error: { code: 'not_found' } }, { status: 404, statusText: 'Not Found' });
+      }
     } else {
       request.flush({ data: answer });
     }
@@ -106,6 +114,15 @@ describe('IntegrationPermissionsDialogComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="permissions-save"]')).toBeNull();
     expect(messages).toEqual([]);
     expect(closed).toBeUndefined();
+    http.verify();
+  });
+
+  it('reports an integration that is gone and closes', async () => {
+    const fixture = await render('gone');
+
+    expect(fixture.componentInstance.notAvailable()).toBe(false);
+    expect(messages).toEqual(['apiError']);
+    expect(closed).toBe(false);
     http.verify();
   });
 
