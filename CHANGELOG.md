@@ -7,22 +7,56 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-21
+
+### Added
+
+- Permissions for a connected service. Each connection on the integrations page has a
+  Permissions button that sets what assistants may do through it: read only, read and
+  write, full access, or a custom selection of actions. Each level shows how many actions
+  it allows, full access warns that assistants can then delete data, and saving updates
+  the assistants that use the connection and says how many were updated. A service
+  without permissions says so instead. Needs API version 1.16.0 at the service.
+- The tool picker of an assistant marks an action the permissions do not allow, keeps it
+  switched off and leaves it out of what it saves, so the service no longer refuses the
+  assistant with `tool_not_permitted`.
+- The knowledge list marks a source that is still being processed and one that failed,
+  and adding a source the service stored but could not process now says so instead of
+  reporting success. A whole website read in by the service shows with its own icon.
+  Needs API version 1.18.0 at the service; an older one reports no status.
+- Readable messages for the errors `conflict`, `invalid_config` and `tool_not_permitted`
+  in English, German and French, instead of the generic error.
+
 ### Fixed
 
+- Editing a Genesys Cloud connection no longer damages it. The dialog sent back only its
+  form fields, all as text, while the service replaces the whole configuration on save:
+  the handoff targets, data tables and limits were lost or the save was refused. The
+  dialog now sends every stored setting without a form field back as it came, and a
+  shown field in the type the service sent. Changing the region or the OAuth client ID
+  asks for the client secret again, as the service requires.
 - Editing an integration keeps every secret the service stores, not only password fields:
   a webhook URL or token the service sends masked is no longer asked for again. Once a
   destination such as the host or a URL changes, the dialog asks for the secrets again,
   because the service does not carry them over to a new destination. Needs API version
   1.16.0 at the service.
+- Answers on `/embed/` no longer name the server software and carry
+  `X-Content-Type-Options: nosniff`, like the rest of the portal.
 
 ### Changed
 
-- The typed client was regenerated from API version 1.16.0: integrations come back with
-  their secrets masked, a masked value sent back keeps the stored one, and a changed
-  destination without its secrets is refused with `destination_changed`. The new
-  `/integrations/{id}/permissions` (GET and PUT) reads and sets which tools agents may use
-  through an integration connected by sign-in, and catalog tools carry `access` and
-  `permitted`. The portal does not offer the permissions yet.
+- Genesys Cloud is no longer offered for connecting in the portal, because its access
+  data are issued only by the service itself. A connection set up there is listed as
+  before and can be renamed, switched off, given permissions or deleted here; its edit
+  dialog says where it is set up.
+- The typed client was regenerated from API version 1.18.0: the integration type
+  `genesys_cloud`, knowledge entries with a `status` (`pending`, `ready`, `failed`) and
+  the type `crawl`, an entry whose document could not be created stored as `failed`
+  instead of `ready`, and deleting an agent also deletes its integration links and
+  knowledge. Version 1.16.0 had already brought masked secrets, `destination_changed`,
+  `/integrations/{id}/permissions` (GET and PUT) and the `access` and `permitted` fields
+  of catalog tools. No path was removed.
+- The pipeline checks the formatting with Prettier.
 
 ## [0.3.0] - 2026-10-07
 
@@ -215,7 +249,8 @@ link below points at the commit that carried this version.
 - Documentation: README, architecture, configuration, self-hosting, database and operating
   guides, a written security review, security policy, contribution guidelines.
 
-[Unreleased]: https://github.com/kristiangasic/echocall-whitelabel/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/kristiangasic/echocall-whitelabel/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/kristiangasic/echocall-whitelabel/releases/tag/v0.4.0
 [0.3.0]: https://github.com/kristiangasic/echocall-whitelabel/releases/tag/v0.3.0
 [0.2.0]: https://github.com/kristiangasic/echocall-whitelabel/releases/tag/v0.2.0
 [0.1.0]: https://github.com/kristiangasic/echocall-whitelabel/tree/c41c033

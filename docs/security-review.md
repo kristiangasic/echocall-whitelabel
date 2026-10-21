@@ -1,7 +1,8 @@
 # Security review
 
 Reviewed on 2026-09-17 against the state of `main` before the 0.1.0 release, and
-updated on 2026-09-18, when passwords were taken out of the product altogether.
+updated on 2026-09-18, when passwords were taken out of the product altogether. The
+dependency audit was repeated on 2026-10-21 for 0.4.0.
 
 How it was reviewed: every route, guard and service of the back end was read, the test
 suites of both applications were run, the browser smoke run was executed against a built
@@ -204,6 +205,12 @@ file name.
 
 `npm audit` and `npm audit --omit=dev` both report 0 vulnerabilities on 2026-09-17. The
 pipeline runs the production audit on every push, so a new advisory fails the build.
+
+On 2026-10-21, for 0.4.0, `npm audit --omit=dev` still reports 0 vulnerabilities. The full
+`npm audit` reports 3 advisories, all in build and test tooling that never ships in the
+image: `vite` (through `@angular/build` and Vitest), `@angular/build` itself and
+`source-map-js` (through the coverage reporter). They are fixed by moving those tools to
+their next releases, which the dependency updates bring.
 
 ## What this review changed
 
