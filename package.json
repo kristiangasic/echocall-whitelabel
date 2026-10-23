@@ -35,5 +35,11 @@
   },
   "devDependencies": {
     "prettier": "3.9.10"
+  },
+  "overrides": {
+    "vite": {
+      ".": "8.3.4",
+      "rolldown": "1.2.14"
+    }
   }
 }
